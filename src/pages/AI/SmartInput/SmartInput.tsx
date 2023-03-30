@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Wrapper = styled.div`
   width: 100vw;
-  height: 100px;
+  height: 300px;
   border: 2px solid black;
 `;
 
@@ -67,9 +67,9 @@ const SmartInput = () => {
                   "content": "Get a haircut on Saturday"
                 }
               ]
-            }.${inputValue}. Return response in the following parsable JSON format in Traditional Chinese:
+            }.${inputValue}. Return response in Traditional Chinese:
           {
-              "S": "Suggestion",
+              "R": "Response",
               
           }
       `;
@@ -81,12 +81,12 @@ const SmartInput = () => {
       temperature: 0.5,
     });
 
-    const parsableJSONresponse = response.data.choices[0].text;
-    console.log(response.data);
-    const parsedResponse = JSON.parse(parsableJSONresponse);
-    console.log('parsedResponse:', parsedResponse);
-
-    console.log('Suggestions: ', parsedResponse.S);
+    // const parsableJSONresponse = response.data.choices[0].text;
+    console.log(response.data.choices[0].text);
+    // const parsedResponse = JSON.parse(parsableJSONresponse);
+    // console.log('parsedResponse:', parsedResponse);
+    setResponseValue(response.data.choices[0].text);
+    //console.log('Responses: ', parsedResponse.R);
   };
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
