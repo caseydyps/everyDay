@@ -11,6 +11,26 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
 `;
 
+const AddListButton = styled.button`
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  margin: 10px;
+`;
+
+const AddItemButton = styled.button`
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  background-color: #4caf50;
+  color: white;
+  font-size: 16px;
+  margin: 10px;
+`;
+
 const defaultTodo = [
   { title: 'Todo', items: ['Eat out', 'take out garbage'] },
   { title: 'Doing', items: ['Todo1', 'Todo2', 'Todo3'] },
@@ -54,7 +74,7 @@ const todoReducer = (state, action) => {
 
 function Todo() {
   const [data, dispatch] = useReducer(todoReducer, defaultTodo);
-
+  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(data));
   }, [data]);
@@ -66,14 +86,24 @@ function Todo() {
 
   const addItem = (listIndex) => {
     const item = prompt('Enter item text');
-    item && dispatch({ type: 'ADD_ITEM', payload: item, listIndex });
+    if (item) {
+      dispatch({ type: 'ADD_ITEM', payload: item, listIndex });
+    }
   };
 
   return (
-    <Wrapper>
-      <button onClick={addList}>Add New List</button>
-      <DragNDrop data={data} onItemAdd={addItem} />
-    </Wrapper>
+    <>
+      <Wrapper>
+        <DragNDrop
+          data={data}
+          onItemAdd={addItem}
+          selectedItemIndex={selectedItemIndex}
+          setSelectedItemIndex={setSelectedItemIndex}
+        />
+      </Wrapper>
+      <AddListButton onClick={addList}>Add New List</AddListButton>
+      <AddItemButton onClick={addItem}>Add New Item</AddItemButton>
+    </>
   );
 }
 

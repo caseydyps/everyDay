@@ -88,7 +88,7 @@ const SmartInput = () => {
     setResponseValue(response.data.choices[0].text);
     //console.log('Responses: ', parsedResponse.R);
   };
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: string) => {
     setInputValue(event.target.value);
     console.log('inputValue:', inputValue);
   };

@@ -114,13 +114,13 @@ function Calendar() {
     );
   }
 
-  const getDaysInMonth = (date) => {
+  const getDaysInMonth = (date: Date): number => {
     const year = date.getFullYear();
     const month = date.getMonth();
     return new Date(year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date) => {
+  const getFirstDayOfMonth = (date: Date): number => {
     const year = date.getFullYear();
     const month = date.getMonth();
     return new Date(year, month, 1).getDay();
@@ -137,8 +137,7 @@ function Calendar() {
     const month = date.getMonth() + 1;
     setDate(new Date(year, month, 1));
   };
-
-  const handleDateClick = (day) => {
+  const handleDateClick = (day: number) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
   };
 

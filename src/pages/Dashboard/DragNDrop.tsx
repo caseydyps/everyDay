@@ -18,8 +18,7 @@ const DragNDropGroup = styled.div`
 `;
 
 const DragNDropItem = styled.div`
-  margin: 10px 0;
-  padding: 10px;
+  padding: 30px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
   border: 1px solid #ccc;
   border-radius: 3px;
@@ -56,11 +55,11 @@ function DragNDrop({ data }) {
       console.log('Target is NOT the same as dragged item');
       setList((oldList) => {
         let newList = JSON.parse(JSON.stringify(oldList));
-        newList[targetItem.grpI].items.splice(
-          targetItem.itemI,
+        newList[targetItem.groupIndex].items.splice(
+          targetItem.itemIndex,
           0,
-          newList[dragItem.current.grpI].items.splice(
-            dragItem.current.itemI,
+          newList[dragItem.current.groupIndex].items.splice(
+            dragItem.current.itemIndex,
             1
           )[0]
         );
@@ -78,44 +77,76 @@ function DragNDrop({ data }) {
   };
   const getStyles = (item) => {
     if (
-      dragItem.current.grpI === item.grpI &&
-      dragItem.current.itemI === item.itemI
+      dragItem.current.groupIndex === item.groupIndex &&
+      dragItem.current.itemIndex === item.itemIndex
     ) {
       return 'dnd-item current';
     }
     return 'dnd-item';
   };
 
+  const addItem = (groupIndex) => {
+    const item = prompt('Enter item text');
+    if (item) {
+      setList((prevList) => {
+        const newList = [...prevList];
+        newList[groupIndex].items.push(item);
+        localStorage.setItem('List', JSON.stringify(newList));
+        return newList;
+      });
+    }
+  };
+
+  const deleteItem = (groupIndex, itemIndex) => {
+    setList((prevList) => {
+      const newList = [...prevList];
+      newList[groupIndex].items.splice(itemIndex, 1);
+      localStorage.setItem('List', JSON.stringify(newList));
+      return newList;
+    });
+  };
+
   if (list) {
     return (
       <DragNDropWrapper>
-        {list.map((grp, grpI) => (
-          <DragNDropGroup
-            key={grp.title}
-            onDragEnter={
-              dragging && !grp.items.length
-                ? (e) => handleDragEnter(e, { grpI, itemI: 0 })
-                : null
-            }
-          >
-            {grp.items.map((item, itemI) => (
-              <DragNDropGroup
-                draggable
-                key={item}
-                onDragStart={(e) => handletDragStart(e, { grpI, itemI })}
-                onDragEnter={
-                  dragging
-                    ? (e) => {
-                        handleDragEnter(e, { grpI, itemI });
-                      }
-                    : null
-                }
-                className={dragging ? getStyles({ grpI, itemI }) : 'dnd-item'}
-              >
-                {item}
-              </DragNDropGroup>
-            ))}
-          </DragNDropGroup>
+        {list.map((group, groupIndex) => (
+          <div>
+            <h3>{group.title}</h3>
+            <DragNDropGroup
+              key={group.title}
+              onDragEnter={
+                dragging && !group.items.length
+                  ? (e) => handleDragEnter(e, { groupIndex, itemIndex: 0 })
+                  : null
+              }
+            >
+              {group.items.map((item, itemIndex) => (
+                <DragNDropItem
+                  draggable
+                  key={item}
+                  onDragStart={(e) =>
+                    handletDragStart(e, { groupIndex, itemIndex })
+                  }
+                  onDragEnter={
+                    dragging
+                      ? (e) => {
+                          handleDragEnter(e, { groupIndex, itemIndex });
+                        }
+                      : null
+                  }
+                  className={
+                    dragging ? getStyles({ groupIndex, itemIndex }) : 'dnd-item'
+                  }
+                >
+                  {item}
+                  <button onClick={() => deleteItem(groupIndex, itemIndex)}>
+                    Delete
+                  </button>
+                </DragNDropItem>
+              ))}
+              <button onClick={() => addItem(groupIndex)}>Add New Item</button>
+            </DragNDropGroup>
+          </div>
         ))}
       </DragNDropWrapper>
     );
