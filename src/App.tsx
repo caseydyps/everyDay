@@ -4,6 +4,7 @@ import './App.css';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Dashboard from './pages/Dashboard/Dashboard';
+import Whiteboard from './pages/Dashboard/Whiteboard';
 import SmartInput from './pages/AI/SmartInput/SmartInput';
 import Settings from './pages/Setting/Setting';
 import styled from 'styled-components';
@@ -19,6 +20,7 @@ function App() {
       <Header />
       <Content>
         <SmartInput />
+        <Whiteboard />
         <Dashboard />
         {/* <Settings /> */}
       </Content>
