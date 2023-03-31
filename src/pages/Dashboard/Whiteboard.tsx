@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import DrawingTool from '../../Components/drawingtool';
+
 //import './piece.scss';
 
 type Sticker = {
@@ -96,7 +98,6 @@ export const Whiteboard = () => {
       {stickers.map((position, index) => (
         <Sticker
           key={index}
-          className="Piece"
           onMouseDown={(e) => onStickerMouseDown(index, e)}
           ref={(el) => (stickerRefs.current[index] = el)}
           style={{
@@ -108,6 +109,7 @@ export const Whiteboard = () => {
         </Sticker>
       ))}
       <AddButton onClick={addSticker}>Add Sticker</AddButton>
+      <DrawingTool />
     </Wrapper>
   );
 };
