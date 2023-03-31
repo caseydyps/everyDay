@@ -41,14 +41,23 @@ const DrawingTool = () => {
     contextRef.current.stroke();
   };
 
+  const clearCanvas = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
   return (
-    <canvas
-      id="canvas"
-      ref={canvasRef}
-      onMouseDown={startPaint}
-      onMouseUp={endPaint}
-      onMouseMove={paint}
-    />
+    <>
+      <canvas
+        id="canvas"
+        ref={canvasRef}
+        onMouseDown={startPaint}
+        onMouseUp={endPaint}
+        onMouseMove={paint}
+      />
+      <button onClick={clearCanvas}>Clear</button>
+    </>
   );
 };
 
