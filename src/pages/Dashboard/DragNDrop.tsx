@@ -99,7 +99,7 @@ function DragNDrop({ data }) {
             }
           >
             {grp.items.map((item, itemI) => (
-              <DragNDropItem
+              <DragNDropGroup
                 draggable
                 key={item}
                 onDragStart={(e) => handletDragStart(e, { grpI, itemI })}
@@ -113,7 +113,7 @@ function DragNDrop({ data }) {
                 className={dragging ? getStyles({ grpI, itemI }) : 'dnd-item'}
               >
                 {item}
-              </DragNDropItem>
+              </DragNDropGroup>
             ))}
           </DragNDropGroup>
         ))}

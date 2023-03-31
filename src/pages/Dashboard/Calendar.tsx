@@ -46,7 +46,7 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  padding: 10px;
+  padding: 50px;
   border: 1px solid #ccc;
 
   &.inactive {
@@ -63,9 +63,24 @@ const Td = styled.td`
   }
 `;
 
+const AddButton = styled.button`
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+`;
+
 function Calendar() {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [eventTitle, setEventTitle] = useState('');
+  const [eventDate, setEventDate] = useState('');
+  const [eventTime, setEventTime] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
+  const [events, setEvents] = useState([]);
 
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
@@ -94,6 +109,7 @@ function Calendar() {
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         <div>Some details about the selected date...</div>
+        <AddButton onClick={() => setShowModal(true)}>Add Event</AddButton>
       </div>
     );
   }
@@ -124,6 +140,22 @@ function Calendar() {
 
   const handleDateClick = (day) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
+  };
+
+  const handleEventSubmit = (event) => {
+    event.preventDefault();
+    const newEvent = {
+      title: eventTitle,
+      date: eventDate,
+      time: eventTime,
+      location: eventLocation,
+    };
+    setEvents([...events, newEvent]);
+    setShowModal(false);
+    setEventTitle('');
+    setEventDate('');
+    setEventTime('');
+    setEventLocation('');
   };
 
   return (
