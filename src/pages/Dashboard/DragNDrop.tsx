@@ -8,23 +8,99 @@ const DragNDropWrapper = styled.div`
   flex:direction: column;
 `;
 
+const DeleteListButton = styled.button`
+  display: flex;
+  // justify-content: space-between;
+  margin: 20px;
+  flex:direction: column;
+`;
+
 const DragNDropGroup = styled.div`
-  width: 200px;
+  display: flex;
+  flex-direction: column;
+  width: 80%;
   padding: 10px;
   margin: 20px;
   background-color: #f4f4f4;
   border-radius: 5px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.01);
 `;
 
 const DragNDropItem = styled.div`
-  padding: 30px;
+  padding: 40px;
+  margin: 10px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
-  border: 1px solid #ccc;
-  border-radius: 3px;
+  border: 2px solid ${(props) => (props.isDragging ? '#c7d9ff' : '#ccc')};
+  border-radius: 5px;
   box-shadow: ${(props) =>
     props.isDragging ? '0px 2px 5px rgba(0, 0, 0, 0.3)' : 'none'};
   cursor: move;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 32px;
+  font-weight: 500;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  .drag-handle {
+    margin-right: 10px;
+    cursor: grab;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+  }
+
+  .checkbox-label input[type='checkbox'] {
+    margin-right: 10px;
+  }
+`;
+
+const CheckContainer = styled.label`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  position: relative;
+  cursor: pointer;
+`;
+
+const Checkmark = styled.div`
+  display: inline-block;
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
+  border: 1px solid black;
+  border-radius: 3px;
+  background-color: ${(props) => (props.checked ? 'green' : 'white')};
+
+  &:after {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 11px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin: 2px;
+    visibility: ${(props) => (props.checked ? 'visible' : 'hidden')};
+  }
+`;
+
+const Checkbox = styled.input.attrs({ type: 'checkbox' })`
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
 `;
 
 function DragNDrop({ data }) {
@@ -75,15 +151,6 @@ function DragNDrop({ data }) {
     dragItemNode.current.removeEventListener('dragend', handleDragEnd);
     dragItemNode.current = null;
   };
-  const getStyles = (item) => {
-    if (
-      dragItem.current.groupIndex === item.groupIndex &&
-      dragItem.current.itemIndex === item.itemIndex
-    ) {
-      return 'dnd-item current';
-    }
-    return 'dnd-item';
-  };
 
   const addItem = (groupIndex) => {
     const item = prompt('Enter item text');
@@ -105,6 +172,32 @@ function DragNDrop({ data }) {
       return newList;
     });
   };
+  const handleDoneChange = (e, groupIndex, itemIndex) => {
+    const checked = e.target.checked;
+    setList((prevList) => {
+      const newList = [...prevList];
+      newList[groupIndex].items[itemIndex] = {
+        ...newList[groupIndex].items[itemIndex],
+        done: checked,
+      };
+      localStorage.setItem('List', JSON.stringify(newList));
+      return newList;
+    });
+  };
+
+  function deleteList(listIndex) {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this list?'
+    );
+    if (confirmDelete) {
+      setList((prevList) => {
+        const newList = [...prevList];
+        newList.splice(listIndex, 1);
+        localStorage.setItem('List', JSON.stringify(newList));
+        return newList;
+      });
+    }
+  }
 
   if (list) {
     return (
@@ -112,6 +205,9 @@ function DragNDrop({ data }) {
         {list.map((group, groupIndex) => (
           <div>
             <h3>{group.title}</h3>
+            <DeleteListButton onClick={() => deleteList(groupIndex)}>
+              Delete List
+            </DeleteListButton>
             <DragNDropGroup
               key={group.title}
               onDragEnter={
@@ -134,17 +230,28 @@ function DragNDrop({ data }) {
                         }
                       : null
                   }
-                  className={
-                    dragging ? getStyles({ groupIndex, itemIndex }) : 'dnd-item'
-                  }
                 >
-                  {item}
+                  {item.text}
+
+                  <div>Due: {item.due}</div>
+                  <div>Member: {item.member}</div>
+                  <div>Done: {item.done ? 'Done' : 'Not yet'}</div>
+                  <CheckContainer>
+                    <Checkbox
+                      checked={item.done}
+                      onChange={(e) =>
+                        handleDoneChange(e, groupIndex, itemIndex)
+                      }
+                    />
+                    <Checkmark checked={item.done}></Checkmark>
+                  </CheckContainer>
                   <button onClick={() => deleteItem(groupIndex, itemIndex)}>
                     Delete
                   </button>
                 </DragNDropItem>
               ))}
               <button onClick={() => addItem(groupIndex)}>Add New Item</button>
+              <button>My task only</button>
             </DragNDropGroup>
           </div>
         ))}
