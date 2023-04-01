@@ -181,13 +181,26 @@ function DragNDrop({ data }) {
       return newList;
     });
   };
-  const handleDoneChange = (e, groupIndex, itemIndex, field) => {
+  const handleChange = (e, groupIndex, itemIndex, field) => {
     const value = e.target.value;
     setList((prevList) => {
       const newList = [...prevList];
       newList[groupIndex].items[itemIndex] = {
         ...newList[groupIndex].items[itemIndex],
         [field]: value,
+      };
+      localStorage.setItem('List', JSON.stringify(newList));
+      return newList;
+    });
+  };
+
+  const handleDoneChange = (e, groupIndex, itemIndex) => {
+    const checked = e.target.checked;
+    setList((prevList) => {
+      const newList = [...prevList];
+      newList[groupIndex].items[itemIndex] = {
+        ...newList[groupIndex].items[itemIndex],
+        done: checked,
       };
       localStorage.setItem('List', JSON.stringify(newList));
       return newList;
@@ -261,7 +274,7 @@ function DragNDrop({ data }) {
                     onClick={() => {
                       const newText = prompt('Enter new text');
                       if (newText) {
-                        handleDoneChange(
+                        handleChange(
                           { target: { value: newText } },
                           groupIndex,
                           itemIndex,
@@ -275,25 +288,9 @@ function DragNDrop({ data }) {
 
                   <button
                     onClick={() => {
-                      const newDue = prompt('Enter new due date');
-                      if (newDue) {
-                        handleDoneChange(
-                          { target: { value: newDue } },
-                          groupIndex,
-                          itemIndex,
-                          'due'
-                        );
-                      }
-                    }}
-                  >
-                    Edit due
-                  </button>
-
-                  <button
-                    onClick={() => {
                       const newMember = prompt('Enter new member');
                       if (newMember) {
-                        handleDoneChange(
+                        handleChange(
                           { target: { value: newMember } },
                           groupIndex,
                           itemIndex,
@@ -308,7 +305,7 @@ function DragNDrop({ data }) {
                     onClick={() => {
                       const newDue = prompt('Enter new due date');
                       if (newDue) {
-                        handleDoneChange(
+                        handleChange(
                           { target: { value: newDue } },
                           groupIndex,
                           itemIndex,

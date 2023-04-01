@@ -144,21 +144,19 @@ function Dashboard() {
     }
   };
 
-  const [data, setData] = useState();
-  useEffect(() => {
-    if (localStorage.getItem('List')) {
-      console.log(localStorage.getItem('List'));
-      setData(JSON.parse(localStorage.getItem('List')));
-    } else {
-      setData(defaultData);
-    }
-  }, [setData]);
+   const [data, setData] = useState();
+   useEffect(() => {
+     if (localStorage.getItem('List')) {
+       console.log(localStorage.getItem('List'));
+       setData(JSON.parse(localStorage.getItem('List')));
+     } else {
+       setData(defaultData);
+     }
+   }, [setData]);
 
   return (
     <>
-      <Wrapper>
-        <DragNDrop data={data} />
-      </Wrapper>
+      <Wrapper>{/* <DragNDrop data={data} /> */}</Wrapper>
       <Wrapper>
         <Calendar
           onDragStart={(event) => handleDragStart(event, 'calendar')}
