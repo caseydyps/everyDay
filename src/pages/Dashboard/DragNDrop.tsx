@@ -172,13 +172,22 @@ function DragNDrop({ data }) {
       return newList;
     });
   };
-  const handleDoneChange = (e, groupIndex, itemIndex) => {
-    const checked = e.target.checked;
+
+  const editItem = (groupIndex, itemIndex) => {
+    setList((prevList) => {
+      const newList = [...prevList];
+      newList[groupIndex].items.splice(itemIndex, 1);
+      localStorage.setItem('List', JSON.stringify(newList));
+      return newList;
+    });
+  };
+  const handleDoneChange = (e, groupIndex, itemIndex, field) => {
+    const value = e.target.value;
     setList((prevList) => {
       const newList = [...prevList];
       newList[groupIndex].items[itemIndex] = {
         ...newList[groupIndex].items[itemIndex],
-        done: checked,
+        [field]: value,
       };
       localStorage.setItem('List', JSON.stringify(newList));
       return newList;
@@ -247,6 +256,68 @@ function DragNDrop({ data }) {
                   </CheckContainer>
                   <button onClick={() => deleteItem(groupIndex, itemIndex)}>
                     Delete
+                  </button>
+                  <button
+                    onClick={() => {
+                      const newText = prompt('Enter new text');
+                      if (newText) {
+                        handleDoneChange(
+                          { target: { value: newText } },
+                          groupIndex,
+                          itemIndex,
+                          'text'
+                        );
+                      }
+                    }}
+                  >
+                    Edit Task
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const newDue = prompt('Enter new due date');
+                      if (newDue) {
+                        handleDoneChange(
+                          { target: { value: newDue } },
+                          groupIndex,
+                          itemIndex,
+                          'due'
+                        );
+                      }
+                    }}
+                  >
+                    Edit due
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const newMember = prompt('Enter new member');
+                      if (newMember) {
+                        handleDoneChange(
+                          { target: { value: newMember } },
+                          groupIndex,
+                          itemIndex,
+                          'member'
+                        );
+                      }
+                    }}
+                  >
+                    Edit Member
+                  </button>
+                  <button
+                    onClick={() => {
+                      const newDue = prompt('Enter new due date');
+                      if (newDue) {
+                        handleDoneChange(
+                          { target: { value: newDue } },
+                          groupIndex,
+                          itemIndex,
+                          'due'
+                        );
+                      }
+                    }}
+                  >
+                    Edit Due Date
                   </button>
                 </DragNDropItem>
               ))}
