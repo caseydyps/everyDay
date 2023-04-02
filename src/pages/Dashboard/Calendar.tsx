@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import { format, getWeek } from 'date-fns';
+
+import { v4 as uuidv4 } from 'uuid';
 
 const CalendarContainer = styled.div`
   display: flex;
@@ -121,6 +122,28 @@ const AddButton = styled.button`
 
 const Modal = styled.div``;
 
+const EventWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+  background-color: #d1c4e9;
+`;
+
+const EventTime = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+`;
+
+const EventTitle = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+`;
+
+const EventLocation = styled.div`
+  font-size: 24px;
+  color: gray;
+`;
+
 function Calendar() {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -133,7 +156,7 @@ function Calendar() {
   const [events, setEvents] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [view, setView] = useState('month');
-
+  const draggedEventIdRef = useRef(null);
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
     'Jan',
@@ -150,8 +173,39 @@ function Calendar() {
     'Dec',
   ];
 
-  function DateDetails({ date, events }) {
-    console.log(date);
+  function DateDetails({ date, events, setEvents, draggedEventIdRef }) {
+    const handleDragStart = (e, eventId) => {
+      console.log(eventId);
+      draggedEventIdRef.current = eventId;
+      console.log(draggedEventIdRef.current);
+    };
+
+    const handleDragOver = (e) => {
+      e.preventDefault();
+    };
+
+    const handleDrop = (e, date, draggedEventIdRef) => {
+      e.preventDefault();
+      console.log('drop', date);
+      console.log(draggedEventIdRef.current);
+      const updatedEvents = events.map((event) => {
+        console.log(draggedEventIdRef.current);
+        console.log(event.id + ' ' + draggedEventIdRef.current);
+        if (event.id === draggedEventIdRef.current) {
+          console.log('same');
+          console.log(event.date);
+          console.log('targetDate' + date);
+          const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+          const dateString = date.toLocaleDateString('en-US', options);
+          console.log(dateString);
+          return { ...event, date: dateString };
+        }
+        return event;
+      });
+      setEvents(updatedEvents);
+      console.log('updatedEvents', updatedEvents);
+    };
+
     if (!date) {
       return <div>No date selected</div>;
     }
@@ -161,7 +215,10 @@ function Calendar() {
     );
 
     return (
-      <div>
+      <div
+        onDragOver={handleDragOver}
+        onDrop={(e) => handleDrop(e, date, draggedEventIdRef)}
+      >
         <div>{`${
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
@@ -169,7 +226,14 @@ function Calendar() {
           <ul>
             {selectedEvents.map((event, index) => (
               <li key={index}>
-                {event.title} at {event.time} - {event.location}
+                <EventWrapper
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, event.id)}
+                >
+                  <EventTime>{event.time}</EventTime>
+                  <EventTitle>{event.title}</EventTitle>
+                  <EventLocation>{event.member}</EventLocation>
+                </EventWrapper>
               </li>
             ))}
           </ul>
@@ -206,7 +270,7 @@ function Calendar() {
             ))}
           </ul>
         ) : (
-          <div>No events for the selected month</div>
+          <div>這個月目前沒有活動</div>
         )}
       </div>
     );
@@ -297,6 +361,7 @@ function Calendar() {
       time: eventTime,
       location: eventNote,
       memeber: eventMember,
+      id: uuidv4(),
     };
     setEvents([...events, newEvent]);
     setShowModal(false);
@@ -393,7 +458,11 @@ function Calendar() {
           } ${date.getFullYear()}`}</MonthLabel>
           <Button onClick={handleNextMonth}>Next</Button>
         </MonthContainer>
-        <DateDetails date={selectedDate} events={events} />
+        <DateDetails
+          date={selectedDate}
+          events={events}
+          setEvents={setEvents}
+        />
 
         <AddButton onClick={handleAddEvent}>Add Event</AddButton>
         {showModal && (
@@ -491,6 +560,8 @@ function Calendar() {
                           )
                         }
                         events={events}
+                        setEvents={setEvents}
+                        draggedEventIdRef={draggedEventIdRef}
                       />
                     </Td>
                   );
@@ -598,6 +669,16 @@ function Calendar() {
                     {eventsOnDay.map((event) => (
                       <div key={event.title}>{event.title}</div>
                     ))}
+                    <DateDetails
+                      date={
+                        new Date(
+                          date.getFullYear(),
+                          date.getMonth(),
+                          dayOfMonth
+                        )
+                      }
+                      events={events}
+                    />
                   </Td>
                 </>
               );
@@ -605,7 +686,6 @@ function Calendar() {
           </tr>
         </tbody>
       </WeekWrap>
-
       <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
         {/* <h2>{formatDate(selectedDate)}</h2> */}
         <MonthContainer>
@@ -670,6 +750,7 @@ function Calendar() {
         <>
           <Td>
             <div key={event.title}>{event.title}</div>
+            <DateDetails date={selectedDate} events={events} />
           </Td>
         </>
       </DayWrap>
