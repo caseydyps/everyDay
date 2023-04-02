@@ -148,6 +148,21 @@ const EditButton = styled.button`
   }
 `;
 
+const DeleteButton = styled.button`
+  font-size: 16px;
+  padding: 5px 10px;
+  background-color: #e57373;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #ef5350;
+  }
+`;
+
 const EventDot = styled.div`
   width: 20px;
   height: 20px;
@@ -197,6 +212,10 @@ function Milestone() {
       )
     );
     setIsEditing(false);
+  };
+
+  const handleDeleteEvent = (id) => {
+    setEvents(events.filter((event) => event.id !== id));
   };
 
   function EditEventForm({ event, onEdit }) {
@@ -370,6 +389,9 @@ function Milestone() {
                   <EventTitle>{event.title}</EventTitle>
                   <EventDate>{event.date.toDateString()}</EventDate>
                   <EventMember>Member: {event.member}</EventMember>
+                  <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
+                    Delete
+                  </DeleteButton>
                 </EventBox>
                 <EventDot
                   style={{
