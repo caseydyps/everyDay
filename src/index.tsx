@@ -11,6 +11,7 @@ import Milestone from './pages/Dashboard/Milestone';
 import Album from './pages/Dashboard/Album';
 import Calendar from './pages/Dashboard/Calendar';
 import Financial from './pages/Dashboard/Financial';
+import FamilyMemberForm from './pages/Family/Family';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -27,6 +28,7 @@ root.render(
       <Route path="milestone" element={<Milestone />} />
       <Route path="calendar" element={<Calendar />} />
       <Route path="financial" element={<Financial />} />
+      <Route path="family" element={<FamilyMemberForm />} />
     </Routes>
   </BrowserRouter>
 );

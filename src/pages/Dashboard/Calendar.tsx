@@ -148,6 +148,7 @@ const EventTime = styled.div`
 const EventTitle = styled.div`
   font-size: 24px;
   font-weight: bold;
+  text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
 `;
 
 const EventMember = styled.div`
@@ -246,11 +247,23 @@ function Calendar() {
                   draggable
                   onDragStart={(e) => handleDragStart(e, event.id)}
                   category={event.category}
+                  finished={event.finished}
                 >
                   <EventCategory>{event.category}</EventCategory>
                   <EventMember>{event.member}</EventMember>
                   <EventTime>{event.time}</EventTime>
-                  <EventTitle>{event.title}</EventTitle>
+                  <EventTitle finished={event.finished}>
+                    {event.title}
+                  </EventTitle>
+                  <div>
+                    <button onClick={() => handleEditEvent(event)}>Edit</button>
+                    <button onClick={() => handleDeleteEvent(event)}>
+                      Delete
+                    </button>
+                    <button onClick={() => handleFinishEvent(event)}>
+                      Finish
+                    </button>
+                  </div>
                 </EventWrapper>
               </li>
             ))}
@@ -459,6 +472,64 @@ function Calendar() {
   }
 
   const weekNumber = getWeekNumber(date);
+
+  // handleEditEvent function
+  const handleEditEvent = (event) => {
+    // Prompt the user for the updated event details
+    const updatedTitle = prompt('Enter the updated event title:', event.title);
+    const updatedDate = prompt('Enter the updated event date:', event.date);
+    const updatedTime = prompt('Enter the updated event time:', event.time);
+    const updatedCategory = prompt(
+      'Enter the updated event category:',
+      event.category
+    );
+    const updatedMember = prompt(
+      'Enter the updated event member:',
+      event.member
+    );
+    const updatedNote = prompt('Enter the updated event note:', event.note);
+
+    // Create a new event object with the updated details
+    const updatedEvent = {
+      id: event.id,
+      title: updatedTitle,
+      date: updatedDate,
+      time: updatedTime,
+      category: updatedCategory,
+      member: updatedMember,
+      note: updatedNote,
+    };
+
+    // Update the events list with the new event object
+    const updatedEvents = events.map((e) =>
+      e.id === event.id ? updatedEvent : e
+    );
+    setEvents(updatedEvents);
+  };
+
+  // handleDeleteEvent function
+  const handleDeleteEvent = (event) => {
+    // Prompt the user to confirm deletion
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${event.title}"?`
+    );
+    if (confirmDelete) {
+      // Remove the event from the events list
+      const updatedEvents = events.filter((e) => e.id !== event.id);
+      setEvents(updatedEvents);
+    }
+  };
+
+  // handleFinishEvent function
+  const handleFinishEvent = (event) => {
+    // Update the event's "finished" property to its opposite value
+    const updatedEvent = { ...event, finished: !event.finished };
+    // Update the events list with the new event object
+    const updatedEvents = events.map((e) =>
+      e.id === event.id ? updatedEvent : e
+    );
+    setEvents(updatedEvents);
+  };
 
   return (
     <>
@@ -790,7 +861,11 @@ function Calendar() {
         <>
           <Td>
             <div key={event.title}>{event.title}</div>
-            <DateDetails date={selectedDate} events={events} />
+            <DateDetails
+              date={selectedDate}
+              events={events}
+              draggedEventIdRef={draggedEventIdRef}
+            />
           </Td>
         </>
       </DayWrap>
