@@ -126,7 +126,18 @@ const EventWrapper = styled.div`
   display: flex;
   align-items: center;
   margin: 5px 0;
-  background-color: #d1c4e9;
+  background-color: ${({ category }) => {
+    switch (category) {
+      case 'Work':
+        return 'lightblue';
+      case 'Personal':
+        return 'pink';
+      case 'School':
+        return 'lightgreen';
+      default:
+        return 'white';
+    }
+  }};
 `;
 
 const EventTime = styled.div`
@@ -139,7 +150,12 @@ const EventTitle = styled.div`
   font-weight: bold;
 `;
 
-const EventLocation = styled.div`
+const EventMember = styled.div`
+  font-size: 24px;
+  color: blue;
+`;
+
+const EventCategory = styled.div`
   font-size: 24px;
   color: gray;
 `;
@@ -151,7 +167,7 @@ function Calendar() {
   const [eventTitle, setEventTitle] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
-  const [eventNote, setEventNote] = useState('');
+  const [eventCategory, setEventCategory] = useState('');
   const [eventMember, setEventMember] = useState('');
   const [events, setEvents] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -229,10 +245,12 @@ function Calendar() {
                 <EventWrapper
                   draggable
                   onDragStart={(e) => handleDragStart(e, event.id)}
+                  category={event.category}
                 >
+                  <EventCategory>{event.category}</EventCategory>
+                  <EventMember>{event.member}</EventMember>
                   <EventTime>{event.time}</EventTime>
                   <EventTitle>{event.title}</EventTitle>
-                  <EventLocation>{event.member}</EventLocation>
                 </EventWrapper>
               </li>
             ))}
@@ -359,8 +377,8 @@ function Calendar() {
       title: eventTitle,
       date: eventDate,
       time: eventTime,
-      location: eventNote,
-      memeber: eventMember,
+      category: eventCategory,
+      member: eventMember,
       id: uuidv4(),
     };
     setEvents([...events, newEvent]);
@@ -368,7 +386,7 @@ function Calendar() {
     setEventTitle('');
     setEventDate('');
     setEventTime('');
-    setEventNote('');
+    setEventCategory('');
     setEventMember('');
   };
 
@@ -493,20 +511,28 @@ function Calendar() {
                 />
               </label>
               <label>
-                Notes:
-                <input
-                  type="text"
-                  value={eventNote}
-                  onChange={(e) => setEventNote(e.target.value)}
-                />
+                Category:
+                <select
+                  value={eventCategory}
+                  onChange={(e) => setEventCategory(e.target.value)}
+                >
+                  <option value="">Select a category</option>
+                  <option value="Work">Work</option>
+                  <option value="Personal">Personal</option>
+                  <option value="School">School</option>
+                </select>
               </label>
               <label>
                 Member:
-                <input
-                  type="text"
+                <select
                   value={eventMember}
                   onChange={(e) => setEventMember(e.target.value)}
-                />
+                >
+                  <option value="">Select a family member</option>
+                  <option value="Dad">Dad</option>
+                  <option value="Mom">Mom</option>
+                  <option value="Baby">Baby</option>
+                </select>
               </label>
 
               <button type="submit">Add</button>
@@ -584,7 +610,11 @@ function Calendar() {
           } ${date.getFullYear()}`}</MonthLabel>
           <Button onClick={handleNextWeek}>Next</Button>
         </MonthContainer>
-        <DateDetails date={selectedDate} events={events} />
+        <DateDetails
+          date={selectedDate}
+          events={events}
+          setEvents={setEvents}
+        />
 
         <AddButton onClick={handleAddEvent}>Add Event</AddButton>
         {showModal && (
@@ -615,12 +645,16 @@ function Calendar() {
                 />
               </label>
               <label>
-                Notes:
-                <input
-                  type="text"
-                  value={eventNote}
-                  onChange={(e) => setEventNote(e.target.value)}
-                />
+                Category:
+                <select
+                  value={eventCategory}
+                  onChange={(e) => setEventCategory(e.target.value)}
+                >
+                  <option value="">Select a category</option>
+                  <option value="Work">Work</option>
+                  <option value="Personal">Personal</option>
+                  <option value="School">School</option>
+                </select>
               </label>
               <label>
                 Member:
@@ -678,6 +712,8 @@ function Calendar() {
                         )
                       }
                       events={events}
+                      setEvents={setEvents}
+                      draggedEventIdRef={draggedEventIdRef}
                     />
                   </Td>
                 </>
@@ -726,12 +762,16 @@ function Calendar() {
                 />
               </label>
               <label>
-                Notes:
-                <input
-                  type="text"
-                  value={eventNote}
-                  onChange={(e) => setEventNote(e.target.value)}
-                />
+                Category:
+                <select
+                  value={eventCategory}
+                  onChange={(e) => setEventCategory(e.target.value)}
+                >
+                  <option value="">Select a category</option>
+                  <option value="Work">Work</option>
+                  <option value="Personal">Personal</option>
+                  <option value="School">School</option>
+                </select>
               </label>
               <label>
                 Member:
