@@ -271,15 +271,13 @@ function Calendar() {
   };
 
   const handlePrevDay = () => {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() - 1);
-    setDate(newDate);
+    const newDate = new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000);
+    setSelectedDate(newDate);
   };
 
   const handleNextDay = () => {
-    const newDate = new Date(date);
-    newDate.setDate(date.getDate() + 1);
-    setDate(newDate);
+    const newDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000);
+    setSelectedDate(newDate);
   };
 
   const handleDateClick = (day: number, row) => {
@@ -368,14 +366,12 @@ function Calendar() {
     const year = selectedDate.getFullYear();
 
     return (
-      <Table>
-        <thead>
-          <tr>
-            <th>{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </Table>
+      <div>
+        <h1>{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h1>
+        <button onClick={handlePrevDay}>Previous day</button>
+        <button onClick={handleNextDay}>Next day</button>
+        <table>...</table>
+      </div>
     );
   }
 
@@ -486,6 +482,16 @@ function Calendar() {
                       {eventsOnDay.map((event) => (
                         <div key={event.title}>{event.title}</div>
                       ))}
+                      <DateDetails
+                        date={
+                          new Date(
+                            date.getFullYear(),
+                            date.getMonth(),
+                            dayOfMonth
+                          )
+                        }
+                        events={events}
+                      />
                     </Td>
                   );
                 })}
