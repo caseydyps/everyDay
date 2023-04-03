@@ -58,10 +58,21 @@ const FormButton = styled.button`
 const FamilyMemberForm = () => {
   const [numberOfMembers, setNumberOfMembers] = useState(0);
   const [members, setMembers] = useState([]);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const handleAvatarSave = (avatarUrl, index) => {
+    console.log('Avatar URL:', avatarUrl);
+    setMembers((prevMembers) =>
+      prevMembers.map((member, i) =>
+        i === index ? { ...member, avatar: avatarUrl } : member
+      )
+    );
+  };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
     console.log(members);
+    setFormSubmitted(true);
   };
 
   const handleNumberOfMembersChange = (event) => {
@@ -85,11 +96,17 @@ const FamilyMemberForm = () => {
     setMembers(newMembers);
   };
 
-  const handleMemberAvatarChange = (index, event) => {
-    const newMembers = [...members];
-    newMembers[index].avatar = event.target.value;
-    setMembers(newMembers);
-  };
+  function handleMemberAvatarChange(index, event, avatarUrl) {
+    console.log(avatarUrl);
+    setFamilyMembers((prevState) => {
+      const updatedMembers = [...prevState];
+      updatedMembers[index] = {
+        ...updatedMembers[index],
+        avatar: avatarUrl,
+      };
+      return updatedMembers;
+    });
+  }
 
   const handleMemberBirthdayChange = (index, event) => {
     const newMembers = [...members];
@@ -141,21 +158,6 @@ const FamilyMemberForm = () => {
     setMembers(newMembers);
   };
 
-  const options = {
-    method: 'POST',
-    headers: {
-      'X-RapidAPI-Key': '7a8bf5ee76mshcabf5fb42b03522p193735jsn4bb169ac5097',
-      'X-RapidAPI-Host': 'doppelme-avatars.p.rapidapi.com',
-    },
-  };
-
-  // fetch('https://doppelme-avatars.p.rapidapi.com/avatar/1101', options)
-  //   .then((response) => response.json())
-  //   .then((response) => console.log(response))
-  //   .catch((err) => console.error(err));
-
-  // const avatarUrl =
-  //   'https://www.doppelme.com/transparent/DM1861290DMYZJR/avatar.png';
   return (
     <>
       <Form onSubmit={handleFormSubmit}>
@@ -182,10 +184,9 @@ const FamilyMemberForm = () => {
 
             <FormField>
               <FormLabel>Avatar of Family Member {index + 1}</FormLabel>
-              <FormInput
-                type="text"
-                value={member.avatar}
-                onChange={(event) => handleMemberAvatarChange(index, event)}
+              <AvatarCreator
+                index={index}
+                onSave={(avatarUrl) => handleAvatarSave(avatarUrl, index)}
               />
             </FormField>
 
@@ -244,11 +245,26 @@ const FamilyMemberForm = () => {
 
         <FormButton type="submit">Submit</FormButton>
       </Form>
-      <AvatarCreator />
-      <AvatarCreator />
-      <AvatarCreator />
-      <h1>My Avatar</h1>
-      {/* <img src={avatarUrl} alt="Avatar" /> */}
+      {formSubmitted && (
+        <div>
+          {members.map((member, index) => (
+            <div key={index}>
+              <h2>Family Member {index + 1}</h2>
+              <p>Name: {member.name}</p>
+              <p>Avatar: {member.avatar}</p>
+              <p>Birthday: {member.birthday}</p>
+              <p>Role: {member.role}</p>
+              <p>Anniversaries:</p>
+              {member.anniversaries.map((anniversary, anniversaryIndex) => (
+                <div key={anniversaryIndex}>
+                  <p>Date: {anniversary.date}</p>
+                  <p>Description: {anniversary.description}</p>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </>
   );
 };

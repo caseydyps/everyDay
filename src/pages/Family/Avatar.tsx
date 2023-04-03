@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createAvatar } from '@dicebear/core';
 import { adventurer } from '@dicebear/avatars';
 import styled from 'styled-components/macro';
@@ -15,7 +15,18 @@ const AvatarImage = styled.img`
   height: 100%;
 `;
 
-function AvatarCreator() {
+const Button = styled.button`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background-color: #0077cc;
+  color: white;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+`;
+
+function AvatarCreator({ onSave }) {
   const [seed, setSeed] = useState('Sassy');
   const [eyebrows, setEyebrows] = useState('variant01');
   const [eyes, setEyes] = useState('variant01');
@@ -26,19 +37,29 @@ function AvatarCreator() {
   const [background, setBackground] = useState('f5f5f5');
   const [feature, setFeature] = useState('blush');
   const [featuresProbability, setFeaturesProbability] = useState('100');
+  const [avatarUrl, setAvatarUrl] = useState(
+    `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`
+  );
+
+  useEffect(() => {
+    generateAvatarUrl();
+  }, [seed, eyebrows, eyes, hair, hairColor, feature, mouth, background]);
+
+  const generateAvatarUrl = () => {
+    const baseUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`;
+
+    setAvatarUrl(baseUrl);
+  };
 
   const handleSeedChange = (event) => {
     setSeed(event.target.value);
   };
-
   const handleEyebrowsChange = (event) => {
     setEyebrows(event.target.value);
   };
-
   const handleEyesChange = (event) => {
     setEyes(event.target.value);
   };
-
   const handleHairChange = (event) => {
     const value = event.target.value;
     if (value === 'none') {
@@ -65,17 +86,18 @@ function AvatarCreator() {
   const handleFeatureChange = (event) => {
     const value = event.target.value;
     if (value === 'none') {
-      setFeature('blush');
       setFeaturesProbability(0);
+      setFeature('mustache');
     } else {
       setFeature(value);
       setFeaturesProbability(100);
     }
   };
-  const avatarBabyUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&hairProbability=0`;
-  const avatarMomUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=Precious&features[]`;
-  const avatarDadUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=Sadie&earrings=variant01,variant02,variant03&earringsProbability=0&eyebrows=variant01,variant02,variant03&eyes=variant01,variant02,variant03&features[]&featuresProbability=0&glasses[]&glassesProbability=0&hair[]&hairColor=0e0e0e,562306,592454,6a4e35,796a45&mouth=variant01,variant02,variant03&skinColor=f2d3b1`;
-  const avatarUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&eyebrows=${eyebrows}&eyes=${eyes}&hairColor=${hairColor}&mouth=${mouth}https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`;
+
+  const handleSaveClick = () => {
+    onSave(avatarUrl);
+  };
+
   return (
     <>
       <div>
@@ -154,7 +176,7 @@ function AvatarCreator() {
         </select>
 
         <label htmlFor="mouth-select">Select mouth:</label>
-        <select id="mouth-select" value={feature} onChange={handleMouthChange}>
+        <select id="mouth-select" value={mouth} onChange={handleMouthChange}>
           <option value="variant01">Variant 1</option>
           <option value="variant02">Variant 2</option>
           <option value="variant03">Variant 3</option>
@@ -176,6 +198,7 @@ function AvatarCreator() {
       <AvatarContainer>
         <AvatarImage src={avatarUrl} alt="avatar" />
       </AvatarContainer>
+      <Button onClick={handleSaveClick}>Save Avatar</Button>
     </>
   );
 }
