@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
+import AvatarCreator from './Avatar';
 
 const Form = styled.form`
   display: flex;
@@ -67,16 +68,17 @@ const FamilyMemberForm = () => {
     const numberOfMembers = parseInt(event.target.value);
     setNumberOfMembers(numberOfMembers);
     setMembers(
-      Array(numberOfMembers).fill({
-        name: '',
-        avatar: '',
-        birthday: '',
-        role: '',
-        anniversary: '',
-      })
+      Array(numberOfMembers)
+        .fill()
+        .map(() => ({
+          name: '',
+          avatar: '',
+          birthday: '',
+          role: '',
+          anniversaries: [],
+        }))
     );
   };
-
   const handleMemberNameChange = (index, event) => {
     const newMembers = [...members];
     newMembers[index].name = event.target.value;
@@ -103,73 +105,151 @@ const FamilyMemberForm = () => {
 
   const handleMemberAnniversaryChange = (index, event) => {
     const newMembers = [...members];
-    newMembers[index].anniversary = event.target.value;
+    const anniversaryDate = event.target.value;
+    const anniversaryDescription = '';
+    newMembers[index].anniversaries.push({
+      date: anniversaryDate,
+      description: anniversaryDescription,
+    });
     setMembers(newMembers);
   };
 
+  const handleMemberAnniversaryDateChange = (
+    index,
+    anniversaryIndex,
+    event
+  ) => {
+    const newMembers = [...members];
+    newMembers[index].anniversaries[anniversaryIndex].date = event.target.value;
+    setMembers(newMembers);
+  };
+
+  const handleMemberAnniversaryDescriptionChange = (
+    index,
+    anniversaryIndex,
+    event
+  ) => {
+    const newMembers = [...members];
+    newMembers[index].anniversaries[anniversaryIndex].description =
+      event.target.value;
+    setMembers(newMembers);
+  };
+
+  const handleAddAnniversary = (index) => {
+    const newMembers = [...members];
+    newMembers[index].anniversaries.push({ date: '', description: '' });
+    setMembers(newMembers);
+  };
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'X-RapidAPI-Key': '7a8bf5ee76mshcabf5fb42b03522p193735jsn4bb169ac5097',
+      'X-RapidAPI-Host': 'doppelme-avatars.p.rapidapi.com',
+    },
+  };
+
+  // fetch('https://doppelme-avatars.p.rapidapi.com/avatar/1101', options)
+  //   .then((response) => response.json())
+  //   .then((response) => console.log(response))
+  //   .catch((err) => console.error(err));
+
+  // const avatarUrl =
+  //   'https://www.doppelme.com/transparent/DM1861290DMYZJR/avatar.png';
   return (
-    <Form onSubmit={handleFormSubmit}>
-      <FormField>
-        <FormLabel>How many family members do you have?</FormLabel>
-        <FormInput
-          type="number"
-          min="0"
-          value={numberOfMembers}
-          onChange={handleNumberOfMembersChange}
-        />
-      </FormField>
+    <>
+      <Form onSubmit={handleFormSubmit}>
+        <FormField>
+          <FormLabel>How many family members do you have?</FormLabel>
+          <FormInput
+            type="number"
+            min="0"
+            value={numberOfMembers}
+            onChange={handleNumberOfMembersChange}
+          />
+        </FormField>
 
-      {members.map((member, index) => (
-        <div key={index}>
-          <FormField>
-            <FormLabel>Name of Family Member {index + 1}</FormLabel>
-            <FormInput
-              type="text"
-              value={member.name}
-              onChange={(event) => handleMemberNameChange(index, event)}
-            />
-          </FormField>
+        {members.map((member, index) => (
+          <div key={index}>
+            <FormField>
+              <FormLabel>Name of Family Member {index + 1}</FormLabel>
+              <FormInput
+                type="text"
+                value={member.name}
+                onChange={(event) => handleMemberNameChange(index, event)}
+              />
+            </FormField>
 
-          <FormField>
-            <FormLabel>Avatar of Family Member {index + 1}</FormLabel>
-            <FormInput
-              type="text"
-              value={member.avatar}
-              onChange={(event) => handleMemberAvatarChange(index, event)}
-            />
-          </FormField>
+            <FormField>
+              <FormLabel>Avatar of Family Member {index + 1}</FormLabel>
+              <FormInput
+                type="text"
+                value={member.avatar}
+                onChange={(event) => handleMemberAvatarChange(index, event)}
+              />
+            </FormField>
 
-          <FormField>
-            <FormLabel>Birthday of Family Member {index + 1}</FormLabel>
-            <FormInput
-              type="date"
-              value={member.birthday}
-              onChange={(event) => handleMemberBirthdayChange(index, event)}
-            />
-          </FormField>
+            <FormField>
+              <FormLabel>Birthday of Family Member {index + 1}</FormLabel>
+              <FormInput
+                type="date"
+                value={member.birthday}
+                onChange={(event) => handleMemberBirthdayChange(index, event)}
+              />
+            </FormField>
 
-          <FormField>
-            <FormLabel>Role of Family Member {index + 1}</FormLabel>
-            <FormInput
-              type="text"
-              value={member.role}
-              onChange={(event) => handleMemberRoleChange(index, event)}
-            />
-          </FormField>
+            <FormField>
+              <FormLabel>Role of Family Member {index + 1}</FormLabel>
+              <FormInput
+                type="text"
+                value={member.role}
+                onChange={(event) => handleMemberRoleChange(index, event)}
+              />
+            </FormField>
 
-          <FormField>
-            <FormLabel>Anniversary of Family Member {index + 1}</FormLabel>
-            <FormInput
-              type="date"
-              value={member.anniversary}
-              onChange={(event) => handleMemberAnniversaryChange(index, event)}
-            />
-          </FormField>
-        </div>
-      ))}
+            <FormField>
+              <FormLabel>Anniversary of Family Member {index + 1}</FormLabel>
+              {member.anniversaries.map((anniversary, anniversaryIndex) => (
+                <div key={anniversaryIndex}>
+                  <FormInput
+                    type="date"
+                    value={anniversary.date}
+                    onChange={(event) =>
+                      handleMemberAnniversaryDateChange(
+                        index,
+                        anniversaryIndex,
+                        event
+                      )
+                    }
+                  />
+                  <FormInput
+                    type="text"
+                    value={anniversary.description}
+                    onChange={(event) =>
+                      handleMemberAnniversaryDescriptionChange(
+                        index,
+                        anniversaryIndex,
+                        event
+                      )
+                    }
+                  />
+                </div>
+              ))}
+              <button onClick={() => handleAddAnniversary(index)}>
+                Add Anniversary
+              </button>
+            </FormField>
+          </div>
+        ))}
 
-      <FormButton type="submit">Submit</FormButton>
-    </Form>
+        <FormButton type="submit">Submit</FormButton>
+      </Form>
+      <AvatarCreator />
+      <AvatarCreator />
+      <AvatarCreator />
+      <h1>My Avatar</h1>
+      {/* <img src={avatarUrl} alt="Avatar" /> */}
+    </>
   );
 };
 
