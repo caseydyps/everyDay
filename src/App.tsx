@@ -5,7 +5,8 @@ import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Whiteboard from './pages/Dashboard/Whiteboard';
-import SmartInput from './pages/AI/SmartInput/SmartInput';
+import SmartInput from './pages/AI/SmartInput';
+import Suggestion from './pages/AI/Suggestion';
 import Settings from './pages/Family/Family';
 import styled from 'styled-components';
 const Content = styled.div`
@@ -20,6 +21,7 @@ function App() {
       <Header />
       <Content>
         <SmartInput />
+        <Suggestion />
         <Whiteboard />
         <Dashboard />
         {/* <Settings /> */}

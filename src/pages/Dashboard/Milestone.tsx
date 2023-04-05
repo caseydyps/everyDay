@@ -401,7 +401,7 @@ function Milestone() {
 
     setEvents(initialEvents);
   }, []);
-
+  console.log(events);
   //   const handleDrop = (event, index) => {
   //     const draggedEvent = events[event.index];
   //     setEvents((prevEvents) => {

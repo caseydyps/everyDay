@@ -8,10 +8,11 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Todo from './pages/Dashboard/Todo';
 import Whiteboard from './pages/Dashboard/Whiteboard';
 import Milestone from './pages/Dashboard/Milestone';
-import Album from './pages/Dashboard/Album';
+import Album from './pages/Dashboard/Album/Album';
 import Calendar from './pages/Dashboard/Calendar';
 import Financial from './pages/Dashboard/Financial';
 import FamilyMemberForm from './pages/Family/Family';
+import SmartInput from './pages/AI/SmartInput';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -29,6 +30,7 @@ root.render(
       <Route path="calendar" element={<Calendar />} />
       <Route path="financial" element={<Financial />} />
       <Route path="family" element={<FamilyMemberForm />} />
+      <Route path="ai" element={<SmartInput />} />
     </Routes>
   </BrowserRouter>
 );

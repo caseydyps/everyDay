@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   border: 2px solid black;
 `;
 
-const configJs = require('../../../config/config.js');
+const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
 
@@ -18,7 +18,7 @@ const config = new Configuration({
 
 const openai = new OpenAIApi(config);
 
-const SmartInput = () => {
+const Suggestion = () => {
   const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
   const runPrompt = async () => {
@@ -100,6 +100,7 @@ const SmartInput = () => {
 
   return (
     <Wrapper>
+       <p>Suggestion:</p>
       <form onSubmit={handleSubmit}>
         <label>
           Input:
@@ -115,4 +116,4 @@ const SmartInput = () => {
   );
 };
 
-export default SmartInput;
+export default Suggestion;
