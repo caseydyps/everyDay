@@ -12,6 +12,7 @@ const DrawingTool = () => {
   const [width, setWidth] = useState(5);
   const canvasRef = useRef(null);
   const contextRef = useRef(null);
+  const [undoStack, setUndoStack] = useState([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -49,6 +50,9 @@ const DrawingTool = () => {
     const { offsetX, offsetY } = nativeEvent;
     contextRef.current.lineTo(offsetX, offsetY);
     contextRef.current.stroke();
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    undoStack.push(context.getImageData(0, 0, canvas.width, canvas.height)); // save the current state
   };
 
   const handleChangeColor = (newColor) => {
@@ -65,6 +69,17 @@ const DrawingTool = () => {
     context.clearRect(0, 0, canvas.width, canvas.height);
   };
 
+  const undoStroke = () => {
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    console.log(undoStack);
+    const lastState = undoStack.pop(); // get the last saved state from the stack
+    if (lastState) {
+      context.putImageData(lastState, 0, 0); // restore the last saved state
+      setUndoStack(undoStack.slice(0, undoStack.length - 1)); // remove the last state from the stack
+    }
+  };
+
   return (
     <CanvasWrap>
       <button onClick={() => handleChangeColor('black')}>Black</button>
@@ -74,6 +89,7 @@ const DrawingTool = () => {
       <button onClick={() => handleChangeLineWidth(5)}>Default</button>
       <button onClick={() => handleChangeLineWidth(1)}>Thin</button>
       <button onClick={() => handleChangeLineWidth(30)}>Wide</button>
+      <button onClick={undoStroke}>Undo</button>
       <button onClick={clearCanvas}>Clear</button>
       <canvas
         id="canvas"
