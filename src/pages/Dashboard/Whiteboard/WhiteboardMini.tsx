@@ -11,12 +11,14 @@ type Sticker = {
 
 const Wrapper = styled.div`
   position: relative;
-  width: 500px;
+  width: 1500px;
   height: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 2px solid black;
+  margin: 10px;
 `;
 
 const Sticker = styled.div<{
@@ -59,7 +61,7 @@ const ColorButton = styled.button<{ color: string }>`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  color: white;
+  color: black;
   &:hover {
     opacity: 0.8;
   }
@@ -84,6 +86,11 @@ const DeleteButton = styled.button`
   cursor: pointer;
 `;
 
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
 export const Whiteboard = () => {
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [newStickerColor, setNewStickerColor] = useState<string>('yellow');
@@ -102,6 +109,9 @@ export const Whiteboard = () => {
       if (dragging !== null) {
         const newX = e.clientX - offset.x;
         const newY = e.clientY - offset.y;
+        console.log(e.clientX, e.clientY);
+        console.log(offset.x, e.clientY);
+        console.log(newX, newY);
         const newStickers = [...stickers];
         newStickers[dragging] = { ...newStickers[dragging], x: newX, y: newY };
         setStickers(newStickers);
@@ -126,6 +136,7 @@ export const Whiteboard = () => {
     setDragging(id);
     const index = stickers.findIndex((sticker) => sticker.id === id);
     const rect = stickerRefs.current[index]?.getBoundingClientRect();
+    console.log(rect);
     if (rect) {
       const offsetX = isNaN(rect.offsetLeft) ? 0 : e.clientX - rect.offsetLeft;
       const offsetY = isNaN(rect.offsetTop) ? 0 : e.clientY - rect.offsetTop;
@@ -133,8 +144,15 @@ export const Whiteboard = () => {
     }
   };
 
-  const addSticker = () => {
-    const newSticker = { id: Date.now(), x: 150, y: 150, content: 'New note' };
+  const addSticker = (color) => {
+    const newSticker = {
+      id: Date.now(),
+      x: 150,
+      y: 150,
+      content: 'New note',
+      color: color,
+    };
+
     setStickers([...stickers, newSticker]);
     setStickerText([...stickerText, '']);
   };
@@ -159,11 +177,7 @@ export const Whiteboard = () => {
       {stickers.map((sticker, index) => (
         <Sticker
           key={sticker.id}
-          color={
-            sticker.id === stickers[stickers.length - 1]?.id
-              ? newStickerColor
-              : 'yellow'
-          }
+          color={sticker.color}
           onMouseDown={(e) => onStickerMouseDown(index, e)}
           ref={(el) => (stickerRefs.current[index] = el)}
           style={{
@@ -183,17 +197,22 @@ export const Whiteboard = () => {
           <DeleteButton onClick={() => deleteSticker(index)}>X</DeleteButton>
         </Sticker>
       ))}
-      <AddButton onClick={addSticker}>Add Sticker</AddButton>
-      <ColorButton onClick={() => setNewStickerColor('#FFF9C4')}>
-        Yellow
-      </ColorButton>
-      <ColorButton onClick={() => setNewStickerColor('red')}>Red</ColorButton>
-      <ColorButton onClick={() => setNewStickerColor('blue')}>Blue</ColorButton>
-      <ColorButton onClick={() => setNewStickerColor('green')}>
-        Green
-      </ColorButton>
-      <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
-      {/* <DrawingTool /> */}
+      <RowWrap>
+        <ColorButton onClick={() => addSticker('#FFF9C4')}>
+          Add Yellow Sticker
+        </ColorButton>
+        <ColorButton onClick={() => addSticker('#EF9A9A')}>
+          Add Red Sticker
+        </ColorButton>
+        <ColorButton onClick={() => addSticker('#81D4FA')}>
+          Add Blue Sticker
+        </ColorButton>
+        <ColorButton onClick={() => addSticker('#A5D6A7')}>
+          Add Blue Sticker
+        </ColorButton>
+        <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
+      </RowWrap>
+      <DrawingTool />
     </Wrapper>
   );
 };
