@@ -4,7 +4,7 @@ import './App.css';
 import Header from './Components/Header/Header';
 import Footer from './Components/Footer/Footer';
 import Dashboard from './pages/Dashboard/Dashboard';
-import Whiteboard from './pages/Dashboard/Whiteboard';
+import Whiteboard from './pages/Dashboard/Whiteboard/Whiteboard';
 import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import Settings from './pages/Family/Family';

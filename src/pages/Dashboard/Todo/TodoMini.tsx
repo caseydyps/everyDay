@@ -1,10 +1,10 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect, useReducer } from 'react';
-import DragNDrop from './DragNDrop';
+import DragNDropMini from './DragNDropMini';
 
 const Wrapper = styled.div`
-  width: 100vw;
-  height: auto;
+  width: 500px;
+  height: 500px;
   border: 2px solid black;
   display: flex;
   flex-direction: column;
@@ -95,7 +95,7 @@ const todoReducer = (state, action) => {
   }
 };
 
-function Todo() {
+function TodoMini() {
   const [data, dispatch] = useReducer(todoReducer, testData);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   useEffect(() => {
@@ -106,8 +106,6 @@ function Todo() {
     const title = prompt('Enter list title');
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
-
- 
 
   const addItem = (listIndex) => {
     const text = prompt('Enter item text');
@@ -123,7 +121,7 @@ function Todo() {
   return (
     <>
       <Wrapper>
-        <DragNDrop
+        <DragNDropMini
           data={data}
           onItemAdd={addItem}
           selectedItemIndex={selectedItemIndex}
@@ -135,4 +133,4 @@ function Todo() {
   );
 }
 
-export default Todo;
+export default TodoMini;

@@ -351,23 +351,12 @@ const SmartInput = () => {
           </ResponseDisplay>
         )}
 
-        <HastagWrap>
-          <Button onClick={() => handleClick('Calendar')}>#Calendar</Button>
-          <Button onClick={() => handleClick('Todo')}>#Todo</Button>
-          <Button onClick={() => handleClick('Album')}>#Album</Button>
-          <Button onClick={() => handleClick('AI')}>#AI</Button>
-          <Button onClick={() => handleClick('StickyNotes')}>
-            #StickyNotes
-          </Button>
-          <Button onClick={() => handleClick('Milestone')}>#Milestone</Button>
-        </HastagWrap>
-
-        <iframe
+        {/* <iframe
           allow="microphone;"
           width="1000"
           height="1000"
           src="https://console.dialogflow.com/api-client/demo/embedded/ffb168b2-33cb-451d-9a1b-fe91dc74bd4e"
-        ></iframe>
+        ></iframe> */}
       </Wrapper>
     </>
   );

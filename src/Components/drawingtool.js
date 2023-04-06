@@ -1,4 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
+import styled from 'styled-components/macro';
+const CanvasWrap = styled.div`
+  width: 80%;
+  height: auto;
+  border: 2px solid black;
+`;
 
 const DrawingTool = () => {
   const [isPainting, setIsPainting] = useState(false);
@@ -58,7 +64,7 @@ const DrawingTool = () => {
   };
 
   return (
-    <div>
+    <CanvasWrap>
       <canvas
         id="canvas"
         ref={canvasRef}
@@ -74,7 +80,7 @@ const DrawingTool = () => {
       <button onClick={() => handleChangeLineWidth(1)}>Thin</button>
       <button onClick={() => handleChangeLineWidth(30)}>Wide</button>
       <button onClick={clearCanvas}>Clear</button>
-    </div>
+    </CanvasWrap>
   );
 };
 

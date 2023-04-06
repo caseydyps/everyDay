@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-import DragNDrop from './DragNDrop';
+import DragNDrop from './Todo/DragNDrop';
 
 const Wrapper = styled.div`
   width: 100vw;

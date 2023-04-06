@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import DrawingTool from '../../Components/drawingtool';
+import DrawingTool from '../../../Components/drawingtool';
 
 //import './piece.scss';
 
@@ -11,8 +11,8 @@ type Sticker = {
 
 const Wrapper = styled.div`
   position: relative;
-  width: 100%;
-  height: 100%;
+  width: 500px;
+  height: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -30,8 +30,8 @@ const Sticker = styled.div<{
   left: ${(props) => props.offsetX}px;
   background-color: ${({ color }) => color};
   cursor: ${(props) => (props.dragging ? 'grabbing' : 'grab')};
-  width: 250px;
-  height: 250px;
+  width: 150px;
+  height: 150px;
   border: 0px solid black;
   border-radius: 5px;
   display: flex;
@@ -149,6 +149,11 @@ export const Whiteboard = () => {
     setStickerText(newStickerText);
   };
 
+  //change sticker color
+  const changeStickerColor = (color: string) => {
+    setNewStickerColor(color);
+  };
+
   return (
     <Wrapper>
       {stickers.map((sticker, index) => (
@@ -188,7 +193,7 @@ export const Whiteboard = () => {
         Green
       </ColorButton>
       <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
-      <DrawingTool />
+      {/* <DrawingTool /> */}
     </Wrapper>
   );
 };

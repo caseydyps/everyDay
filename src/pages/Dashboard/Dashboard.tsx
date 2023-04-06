@@ -1,7 +1,9 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
 import DragNDrop from './DragNDropDashboard';
-import Todo from './Todo';
+import TodoMini from './Todo/TodoMini';
+import CalendarMini from './Calendar/CalendarMini';
+import WhiteboardMini from './Whiteboard/WhiteboardMini';
 const Block = styled.div`
   height: 200px;
   width: 250px;
@@ -14,18 +16,18 @@ const Block = styled.div`
     props.isDragging ? '2px 2px 8px rgba(0, 0, 0, 0.5)' : 'none'};
 `;
 
-const Calendar = ({ onDragStart, onDragEnd }) => {
-  return (
-    <Block
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      isDragging={false}
-    >
-      Calendar
-    </Block>
-  );
-};
+// const Calendar = ({ onDragStart, onDragEnd }) => {
+//   return (
+//     <Block
+//       draggable
+//       onDragStart={onDragStart}
+//       onDragEnd={onDragEnd}
+//       isDragging={false}
+//     >
+//       Calendar
+//     </Block>
+//   );
+// };
 
 const Whiteboard = ({ onDragStart, onDragEnd }) => {
   return (
@@ -144,27 +146,27 @@ function Dashboard() {
     }
   };
 
-   const [data, setData] = useState();
-   useEffect(() => {
-     if (localStorage.getItem('List')) {
-       console.log(localStorage.getItem('List'));
-       setData(JSON.parse(localStorage.getItem('List')));
-     } else {
-       setData(defaultData);
-     }
-   }, [setData]);
+  const [data, setData] = useState();
+  useEffect(() => {
+    if (localStorage.getItem('List')) {
+      console.log(localStorage.getItem('List'));
+      setData(JSON.parse(localStorage.getItem('List')));
+    } else {
+      setData(defaultData);
+    }
+  }, [setData]);
 
   return (
     <>
       <Wrapper>{/* <DragNDrop data={data} /> */}</Wrapper>
       <Wrapper>
-        <Calendar
+        <CalendarMini
           onDragStart={(event) => handleDragStart(event, 'calendar')}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
           onDrop={(event) => handleDrop(event, 'calendar')}
         />
-        <Whiteboard
+        <WhiteboardMini
           onDragStart={(event) => handleDragStart(event, 'whiteboard')}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
@@ -176,7 +178,7 @@ function Dashboard() {
           onDragOver={handleDragOver}
           onDrop={(event) => handleDrop(event, 'financial')}
         />
-        <Todo
+        <TodoMini
           onDragStart={(event) => handleDragStart(event, 'todo')}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}
