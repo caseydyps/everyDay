@@ -161,6 +161,12 @@ const EventCategory = styled.div`
   color: gray;
 `;
 
+const EventList = styled.ul`
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+`;
+
 function Calendar() {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
@@ -190,7 +196,13 @@ function Calendar() {
     'Dec',
   ];
 
-  function DateDetails({ date, events, setEvents, draggedEventIdRef }) {
+  function DateDetails({
+    date,
+    events,
+    setEvents,
+    draggedEventIdRef,
+    isCurrentMonth,
+  }) {
     const handleDragStart = (e, eventId) => {
       console.log(eventId);
       draggedEventIdRef.current = eventId;
@@ -224,12 +236,13 @@ function Calendar() {
     };
 
     if (!date) {
-      return <div>No date selected</div>;
+      return <div>今天沒事~</div>;
     }
 
     const selectedEvents = events.filter(
       (event) => new Date(event.date).getDate() === date.getDate()
     );
+    console.log(selectedEvents);
 
     return (
       <div
@@ -240,36 +253,41 @@ function Calendar() {
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         {selectedEvents.length > 0 ? (
-          <ul>
-            {selectedEvents.map((event, index) => (
-              <li key={index}>
-                <EventWrapper
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, event.id)}
-                  category={event.category}
-                  finished={event.finished}
-                >
-                  <EventCategory>{event.category}</EventCategory>
-                  <EventMember>{event.member}</EventMember>
-                  <EventTime>{event.time}</EventTime>
-                  <EventTitle finished={event.finished}>
-                    {event.title}
-                  </EventTitle>
-                  <div>
-                    <button onClick={() => handleEditEvent(event)}>Edit</button>
-                    <button onClick={() => handleDeleteEvent(event)}>
-                      Delete
-                    </button>
-                    <button onClick={() => handleFinishEvent(event)}>
-                      Finish
-                    </button>
-                  </div>
-                </EventWrapper>
-              </li>
-            ))}
-          </ul>
+          <EventList>
+            {selectedEvents.map((event, index) =>
+              isCurrentMonth ? (
+                <li key={index}>
+                  <EventWrapper
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, event.id)}
+                    category={event.category}
+                    finished={event.finished}
+                  >
+                    <EventCategory>{event.category}</EventCategory>
+                    <EventMember>{event.member}</EventMember>
+
+                    <EventTime>{event.time}</EventTime>
+                    <EventTitle finished={event.finished}>
+                      {event.title}
+                    </EventTitle>
+                    <div>
+                      <button onClick={() => handleEditEvent(event)}>
+                        Edit
+                      </button>
+                      <button onClick={() => handleDeleteEvent(event)}>
+                        Delete
+                      </button>
+                      <button onClick={() => handleFinishEvent(event)}>
+                        Finish
+                      </button>
+                    </div>
+                  </EventWrapper>
+                </li>
+              ) : null
+            )}
+          </EventList>
         ) : (
-          <div>No events for the selected date</div>
+          <div></div>
         )}
       </div>
     );
@@ -378,6 +396,7 @@ function Calendar() {
   const handleDateClick = (day: number, row) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
+    console.log(selectedDate);
   };
 
   const handleWeekDateClick = (day: number, row) => {
@@ -401,6 +420,7 @@ function Calendar() {
     setEventTime('');
     setEventCategory('');
     setEventMember('');
+    console.log(eventDate);
   };
 
   const handleAddEvent = () => {
@@ -648,6 +668,7 @@ function Calendar() {
                       {eventsOnDay.map((event) => (
                         <div key={event.title}>{event.title}</div>
                       ))}
+
                       <DateDetails
                         date={
                           new Date(
@@ -659,6 +680,7 @@ function Calendar() {
                         events={events}
                         setEvents={setEvents}
                         draggedEventIdRef={draggedEventIdRef}
+                        isCurrentMonth={isCurrentMonth}
                       />
                     </Td>
                   );
