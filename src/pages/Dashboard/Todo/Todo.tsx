@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useRef } from 'react';
 import DragNDrop from './DragNDrop';
 
 const Wrapper = styled.div`
@@ -31,25 +31,25 @@ const testData = [
   {
     title: 'Due Today',
     items: [
-      { text: 'Task 1', due: '4/1', member: 'John', done: false },
-      { text: 'Task 2', due: '4/2', member: 'Jane', done: true },
-      { text: 'Task 3', due: '4/3', member: 'Bob', done: false },
+      { text: 'Task 1', due: '2023-04-01', member: 'John', done: false },
+      { text: 'Task 2', due: '2023-04-01', member: 'Jane', done: true },
+      { text: 'Task 3', due: '2023-04-01', member: 'Bob', done: false },
     ],
   },
   {
     title: 'Due Tomorrow',
     items: [
-      { text: 'Task 4', due: '4/4', member: 'John', done: false },
-      { text: 'Task 5', due: '4/5', member: 'Jane', done: true },
-      { text: 'Task 6', due: '4/6', member: 'Bob', done: false },
+      { text: 'Task 4', due: '2023-04-01', member: 'John', done: false },
+      { text: 'Task 5', due: '2023-04-01', member: 'Jane', done: true },
+      { text: 'Task 6', due: '2023-04-01', member: 'Bob', done: false },
     ],
   },
   {
     title: 'Done',
     items: [
-      { text: 'Task 7', due: '4/7', member: 'John', done: true },
-      { text: 'Task 8', due: '4/8', member: 'Jane', done: true },
-      { text: 'Task 9', due: '4/9', member: 'Bob', done: true },
+      { text: 'Task 7', due: '2023-04-01', member: 'John', done: true },
+      { text: 'Task 8', due: '2023-04-01', member: 'Jane', done: true },
+      { text: 'Task 9', due: '2023-04-01', member: 'Bob', done: true },
     ],
   },
 ];
@@ -107,9 +107,13 @@ function Todo() {
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
+  const dueDateRef = useRef(null);
+
   const addItem = (listIndex) => {
     const text = prompt('Enter item text');
-    const due = prompt('Enter due date');
+    const dueDateString = dueDateRef.current.value; // "YYYY-MM-DD"
+    const due = new Date(dueDateString);
+
     const member = prompt('Enter member name');
     const done = false;
     if (text && due && member) {

@@ -152,12 +152,22 @@ function DragNDrop({ data }) {
     dragItemNode.current = null;
   };
 
+  const [selectedDate, setSelectedDate] = useState('');
+
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
+
   const addItem = (groupIndex) => {
-    const item = prompt('Enter item text');
-    if (item) {
+    const text = prompt('Enter item text');
+    const due = selectedDate;
+    const member = prompt('Enter member name');
+    console.log(due);
+    if (text && due && member) {
+      console.log('adding item');
       setList((prevList) => {
         const newList = [...prevList];
-        newList[groupIndex].items.push(item);
+        newList[groupIndex].items.push({ text, due, member, done: false });
         localStorage.setItem('List', JSON.stringify(newList));
         return newList;
       });
@@ -238,86 +248,101 @@ function DragNDrop({ data }) {
                   : null
               }
             >
-              {group.items.map((item, itemIndex) => (
-                <DragNDropItem
-                  draggable
-                  key={item}
-                  onDragStart={(e) =>
-                    handletDragStart(e, { groupIndex, itemIndex })
-                  }
-                  onDragEnter={
-                    dragging
-                      ? (e) => {
-                          handleDragEnter(e, { groupIndex, itemIndex });
+              {group.items.map((item, itemIndex) => {
+                console.log('Due date:', item.due);
+                console.log('Current date:', new Date());
+                const dueDate = new Date(item.due); // convert date string to Date object
+                const currentDate = new Date(); // get current date
+                const isOverdue = dueDate < currentDate; // check if due date is before current date
+                return (
+                  <DragNDropItem
+                    draggable
+                    key={item}
+                    onDragStart={(e) =>
+                      handletDragStart(e, { groupIndex, itemIndex })
+                    }
+                    onDragEnter={
+                      dragging
+                        ? (e) => {
+                            handleDragEnter(e, { groupIndex, itemIndex });
+                          }
+                        : null
+                    }
+                    style={{
+                      border: isOverdue ? '2px solid red' : 'none',
+                    }}
+                  >
+                    {item.text}
+
+                    <div>Due: {item.due}</div>
+                    <div>Member: {item.member}</div>
+                    <div>Done: {item.done ? 'Done' : 'Not yet'}</div>
+                    <CheckContainer>
+                      <Checkbox
+                        checked={item.done}
+                        onChange={(e) =>
+                          handleDoneChange(e, groupIndex, itemIndex)
                         }
-                      : null
-                  }
-                >
-                  {item.text}
+                      />
+                      <Checkmark checked={item.done}></Checkmark>
+                    </CheckContainer>
+                    <button onClick={() => deleteItem(groupIndex, itemIndex)}>
+                      Delete
+                    </button>
+                    <button
+                      onClick={() => {
+                        const newText = prompt('Enter new text');
+                        if (newText) {
+                          handleChange(
+                            { target: { value: newText } },
+                            groupIndex,
+                            itemIndex,
+                            'text'
+                          );
+                        }
+                      }}
+                    >
+                      Edit Task
+                    </button>
 
-                  <div>Due: {item.due}</div>
-                  <div>Member: {item.member}</div>
-                  <div>Done: {item.done ? 'Done' : 'Not yet'}</div>
-                  <CheckContainer>
-                    <Checkbox
-                      checked={item.done}
-                      onChange={(e) =>
-                        handleDoneChange(e, groupIndex, itemIndex)
-                      }
-                    />
-                    <Checkmark checked={item.done}></Checkmark>
-                  </CheckContainer>
-                  <button onClick={() => deleteItem(groupIndex, itemIndex)}>
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => {
-                      const newText = prompt('Enter new text');
-                      if (newText) {
-                        handleChange(
-                          { target: { value: newText } },
-                          groupIndex,
-                          itemIndex,
-                          'text'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Task
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      const newMember = prompt('Enter new member');
-                      if (newMember) {
-                        handleChange(
-                          { target: { value: newMember } },
-                          groupIndex,
-                          itemIndex,
-                          'member'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Member
-                  </button>
-                  <button
-                    onClick={() => {
-                      const newDue = prompt('Enter new due date');
-                      if (newDue) {
-                        handleChange(
-                          { target: { value: newDue } },
-                          groupIndex,
-                          itemIndex,
-                          'due'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Due Date
-                  </button>
-                </DragNDropItem>
-              ))}
+                    <button
+                      onClick={() => {
+                        const newMember = prompt('Enter new member');
+                        if (newMember) {
+                          handleChange(
+                            { target: { value: newMember } },
+                            groupIndex,
+                            itemIndex,
+                            'member'
+                          );
+                        }
+                      }}
+                    >
+                      Edit Member
+                    </button>
+                    <button
+                      onClick={() => {
+                        const newDue = prompt('Enter new due date');
+                        if (newDue) {
+                          handleChange(
+                            { target: { value: newDue } },
+                            groupIndex,
+                            itemIndex,
+                            'due'
+                          );
+                        }
+                      }}
+                    >
+                      Edit Due Date
+                    </button>
+                  </DragNDropItem>
+                );
+              })}
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
               <button onClick={() => addItem(groupIndex)}>Add New Item</button>
               <button>My task only</button>
             </DragNDropGroup>

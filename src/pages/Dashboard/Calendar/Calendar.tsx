@@ -94,7 +94,8 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  padding: 0px 50px 100px 50px;
+  width: 300px;
+  height: 200px;
   border: 1px solid #ccc;
 
   &.inactive {
@@ -138,6 +139,19 @@ const EventWrapper = styled.div`
         return 'white';
     }
   }};
+  ${({ multiDay }) =>
+    multiDay
+      ? `
+       
+       
+        padding: 5px 10px;
+        margin-left: -2px;
+      `
+      : `
+        padding: 5px;
+        border-radius: 10px;
+        border: 2px solid black;
+      `}
 `;
 
 const EventTime = styled.div`
@@ -171,9 +185,12 @@ function Calendar() {
   const [date, setDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isAllDay, setIsAllDay] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [eventEndDate, setEventEndDate] = useState('');
   const [eventTime, setEventTime] = useState('');
+  const [eventEndTime, setEventEndTime] = useState('');
   const [eventCategory, setEventCategory] = useState('');
   const [eventMember, setEventMember] = useState('');
   const [events, setEvents] = useState([]);
@@ -227,10 +244,11 @@ function Calendar() {
           const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
           const dateString = date.toLocaleDateString('en-US', options);
           console.log(dateString);
-          return { ...event, date: dateString };
+          return { ...event, date: dateString, endDate: dateString };
         }
         return event;
       });
+
       setEvents(updatedEvents);
       console.log('updatedEvents', updatedEvents);
     };
@@ -238,10 +256,19 @@ function Calendar() {
     if (!date) {
       return <div>今天沒事~</div>;
     }
+    const selectedEvents = events.filter((event) => {
+      const startDate = new Date(event.date);
+      if (event.endDate === event.date) {
+        // Single day event
+        return startDate.getDate() === date.getDate();
+      } else {
+        // Multiday event
+        startDate.setDate(startDate.getDate() - 1);
+        const endDate = new Date(event.endDate);
+        return date >= startDate && date <= endDate;
+      }
+    });
 
-    const selectedEvents = events.filter(
-      (event) => new Date(event.date).getDate() === date.getDate()
-    );
     console.log(selectedEvents);
 
     return (
@@ -258,10 +285,11 @@ function Calendar() {
               isCurrentMonth ? (
                 <li key={index}>
                   <EventWrapper
-                    draggable
+                    draggable={!event.multiDay}
                     onDragStart={(e) => handleDragStart(e, event.id)}
                     category={event.category}
                     finished={event.finished}
+                    multiDay={event.date !== event.endDate}
                   >
                     <EventCategory>{event.category}</EventCategory>
                     <EventMember>{event.member}</EventMember>
@@ -314,7 +342,8 @@ function Calendar() {
           <ul>
             {selectedMonthEvents.map((event, index) => (
               <li key={index}>
-                {event.title} on {event.date} at {event.time} - {event.location}
+                {event.member}:{event.title} on {event.date} to {event.endDate}{' '}
+                at {event.time}
               </li>
             ))}
           </ul>
@@ -405,22 +434,30 @@ function Calendar() {
 
   const handleEventSubmit = (event) => {
     event.preventDefault();
+    const isMultiDay = eventDate !== eventEndDate;
     const newEvent = {
       title: eventTitle,
       date: eventDate,
-      time: eventTime,
+      endDate: eventEndDate,
       category: eventCategory,
       member: eventMember,
       id: uuidv4(),
+      multiDay: isMultiDay,
     };
+    if (!isAllDay) {
+      newEvent.time = eventTime;
+      newEvent.endTime = eventEndTime;
+    }
     setEvents([...events, newEvent]);
     setShowModal(false);
     setEventTitle('');
     setEventDate('');
+    setEventEndDate('');
     setEventTime('');
+    setEventEndTime('');
     setEventCategory('');
     setEventMember('');
-    console.log(eventDate);
+    setIsAllDay(false);
   };
 
   const handleAddEvent = () => {
@@ -498,7 +535,15 @@ function Calendar() {
     // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
+    const updatedEndDate = prompt(
+      'Enter the updated event date:',
+      event.endDate
+    );
     const updatedTime = prompt('Enter the updated event time:', event.time);
+    const updatedEndTime = prompt(
+      'Enter the updated event time:',
+      event.endTime
+    );
     const updatedCategory = prompt(
       'Enter the updated event category:',
       event.category
@@ -514,7 +559,9 @@ function Calendar() {
       id: event.id,
       title: updatedTitle,
       date: updatedDate,
+      endDate: updatedEndDate,
       time: updatedTime,
+      endTime: updatedEndTime,
       category: updatedCategory,
       member: updatedMember,
       note: updatedNote,
@@ -551,6 +598,10 @@ function Calendar() {
     setEvents(updatedEvents);
   };
 
+  useEffect(() => {
+    console.log(events);
+  }, [events]);
+
   return (
     <>
       <Button onClick={() => handleViewClick('day')}>Day</Button>
@@ -586,11 +637,27 @@ function Calendar() {
                 />
               </label>
               <label>
-                Due:
+                <input
+                  type="checkbox"
+                  checked={isAllDay}
+                  onChange={(e) => setIsAllDay(e.target.checked)}
+                />
+                All Day Event
+              </label>
+              <label>
+                Start:
                 <input
                   type="date"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
+                />
+              </label>
+              <label>
+                Due:
+                <input
+                  type="date"
+                  value={eventEndDate}
+                  onChange={(e) => setEventEndDate(e.target.value)}
                 />
               </label>
               <label>
@@ -601,6 +668,15 @@ function Calendar() {
                   onChange={(e) => setEventTime(e.target.value)}
                 />
               </label>
+              <label>
+                Time:
+                <input
+                  type="time"
+                  value={eventEndTime}
+                  onChange={(e) => setEventEndTime(e.target.value)}
+                />
+              </label>
+
               <label>
                 Category:
                 <select
@@ -852,6 +928,14 @@ function Calendar() {
                   type="time"
                   value={eventTime}
                   onChange={(e) => setEventTime(e.target.value)}
+                />
+              </label>
+              <label>
+                Time:
+                <input
+                  type="time"
+                  value={eventEndTime}
+                  onChange={(e) => setEventEndTime(e.target.value)}
                 />
               </label>
               <label>
