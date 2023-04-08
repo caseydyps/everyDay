@@ -183,7 +183,7 @@ const EventList = styled.ul`
 
 function Calendar() {
   const [date, setDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const [isAllDay, setIsAllDay] = useState(false);
   const [eventTitle, setEventTitle] = useState('');
@@ -269,7 +269,7 @@ function Calendar() {
       }
     });
 
-    console.log(selectedEvents);
+    // console.log(selectedEvents);
 
     return (
       <div
@@ -798,11 +798,27 @@ function Calendar() {
                 />
               </label>
               <label>
-                Due:
+                <input
+                  type="checkbox"
+                  checked={isAllDay}
+                  onChange={(e) => setIsAllDay(e.target.checked)}
+                />
+                All Day Event
+              </label>
+              <label>
+                Start:
                 <input
                   type="date"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
+                />
+              </label>
+              <label>
+                Due:
+                <input
+                  type="date"
+                  value={eventEndDate}
+                  onChange={(e) => setEventEndDate(e.target.value)}
                 />
               </label>
               <label>
@@ -813,6 +829,15 @@ function Calendar() {
                   onChange={(e) => setEventTime(e.target.value)}
                 />
               </label>
+              <label>
+                Time:
+                <input
+                  type="time"
+                  value={eventEndTime}
+                  onChange={(e) => setEventEndTime(e.target.value)}
+                />
+              </label>
+
               <label>
                 Category:
                 <select
@@ -827,11 +852,15 @@ function Calendar() {
               </label>
               <label>
                 Member:
-                <input
-                  type="text"
+                <select
                   value={eventMember}
                   onChange={(e) => setEventMember(e.target.value)}
-                />
+                >
+                  <option value="">Select a family member</option>
+                  <option value="Dad">Dad</option>
+                  <option value="Mom">Mom</option>
+                  <option value="Baby">Baby</option>
+                </select>
               </label>
 
               <button type="submit">Add</button>
@@ -866,12 +895,13 @@ function Calendar() {
                     className={`${isCurrentMonth ? '' : 'inactive'} ${
                       isToday ? 'today' : ''
                     }`}
-                    onClick={() => handleWeekDateClick(dayOfMonth)}
+                    onClick={() => handleDateClick(dayOfMonth, selectedRow)}
                   >
                     {isCurrentMonth ? dayOfMonth : ''}
                     {eventsOnDay.map((event) => (
                       <div key={event.title}>{event.title}</div>
                     ))}
+
                     <DateDetails
                       date={
                         new Date(
@@ -883,6 +913,7 @@ function Calendar() {
                       events={events}
                       setEvents={setEvents}
                       draggedEventIdRef={draggedEventIdRef}
+                      isCurrentMonth={isCurrentMonth}
                     />
                   </Td>
                 </>
@@ -901,7 +932,6 @@ function Calendar() {
           <Button onClick={handleNextDay}>Next</Button>
         </MonthContainer>
         <DateDetails date={selectedDate} events={events} />
-
         <AddButton onClick={handleAddEvent}>Add Event</AddButton>
         {showModal && (
           <Modal>
@@ -915,11 +945,27 @@ function Calendar() {
                 />
               </label>
               <label>
-                Due:
+                <input
+                  type="checkbox"
+                  checked={isAllDay}
+                  onChange={(e) => setIsAllDay(e.target.checked)}
+                />
+                All Day Event
+              </label>
+              <label>
+                Start:
                 <input
                   type="date"
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
+                />
+              </label>
+              <label>
+                Due:
+                <input
+                  type="date"
+                  value={eventEndDate}
+                  onChange={(e) => setEventEndDate(e.target.value)}
                 />
               </label>
               <label>
@@ -938,6 +984,7 @@ function Calendar() {
                   onChange={(e) => setEventEndTime(e.target.value)}
                 />
               </label>
+
               <label>
                 Category:
                 <select
@@ -952,11 +999,15 @@ function Calendar() {
               </label>
               <label>
                 Member:
-                <input
-                  type="text"
+                <select
                   value={eventMember}
                   onChange={(e) => setEventMember(e.target.value)}
-                />
+                >
+                  <option value="">Select a family member</option>
+                  <option value="Dad">Dad</option>
+                  <option value="Mom">Mom</option>
+                  <option value="Baby">Baby</option>
+                </select>
               </label>
 
               <button type="submit">Add</button>
@@ -964,16 +1015,35 @@ function Calendar() {
           </Modal>
         )}
         <DayCalendar selectedDate={selectedDate} />
-        <>
-          <Td>
-            <div key={event.title}>{event.title}</div>
-            <DateDetails
-              date={selectedDate}
-              events={events}
-              draggedEventIdRef={draggedEventIdRef}
-            />
-          </Td>
-        </>
+        <Td>
+          {events.map((event) => {
+            const eventDate = new Date(event.date);
+            const selectedDateObj = new Date(selectedDate);
+            const eventDateOnly = new Date(
+              eventDate.getFullYear(),
+              eventDate.getMonth(),
+              eventDate.getDate()
+            );
+            const selectedDateOnly = new Date(
+              selectedDateObj.getFullYear(),
+              selectedDateObj.getMonth(),
+              selectedDateObj.getDate()
+            );
+
+            console.log(eventDate);
+            console.log(selectedDateOnly);
+            console.log(new Date(event.endDate));
+            if (
+              selectedDateOnly === eventDateOnly ||
+              (selectedDateOnly >= eventDateOnly &&
+                selectedDateOnly < new Date(event.endDate))
+            ) {
+              return <div key={event.id}>{event.title}</div>;
+            } else {
+              return null;
+            }
+          })}
+        </Td>
       </DayWrap>
     </>
   );

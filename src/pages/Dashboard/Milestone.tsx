@@ -11,6 +11,13 @@ const Wrapper = styled.div`
   align-items: center;
 `;
 
+const Wrap = styled.div`
+  background-color: #bbdefb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
 const Header = styled.h1`
   margin-top: 50px;
   font-size: 48px;
@@ -24,6 +31,7 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   position: relative;
+  background-color: #e3f2fd;
 `;
 
 const EventContainer = styled.div`
@@ -201,6 +209,7 @@ function Milestone() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const handleNewEventSubmit = (e) => {
     e.preventDefault();
@@ -210,7 +219,7 @@ function Milestone() {
       title: newEventTitle,
       date: new Date(newEventDate),
       member: newEventMember,
-      image: newEventImage,
+      image: URL.createObjectURL(file),
     };
 
     setEvents((prevEvents) => [...prevEvents, newEvent]);
@@ -220,20 +229,6 @@ function Milestone() {
     setNewEventDate('');
     setNewEventMember('');
     setNewEventImage('');
-  };
-
-  const SearchInput = ({ value, onChange }) => {
-    return (
-      <SearchInputWrapper>
-        <SearchIcon className="fa fa-search" />
-        <SearchInputField
-          type="text"
-          placeholder="Search events..."
-          value={value}
-          onChange={onChange}
-        />
-      </SearchInputWrapper>
-    );
   };
 
   const AvatarPreview = ({ avatar }) => {
@@ -264,6 +259,12 @@ function Milestone() {
         match = match && event.date <= filter.endDate;
       }
 
+      if (filter.title !== null) {
+        match =
+          match &&
+          event.title.toLowerCase().includes(filter.title.toLowerCase());
+      }
+
       return match;
     });
   };
@@ -272,6 +273,7 @@ function Milestone() {
     member: '',
     startDate: null,
     endDate: null,
+    title: '',
   });
 
   const handleEditFormSubmit = (editedData) => {
@@ -285,6 +287,21 @@ function Milestone() {
 
   const handleDeleteEvent = (id) => {
     setEvents(events.filter((event) => event.id !== id));
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setImage(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    } else {
+      setImage('');
+    }
   };
 
   function EditEventForm({ event, onEdit }) {
@@ -301,7 +318,7 @@ function Milestone() {
         title,
         date: new Date(date),
         member,
-        image,
+        image: URL.createObjectURL(image),
       };
 
       onEdit(editedEvent);
@@ -335,11 +352,12 @@ function Milestone() {
         </FormField>
         <FormField>
           <FormLabel>Image:</FormLabel>
-          <FormInput
-            type="text"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
-          />
+
+          {imagePreview ? (
+            <AvatarPreview src={imagePreview} alt="Preview" />
+          ) : (
+            <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+          )}
         </FormField>
         <FormButton type="submit">Save Changes</FormButton>
       </Form>
@@ -352,25 +370,6 @@ function Milestone() {
     const maxYear = Math.max(...years);
     return { minYear, maxYear };
   }
-
-  const filteredEvents = events.filter((event) => {
-    return (
-      event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      event.member.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
-
-  const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewEventImage(file);
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   useEffect(() => {
     // Fetch events from server or set initial events
@@ -402,56 +401,60 @@ function Milestone() {
     setEvents(initialEvents);
   }, []);
   console.log(events);
-  //   const handleDrop = (event, index) => {
-  //     const draggedEvent = events[event.index];
-  //     setEvents((prevEvents) => {
-  //       const newEvents = [...prevEvents];
-  //       newEvents.splice(event.index, 1);
-  //       newEvents.splice(index, 0, draggedEvent);
-  //       return newEvents;
-  //     });
-  //   };
 
   return (
     <Wrapper>
       <Header>Milestone</Header>
-      {/* <SearchInput
+      <SearchInputField
         type="text"
-        placeholder="Search events"
+        placeholder="Search events..."
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-      /> */}
+      />
 
-      <FormField>
-        <FormLabel>Member:</FormLabel>
-        <FormInput
-          type="text"
-          value={filter.member}
-          onChange={(e) => setFilter({ ...filter, member: e.target.value })}
-        />
-      </FormField>
+      <Wrap>
+        <h3>Filter</h3>
+        <FormField>
+          <FormLabel>Title:</FormLabel>
+          <FormInput
+            type="text"
+            value={filter.title}
+            onChange={(e) => setFilter({ ...filter, title: e.target.value })}
+          />
+        </FormField>
 
-      <FormField>
-        <FormLabel>Start Date:</FormLabel>
-        <FormInput
-          type="date"
-          value={filter.startDate}
-          onChange={(e) =>
-            setFilter({ ...filter, startDate: new Date(e.target.value) })
-          }
-        />
-      </FormField>
+        <FormField>
+          <FormLabel>Member:</FormLabel>
+          <FormInput
+            type="text"
+            value={filter.member}
+            onChange={(e) => setFilter({ ...filter, member: e.target.value })}
+          />
+        </FormField>
 
-      <FormField>
-        <FormLabel>End Date:</FormLabel>
-        <FormInput
-          type="date"
-          value={filter.endDate}
-          onChange={(e) =>
-            setFilter({ ...filter, endDate: new Date(e.target.value) })
-          }
-        />
-      </FormField>
+        <FormField>
+          <FormLabel>Start Date:</FormLabel>
+          <FormInput
+            type="date"
+            value={filter.startDate}
+            onChange={(e) =>
+              setFilter({ ...filter, startDate: new Date(e.target.value) })
+            }
+          />
+        </FormField>
+
+        <FormField>
+          <FormLabel>End Date:</FormLabel>
+          <FormInput
+            type="date"
+            value={filter.endDate}
+            onChange={(e) =>
+              setFilter({ ...filter, endDate: new Date(e.target.value) })
+            }
+          />
+        </FormField>
+      </Wrap>
+
       <ContentWrapper>
         <FormWrapper>
           <Form onSubmit={handleNewEventSubmit}>
@@ -481,10 +484,14 @@ function Milestone() {
             </FormField>
             <FormField>
               <FormLabel>Image:</FormLabel>
+
               {imagePreview ? (
                 <AvatarPreview src={imagePreview} alt="Preview" />
               ) : (
-                <FormInput type="file" onChange={handleFileInputChange} />
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
+                />
               )}
             </FormField>
             <FormButton type="submit">Add Event</FormButton>
