@@ -8,6 +8,7 @@ import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
 import Voting from './Voting';
+import Sidebar from '../../../Components/SideBar/SideBar';
 
 //import './piece.scss';
 
@@ -18,7 +19,8 @@ type Sticker = {
 
 const Wrapper = styled.div`
   position: relative;
-  width: 100%;
+  width: 1500px;
+  flex: 1;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -112,6 +114,8 @@ const Container = styled.div`
   position: relative;
   text-align: center;
   color: white;
+  display: flex;
+  flex-direction: row;
 `;
 
 const Title = styled.h2`
@@ -124,6 +128,7 @@ const Centered = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
 `;
+
 const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
 export const Whiteboard = () => {
@@ -269,83 +274,88 @@ export const Whiteboard = () => {
   console.log(newStickerColor);
 
   return (
-    <Wrapper>
-      {stickers.map((sticker, index) => (
-        <Sticker
-          key={sticker.id}
-          color={sticker.color}
-          onMouseDown={
-            lockedStickers[index] ? null : (e) => onStickerMouseDown(index, e)
-          }
-          ref={(el) => (stickerRefs.current[index] = el)}
-          style={{
-            left: sticker.x - (dragging === index ? offset.x : 0),
-            top: sticker.y - (dragging === index ? offset.y : 0),
-          }}
-          locked={lockedStickers[index]}
-        >
-          <StickerInput
-            type="text"
-            value={stickerText[index]}
-            onChange={(e) => {
-              const newStickerText = [...stickerText];
-              newStickerText[index] = e.target.value;
-              setStickerText(newStickerText);
+    <Container>
+      <Sidebar />
+      <Wrapper>
+        {stickers.map((sticker, index) => (
+          <Sticker
+            key={sticker.id}
+            color={sticker.color}
+            onMouseDown={
+              lockedStickers[index] ? null : (e) => onStickerMouseDown(index, e)
+            }
+            ref={(el) => (stickerRefs.current[index] = el)}
+            style={{
+              left: sticker.x - (dragging === index ? offset.x : 0),
+              top: sticker.y - (dragging === index ? offset.y : 0),
             }}
-            disabled={lockedStickers[index]}
-          />
-          {sticker.content !== 'New note' && (
-            <img
-              src={sticker.content}
-              alt=""
-              style={{ width: '100%', height: '100%' }}
+            locked={lockedStickers[index]}
+          >
+            <StickerInput
+              type="text"
+              value={stickerText[index]}
+              onChange={(e) => {
+                const newStickerText = [...stickerText];
+                newStickerText[index] = e.target.value;
+                setStickerText(newStickerText);
+              }}
+              disabled={lockedStickers[index]}
             />
-          )}
-          <DeleteButton onClick={() => deleteSticker(index)}>X</DeleteButton>
-          <LockButton onClick={() => handleLockClick(index)}>
-            {lockedStickers[index] ? 'Unlock' : 'Lock'}
-          </LockButton>
-        </Sticker>
-      ))}
-      {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
-      <RowWrap>
-        <ColorButton onClick={() => addGif('transparent')}>Add Gif</ColorButton>
-        <ColorButton onClick={() => addSticker('#FFF9C4')}>
-          Add Yellow Sticker
-        </ColorButton>
-        <ColorButton onClick={() => addSticker('#EF9A9A')}>
-          Add Red Sticker
-        </ColorButton>
-        <ColorButton onClick={() => addSticker('#81D4FA')}>
-          Add Blue Sticker
-        </ColorButton>
-        <ColorButton onClick={() => addSticker('#A5D6A7')}>
-          Add Blue Sticker
-        </ColorButton>
-        <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
-      </RowWrap>
-      <div>
-        <input type="text" value={searchTerm} onChange={handleInputChange} />
-        <button onClick={handleSearch}>Search</button>
-      </div>
-      <h4>Selected GIF:</h4>
-      <h4>Searched GIF:</h4>
-      {searchResults.length > 0 && (
+            {sticker.content !== 'New note' && (
+              <img
+                src={sticker.content}
+                alt=""
+                style={{ width: '100%', height: '100%' }}
+              />
+            )}
+            <DeleteButton onClick={() => deleteSticker(index)}>X</DeleteButton>
+            <LockButton onClick={() => handleLockClick(index)}>
+              {lockedStickers[index] ? 'Unlock' : 'Lock'}
+            </LockButton>
+          </Sticker>
+        ))}
+        {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
+        <RowWrap>
+          <ColorButton onClick={() => addGif('transparent')}>
+            Add Gif
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#FFF9C4')}>
+            Add Yellow Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#EF9A9A')}>
+            Add Red Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#81D4FA')}>
+            Add Blue Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#A5D6A7')}>
+            Add Blue Sticker
+          </ColorButton>
+          <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
+        </RowWrap>
         <div>
-          {searchResults.map((result) => (
-            <img
-              key={result.id}
-              src={result.images.original.url}
-              alt={result.title}
-              style={{ width: '200px', height: '200px' }}
-              onClick={() => setSelectedGif(result)}
-            />
-          ))}
+          <input type="text" value={searchTerm} onChange={handleInputChange} />
+          <button onClick={handleSearch}>Search</button>
         </div>
-      )}
-      <Voting />
-      <DrawingTool />
-    </Wrapper>
+        <h4>Selected GIF:</h4>
+        <h4>Searched GIF:</h4>
+        {searchResults.length > 0 && (
+          <div>
+            {searchResults.map((result) => (
+              <img
+                key={result.id}
+                src={result.images.original.url}
+                alt={result.title}
+                style={{ width: '200px', height: '200px' }}
+                onClick={() => setSelectedGif(result)}
+              />
+            ))}
+          </div>
+        )}
+        <Voting />
+        <DrawingTool />
+      </Wrapper>
+    </Container>
   );
 };
 export default Whiteboard;

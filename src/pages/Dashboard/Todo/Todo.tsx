@@ -1,13 +1,20 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect, useReducer, useRef } from 'react';
 import DragNDrop from './DragNDrop';
+import Sidebar from '../../../Components/SideBar/SideBar';
 
 const Wrapper = styled.div`
-  width: 100vw;
+  width: 80vw;
   height: auto;
   border: 2px solid black;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
 `;
 
@@ -181,7 +188,8 @@ function Todo() {
   };
 
   return (
-    <>
+    <Container>
+      <Sidebar />
       <Wrapper>
         <AddListButton onClick={addList}>Add New List</AddListButton>
         <DragNDrop
@@ -191,7 +199,7 @@ function Todo() {
           setSelectedItemIndex={setSelectedItemIndex}
         />
       </Wrapper>
-    </>
+    </Container>
   );
 }
 

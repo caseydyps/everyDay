@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components/macro';
+import Sidebar from '../../Components/SideBar/SideBar';
 import AvatarCreator from './Avatar';
 
 const Form = styled.form`
@@ -53,6 +54,12 @@ const FormButton = styled.button`
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 `;
 
 const FamilyMemberForm = () => {
@@ -159,7 +166,8 @@ const FamilyMemberForm = () => {
   };
 
   return (
-    <>
+    <Container>
+      <Sidebar />
       <Form onSubmit={handleFormSubmit}>
         <FormField>
           <FormLabel>How many family members do you have?</FormLabel>
@@ -265,7 +273,7 @@ const FamilyMemberForm = () => {
           ))}
         </div>
       )}
-    </>
+    </Container>
   );
 };
 

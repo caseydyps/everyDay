@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import Sidebar from '../../../Components/SideBar/SideBar';
 
 import { v4 as uuidv4 } from 'uuid';
 
@@ -110,6 +111,16 @@ const Td = styled.td`
     background-color: #f5f5f5;
     cursor: pointer;
   }
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
 `;
 
 const AddButton = styled.button`
@@ -603,142 +614,303 @@ function Calendar() {
   }, [events]);
 
   return (
-    <>
-      <Button onClick={() => handleViewClick('day')}>Day</Button>
-      <Button onClick={() => handleViewClick('week')}>Week</Button>
-      <Button onClick={() => handleViewClick('month')}>Month</Button>
+    <Container>
+      <Sidebar />
+      <Wrap>
+        <Button onClick={() => handleViewClick('day')}>Day</Button>
+        <Button onClick={() => handleViewClick('week')}>Week</Button>
+        <Button onClick={() => handleViewClick('month')}>Month</Button>
 
-      <CalendarContainer
-        style={{ display: view === 'month' ? 'block' : 'none' }}
-      >
-        <MonthContainer>
-          <Button onClick={handlePrevMonth}>Prev</Button>
-          <MonthLabel>{`${
-            months[date.getMonth()]
-          } ${date.getFullYear()}`}</MonthLabel>
-          <Button onClick={handleNextMonth}>Next</Button>
-        </MonthContainer>
-        <DateDetails
-          date={selectedDate}
-          events={events}
-          setEvents={setEvents}
-        />
+        <CalendarContainer
+          style={{ display: view === 'month' ? 'block' : 'none' }}
+        >
+          <MonthContainer>
+            <Button onClick={handlePrevMonth}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextMonth}>Next</Button>
+          </MonthContainer>
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+          />
 
-        <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-        {showModal && (
-          <Modal>
-            <form onSubmit={handleEventSubmit}>
-              <label>
-                Title:
-                <input
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isAllDay}
-                  onChange={(e) => setIsAllDay(e.target.checked)}
-                />
-                All Day Event
-              </label>
-              <label>
-                Start:
-                <input
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Due:
-                <input
-                  type="date"
-                  value={eventEndDate}
-                  onChange={(e) => setEventEndDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventTime}
-                  onChange={(e) => setEventTime(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventEndTime}
-                  onChange={(e) => setEventEndTime(e.target.value)}
-                />
-              </label>
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <form onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => setEventEndDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
 
-              <label>
-                Category:
-                <select
-                  value={eventCategory}
-                  onChange={(e) => setEventCategory(e.target.value)}
-                >
-                  <option value="">Select a category</option>
-                  <option value="Work">Work</option>
-                  <option value="Personal">Personal</option>
-                  <option value="School">School</option>
-                </select>
-              </label>
-              <label>
-                Member:
-                <select
-                  value={eventMember}
-                  onChange={(e) => setEventMember(e.target.value)}
-                >
-                  <option value="">Select a family member</option>
-                  <option value="Dad">Dad</option>
-                  <option value="Mom">Mom</option>
-                  <option value="Baby">Baby</option>
-                </select>
-              </label>
+                <label>
+                  Category:
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="School">School</option>
+                  </select>
+                </label>
+                <label>
+                  Member:
+                  <select
+                    value={eventMember}
+                    onChange={(e) => setEventMember(e.target.value)}
+                  >
+                    <option value="">Select a family member</option>
+                    <option value="Dad">Dad</option>
+                    <option value="Mom">Mom</option>
+                    <option value="Baby">Baby</option>
+                  </select>
+                </label>
 
-              <button type="submit">Add</button>
-            </form>
-          </Modal>
-        )}
-        <Table>
+                <button type="submit">Add</button>
+              </form>
+            </Modal>
+          )}
+          <Table>
+            <tbody>
+              {[
+                ...Array(
+                  Math.ceil(
+                    (getDaysInMonth(date) + getFirstDayOfMonth(date)) / 7
+                  )
+                ),
+              ].map((_, row) => (
+                <tr key={row}>
+                  {[...Array(7).keys()].map((weekday) => {
+                    const dayOfMonth =
+                      row * 7 + weekday - getFirstDayOfMonth(date) + 1;
+                    const isFirstWeek = dayOfMonth <= 0;
+                    const isLastWeek = dayOfMonth > getDaysInMonth(date);
+                    const isCurrentMonth = !isFirstWeek && !isLastWeek;
+                    const isToday =
+                      isCurrentMonth &&
+                      dayOfMonth === new Date().getDate() &&
+                      date.getMonth() === new Date().getMonth() &&
+                      date.getFullYear() === new Date().getFullYear();
+                    const eventsOnDay = events.filter(
+                      (event) =>
+                        event.date ===
+                        `${date.getFullYear()}-${
+                          date.getMonth() + 1
+                        }-${dayOfMonth}`
+                    );
+                    return (
+                      <Td
+                        key={weekday}
+                        className={`${isCurrentMonth ? '' : 'inactive'} ${
+                          isToday ? 'today' : ''
+                        }`}
+                        onClick={() => handleDateClick(dayOfMonth, row)}
+                      >
+                        {isCurrentMonth ? dayOfMonth : ''}
+                        {eventsOnDay.map((event) => (
+                          <div key={event.title}>{event.title}</div>
+                        ))}
+
+                        <DateDetails
+                          date={
+                            new Date(
+                              date.getFullYear(),
+                              date.getMonth(),
+                              dayOfMonth
+                            )
+                          }
+                          events={events}
+                          setEvents={setEvents}
+                          draggedEventIdRef={draggedEventIdRef}
+                          isCurrentMonth={isCurrentMonth}
+                        />
+                      </Td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+
+          <MonthDetails date={selectedDate} events={events} />
+        </CalendarContainer>
+        <WeekWrap style={{ display: view === 'week' ? 'block' : 'none' }}>
+          <h1>
+            Week {weekNumber} of {date.getFullYear()}
+          </h1>
+          <MonthContainer>
+            <Button onClick={handlePrevWeek}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextWeek}>Next</Button>
+          </MonthContainer>
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+          />
+
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <form onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => setEventEndDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  Category:
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="School">School</option>
+                  </select>
+                </label>
+                <label>
+                  Member:
+                  <select
+                    value={eventMember}
+                    onChange={(e) => setEventMember(e.target.value)}
+                  >
+                    <option value="">Select a family member</option>
+                    <option value="Dad">Dad</option>
+                    <option value="Mom">Mom</option>
+                    <option value="Baby">Baby</option>
+                  </select>
+                </label>
+
+                <button type="submit">Add</button>
+              </form>
+            </Modal>
+          )}
+
           <tbody>
-            {[
-              ...Array(
-                Math.ceil((getDaysInMonth(date) + getFirstDayOfMonth(date)) / 7)
-              ),
-            ].map((_, row) => (
-              <tr key={row}>
-                {[...Array(7).keys()].map((weekday) => {
-                  const dayOfMonth =
-                    row * 7 + weekday - getFirstDayOfMonth(date) + 1;
-                  const isFirstWeek = dayOfMonth <= 0;
-                  const isLastWeek = dayOfMonth > getDaysInMonth(date);
-                  const isCurrentMonth = !isFirstWeek && !isLastWeek;
-                  const isToday =
-                    isCurrentMonth &&
-                    dayOfMonth === new Date().getDate() &&
-                    date.getMonth() === new Date().getMonth() &&
-                    date.getFullYear() === new Date().getFullYear();
-                  const eventsOnDay = events.filter(
-                    (event) =>
-                      event.date ===
-                      `${date.getFullYear()}-${
-                        date.getMonth() + 1
-                      }-${dayOfMonth}`
-                  );
+            <tr key={selectedRow}>
+              {' '}
+              {[...Array(7).keys()].map((weekday) => {
+                const dayOfMonth =
+                  selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1; // Use row 0
+                const isFirstWeek = dayOfMonth <= 0;
+                const isLastWeek = dayOfMonth > getDaysInMonth(date);
+                const isCurrentMonth = !isFirstWeek && !isLastWeek;
+                const isToday =
+                  isCurrentMonth &&
+                  dayOfMonth === new Date().getDate() &&
+                  date.getMonth() === new Date().getMonth() &&
+                  date.getFullYear() === new Date().getFullYear();
+                const eventsOnDay = events.filter((event) => {
                   return (
+                    event.date ===
+                    `${date.getFullYear()}-${date.getMonth() + 1}-${dayOfMonth}`
+                  );
+                });
+                return (
+                  <>
                     <Td
                       key={weekday}
                       className={`${isCurrentMonth ? '' : 'inactive'} ${
                         isToday ? 'today' : ''
                       }`}
-                      onClick={() => handleDateClick(dayOfMonth, row)}
+                      onClick={() => handleDateClick(dayOfMonth, selectedRow)}
                     >
                       {isCurrentMonth ? dayOfMonth : ''}
                       {eventsOnDay.map((event) => (
@@ -759,293 +931,146 @@ function Calendar() {
                         isCurrentMonth={isCurrentMonth}
                       />
                     </Td>
-                  );
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-
-        <MonthDetails date={selectedDate} events={events} />
-      </CalendarContainer>
-      <WeekWrap style={{ display: view === 'week' ? 'block' : 'none' }}>
-        <h1>
-          Week {weekNumber} of {date.getFullYear()}
-        </h1>
-        <MonthContainer>
-          <Button onClick={handlePrevWeek}>Prev</Button>
-          <MonthLabel>{`${
-            months[date.getMonth()]
-          } ${date.getFullYear()}`}</MonthLabel>
-          <Button onClick={handleNextWeek}>Next</Button>
-        </MonthContainer>
-        <DateDetails
-          date={selectedDate}
-          events={events}
-          setEvents={setEvents}
-        />
-
-        <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-        {showModal && (
-          <Modal>
-            <form onSubmit={handleEventSubmit}>
-              <label>
-                Title:
-                <input
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isAllDay}
-                  onChange={(e) => setIsAllDay(e.target.checked)}
-                />
-                All Day Event
-              </label>
-              <label>
-                Start:
-                <input
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Due:
-                <input
-                  type="date"
-                  value={eventEndDate}
-                  onChange={(e) => setEventEndDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventTime}
-                  onChange={(e) => setEventTime(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventEndTime}
-                  onChange={(e) => setEventEndTime(e.target.value)}
-                />
-              </label>
-
-              <label>
-                Category:
-                <select
-                  value={eventCategory}
-                  onChange={(e) => setEventCategory(e.target.value)}
-                >
-                  <option value="">Select a category</option>
-                  <option value="Work">Work</option>
-                  <option value="Personal">Personal</option>
-                  <option value="School">School</option>
-                </select>
-              </label>
-              <label>
-                Member:
-                <select
-                  value={eventMember}
-                  onChange={(e) => setEventMember(e.target.value)}
-                >
-                  <option value="">Select a family member</option>
-                  <option value="Dad">Dad</option>
-                  <option value="Mom">Mom</option>
-                  <option value="Baby">Baby</option>
-                </select>
-              </label>
-
-              <button type="submit">Add</button>
-            </form>
-          </Modal>
-        )}
-
-        <tbody>
-          <tr key={selectedRow}>
-            {' '}
-            {[...Array(7).keys()].map((weekday) => {
-              const dayOfMonth =
-                selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1; // Use row 0
-              const isFirstWeek = dayOfMonth <= 0;
-              const isLastWeek = dayOfMonth > getDaysInMonth(date);
-              const isCurrentMonth = !isFirstWeek && !isLastWeek;
-              const isToday =
-                isCurrentMonth &&
-                dayOfMonth === new Date().getDate() &&
-                date.getMonth() === new Date().getMonth() &&
-                date.getFullYear() === new Date().getFullYear();
-              const eventsOnDay = events.filter((event) => {
-                return (
-                  event.date ===
-                  `${date.getFullYear()}-${date.getMonth() + 1}-${dayOfMonth}`
+                  </>
                 );
-              });
-              return (
-                <>
-                  <Td
-                    key={weekday}
-                    className={`${isCurrentMonth ? '' : 'inactive'} ${
-                      isToday ? 'today' : ''
-                    }`}
-                    onClick={() => handleDateClick(dayOfMonth, selectedRow)}
+              })}
+            </tr>
+          </tbody>
+        </WeekWrap>
+        <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
+          {/* <h2>{formatDate(selectedDate)}</h2> */}
+          <MonthContainer>
+            <Button onClick={handlePrevDay}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextDay}>Next</Button>
+          </MonthContainer>
+          <DateDetails date={selectedDate} events={events} />
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <form onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => setEventDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => setEventEndDate(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  Category:
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value)}
                   >
-                    {isCurrentMonth ? dayOfMonth : ''}
-                    {eventsOnDay.map((event) => (
-                      <div key={event.title}>{event.title}</div>
-                    ))}
+                    <option value="">Select a category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="School">School</option>
+                  </select>
+                </label>
+                <label>
+                  Member:
+                  <select
+                    value={eventMember}
+                    onChange={(e) => setEventMember(e.target.value)}
+                  >
+                    <option value="">Select a family member</option>
+                    <option value="Dad">Dad</option>
+                    <option value="Mom">Mom</option>
+                    <option value="Baby">Baby</option>
+                  </select>
+                </label>
 
-                    <DateDetails
-                      date={
-                        new Date(
-                          date.getFullYear(),
-                          date.getMonth(),
-                          dayOfMonth
-                        )
-                      }
-                      events={events}
-                      setEvents={setEvents}
-                      draggedEventIdRef={draggedEventIdRef}
-                      isCurrentMonth={isCurrentMonth}
-                    />
-                  </Td>
-                </>
+                <button type="submit">Add</button>
+              </form>
+            </Modal>
+          )}
+          <DayCalendar selectedDate={selectedDate} />
+          <Td>
+            {events.map((event) => {
+              const eventDate = new Date(event.date);
+              const selectedDateObj = new Date(selectedDate);
+              const eventDateOnly = new Date(
+                eventDate.getFullYear(),
+                eventDate.getMonth(),
+                eventDate.getDate()
               );
+              const selectedDateOnly = new Date(
+                selectedDateObj.getFullYear(),
+                selectedDateObj.getMonth(),
+                selectedDateObj.getDate()
+              );
+
+              console.log(eventDate);
+              console.log(selectedDateOnly);
+              console.log(new Date(event.endDate));
+              if (
+                selectedDateOnly === eventDateOnly ||
+                (selectedDateOnly >= eventDateOnly &&
+                  selectedDateOnly < new Date(event.endDate))
+              ) {
+                return (
+                  <div>
+                    <EventCategory>{event.category}</EventCategory>
+                    <EventMember>{event.member}</EventMember>
+                    <EventTime>{event.time}</EventTime>
+                    <EventTitle finished={event.finished}>
+                      {event.title}
+                    </EventTitle>
+                  </div>
+                );
+              } else {
+                return null;
+              }
             })}
-          </tr>
-        </tbody>
-      </WeekWrap>
-      <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
-        {/* <h2>{formatDate(selectedDate)}</h2> */}
-        <MonthContainer>
-          <Button onClick={handlePrevDay}>Prev</Button>
-          <MonthLabel>{`${
-            months[date.getMonth()]
-          } ${date.getFullYear()}`}</MonthLabel>
-          <Button onClick={handleNextDay}>Next</Button>
-        </MonthContainer>
-        <DateDetails date={selectedDate} events={events} />
-        <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-        {showModal && (
-          <Modal>
-            <form onSubmit={handleEventSubmit}>
-              <label>
-                Title:
-                <input
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isAllDay}
-                  onChange={(e) => setIsAllDay(e.target.checked)}
-                />
-                All Day Event
-              </label>
-              <label>
-                Start:
-                <input
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Due:
-                <input
-                  type="date"
-                  value={eventEndDate}
-                  onChange={(e) => setEventEndDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventTime}
-                  onChange={(e) => setEventTime(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventEndTime}
-                  onChange={(e) => setEventEndTime(e.target.value)}
-                />
-              </label>
-
-              <label>
-                Category:
-                <select
-                  value={eventCategory}
-                  onChange={(e) => setEventCategory(e.target.value)}
-                >
-                  <option value="">Select a category</option>
-                  <option value="Work">Work</option>
-                  <option value="Personal">Personal</option>
-                  <option value="School">School</option>
-                </select>
-              </label>
-              <label>
-                Member:
-                <select
-                  value={eventMember}
-                  onChange={(e) => setEventMember(e.target.value)}
-                >
-                  <option value="">Select a family member</option>
-                  <option value="Dad">Dad</option>
-                  <option value="Mom">Mom</option>
-                  <option value="Baby">Baby</option>
-                </select>
-              </label>
-
-              <button type="submit">Add</button>
-            </form>
-          </Modal>
-        )}
-        <DayCalendar selectedDate={selectedDate} />
-        <Td>
-          {events.map((event) => {
-            const eventDate = new Date(event.date);
-            const selectedDateObj = new Date(selectedDate);
-            const eventDateOnly = new Date(
-              eventDate.getFullYear(),
-              eventDate.getMonth(),
-              eventDate.getDate()
-            );
-            const selectedDateOnly = new Date(
-              selectedDateObj.getFullYear(),
-              selectedDateObj.getMonth(),
-              selectedDateObj.getDate()
-            );
-
-            console.log(eventDate);
-            console.log(selectedDateOnly);
-            console.log(new Date(event.endDate));
-            if (
-              selectedDateOnly === eventDateOnly ||
-              (selectedDateOnly >= eventDateOnly &&
-                selectedDateOnly < new Date(event.endDate))
-            ) {
-              return <div key={event.id}>{event.title}</div>;
-            } else {
-              return null;
-            }
-          })}
-        </Td>
-      </DayWrap>
-    </>
+          </Td>
+        </DayWrap>
+      </Wrap>
+    </Container>
   );
 }
 

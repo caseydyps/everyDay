@@ -5,8 +5,10 @@ import Sidebar from '../../Components/SideBar/SideBar';
 
 const Wrapper = styled.div`
   width: 80vw;
-  height: autp;
+  height: auto;
   border: 2px solid black;
+  display: flex;
+  flex-direction: row;
 `;
 const Container = styled.div`
   width: 100vw;
@@ -172,7 +174,7 @@ const MembersSelector = ({
   );
 };
 
-const SmartInput = () => {
+const SmartInputMini = () => {
   const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
   const [category, setCategory] = useState('');
@@ -332,9 +334,7 @@ const SmartInput = () => {
 
   return (
     <Container>
-      <Sidebar />
       <Wrapper>
-        <h2>Smart Input</h2>
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector
           onSelectMember={handleSelectMember}
@@ -369,4 +369,4 @@ const SmartInput = () => {
   );
 };
 
-export default SmartInput;
+export default SmartInputMini;

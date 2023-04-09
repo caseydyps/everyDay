@@ -1,11 +1,18 @@
 import styled from 'styled-components';
 import React, { useState } from 'react';
 import axios from 'axios';
+import Sidebar from '../../Components/SideBar/SideBar';
 
 const Wrapper = styled.div`
   width: 100vw;
   height: 300px;
   border: 2px solid black;
+`;
+
+const Container = styled.div`
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
 `;
 
 const configJs = require('../../config/config.js');
@@ -211,20 +218,27 @@ const Suggestion = () => {
   };
 
   return (
-    <Wrapper>
-      <p>輸入問題:</p>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Input:
-          <input type="text" value={inputValue} onChange={handleInputChange} />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
-      <div>
-        <p>Response:</p>
-        <p>{responseValue}</p>
-      </div>
-    </Wrapper>
+    <Container>
+      <Sidebar />
+      <Wrapper>
+        <p>輸入問題:</p>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Input:
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleInputChange}
+            />
+          </label>
+          <button type="submit">Submit</button>
+        </form>
+        <div>
+          <p>Response:</p>
+          <p>{responseValue}</p>
+        </div>
+      </Wrapper>
+    </Container>
   );
 };
 

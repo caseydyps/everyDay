@@ -2,10 +2,11 @@ import styled from 'styled-components/macro';
 
 const TimelineWrapper = styled.div`
   position: absolute;
-  width: 2px;
-  height: 90%;
-  right: 50%;
-  margin: 0 20px;
+  width: 90%;
+  height: 4px;
+  bottom: 50%;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #aaa;
 `;
 const TimelineDot = styled.div`

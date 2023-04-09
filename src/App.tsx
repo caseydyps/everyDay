@@ -9,16 +9,25 @@ import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import Settings from './pages/Family/Family';
 import styled from 'styled-components';
+import Sidebar from './Components/SideBar/SideBar';
 const Content = styled.div`
-  width: 100vw;
-  height: 1000px;
+  width: auto;
+
   border: 2px solid black;
+`;
+
+const Wrap = styled.div`
+  width: 100vw;
+  height: auto;
+  display: flex;
+  flex-direction: row;
 `;
 
 function App() {
   return (
-    <>
-      <Header />
+    <Wrap>
+      <Sidebar />
+      {/* <Header /> */}
       <Content>
         <SmartInput />
         <Suggestion />
@@ -27,8 +36,8 @@ function App() {
         {/* <Settings /> */}
       </Content>
 
-      <Footer />
-    </>
+      {/* <Footer /> */}
+    </Wrap>
   );
 }
 

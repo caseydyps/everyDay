@@ -8,13 +8,16 @@ import Sidebar from '../../../Components/SideBar/SideBar';
 const Container = styled.div`
   display: flex;
   flex-direction: row;
+  border: 2px solid black;
+
+  flex: 1;
 `;
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const Album = () => {
+const AlbumMini = () => {
   const [albums, setAlbums] = useState([
     {
       id: 1,
@@ -97,12 +100,11 @@ const Album = () => {
 
   return (
     <Container>
-      <Sidebar />
-      <ColumnWrap>
+      {/* <ColumnWrap>
         <h1>Photo Albums</h1>
         <AlbumList albums={albums} onAlbumClick={handleAlbumClick} />
         <UploadForm albums={albums} onUpload={handleUpload} />
-      </ColumnWrap>
+      </ColumnWrap> */}
       {currentAlbum ? (
         <div>
           <h2>{currentAlbum.title}</h2>
@@ -134,4 +136,4 @@ const Album = () => {
   );
 };
 
-export default Album;
+export default AlbumMini;

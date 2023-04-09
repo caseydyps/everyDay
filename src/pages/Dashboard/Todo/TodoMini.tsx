@@ -1,14 +1,15 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useRef } from 'react';
 import DragNDropMini from './DragNDropMini';
 
 const Wrapper = styled.div`
-  width: 500px;
-  height: 500px;
+  width: auto;
+  height: auto;
   border: 2px solid black;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  flex: 1;
 `;
 
 const AddListButton = styled.button`
@@ -21,35 +22,93 @@ const AddListButton = styled.button`
   margin: 10px;
 `;
 
-const defaultTodo = [
-  { title: 'Todo', items: ['Eat out', 'take out garbage'] },
-  { title: 'Doing', items: ['Todo1', 'Todo2', 'Todo3'] },
-  { title: 'Done', items: ['Todo3'] },
-];
+const Input = styled.input`
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #4caf50;
 
-const testData = [
+  color: white;
+  font-size: 16px;
+  margin: 10px;
+`;
+
+const defaultData = [
   {
-    title: 'Due Today',
+    title: '家事🏠',
     items: [
-      { text: 'Task 1', due: '4/1', member: 'John', done: false },
-      { text: 'Task 2', due: '4/2', member: 'Jane', done: true },
-      { text: 'Task 3', due: '4/3', member: 'Bob', done: false },
+      {
+        text: 'take out garbage',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
+        done: false,
+      },
+      {
+        text: '洗碗',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=long03&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
+        done: true,
+      },
+      {
+        text: '繳費',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
+        done: false,
+      },
     ],
   },
   {
-    title: 'Due Tomorrow',
+    title: '購物清單',
     items: [
-      { text: 'Task 4', due: '4/4', member: 'John', done: false },
-      { text: 'Task 5', due: '4/5', member: 'Jane', done: true },
-      { text: 'Task 6', due: '4/6', member: 'Bob', done: false },
+      {
+        text: 'milk',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
+        done: false,
+      },
+      {
+        text: 'Task 2',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
+        done: true,
+      },
+      {
+        text: 'Task 3',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
+        done: false,
+      },
     ],
   },
   {
-    title: 'Done',
+    title: '家庭活動',
     items: [
-      { text: 'Task 7', due: '4/7', member: 'John', done: true },
-      { text: 'Task 8', due: '4/8', member: 'Jane', done: true },
-      { text: 'Task 9', due: '4/9', member: 'Bob', done: true },
+      {
+        text: 'Task 1',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
+        done: false,
+      },
+      {
+        text: 'Task 2',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
+        done: true,
+      },
+      {
+        text: 'Task 3',
+        due: '2023-04-07',
+        member:
+          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
+        done: false,
+      },
     ],
   },
 ];
@@ -96,7 +155,7 @@ const todoReducer = (state, action) => {
 };
 
 function TodoMini() {
-  const [data, dispatch] = useReducer(todoReducer, testData);
+  const [data, dispatch] = useReducer(todoReducer, defaultData);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(data));
@@ -107,9 +166,13 @@ function TodoMini() {
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
+  const dueDateRef = useRef(null);
+
   const addItem = (listIndex) => {
     const text = prompt('Enter item text');
-    const due = prompt('Enter due date');
+    const dueDateString = dueDateRef.current.value; // "YYYY-MM-DD"
+    const due = new Date(dueDateString);
+
     const member = prompt('Enter member name');
     const done = false;
     if (text && due && member) {
@@ -128,7 +191,6 @@ function TodoMini() {
           setSelectedItemIndex={setSelectedItemIndex}
         />
       </Wrapper>
-      <AddListButton onClick={addList}>Add New List</AddListButton>
     </>
   );
 }

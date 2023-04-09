@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
+import AddItemForm from './AddItemForm';
 
 const DragNDropWrapper = styled.div`
   display: flex;
-  // justify-content: space-between;
+  justify-content: space-between;
   margin: 20px;
   flex:direction: column;
+  width: auto;
 `;
 
 const DeleteListButton = styled.button`
@@ -18,9 +20,9 @@ const DeleteListButton = styled.button`
 const DragNDropGroup = styled.div`
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 80%;
   padding: 5px;
-  margin: 10px;
+  margin: 0px;
   background-color: #f4f4f4;
   border-radius: 5px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.01);
@@ -103,20 +105,25 @@ const Checkbox = styled.input.attrs({ type: 'checkbox' })`
   width: 0;
 `;
 
-const Task = styled.div`
-  margin: 1rem 0;
-  padding: 1rem;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  height: 25px;
-  h3 {
-    margin-top: 0;
-  }
+const Avatar = styled.img`
+  width: 100px;
+  height: 100px;
+`;
+
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 function DragNDropMini({ data }) {
   const [list, setList] = useState(data);
   const [dragging, setDragging] = useState(false);
+  const [sortOrder, setSortOrder] = useState('ascending');
 
   useEffect(() => {
     setList(data);
@@ -162,13 +169,45 @@ function DragNDropMini({ data }) {
     dragItemNode.current.removeEventListener('dragend', handleDragEnd);
     dragItemNode.current = null;
   };
+  const [hideChecked, setHideChecked] = useState(false);
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedMembers, setSelectedMembers] = useState([]);
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+  };
 
-  const addItem = (groupIndex) => {
-    const item = prompt('Enter item text');
-    if (item) {
+  const addItem = (groupIndex, { title, due, member }) => {
+    const text = title;
+    console.log(due);
+    const dueDate = due ? due : null;
+    console.log(dueDate);
+    const memberAvatarSrc = member.avatarSrc;
+    if (text && memberAvatarSrc) {
+      console.log('adding item');
       setList((prevList) => {
         const newList = [...prevList];
-        newList[groupIndex].items.push(item);
+        newList[groupIndex].items.push({
+          text,
+          due: dueDate,
+          member: memberAvatarSrc,
+          done: false,
+        });
+        localStorage.setItem('List', JSON.stringify(newList));
+        return newList;
+      });
+    }
+  };
+
+  const addNoDueItem = (groupIndex) => {
+    const text = prompt('Enter item text');
+
+    const member = prompt('Enter member name');
+
+    if (text && member) {
+      console.log('adding No due item');
+      setList((prevList) => {
+        const newList = [...prevList];
+        newList[groupIndex].items.push({ text, member, done: false });
         localStorage.setItem('List', JSON.stringify(newList));
         return newList;
       });
@@ -232,26 +271,135 @@ function DragNDropMini({ data }) {
     }
   }
 
+  function getTotalTaskCount(group) {
+    let count = 0;
+
+    for (const item of group.items) {
+      count++;
+    }
+
+    return count;
+  }
+
+  function getUnfinishedTaskCount(group) {
+    let count = 0;
+
+    for (const item of group.items) {
+      if (!item.done) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
+  function getfinishedTaskCount(group) {
+    let count = 0;
+
+    for (const item of group.items) {
+      if (item.done) {
+        count++;
+      }
+    }
+
+    return count;
+  }
+
+  function getListProgress(list) {
+    const totalTasks = getTotalTaskCount(list);
+    const unfinishedTasks = getUnfinishedTaskCount(list);
+    const finishedTasks = getfinishedTaskCount(list);
+    const progress =
+      totalTasks === 0 ? 0 : Math.round((finishedTasks / totalTasks) * 100);
+
+    return (
+      <div
+        style={{
+          width: '95%',
+          backgroundColor: '#ddd',
+          borderRadius: '5px',
+          height: '10px',
+        }}
+      >
+        <div
+          style={{
+            width: `${progress}%`,
+            backgroundColor: 'blue',
+            borderRadius: '5px',
+            height: '100%',
+          }}
+        />
+      </div>
+    );
+  }
+
   if (list) {
     return (
       <DragNDropWrapper>
-        {list.map(
-          (group, groupIndex) =>
-            group.title === 'Due Today' && (
-              <Task key={groupIndex}>
-                <h3>{group.title}</h3>
-                {/* <DeleteListButton onClick={() => deleteList(groupIndex)}>
+        {/* <button
+          onClick={() => setHideChecked(!hideChecked)}
+          style={{
+            backgroundColor: 'blue',
+            color: 'white',
+            borderRadius: '5px',
+            padding: '5px 10px',
+            cursor: 'pointer',
+            height: '50px',
+          }}
+        >
+          {hideChecked ? 'Show Completed' : 'Hide Completed'}
+        </button> */}
+        {list.map((group, groupIndex) => (
+          <div>
+            <h3>{group.title}</h3>
+            {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
+            <h4>Total tasks: {getTotalTaskCount(group)}</h4>
+            <h4>
+              {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
+            </h4>
+            {getListProgress(group)} */}
+            {/* <DeleteListButton onClick={() => deleteList(groupIndex)}>
               Delete List
             </DeleteListButton> */}
-                <DragNDropGroup
-                  key={group.title}
-                  onDragEnter={
-                    dragging && !group.items.length
-                      ? (e) => handleDragEnter(e, { groupIndex, itemIndex: 0 })
-                      : null
+            {/* <button
+              onClick={() =>
+                setSortOrder(
+                  sortOrder === 'ascending' ? 'descending' : 'ascending'
+                )
+              }
+            >
+              Sort by due date
+            </button> */}
+            <DragNDropGroup
+              key={group.title}
+              onDragEnter={
+                dragging && !group.items.length
+                  ? (e) => handleDragEnter(e, { groupIndex, itemIndex: 0 })
+                  : null
+              }
+            >
+              {group.items
+                .sort((a, b) => {
+                  const aDueDate = new Date(a.due);
+                  const bDueDate = new Date(b.due);
+                  if (sortOrder === 'ascending') {
+                    return aDueDate - bDueDate;
+                  } else {
+                    return bDueDate - aDueDate;
                   }
-                >
-                  {group.items.map((item, itemIndex) => (
+                })
+                .map((item, itemIndex) => {
+                  console.log('Due date:', item.due);
+                  console.log('Current date:', new Date());
+                  const dueDate = new Date(item.due); // convert date string to Date object
+                  const currentDate = new Date(); // get current date
+                  const formattedDueDate = dueDate.toLocaleDateString();
+                  const formattedCurrentDate = currentDate.toLocaleDateString();
+                  const isOverdue = formattedDueDate < formattedCurrentDate; // check if due date is before current date
+                  const isToday = formattedDueDate === formattedCurrentDate;
+                  console.log('Is overdue:', isOverdue);
+                  console.log('Is today:', isToday);
+                  return (
                     <DragNDropItem
                       draggable
                       key={item}
@@ -260,83 +408,114 @@ function DragNDropMini({ data }) {
                       }
                       onDragEnter={
                         dragging
-                          ? (e) => {
-                              handleDragEnter(e, { groupIndex, itemIndex });
-                            }
+                          ? (e) => handleDragEnter(e, { groupIndex, itemIndex })
                           : null
                       }
+                      style={{
+                        display: hideChecked && item.done ? 'none' : 'block',
+                        border:
+                          item.due === null
+                            ? '2px solid gray'
+                            : isOverdue
+                            ? '2px solid red'
+                            : 'none',
+                        backgroundColor:
+                          item.due === null
+                            ? 'lightgray'
+                            : isToday
+                            ? 'yellow'
+                            : 'transparent',
+                      }}
                     >
-                      {item.text}
+                      <ColumnWrap>
+                        <Avatar src={item.member} alt="Member Avatar"></Avatar>
+                        <RowWrap>
+                          <CheckContainer>
+                            <Checkbox
+                              checked={item.done}
+                              onChange={(e) =>
+                                handleDoneChange(e, groupIndex, itemIndex)
+                              }
+                            />
+                            <Checkmark checked={item.done}></Checkmark>
+                          </CheckContainer>
+                          <div
+                            style={{
+                              textDecoration: item.done
+                                ? 'line-through'
+                                : 'none',
+                            }}
+                          >
+                            {item.text}
+                          </div>
 
-                      <div>Due: {item.due}</div>
-                      <div>Member: {item.member}</div>
-                      <div>Done: {item.done ? 'Done' : 'Not yet'}</div>
-                      <CheckContainer>
-                        <Checkbox
-                          checked={item.done}
-                          onChange={(e) =>
-                            handleDoneChange(e, groupIndex, itemIndex)
-                          }
-                        />
-                        <Checkmark checked={item.done}></Checkmark>
-                      </CheckContainer>
-                      {/* <button onClick={() => deleteItem(groupIndex, itemIndex)}>
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => {
-                      const newText = prompt('Enter new text');
-                      if (newText) {
-                        handleChange(
-                          { target: { value: newText } },
-                          groupIndex,
-                          itemIndex,
-                          'text'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Task
-                  </button>
+                          <div>{item.due && `${item.due}`}</div>
+                        </RowWrap>
+                      </ColumnWrap>
 
-                  <button
-                    onClick={() => {
-                      const newMember = prompt('Enter new member');
-                      if (newMember) {
-                        handleChange(
-                          { target: { value: newMember } },
-                          groupIndex,
-                          itemIndex,
-                          'member'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Member
-                  </button>
-                  <button
-                    onClick={() => {
-                      const newDue = prompt('Enter new due date');
-                      if (newDue) {
-                        handleChange(
-                          { target: { value: newDue } },
-                          groupIndex,
-                          itemIndex,
-                          'due'
-                        );
-                      }
-                    }}
-                  >
-                    Edit Due Date
-                  </button> */}
+                      <ColumnWrap>
+                        {/* <button
+                          onClick={() => deleteItem(groupIndex, itemIndex)}
+                        >
+                          Delete
+                        </button> */}
+                        {/* <button
+                          onClick={() => {
+                            const newText = prompt('Enter new text');
+                            if (newText) {
+                              handleChange(
+                                { target: { value: newText } },
+                                groupIndex,
+                                itemIndex,
+                                'text'
+                              );
+                            }
+                          }}
+                        >
+                          Edit Task
+                        </button> */}
+
+                        {/* <button
+                          onClick={() => {
+                            const newMember = prompt('Enter new member');
+                            if (newMember) {
+                              handleChange(
+                                { target: { value: newMember } },
+                                groupIndex,
+                                itemIndex,
+                                'member'
+                              );
+                            }
+                          }}
+                        >
+                          Edit Member
+                        </button>
+                        <button
+                          onClick={() => {
+                            const newDue = prompt('Enter new due date');
+                            if (newDue) {
+                              handleChange(
+                                { target: { value: newDue } },
+                                groupIndex,
+                                itemIndex,
+                                'due'
+                              );
+                            }
+                          }}
+                        >
+                          Edit Due Date
+                        </button> */}
+                      </ColumnWrap>
                     </DragNDropItem>
-                  ))}
-                  {/* <button onClick={() => addItem(groupIndex)}>Add New Item</button>
-              <button>My task only</button> */}
-                </DragNDropGroup>
-              </Task>
-            )
-        )}
+                  );
+                })}
+
+              {/* <AddItemForm groupIndex={0} onAddItem={addItem} /> */}
+
+              {/* <button>My task only</button> */}
+            </DragNDropGroup>
+          </div>
+        ))}
       </DragNDropWrapper>
     );
   } else {

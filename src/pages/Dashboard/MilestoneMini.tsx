@@ -1,21 +1,23 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
 import Timeline from './Timeline';
-import Sidebar from '../../Components/SideBar/SideBar';
+import ImageSlider from './Slider';
 
 const Wrapper = styled.div`
-  width: 90vw;
-  height: 100%;
+  width: 100%;
+  height: auto;
   background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 2px solid black;
 `;
 
-const Wrap = styled.div`
+const ColumnWrap = styled.div`
   background-color: #bbdefb;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  width: 400px;
   align-items: center;
 `;
 
@@ -27,7 +29,7 @@ const Header = styled.h1`
 `;
 
 const ContentWrapper = styled.div`
-  width: 80%;
+  width: 80vw;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -36,32 +38,37 @@ const ContentWrapper = styled.div`
 `;
 
 const EventContainer = styled.div`
-  width: 100%;
-  height: auto;
+  max-width: 80%;
+  height: 100%;
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: center;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+
+  /* Style the scrollbar */
+  &::-webkit-scrollbar {
+    width: 58px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 58px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+  }
 `;
 
 const EventBox = styled.div`
-  width: 300px;
-  height: 300px;
+  width: auto;
+
   border: 2px solid #999;
   border-radius: 10px;
   display: flex;
-  flex-direction: column;
+
   justify-content: space-between;
-  margin: 20px;
-  overflow: hidden;
+  margin: 10px;
 
-  &:nth-child(odd) {
-    align-self: flex-end;
-  }
-
-  &:nth-child(even) {
-    align-self: flex-start;
-  }
   position: relative;
 `;
 const EventTitle = styled.div`
@@ -201,13 +208,7 @@ const SearchInputField = styled.input`
   color: #333;
 `;
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-`;
-
-function Milestone() {
+function MilestoneMini() {
   const [events, setEvents] = useState([]);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventDate, setNewEventDate] = useState('');
@@ -403,6 +404,146 @@ function Milestone() {
         member: 'Bob Johnson',
         image: 'https://picsum.photos/200',
       },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
     ];
 
     setEvents(initialEvents);
@@ -410,149 +551,146 @@ function Milestone() {
   console.log(events);
 
   return (
-    <Container>
-      <Sidebar />
-      <Wrapper>
-        <Header>Milestone</Header>
-        <SearchInputField
-          type="text"
-          placeholder="Search events..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+    <Wrapper>
+      <ImageSlider />
+      <Header>Milestone</Header>
+      {/* <SearchInputField
+        type="text"
+        placeholder="Search events..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      /> */}
 
-        <Wrap>
-          <h3>Filter</h3>
-          <FormField>
-            <FormLabel>Title:</FormLabel>
-            <FormInput
-              type="text"
-              value={filter.title}
-              onChange={(e) => setFilter({ ...filter, title: e.target.value })}
-            />
-          </FormField>
+      {/* <Wrap>
+        <h3>Filter</h3>
+        <FormField>
+          <FormLabel>Title:</FormLabel>
+          <FormInput
+            type="text"
+            value={filter.title}
+            onChange={(e) => setFilter({ ...filter, title: e.target.value })}
+          />
+        </FormField>
 
-          <FormField>
-            <FormLabel>Member:</FormLabel>
-            <FormInput
-              type="text"
-              value={filter.member}
-              onChange={(e) => setFilter({ ...filter, member: e.target.value })}
-            />
-          </FormField>
+        <FormField>
+          <FormLabel>Member:</FormLabel>
+          <FormInput
+            type="text"
+            value={filter.member}
+            onChange={(e) => setFilter({ ...filter, member: e.target.value })}
+          />
+        </FormField>
 
-          <FormField>
-            <FormLabel>Start Date:</FormLabel>
-            <FormInput
-              type="date"
-              value={filter.startDate}
-              onChange={(e) =>
-                setFilter({ ...filter, startDate: new Date(e.target.value) })
-              }
-            />
-          </FormField>
+        <FormField>
+          <FormLabel>Start Date:</FormLabel>
+          <FormInput
+            type="date"
+            value={filter.startDate}
+            onChange={(e) =>
+              setFilter({ ...filter, startDate: new Date(e.target.value) })
+            }
+          />
+        </FormField>
 
-          <FormField>
-            <FormLabel>End Date:</FormLabel>
-            <FormInput
-              type="date"
-              value={filter.endDate}
-              onChange={(e) =>
-                setFilter({ ...filter, endDate: new Date(e.target.value) })
-              }
-            />
-          </FormField>
-        </Wrap>
+        <FormField>
+          <FormLabel>End Date:</FormLabel>
+          <FormInput
+            type="date"
+            value={filter.endDate}
+            onChange={(e) =>
+              setFilter({ ...filter, endDate: new Date(e.target.value) })
+            }
+          />
+        </FormField>
+      </Wrap> */}
 
-        <ContentWrapper>
-          <FormWrapper>
-            <Form onSubmit={handleNewEventSubmit}>
-              <FormField>
-                <FormLabel>Title:</FormLabel>
-                <FormInput
-                  type="text"
-                  value={newEventTitle}
-                  onChange={(e) => setNewEventTitle(e.target.value)}
+      <ContentWrapper>
+        {/* <FormWrapper>
+          <Form onSubmit={handleNewEventSubmit}>
+            <FormField>
+              <FormLabel>Title:</FormLabel>
+              <FormInput
+                type="text"
+                value={newEventTitle}
+                onChange={(e) => setNewEventTitle(e.target.value)}
+              />
+            </FormField>
+            <FormField>
+              <FormLabel>Date:</FormLabel>
+              <FormInput
+                type="date"
+                value={newEventDate}
+                onChange={(e) => setNewEventDate(e.target.value)}
+              />
+            </FormField>
+            <FormField>
+              <FormLabel>Member:</FormLabel>
+              <FormInput
+                type="text"
+                value={newEventMember}
+                onChange={(e) => setNewEventMember(e.target.value)}
+              />
+            </FormField>
+            <FormField>
+              <FormLabel>Image:</FormLabel>
+
+              {imagePreview ? (
+                <AvatarPreview src={imagePreview} alt="Preview" />
+              ) : (
+                <input
+                  type="file"
+                  onChange={(e) => setFile(e.target.files[0])}
                 />
-              </FormField>
-              <FormField>
-                <FormLabel>Date:</FormLabel>
-                <FormInput
-                  type="date"
-                  value={newEventDate}
-                  onChange={(e) => setNewEventDate(e.target.value)}
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Member:</FormLabel>
-                <FormInput
-                  type="text"
-                  value={newEventMember}
-                  onChange={(e) => setNewEventMember(e.target.value)}
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Image:</FormLabel>
+              )}
+            </FormField>
+            <FormButton type="submit">Add Event</FormButton>
+          </Form>
+        </FormWrapper> */}
 
-                {imagePreview ? (
-                  <AvatarPreview src={imagePreview} alt="Preview" />
-                ) : (
-                  <input
-                    type="file"
-                    onChange={(e) => setFile(e.target.files[0])}
-                  />
-                )}
-              </FormField>
-              <FormButton type="submit">Add Event</FormButton>
-            </Form>
-          </FormWrapper>
+        <EventContainer>
+          <Timeline events={events} />
 
-          <EventContainer>
-            <Timeline events={events} />
-
-            {filterEvents(events)
-              .sort((a, b) => a.date - b.date)
-              .map((event, index) => (
-                <>
-                  <EventBox
-                    key={event.id}
-                    style={{
-                      alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                      marginTop: '40px',
-                      marginLeft: index % 2 === 0 ? '0px' : '20px',
-                      marginRight: index % 2 === 0 ? '20px' : '0px',
-                    }}
-                  >
-                    <EditButton onClick={() => handleEditEvent(event)}>
-                      Edit
-                    </EditButton>
+          {filterEvents(events)
+            .sort((a, b) => a.date - b.date)
+            .map((event, index) => (
+              <>
+                <EventBox
+                  key={event.id}
+                  style={{
+                    alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                    marginTop: index % 2 === 0 ? '0px' : '400px',
+                    marginBottom: index % 2 === 0 ? '400px' : '0px',
+                  }}
+                >
+                  <EditButton onClick={() => handleEditEvent(event)}>
+                    Edit
+                  </EditButton>
+                  <ColumnWrap>
                     <EventImage src={event.image} alt="Event" />
                     <EventTitle>{event.title}</EventTitle>
                     <EventDate>{event.date.toDateString()}</EventDate>
-                    <EventMember>Member: {event.member}</EventMember>
-                    <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
-                      Delete
-                    </DeleteButton>
-                  </EventBox>
-                  <EventDot
-                    style={{
-                      alignSelf: 'center',
-                    }}
-                  />
-                </>
-              ))}
+                    <EventMember>Member: {event.member}</EventMember>s
+                  </ColumnWrap>
 
-            {isEditing && (
-              <EditEventForm
-                event={editedEvent}
-                onEdit={handleEditFormSubmit}
-              />
-            )}
-          </EventContainer>
-        </ContentWrapper>
-      </Wrapper>
-    </Container>
+                  <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
+                    Delete
+                  </DeleteButton>
+                </EventBox>
+                <EventDot
+                  style={{
+                    alignSelf: 'center',
+                  }}
+                />
+              </>
+            ))}
+
+          {isEditing && (
+            <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
+          )}
+        </EventContainer>
+      </ContentWrapper>
+    </Wrapper>
   );
 }
 
-export default Milestone;
+export default MilestoneMini;

@@ -4,202 +4,166 @@ import DragNDrop from './DragNDropDashboard';
 import TodoMini from './Todo/TodoMini';
 import CalendarMini from './Calendar/CalendarMini';
 import WhiteboardMini from './Whiteboard/WhiteboardMini';
-const Block = styled.div`
-  height: 200px;
-  width: 250px;
-  border: 2px solid black;
-  margin: 10px;
-  cursor: move;
-  opacity: ${(props) => (props.isDragging ? 0.5 : 1)};
-  background-color: ${(props) => (props.isDragging ? 'grey' : 'white')};
-  box-shadow: ${(props) =>
-    props.isDragging ? '2px 2px 8px rgba(0, 0, 0, 0.5)' : 'none'};
+import AlbumMini from './Album/AlbumMini';
+import MilestoneMini from './MilestoneMini';
+import Sidebar from '../../Components/SideBar/SideBar';
+import Navbar from '../../Components/Navbar/Navbar';
+import React from 'react';
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row; ;
 `;
 
-// const Calendar = ({ onDragStart, onDragEnd }) => {
-//   return (
-//     <Block
-//       draggable
-//       onDragStart={onDragStart}
-//       onDragEnd={onDragEnd}
-//       isDragging={false}
-//     >
-//       Calendar
-//     </Block>
-//   );
-// };
-
-const Whiteboard = ({ onDragStart, onDragEnd }) => {
-  return (
-    <Block
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      isDragging={false}
-    >
-      Whiteboard
-    </Block>
-  );
-};
-
-// const Todo = ({ onDragStart, onDragEnd }) => {
-//   return (
-//     <Block
-//       draggable
-//       onDragStart={onDragStart}
-//       onDragEnd={onDragEnd}
-//       isDragging={false}
-//     >
-//       Todo
-//     </Block>
-//   );
-// };
-
-const Financial = ({ onDragStart, onDragEnd }) => {
-  return (
-    <Block
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      isDragging={false}
-    >
-      Financial
-    </Block>
-  );
-};
-
-const Album = ({ onDragStart, onDragEnd }) => {
-  return (
-    <Block
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      isDragging={false}
-    >
-      Album
-    </Block>
-  );
-};
-
-const Milestone = ({ onDragStart, onDragEnd }) => {
-  return (
-    <Block
-      draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
-      isDragging={false}
-    >
-      Milestone
-    </Block>
-  );
-};
-
-const defaultData = [
-  { title: 'row 1', items: ['Calendar', 'Sticker'] },
-  { title: 'row 2', items: ['Todo', 'Album', 'Financial'] },
-  { title: 'row 3', items: ['Milestone'] },
-];
-
-const Wrapper = styled.div`
-  width: 100vw;
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
   height: auto;
-  border: 2px solid black;
+  justify-content: space-between;
+`;
+const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
+  width: 100%;
+  border: 2px solid blue;
 `;
 
-const WrapperBottom = styled.div`
-  width: 100vw;
-  height: 300px;
-  border: 2px solid black;
+const Block = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  flex: 1;
 `;
+// const Wrapper = styled.div`
+//   width: 100vw;
+//   height: auto;
+//   border: 2px solid black;
+//   display: flex;
+//   flex-direction: column;
+//   flex-wrap: wrap;
+// `;
 
-function Dashboard() {
-  const [draggingBlock, setDraggingBlock] = useState(null);
+// function Dashboard() {
+//   const [componentOrder, setComponentOrder] = useState([
+//     'WhiteboardMini',
+//     'CalendarMini',
+//     'TodoMini',
+//     'AlbumMini',
+//     'MilestoneMini',
+//   ]);
 
-  const handleDragStart = (event, block) => {
-    setDraggingBlock(block);
-  };
+//   const components = {
+//     WhiteboardMini,
+//     CalendarMini,
+//     TodoMini,
+//     AlbumMini,
+//     MilestoneMini,
+//   };
 
-  const handleDragEnd = (event) => {
-    setDraggingBlock(null);
-  };
+//   const moveComponentUp = (index) => {
+//     if (index === 0) {
+//       return;
+//     }
+//     const newOrder = [...componentOrder];
+//     [newOrder[index - 1], newOrder[index]] = [
+//       newOrder[index],
+//       newOrder[index - 1],
+//     ];
+//     setComponentOrder(newOrder);
+//   };
 
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
+//   const moveComponentDown = (index) => {
+//     if (index === componentOrder.length - 1) {
+//       return;
+//     }
+//     const newOrder = [...componentOrder];
+//     [newOrder[index], newOrder[index + 1]] = [
+//       newOrder[index + 1],
+//       newOrder[index],
+//     ];
+//     setComponentOrder(newOrder);
+//   };
+//   return (
+//     <Container>
+//       <Sidebar />
+//       <Wrapper>
+//         {componentOrder.map((component, index) => (
+//           <RowWrap key={index}>
+//             {React.createElement(components[component], {})}
+//             <div>
+//               <button onClick={() => moveComponentUp(index)}>Move Up</button>
+//               <button onClick={() => moveComponentDown(index)}>
+//                 Move Down
+//               </button>
+//             </div>
+//           </RowWrap>
+//         ))}
+//       </Wrapper>
+//     </Container>
+//   );
+// }
 
-  const handleDrop = (event, block) => {
-    event.preventDefault();
-    if (block !== draggingBlock) {
-      // Swap the positions of the two blocks
-      const parent = event.target.parentNode;
-      const dropZoneIndex = Array.from(parent.children).indexOf(event.target);
-      const draggingBlockIndex = Array.from(parent.children).indexOf(
-        draggingBlock
-      );
-      parent.insertBefore(draggingBlock, event.target);
-      parent.insertBefore(event.target, parent.children[draggingBlockIndex]);
+// export default Dashboard;
+
+const Dashboard = () => {
+  const [rows, setRows] = useState([
+    {
+      id: 1,
+      color: '#BBDEFB',
+      components: [<WhiteboardMini />],
+    },
+    {
+      id: 2,
+      color: '#90CAF9',
+      components: [<TodoMini />, <CalendarMini />, <AlbumMini />],
+    },
+    {
+      id: 3,
+      color: '#64B5F6',
+      components: [<MilestoneMini />],
+    },
+  ]);
+
+  const moveRowUp = (index) => {
+    if (index > 0) {
+      const newRows = [...rows];
+      const temp = newRows[index - 1];
+      newRows[index - 1] = newRows[index];
+      newRows[index] = temp;
+      setRows(newRows);
     }
   };
 
-  const [data, setData] = useState();
-  useEffect(() => {
-    if (localStorage.getItem('List')) {
-      console.log(localStorage.getItem('List'));
-      setData(JSON.parse(localStorage.getItem('List')));
-    } else {
-      setData(defaultData);
+  const moveRowDown = (index) => {
+    if (index < rows.length - 1) {
+      const newRows = [...rows];
+      const temp = newRows[index + 1];
+      newRows[index + 1] = newRows[index];
+      newRows[index] = temp;
+      setRows(newRows);
     }
-  }, [setData]);
+  };
 
   return (
-    <>
-      <Wrapper>{/* <DragNDrop data={data} /> */}</Wrapper>
-      <Wrapper>
-        <CalendarMini
-          onDragStart={(event) => handleDragStart(event, 'calendar')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'calendar')}
-        />
-        <WhiteboardMini
-          onDragStart={(event) => handleDragStart(event, 'whiteboard')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'whiteboard')}
-        />
-        <Financial
-          onDragStart={(event) => handleDragStart(event, 'financial')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'financial')}
-        />
-        <TodoMini
-          onDragStart={(event) => handleDragStart(event, 'todo')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'todo')}
-        />
-        <Album
-          onDragStart={(event) => handleDragStart(event, 'album')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'album')}
-        />
-        <Milestone
-          onDragStart={(event) => handleDragStart(event, 'milestone')}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, 'milestone')}
-        />
-      </Wrapper>
-      <WrapperBottom></WrapperBottom>
-    </>
+    <Container>
+      <Sidebar />
+      <ColumnWrap>
+        <Navbar />
+        {rows.map((row, index) => (
+          <>
+            <RowWrap key={row.id} style={{ backgroundColor: row.color }}>
+              {row.components.map((component, componentIndex) => (
+                <Block key={componentIndex}>{component}</Block>
+              ))}
+            </RowWrap>
+            <div>
+              <button onClick={() => moveRowUp(index)}>Move Up</button>
+              <button onClick={() => moveRowDown(index)}>Move Down</button>
+            </div>
+          </>
+        ))}
+      </ColumnWrap>
+    </Container>
   );
-}
+};
 
 export default Dashboard;
