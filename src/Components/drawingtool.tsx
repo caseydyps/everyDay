@@ -25,21 +25,24 @@ const ButtonWrap = styled.div`
 `;
 
 const DrawingTool = () => {
-  const [isPainting, setIsPainting] = useState(false);
-  const [color, setColor] = useState('black');
-  const [width, setWidth] = useState(5);
-  const canvasRef = useRef(null);
-  const contextRef = useRef(null);
-  const [undoStack, setUndoStack] = useState([]);
+  const [isPainting, setIsPainting] = useState<boolean>(false);
+  const [color, setColor] = useState<string>('black');
+  const [width, setWidth] = useState<number>(5);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null);
+  const [undoStack, setUndoStack] = useState<any[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
+
     canvas.width = window.innerWidth * 2;
     canvas.height = window.innerHeight * 2;
     canvas.style.width = `${window.innerWidth}px`;
     canvas.style.height = `${window.innerHeight}px`;
 
     const context = canvas.getContext('2d');
+    if (!context) return;
     context.scale(2, 2);
     context.lineCap = 'round';
     context.lineWidth = width;
@@ -47,8 +50,9 @@ const DrawingTool = () => {
     contextRef.current = context;
   }, []);
 
-  const startPaint = ({ nativeEvent }) => {
+  const startPaint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX, offsetY } = nativeEvent;
+    if (!contextRef.current) return;
     contextRef.current.strokeStyle = color;
     contextRef.current.lineWidth = width;
     contextRef.current.beginPath();
@@ -65,66 +69,78 @@ const DrawingTool = () => {
   };
 
   const endPaint = () => {
+    if (!contextRef.current) return;
     contextRef.current.lineWidth = width;
     contextRef.current.closePath();
     setIsPainting(false);
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    //undoStack.push(context.getImageData(0, 0, canvas.width, canvas.height));
+    // const canvas = canvasRef.current;
+    // const context = canvas.getContext('2d');
   };
 
-  const throttle = (callback, delay) => {
+  const throttle = <T extends any[]>(
+    callback: (...args: T) => void,
+    delay: number
+  ) => {
     let previousCall = new Date().getTime();
-    return function () {
+    return (...args: T) => {
       const time = new Date().getTime();
 
       if (time - previousCall >= delay) {
         previousCall = time;
-        callback.apply(null, arguments);
+        callback.apply(null, args);
       }
     };
   };
 
   const stackLimit = 500; // maximum stack size
 
-  const paint = throttle(({ nativeEvent }) => {
-    if (!isPainting) {
-      return;
-    }
-    const { offsetX, offsetY } = nativeEvent;
-    contextRef.current.lineTo(offsetX, offsetY);
-    contextRef.current.stroke();
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    console.log(undoStack.length);
-    if (undoStack.length < stackLimit) {
-      undoStack.push(context.getImageData(0, 0, canvas.width, canvas.height)); // save the current state
-    } else {
-      alert("You've reached the maximum number of strokes!");
-      setUndoStack([]);
-    }
-  }, 20);
+  const paint = throttle(
+    ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!isPainting) {
+        return;
+      }
+      const { offsetX, offsetY } = nativeEvent;
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const context = canvas.getContext('2d');
+        if (context) {
+          context.lineTo(offsetX, offsetY);
+          context.stroke();
+          console.log(undoStack.length);
+          if (undoStack.length < stackLimit) {
+            undoStack.push(
+              context.getImageData(0, 0, canvas.width, canvas.height)
+            ); // save the current state
+          } else {
+            alert("You've reached the maximum number of strokes!");
+            setUndoStack([]);
+          }
+        }
+      }
+    },
+    20
+  );
 
-  const handleChangeColor = (newColor) => {
+  const handleChangeColor = (newColor: string) => {
     setColor(newColor);
   };
 
-  const handleChangeLineWidth = (newWidth) => {
+  const handleChangeLineWidth = (newWidth: number) => {
     setWidth(newWidth);
   };
-
   const clearCanvas = () => {
+    if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context?.clearRect(0, 0, canvas.width, canvas.height);
   };
 
   const undoStroke = () => {
     const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    const context = canvas ? canvas.getContext('2d') : null;
     console.log(undoStack);
     const lastState = undoStack.pop(); // get the last saved state from the stack
-    if (lastState) {
+    if (lastState && context) {
       context.putImageData(lastState, 0, 0); // restore the last saved state
       setUndoStack(undoStack.slice(0, undoStack.length - 1)); // remove the last state from the stack
     }
@@ -132,13 +148,20 @@ const DrawingTool = () => {
 
   const saveCanvas = () => {
     const canvas = canvasRef.current;
-    const dataURL = canvas.toDataURL();
-    localStorage.setItem('savedCanvas', dataURL);
+    const dataURL = canvas ? canvas.toDataURL() : null;
+    if (dataURL) {
+      localStorage.setItem('savedCanvas', dataURL);
+    }
   };
-
   const loadCanvas = () => {
     const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
     const context = canvas.getContext('2d');
+    if (!context) {
+      return;
+    }
 
     const savedData = localStorage.getItem('savedCanvas');
     if (savedData) {

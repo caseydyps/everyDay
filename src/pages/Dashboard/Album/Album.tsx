@@ -58,7 +58,7 @@ const Album = () => {
     },
   ]);
 
-  const handleUpload = (file, albumId) => {
+  const handleUpload = (file: File, albumId: number) => {
     // Generate a unique ID for the new photo
     const newId = Date.now();
     // Create a new photo object with the file information and ID

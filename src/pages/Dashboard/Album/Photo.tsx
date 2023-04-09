@@ -1,6 +1,20 @@
 import React from 'react';
 
-const Photo = ({ photo, members = [], hashtags = [] }) => {
+type Member = {
+  id: string;
+  name: string;
+};
+
+type PhotoProps = {
+  photo: {
+    url: string;
+    caption: string;
+  };
+  members?: Member[];
+  hashtags?: string[];
+};
+
+const Photo = ({ photo, members = [], hashtags = [] }: PhotoProps) => {
   return (
     <div>
       <img src={photo.url} alt={photo.caption} />

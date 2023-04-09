@@ -207,12 +207,12 @@ const Suggestion = () => {
     }
   };
 
-  const handleInputChange = (event: string) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
     console.log('inputValue:', inputValue);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     runPrompt();
   };

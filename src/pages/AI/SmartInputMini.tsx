@@ -70,7 +70,11 @@ const ResponseDisplay = styled.div`
   padding: 1rem;
 `;
 
-const CategoryButton = styled.button`
+type CategoryButtonProps = {
+  active?: boolean;
+  onClick: () => void;
+};
+const CategoryButton = styled.button<CategoryButtonProps>`
   font-size: 18px;
   padding: 10px;
   margin: 0 10px;
@@ -107,7 +111,11 @@ const config = new Configuration({
 
 const openai = new OpenAIApi(config);
 
-const CategorySelector = ({ onSelect }) => {
+type CategorySelectorProps = {
+  onSelect: (category: string) => void;
+};
+
+const CategorySelector = ({ onSelect }: CategorySelectorProps) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const categories = [
     '#Calendar',
@@ -118,7 +126,7 @@ const CategorySelector = ({ onSelect }) => {
     '#Milestone',
   ];
 
-  const onCategorySelect = (category) => {
+  const onCategorySelect = (category: string) => {
     setSelectedCategory(category);
     onSelect(category);
   };
@@ -138,13 +146,18 @@ const CategorySelector = ({ onSelect }) => {
   );
 };
 const members = ['Daddy', 'Mom', 'Baby'];
+type MembersSelectorProps = {
+  selectedMembers?: string[];
+  onSelectMember: (members: string[]) => void;
+};
+
 const MembersSelector = ({
   selectedMembers = ['Daddy', 'Mom', 'Baby'],
   onSelectMember,
-}) => {
+}: MembersSelectorProps) => {
   console.log(selectedMembers);
 
-  const handleSelectMember = (member) => {
+  const handleSelectMember = (member: string) => {
     if (selectedMembers.includes(member)) {
       onSelectMember(selectedMembers.filter((m) => m !== member));
     } else {
@@ -184,15 +197,15 @@ const SmartInputMini = () => {
     'Mom',
     'Baby',
   ]);
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = (category: string) => {
     setCategory(category);
   };
 
-  const handleSelectMember = (member) => {
+  const handleSelectMember = (member: string[]) => {
     setSelectedMembers(member);
   };
 
-  const handleClick = (category) => {
+  const handleClick = (category: string) => {
     setSelectedCategory(category);
   };
 
@@ -323,13 +336,15 @@ const SmartInputMini = () => {
     }
   };
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
     event.preventDefault();
-    runPrompt();
+    await runPrompt();
   };
 
   return (

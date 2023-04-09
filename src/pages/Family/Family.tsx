@@ -67,7 +67,7 @@ const FamilyMemberForm = () => {
   const [members, setMembers] = useState([]);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
-  const handleAvatarSave = (avatarUrl, index) => {
+  const handleAvatarSave = (avatarUrl: string, index: number) => {
     console.log('Avatar URL:', avatarUrl);
     setMembers((prevMembers) =>
       prevMembers.map((member, i) =>

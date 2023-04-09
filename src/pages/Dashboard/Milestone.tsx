@@ -4,11 +4,18 @@ import Timeline from './Timeline';
 import Sidebar from '../../Components/SideBar/SideBar';
 
 const Wrapper = styled.div`
-  width: 90vw;
+  width: 80vw;
   height: 100%;
   background-color: #f9f9f9;
   display: flex;
   flex-direction: column;
+  align-items: center;
+`;
+const ColumnWrap = styled.div`
+  background-color: #bbdefb;
+  display: flex;
+  flex-direction: column;
+  width: 400px;
   align-items: center;
 `;
 
@@ -36,32 +43,37 @@ const ContentWrapper = styled.div`
 `;
 
 const EventContainer = styled.div`
-  width: 100%;
-  height: auto;
+  max-width: 80%;
+  height: 100%;
   display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
-  justify-content: center;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+
+  /* Style the scrollbar */
+  &::-webkit-scrollbar {
+    width: 58px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 58px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+  }
 `;
 
 const EventBox = styled.div`
-  width: 300px;
-  height: 300px;
+  width: auto;
+
   border: 2px solid #999;
   border-radius: 10px;
   display: flex;
-  flex-direction: column;
+
   justify-content: space-between;
-  margin: 20px;
-  overflow: hidden;
+  margin: 10px;
 
-  &:nth-child(odd) {
-    align-self: flex-end;
-  }
-
-  &:nth-child(even) {
-    align-self: flex-start;
-  }
   position: relative;
 `;
 const EventTitle = styled.div`
@@ -403,6 +415,55 @@ function Milestone() {
         member: 'Bob Johnson',
         image: 'https://picsum.photos/200',
       },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: 'Event 3',
+        date: new Date(2023, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
     ];
 
     setEvents(initialEvents);
@@ -518,18 +579,20 @@ function Milestone() {
                     key={event.id}
                     style={{
                       alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                      marginTop: '40px',
-                      marginLeft: index % 2 === 0 ? '0px' : '20px',
-                      marginRight: index % 2 === 0 ? '20px' : '0px',
+                      marginTop: index % 2 === 0 ? '0px' : '400px',
+                      marginBottom: index % 2 === 0 ? '400px' : '0px',
                     }}
                   >
                     <EditButton onClick={() => handleEditEvent(event)}>
                       Edit
                     </EditButton>
-                    <EventImage src={event.image} alt="Event" />
-                    <EventTitle>{event.title}</EventTitle>
-                    <EventDate>{event.date.toDateString()}</EventDate>
-                    <EventMember>Member: {event.member}</EventMember>
+                    <ColumnWrap>
+                      <EventImage src={event.image} alt="Event" />
+                      <EventTitle>{event.title}</EventTitle>
+                      <EventDate>{event.date.toDateString()}</EventDate>
+                      <EventMember>Member: {event.member}</EventMember>s
+                    </ColumnWrap>
+
                     <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
                       Delete
                     </DeleteButton>

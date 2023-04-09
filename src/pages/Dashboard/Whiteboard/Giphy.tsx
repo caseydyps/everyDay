@@ -13,14 +13,6 @@ function Giphy() {
 
   const handleSearch = () => {
     setShowCarousel(true);
-    return (
-      <Carousel
-        fetchGifs={fetchGifs}
-        gifHeight={200}
-        gutter={6}
-        onGifClick={(gif) => setSelectedGif(gif)}
-      />
-    );
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +37,12 @@ function Giphy() {
       {showCarousel && (
         <>
           <h4>Search Results for "{searchTerm}"</h4>
-          <Carousel fetchGifs={fetchGifs} gifHeight={200} gutter={6} />
+          <Carousel
+            fetchGifs={fetchGifs}
+            gifHeight={200}
+            gutter={6}
+            onGifClick={(gif) => setSelectedGif(gif)}
+          />
         </>
       )}
     </>

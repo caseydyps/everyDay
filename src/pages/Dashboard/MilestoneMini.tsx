@@ -552,7 +552,6 @@ function MilestoneMini() {
 
   return (
     <Wrapper>
-      <ImageSlider />
       <Header>Milestone</Header>
       {/* <SearchInputField
         type="text"

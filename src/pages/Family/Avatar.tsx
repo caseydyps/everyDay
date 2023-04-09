@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { createAvatar } from '@dicebear/core';
-import { adventurer } from '@dicebear/avatars';
+// import { createAvatar } from '@dicebear/core';
+// import { adventurer } from '@dicebear/avatars';
 import styled from 'styled-components/macro';
 
 const AvatarContainer = styled.div`
@@ -26,18 +26,21 @@ const Button = styled.button`
   cursor: pointer;
 `;
 
-function AvatarCreator({ onSave }) {
-  const [seed, setSeed] = useState('Sassy');
-  const [eyebrows, setEyebrows] = useState('variant01');
-  const [eyes, setEyes] = useState('variant01');
-  const [hair, setHair] = useState('short01');
-  const [hairProbability, setHairProbability] = useState('100');
-  const [hairColor, setHairColor] = useState('0e0e0e');
-  const [mouth, setMouth] = useState('variant01');
-  const [background, setBackground] = useState('f5f5f5');
-  const [feature, setFeature] = useState('blush');
-  const [featuresProbability, setFeaturesProbability] = useState('100');
-  const [avatarUrl, setAvatarUrl] = useState(
+type AvatarCreatorProps = {
+  onSave: () => void;
+};
+function AvatarCreator({ onSave }: AvatarCreatorProps) {
+  const [seed, setSeed] = useState<string>('Sassy');
+  const [eyebrows, setEyebrows] = useState<string>('variant01');
+  const [eyes, setEyes] = useState<string>('variant01');
+  const [hair, setHair] = useState<string>('short01');
+  const [hairProbability, setHairProbability] = useState<number>(100);
+  const [hairColor, setHairColor] = useState<string>('0e0e0e');
+  const [mouth, setMouth] = useState<string>('variant01');
+  const [background, setBackground] = useState<string>('f5f5f5');
+  const [feature, setFeature] = useState<string>('blush');
+  const [featuresProbability, setFeaturesProbability] = useState<number>(100);
+  const [avatarUrl, setAvatarUrl] = useState<string>(
     `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`
   );
 
@@ -51,16 +54,16 @@ function AvatarCreator({ onSave }) {
     setAvatarUrl(baseUrl);
   };
 
-  const handleSeedChange = (event) => {
+  const handleSeedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSeed(event.target.value);
   };
-  const handleEyebrowsChange = (event) => {
+  const handleEyebrowsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEyebrows(event.target.value);
   };
-  const handleEyesChange = (event) => {
+  const handleEyesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEyes(event.target.value);
   };
-  const handleHairChange = (event) => {
+  const handleHairChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     if (value === 'none') {
       setHair('short19');
@@ -71,19 +74,23 @@ function AvatarCreator({ onSave }) {
     }
   };
 
-  const handleHairColorChange = (event) => {
+  const handleHairColorChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setHairColor(event.target.value);
   };
 
-  const handleMouthChange = (event) => {
+  const handleMouthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setMouth(event.target.value);
   };
 
-  const handleBackgroundChange = (event) => {
+  const handleBackgroundChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setBackground(event.target.value);
   };
 
-  const handleFeatureChange = (event) => {
+  const handleFeatureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value === 'none') {
       setFeaturesProbability(0);

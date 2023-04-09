@@ -3,10 +3,13 @@ import Vote from './Vote';
 
 function Voting() {
   const [title, setTitle] = useState('');
-  const [options, setOptions] = useState([]);
+  const [options, setOptions] = useState<string[]>([]);
   const [voteCreated, setVoteCreated] = useState(false);
 
-  const handleOptionChange = (index, event) => {
+  const handleOptionChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const newOptions = [...options];
     newOptions[index] = event.target.value;
     setOptions(newOptions);
@@ -16,26 +19,25 @@ function Voting() {
     setOptions([...options, '']);
   };
 
-  const handleRemoveOption = (index) => {
+  const handleRemoveOption = (index: number) => {
     const newOptions = [...options];
     newOptions.splice(index, 1);
     setOptions(newOptions);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log('Title:', title);
     console.log('Options:', options);
 
     // Save to local storage
-    const vote = { title, options };
-    const votes = JSON.parse(localStorage.getItem('votes')) || [];
+    const vote: { title: string; options: string[] } = { title, options };
+    const votes: { title: string; options: string[] }[] =
+      JSON.parse(localStorage.getItem('votes')) || [];
     votes.push(vote);
     localStorage.setItem('votes', JSON.stringify(votes));
     setVoteCreated(true);
   };
-
-  
 
   return (
     <div>

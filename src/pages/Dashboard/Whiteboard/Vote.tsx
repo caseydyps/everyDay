@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Vote({ title, options }) {
+function Vote({ title, options }: { title: string; options: string[] }) {
   return (
     <div>
       <h2>{title}</h2>

@@ -1,6 +1,15 @@
 import React from 'react';
 
-const AlbumList = ({ albums }) => {
+interface Album {
+  id: number;
+  title: string;
+}
+
+interface Props {
+  albums: Album[];
+}
+
+const AlbumList: React.FC<Props> = ({ albums }) => {
   return (
     <div>
       <h2>Albums</h2>

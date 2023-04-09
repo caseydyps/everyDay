@@ -123,7 +123,7 @@ const Dashboard = () => {
     },
   ]);
 
-  const moveRowUp = (index) => {
+  const moveRowUp = (index: number) => {
     if (index > 0) {
       const newRows = [...rows];
       const temp = newRows[index - 1];
@@ -133,7 +133,7 @@ const Dashboard = () => {
     }
   };
 
-  const moveRowDown = (index) => {
+  const moveRowDown = (index: number) => {
     if (index < rows.length - 1) {
       const newRows = [...rows];
       const temp = newRows[index + 1];

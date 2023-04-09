@@ -11,7 +11,7 @@ const TimelineWrapper = styled.div`
 `;
 const TimelineDot = styled.div`
   position: absolute;
-  top: ${(props) => props.top};
+  top: ${(props) => props.top}px;
   left: -5px;
   width: 10px;
   height: 10px;
@@ -19,7 +19,7 @@ const TimelineDot = styled.div`
   background-color: #aaa;
 `;
 
-function getDatesRange(startDate, endDate) {
+function getDatesRange(startDate: Date, endDate: Date) {
   const dates = [];
   let currentDate = new Date(startDate);
   while (currentDate <= endDate) {
@@ -29,9 +29,20 @@ function getDatesRange(startDate, endDate) {
   return dates;
 }
 
-const Timeline = ({ events }) => {
+type Event = {
+  date: Date;
+  // add any other properties
+};
+
+type TimelineProps = {
+  events: Event[];
+};
+
+const Timeline = ({ events }: TimelineProps) => {
   const eventDates = events.map((event) => event.date.toDateString());
-  const dateRange = getDatesRange(eventDates);
+  const startDate = new Date(Math.min(...events.map((event) => event.date)));
+  const endDate = new Date(Math.max(...events.map((event) => event.date)));
+  const dateRange = getDatesRange(startDate, endDate);
 
   return (
     <TimelineWrapper>

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 
-const UploadForm = ({ album, onUpload }) => {
-  const [file, setFile] = useState(null);
-  const [albumName, setAlbumName] = useState('');
-  const [hashtags, setHashtags] = useState('');
-  const [members, setMembers] = useState('');
+interface UploadFormProps {
+  album: string;
+  onUpload: (file: File | null, albumName: string) => void;
+}
 
-  const handleSubmit = (e) => {
+const UploadForm: React.FC<UploadFormProps> = ({ album, onUpload }) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [albumName, setAlbumName] = useState<string>('');
+  const [hashtags, setHashtags] = useState<string>('');
+  const [members, setMembers] = useState<number[]>([]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onUpload(file, albumName);
   };
@@ -23,7 +28,10 @@ const UploadForm = ({ album, onUpload }) => {
       <form onSubmit={handleSubmit}>
         <label>
           Choose a photo:
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+          <input
+            type="file"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
+          />
         </label>
         <br />
         <label>
@@ -49,7 +57,9 @@ const UploadForm = ({ album, onUpload }) => {
             value={members}
             onChange={(e) =>
               setMembers(
-                Array.from(e.target.selectedOptions, (option) => option.value)
+                Array.from(e.target.selectedOptions, (option) =>
+                  Number(option.value)
+                )
               )
             }
           >
