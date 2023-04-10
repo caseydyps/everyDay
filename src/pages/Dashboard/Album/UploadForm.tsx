@@ -54,7 +54,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ album, onUpload }) => {
           Members:
           <select
             multiple
-            value={members}
+            value={members.map((member) => String(member))}
             onChange={(e) =>
               setMembers(
                 Array.from(e.target.selectedOptions, (option) =>

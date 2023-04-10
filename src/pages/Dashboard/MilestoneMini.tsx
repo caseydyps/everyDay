@@ -1,7 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
 import Timeline from './Timeline';
-import ImageSlider from './Slider';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -208,18 +207,30 @@ const SearchInputField = styled.input`
   color: #333;
 `;
 
+interface Event {
+  id: number;
+  title: string;
+  date: Date;
+  member: string;
+  image: string;
+}
+
+type AvatarPreviewProps = {
+  avatar: string;
+};
+
 function MilestoneMini() {
-  const [events, setEvents] = useState([]);
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventDate, setNewEventDate] = useState('');
-  const [newEventMember, setNewEventMember] = useState('');
-  const [newEventImage, setNewEventImage] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedEvent, setEditedEvent] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [file, setFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const handleNewEventSubmit = (e) => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [newEventTitle, setNewEventTitle] = useState<string>('');
+  const [newEventDate, setNewEventDate] = useState<string>('');
+  const [newEventMember, setNewEventMember] = useState<string>('');
+  const [newEventImage, setNewEventImage] = useState<string>('');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedEvent, setEditedEvent] = useState<Event | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [file, setFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const handleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const newEvent = {
@@ -239,18 +250,18 @@ function MilestoneMini() {
     setNewEventImage('');
   };
 
-  const AvatarPreview = ({ avatar }) => {
+  const AvatarPreview: React.FC<AvatarPreviewProps> = ({ avatar }) => {
     return <img src={avatar} alt="Avatar" />;
   };
 
-  const handleEditEvent = (event) => {
+  const handleEditEvent = (event: Event) => {
     EditEventForm;
     setEditedEvent(event);
     setIsEditing(true);
   };
 
-  const filterEvents = (events) => {
-    return events.filter((event) => {
+  const filterEvents = (events: []) => {
+    return events.filter((event: Event) => {
       let match = true;
 
       if (filter.member !== '') {
@@ -293,23 +304,8 @@ function MilestoneMini() {
     setIsEditing(false);
   };
 
-  const handleDeleteEvent = (id) => {
+  const handleDeleteEvent = (id: number) => {
     setEvents(events.filter((event) => event.id !== id));
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      setImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImage('');
-    }
   };
 
   function EditEventForm({ event, onEdit }) {
@@ -318,7 +314,7 @@ function MilestoneMini() {
     const [member, setMember] = useState(event.member);
     const [image, setImage] = useState(event.image);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const editedEvent = {
@@ -372,8 +368,8 @@ function MilestoneMini() {
     );
   }
 
-  function getEventYearRange(events) {
-    const years = events.map((event) => event.date.getFullYear());
+  function getEventYearRange(events: []) {
+    const years = events.map((event: Event) => event.date.getFullYear());
     const minYear = Math.min(...years);
     const maxYear = Math.max(...years);
     return { minYear, maxYear };
@@ -651,7 +647,7 @@ function MilestoneMini() {
 
           {filterEvents(events)
             .sort((a, b) => a.date - b.date)
-            .map((event, index) => (
+            .map((event: Event, index) => (
               <>
                 <EventBox
                   key={event.id}

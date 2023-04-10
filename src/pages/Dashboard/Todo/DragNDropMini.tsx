@@ -28,7 +28,11 @@ const DragNDropGroup = styled.div`
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.01);
 `;
 
-const DragNDropItem = styled.div`
+type DragNDropItemProps = {
+  isDragging: boolean;
+};
+
+const DragNDropItem = styled.div<DragNDropItemProps>`
   padding: 20px;
   margin: 10px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
@@ -75,7 +79,10 @@ const CheckContainer = styled.label`
   cursor: pointer;
 `;
 
-const Checkmark = styled.div`
+type CheckmarkProps = {
+  checked: boolean;
+};
+const Checkmark = styled.div<CheckmarkProps>`
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -132,7 +139,7 @@ function DragNDropMini({ data }) {
   const dragItem = useRef();
   const dragItemNode = useRef();
 
-  const handletDragStart = (e, item) => {
+  const handletDragStart = (e: React.DragEvent<HTMLDivElement>, item) => {
     console.log('Starting to drag', item);
 
     dragItemNode.current = e.target;
@@ -143,7 +150,7 @@ function DragNDropMini({ data }) {
       setDragging(true);
     }, 0);
   };
-  const handleDragEnter = (e, targetItem) => {
+  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, targetItem) => {
     console.log('Entering a drag target', targetItem);
     if (dragItemNode.current !== e.target) {
       console.log('Target is NOT the same as dragged item');
@@ -163,7 +170,7 @@ function DragNDropMini({ data }) {
       });
     }
   };
-  const handleDragEnd = (e) => {
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
     setDragging(false);
     dragItem.current = null;
     dragItemNode.current.removeEventListener('dragend', handleDragEnd);
@@ -172,79 +179,83 @@ function DragNDropMini({ data }) {
   const [hideChecked, setHideChecked] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const handleDateChange = (event) => {
-    setSelectedDate(event.target.value);
-  };
+  // const handleDateChange = (event) => {
+  //   setSelectedDate(event.target.value);
+  // };
 
-  const addItem = (groupIndex, { title, due, member }) => {
-    const text = title;
-    console.log(due);
-    const dueDate = due ? due : null;
-    console.log(dueDate);
-    const memberAvatarSrc = member.avatarSrc;
-    if (text && memberAvatarSrc) {
-      console.log('adding item');
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList[groupIndex].items.push({
-          text,
-          due: dueDate,
-          member: memberAvatarSrc,
-          done: false,
-        });
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
-    }
-  };
+  // const addItem = (groupIndex, { title, due, member }) => {
+  //   const text = title;
+  //   console.log(due);
+  //   const dueDate = due ? due : null;
+  //   console.log(dueDate);
+  //   const memberAvatarSrc = member.avatarSrc;
+  //   if (text && memberAvatarSrc) {
+  //     console.log('adding item');
+  //     setList((prevList) => {
+  //       const newList = [...prevList];
+  //       newList[groupIndex].items.push({
+  //         text,
+  //         due: dueDate,
+  //         member: memberAvatarSrc,
+  //         done: false,
+  //       });
+  //       localStorage.setItem('List', JSON.stringify(newList));
+  //       return newList;
+  //     });
+  //   }
+  // };
 
-  const addNoDueItem = (groupIndex) => {
-    const text = prompt('Enter item text');
+  // const addNoDueItem = (groupIndex) => {
+  //   const text = prompt('Enter item text');
 
-    const member = prompt('Enter member name');
+  //   const member = prompt('Enter member name');
 
-    if (text && member) {
-      console.log('adding No due item');
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList[groupIndex].items.push({ text, member, done: false });
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
-    }
-  };
+  //   if (text && member) {
+  //     console.log('adding No due item');
+  //     setList((prevList) => {
+  //       const newList = [...prevList];
+  //       newList[groupIndex].items.push({ text, member, done: false });
+  //       localStorage.setItem('List', JSON.stringify(newList));
+  //       return newList;
+  //     });
+  //   }
+  // };
 
-  const deleteItem = (groupIndex, itemIndex) => {
-    setList((prevList) => {
-      const newList = [...prevList];
-      newList[groupIndex].items.splice(itemIndex, 1);
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
-  };
+  // const deleteItem = (groupIndex: number, itemIndex) => {
+  //   setList((prevList) => {
+  //     const newList = [...prevList];
+  //     newList[groupIndex].items.splice(itemIndex, 1);
+  //     localStorage.setItem('List', JSON.stringify(newList));
+  //     return newList;
+  //   });
+  // };
 
-  const editItem = (groupIndex, itemIndex) => {
-    setList((prevList) => {
-      const newList = [...prevList];
-      newList[groupIndex].items.splice(itemIndex, 1);
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
-  };
-  const handleChange = (e, groupIndex, itemIndex, field) => {
-    const value = e.target.value;
-    setList((prevList) => {
-      const newList = [...prevList];
-      newList[groupIndex].items[itemIndex] = {
-        ...newList[groupIndex].items[itemIndex],
-        [field]: value,
-      };
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
-  };
+  // const editItem = (groupIndex, itemIndex) => {
+  //   setList((prevList) => {
+  //     const newList = [...prevList];
+  //     newList[groupIndex].items.splice(itemIndex, 1);
+  //     localStorage.setItem('List', JSON.stringify(newList));
+  //     return newList;
+  //   });
+  // };
+  // const handleChange = (e, groupIndex, itemIndex, field) => {
+  //   const value = e.target.value;
+  //   setList((prevList) => {
+  //     const newList = [...prevList];
+  //     newList[groupIndex].items[itemIndex] = {
+  //       ...newList[groupIndex].items[itemIndex],
+  //       [field]: value,
+  //     };
+  //     localStorage.setItem('List', JSON.stringify(newList));
+  //     return newList;
+  //   });
+  // };
 
-  const handleDoneChange = (e, groupIndex, itemIndex) => {
+  const handleDoneChange = (
+    e: React.DragEvent<HTMLDivElement>,
+    groupIndex: number,
+    itemIndex: number
+  ) => {
     const checked = e.target.checked;
     setList((prevList) => {
       const newList = [...prevList];
@@ -257,81 +268,81 @@ function DragNDropMini({ data }) {
     });
   };
 
-  function deleteList(listIndex) {
-    const confirmDelete = window.confirm(
-      'Are you sure you want to delete this list?'
-    );
-    if (confirmDelete) {
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList.splice(listIndex, 1);
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
-    }
-  }
+  // function deleteList(listIndex) {
+  //   const confirmDelete = window.confirm(
+  //     'Are you sure you want to delete this list?'
+  //   );
+  //   if (confirmDelete) {
+  //     setList((prevList) => {
+  //       const newList = [...prevList];
+  //       newList.splice(listIndex, 1);
+  //       localStorage.setItem('List', JSON.stringify(newList));
+  //       return newList;
+  //     });
+  //   }
+  // }
 
-  function getTotalTaskCount(group) {
-    let count = 0;
+  // function getTotalTaskCount(group) {
+  //   let count = 0;
 
-    for (const item of group.items) {
-      count++;
-    }
+  //   for (const item of group.items) {
+  //     count++;
+  //   }
 
-    return count;
-  }
+  //   return count;
+  // }
 
-  function getUnfinishedTaskCount(group) {
-    let count = 0;
+  // function getUnfinishedTaskCount(group) {
+  //   let count = 0;
 
-    for (const item of group.items) {
-      if (!item.done) {
-        count++;
-      }
-    }
+  //   for (const item of group.items) {
+  //     if (!item.done) {
+  //       count++;
+  //     }
+  //   }
 
-    return count;
-  }
+  //   return count;
+  // }
 
-  function getfinishedTaskCount(group) {
-    let count = 0;
+  // function getfinishedTaskCount(group) {
+  //   let count = 0;
 
-    for (const item of group.items) {
-      if (item.done) {
-        count++;
-      }
-    }
+  //   for (const item of group.items) {
+  //     if (item.done) {
+  //       count++;
+  //     }
+  //   }
 
-    return count;
-  }
+  //   return count;
+  // }
 
-  function getListProgress(list) {
-    const totalTasks = getTotalTaskCount(list);
-    const unfinishedTasks = getUnfinishedTaskCount(list);
-    const finishedTasks = getfinishedTaskCount(list);
-    const progress =
-      totalTasks === 0 ? 0 : Math.round((finishedTasks / totalTasks) * 100);
+  // function getListProgress(list) {
+  //   const totalTasks = getTotalTaskCount(list);
+  //   const unfinishedTasks = getUnfinishedTaskCount(list);
+  //   const finishedTasks = getfinishedTaskCount(list);
+  //   const progress =
+  //     totalTasks === 0 ? 0 : Math.round((finishedTasks / totalTasks) * 100);
 
-    return (
-      <div
-        style={{
-          width: '95%',
-          backgroundColor: '#ddd',
-          borderRadius: '5px',
-          height: '10px',
-        }}
-      >
-        <div
-          style={{
-            width: `${progress}%`,
-            backgroundColor: 'blue',
-            borderRadius: '5px',
-            height: '100%',
-          }}
-        />
-      </div>
-    );
-  }
+  //   return (
+  //     <div
+  //       style={{
+  //         width: '95%',
+  //         backgroundColor: '#ddd',
+  //         borderRadius: '5px',
+  //         height: '10px',
+  //       }}
+  //     >
+  //       <div
+  //         style={{
+  //           width: `${progress}%`,
+  //           backgroundColor: 'blue',
+  //           borderRadius: '5px',
+  //           height: '100%',
+  //         }}
+  //       />
+  //     </div>
+  //   );
+  // }
 
   if (list) {
     return (

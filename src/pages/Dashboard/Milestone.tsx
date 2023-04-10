@@ -220,7 +220,15 @@ const Container = styled.div`
 `;
 
 function Milestone() {
-  const [events, setEvents] = useState([]);
+  type EventType = {
+    id: number;
+    title: string;
+    date: Date;
+    member: string;
+    image: string;
+  };
+
+  const [events, setEvents] = useState<EventType[]>([]);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [newEventDate, setNewEventDate] = useState('');
   const [newEventMember, setNewEventMember] = useState('');
@@ -230,7 +238,17 @@ function Milestone() {
   const [searchQuery, setSearchQuery] = useState('');
   const [file, setFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const handleNewEventSubmit = (e) => {
+  type NewEvent = {
+    id: number;
+    title: string;
+    date: Date;
+    member: string;
+    image: string;
+  };
+
+  type HandleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => void;
+
+  const handleNewEventSubmit: HandleNewEventSubmit = (e) => {
     e.preventDefault();
 
     const newEvent = {
@@ -238,7 +256,7 @@ function Milestone() {
       title: newEventTitle,
       date: new Date(newEventDate),
       member: newEventMember,
-      image: URL.createObjectURL(file),
+      image: file ? URL.createObjectURL(file) : null,
     };
 
     setEvents((prevEvents) => [...prevEvents, newEvent]);
@@ -250,17 +268,21 @@ function Milestone() {
     setNewEventImage('');
   };
 
-  const AvatarPreview = ({ avatar }) => {
+  type AvatarPreviewProps = {
+    avatar: string;
+  };
+
+  const AvatarPreview = ({ avatar }: AvatarPreviewProps) => {
     return <img src={avatar} alt="Avatar" />;
   };
 
-  const handleEditEvent = (event) => {
+  const handleEditEvent = (event: EventType) => {
     EditEventForm;
     setEditedEvent(event);
     setIsEditing(true);
   };
 
-  const filterEvents = (events) => {
+  const filterEvents = (events: EventType[]) => {
     return events.filter((event) => {
       let match = true;
 
@@ -304,23 +326,8 @@ function Milestone() {
     setIsEditing(false);
   };
 
-  const handleDeleteEvent = (id) => {
+  const handleDeleteEvent = (id: number) => {
     setEvents(events.filter((event) => event.id !== id));
-  };
-
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-
-    reader.onloadend = () => {
-      setImage(reader.result);
-    };
-
-    if (file) {
-      reader.readAsDataURL(file);
-    } else {
-      setImage('');
-    }
   };
 
   function EditEventForm({ event, onEdit }) {
@@ -383,13 +390,6 @@ function Milestone() {
     );
   }
 
-  function getEventYearRange(events) {
-    const years = events.map((event) => event.date.getFullYear());
-    const minYear = Math.min(...years);
-    const maxYear = Math.max(...years);
-    return { minYear, maxYear };
-  }
-
   useEffect(() => {
     // Fetch events from server or set initial events
     const initialEvents = [
@@ -403,43 +403,43 @@ function Milestone() {
       },
       {
         id: 2,
-        title: 'Event 2',
+        title: '第一次站起來',
         date: new Date(2023, 3, 17),
         member: 'Jane Smith',
         image: 'https://picsum.photos/200',
       },
       {
         id: 3,
-        title: 'Event 3',
+        title: '生日',
         date: new Date(2023, 3, 22),
         member: 'Bob Johnson',
         image: 'https://picsum.photos/200',
       },
       {
         id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
+        title: '第一次走路',
+        date: new Date(2023, 3, 23),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: '一週年',
+        date: new Date(2021, 3, 22),
+        member: 'Bob Johnson',
+        image: 'https://picsum.photos/200',
+      },
+      {
+        id: 3,
+        title: '二週年',
+        date: new Date(2024, 3, 22),
         member: 'Bob Johnson',
         image: 'https://picsum.photos/200',
       },
       {
         id: 3,
         title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
+        date: new Date(2025, 3, 22),
         member: 'Bob Johnson',
         image: 'https://picsum.photos/200',
       },

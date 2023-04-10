@@ -174,7 +174,11 @@ const EventTime = styled.div`
   font-weight: bold;
 `;
 
-const EventTitle = styled.div`
+interface EventTitleProps {
+  finished: boolean;
+}
+
+const EventTitle: React.FC<EventTitleProps> = styled.div<EventTitleProps>`
   font-size: 24px;
   font-weight: bold;
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
@@ -197,22 +201,22 @@ const EventList = styled.ul`
 `;
 
 function CalendarMini() {
-  const [date, setDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const [isAllDay, setIsAllDay] = useState(false);
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [eventEndDate, setEventEndDate] = useState('');
-  const [eventTime, setEventTime] = useState('');
-  const [eventEndTime, setEventEndTime] = useState('');
-  const [eventCategory, setEventCategory] = useState('');
-  const [eventMember, setEventMember] = useState('');
-  const [events, setEvents] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [view, setView] = useState('day');
-  const draggedEventIdRef = useRef(null);
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isAllDay, setIsAllDay] = useState<boolean>(false);
+  const [eventTitle, setEventTitle] = useState<string>('');
+  const [eventDate, setEventDate] = useState<string>('');
+  const [eventEndDate, setEventEndDate] = useState<string>('');
+  const [eventTime, setEventTime] = useState<string>('');
+  const [eventEndTime, setEventEndTime] = useState<string>('');
+  const [eventCategory, setEventCategory] = useState<string>('');
+  const [eventMember, setEventMember] = useState<string>('');
+  const [events, setEvents] = useState<Event[]>([]);
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [view, setView] = useState<'month' | 'day' | 'week'>('day');
+  const draggedEventIdRef = useRef<string | null>(null);
+  const days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
     'Jan',
     'Feb',
@@ -296,7 +300,7 @@ function CalendarMini() {
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         {selectedEvents.length > 0 ? (
           <EventList>
-            {selectedEvents.map((event, index) =>
+            {selectedEvents.map((event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
                   <EventWrapper
@@ -336,38 +340,38 @@ function CalendarMini() {
     );
   }
 
-  function MonthDetails({ date, events }) {
-    console.log(date);
-    if (!date) {
-      return <div>No date selected</div>;
-    }
+  //   function MonthDetails({ date, events }) {
+  //     console.log(date);
+  //     if (!date) {
+  //       return <div>No date selected</div>;
+  //     }
 
-    const selectedMonthEvents = events.filter((event) => {
-      const eventDate = new Date(event.date);
-      return (
-        eventDate.getMonth() === date.getMonth() &&
-        eventDate.getFullYear() === date.getFullYear()
-      );
-    });
+  //     const selectedMonthEvents = events.filter((event) => {
+  //       const eventDate = new Date(event.date);
+  //       return (
+  //         eventDate.getMonth() === date.getMonth() &&
+  //         eventDate.getFullYear() === date.getFullYear()
+  //       );
+  //     });
 
-    return (
-      <div>
-        <div>{`${months[date.getMonth()]} ${date.getFullYear()}`}</div>
-        {selectedMonthEvents.length > 0 ? (
-          <ul>
-            {selectedMonthEvents.map((event, index) => (
-              <li key={index}>
-                {event.member}:{event.title} on {event.date} to {event.endDate}{' '}
-                at {event.time}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <div>這個月目前沒有活動</div>
-        )}
-      </div>
-    );
-  }
+  //     return (
+  //       <div>
+  //         <div>{`${months[date.getMonth()]} ${date.getFullYear()}`}</div>
+  //         {selectedMonthEvents.length > 0 ? (
+  //           <ul>
+  //             {selectedMonthEvents.map((event, index) => (
+  //               <li key={index}>
+  //                 {event.member}:{event.title} on {event.date} to {event.endDate}{' '}
+  //                 at {event.time}
+  //               </li>
+  //             ))}
+  //           </ul>
+  //         ) : (
+  //           <div>這個月目前沒有活動</div>
+  //         )}
+  //       </div>
+  //     );
+  //   }
 
   const getDaysInMonth = (date: Date): number => {
     const year = date.getFullYear();
@@ -375,17 +379,17 @@ function CalendarMini() {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  const getFirstDayOfMonth = (date: Date): number => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    return new Date(year, month, 1).getDay();
-  };
+  //   const getFirstDayOfMonth = (date: Date): number => {
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth();
+  //     return new Date(year, month, 1).getDay();
+  //   };
 
-  const getFirstDayOfWeek = (date: Date): Date => {
-    const dayOfWeek = date.getDay();
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
-    return new Date(date.setDate(diff));
-  };
+  //   const getFirstDayOfWeek = (date: Date): Date => {
+  //     const dayOfWeek = date.getDay();
+  //     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
+  //     return new Date(date.setDate(diff));
+  //   };
   function addWeeks(date, weeks) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + weeks * 7);
@@ -396,36 +400,36 @@ function CalendarMini() {
     return addWeeks(date, -weeks);
   }
 
-  const handlePrevMonth = () => {
-    const year = date.getFullYear();
-    const month = date.getMonth() - 1;
-    setDate(new Date(year, month, 1));
-  };
+  //   const handlePrevMonth = () => {
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth() - 1;
+  //     setDate(new Date(year, month, 1));
+  //   };
 
-  const handleNextMonth = () => {
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1;
-    setDate(new Date(year, month, 1));
-  };
+  //   const handleNextMonth = () => {
+  //     const year = date.getFullYear();
+  //     const month = date.getMonth() + 1;
+  //     setDate(new Date(year, month, 1));
+  //   };
 
-  const handlePrevWeek = () => {
-    const newDate = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const newMonth = newDate.getMonth();
-    const currentMonth = date.getMonth();
-    const lastRowOfMonth = Math.ceil(getDaysInMonth(date) / 7) - 1;
-    setDate(newDate);
-    setSelectedRow(
-      newMonth === currentMonth ? Math.max(selectedRow - 1, 0) : lastRowOfMonth
-    );
-  };
+  //   const handlePrevWeek = () => {
+  //     const newDate = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000);
+  //     const newMonth = newDate.getMonth();
+  //     const currentMonth = date.getMonth();
+  //     const lastRowOfMonth = Math.ceil(getDaysInMonth(date) / 7) - 1;
+  //     setDate(newDate);
+  //     setSelectedRow(
+  //       newMonth === currentMonth ? Math.max(selectedRow - 1, 0) : lastRowOfMonth
+  //     );
+  //   };
 
-  const handleNextWeek = () => {
-    const newDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const newMonth = newDate.getMonth();
-    const currentMonth = date.getMonth();
-    setDate(newDate);
-    setSelectedRow(newMonth === currentMonth ? selectedRow + 1 : 0);
-  };
+  //   const handleNextWeek = () => {
+  //     const newDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
+  //     const newMonth = newDate.getMonth();
+  //     const currentMonth = date.getMonth();
+  //     setDate(newDate);
+  //     setSelectedRow(newMonth === currentMonth ? selectedRow + 1 : 0);
+  //   };
 
   const handlePrevDay = () => {
     const newDate = new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000);
@@ -437,13 +441,13 @@ function CalendarMini() {
     setSelectedDate(newDate);
   };
 
-  const handleDateClick = (day: number, row) => {
+  const handleDateClick = (day: number, row: number) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
     console.log(selectedDate);
   };
 
-  const handleWeekDateClick = (day: number, row) => {
+  const handleWeekDateClick = (day: number, row: number) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
   };
 
@@ -479,17 +483,17 @@ function CalendarMini() {
     setShowModal(true);
   };
 
-  function getLastDayOfWeek(date) {
-    return new Date(date.setDate(date.getDate() + 6));
-  }
+  //   function getLastDayOfWeek(date) {
+  //     return new Date(date.setDate(date.getDate() + 6));
+  //   }
 
   useEffect(() => {
     console.log(selectedRow); // log the updated value of selectedRow
   }, [selectedRow]);
 
-  const handleViewClick = (view) => {
-    setView(view);
-  };
+  //   const handleViewClick = (view) => {
+  //     setView(view);
+  //   };
 
   function getWeekNumber(date) {
     const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.

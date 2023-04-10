@@ -3,9 +3,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 function AddItemForm({ groupIndex, onAddItem }) {
-  const [title, setTitle] = useState('');
-  const [dueDate, setDueDate] = useState(new Date());
-  const [selectedMember, setSelectedMember] = useState([]);
+  const [title, setTitle] = useState<string>('');
+  const [dueDate, setDueDate] = useState<Date>(new Date());
+  const [selectedMember, setSelectedMember] = useState<string[]>([]);
   const [dueDateNeeded, setDueDateNeeded] = useState(false);
   const family = [
     {
@@ -27,20 +27,20 @@ function AddItemForm({ groupIndex, onAddItem }) {
         'https://api.dicebear.com/6.x/adventurer/svg?seed=Kid&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
     },
   ];
-  function handleTitleChange(event) {
+  function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
   }
 
-  function handleDateChange(date) {
+  function handleDateChange(date: Date) {
     setDueDate(date);
   }
 
-  function handleMemberChange(event) {
+  function handleMemberChange(event: React.ChangeEvent<HTMLSelectElement>) {
     const memberIndex = parseInt(event.target.value);
     setSelectedMember(memberIndex);
   }
 
-  function handleSubmit(event) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const member = family[selectedMember];
     const due = dueDateNeeded ? dueDate.toLocaleDateString() : null;
@@ -53,7 +53,9 @@ function AddItemForm({ groupIndex, onAddItem }) {
     setDueDateNeeded(false);
   }
 
-  function handleDueDateNeededChange(event) {
+  function handleDueDateNeededChange(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
     const isChecked = event.target.checked;
     setDueDateNeeded(isChecked);
   }

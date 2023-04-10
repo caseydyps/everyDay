@@ -27,7 +27,7 @@ const Button = styled.button`
 `;
 
 type AvatarCreatorProps = {
-  onSave: () => void;
+  onSave: (avatarUrl: string) => void;
 };
 function AvatarCreator({ onSave }: AvatarCreatorProps) {
   const [seed, setSeed] = useState<string>('Sassy');
@@ -54,13 +54,15 @@ function AvatarCreator({ onSave }: AvatarCreatorProps) {
     setAvatarUrl(baseUrl);
   };
 
-  const handleSeedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSeed(event.target.value);
   };
-  const handleEyebrowsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEyebrowsChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setEyebrows(event.target.value);
   };
-  const handleEyesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEyesChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setEyes(event.target.value);
   };
   const handleHairChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -75,22 +77,22 @@ function AvatarCreator({ onSave }: AvatarCreatorProps) {
   };
 
   const handleHairColorChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setHairColor(event.target.value);
   };
 
-  const handleMouthChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleMouthChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setMouth(event.target.value);
   };
 
   const handleBackgroundChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setBackground(event.target.value);
   };
 
-  const handleFeatureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFeatureChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;
     if (value === 'none') {
       setFeaturesProbability(0);

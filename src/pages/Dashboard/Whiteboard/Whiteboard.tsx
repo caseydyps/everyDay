@@ -159,14 +159,17 @@ export const Whiteboard = () => {
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
+  const [showResults, setShowResults] = useState(false);
 
   const handleSearch = async () => {
     const { data } = await giphyFetch.search(searchTerm, { limit: 10 });
     setSearchResults(data.slice(0, 10));
+    setShowResults(true);
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setShowResults(false);
   };
 
   useEffect(() => {
@@ -211,7 +214,7 @@ export const Whiteboard = () => {
     }
   };
 
-  const addSticker = (color) => {
+  const addSticker = (color: string) => {
     const newSticker = {
       id: Date.now(),
       x: 150,
@@ -239,21 +242,6 @@ export const Whiteboard = () => {
     setStickerText([...stickerText, '']);
   };
 
-  const addVote = async (color) => {
-    const gifUrl = selectedGif.images.original.url;
-
-    const newSticker = {
-      id: Date.now(),
-      x: 150,
-      y: 150,
-      content: gifUrl,
-      color: color,
-    };
-
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
-  };
-
   const deleteSticker = (index: number) => {
     const newStickers = [...stickers];
     newStickers.splice(index, 1);
@@ -264,7 +252,7 @@ export const Whiteboard = () => {
     setStickerText(newStickerText);
   };
 
-  const handleLockClick = (index) => {
+  const handleLockClick = (index: number) => {
     const newLockedStickers = [...lockedStickers];
     newLockedStickers[index] = !newLockedStickers[index];
     setLockedStickers(newLockedStickers);
@@ -337,20 +325,24 @@ export const Whiteboard = () => {
           <input type="text" value={searchTerm} onChange={handleInputChange} />
           <button onClick={handleSearch}>Search</button>
         </div>
-        <h4>Selected GIF:</h4>
+
         <h4>Searched GIF:</h4>
-        {searchResults.length > 0 && (
-          <div>
-            {searchResults.map((result) => (
-              <img
-                key={result.id}
-                src={result.images.original.url}
-                alt={result.title}
-                style={{ width: '200px', height: '200px' }}
-                onClick={() => setSelectedGif(result)}
-              />
-            ))}
-          </div>
+
+        {showResults && (
+          <>
+            <div>
+              {searchResults.map((result) => (
+                <img
+                  key={result.id}
+                  src={result.images.original.url}
+                  alt={result.title}
+                  style={{ width: '150px', height: '150px' }}
+                  onClick={() => setSelectedGif(result)}
+                />
+              ))}
+            </div>
+            <button onClick={() => setShowResults(false)}>Hide Results</button>
+          </>
         )}
         <Voting />
         <DrawingTool />

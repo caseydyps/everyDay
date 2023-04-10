@@ -14,8 +14,22 @@ const ColumnWrap = styled.div`
   flex-direction: column;
 `;
 
+type Photo = {
+  id: number;
+  title: string;
+  url: string;
+  members: string[];
+  hashtags: string[];
+};
+
+type Album = {
+  id: number;
+  title: string;
+  photos: Photo[];
+};
+
 const Album = () => {
-  const [albums, setAlbums] = useState([
+  const [albums, setAlbums] = useState<Album[]>([
     {
       id: 1,
       title: 'Family Vacation',
@@ -66,11 +80,15 @@ const Album = () => {
       id: newId,
       title: file.name,
       url: URL.createObjectURL(file),
+      members: [], // add empty array
+      hashtags: [], // add empty array
     };
     // Find the album with the matching ID
 
     console.log(albumId);
-    const updatedAlbum = albums.find((album) => album.title === albumId);
+    const updatedAlbum = albums.find(
+      (album) => album.title === String(albumId)
+    );
     if (!updatedAlbum) {
       // Handle the case where the album with the given ID doesn't exist
       console.error(`Album with ID ${albumId} not found`);
@@ -86,13 +104,27 @@ const Album = () => {
     setAlbums(updatedAlbums);
   };
 
-  const [currentAlbum, setCurrentAlbum] = useState(null);
-  const handleAlbumClick = (album) => {
+  const [currentAlbum, setCurrentAlbum] = useState<Album | null>(null);
+  const handleAlbumClick = (album: Album) => {
     setCurrentAlbum(album);
   };
 
-  const handlePhotoClick = (photo) => {
+  const handlePhotoClick = (photo: Photo) => {
     console.log('Clicked photo:', photo);
+  };
+
+  type Album = {
+    id: number;
+    title: string;
+    photos: Photo[];
+  };
+
+  type Photo = {
+    id: number;
+    title: string;
+    url: string;
+    members: string[];
+    hashtags: string[];
   };
 
   return (

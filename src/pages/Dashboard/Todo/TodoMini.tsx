@@ -32,7 +32,7 @@ const Input = styled.input`
   margin: 10px;
 `;
 
-const defaultData = [
+const defaultData: TodoState = [
   {
     title: '家事🏠',
     items: [
@@ -113,7 +113,32 @@ const defaultData = [
   },
 ];
 
-const todoReducer = (state, action) => {
+type TodoList = {
+  title: string;
+  items: TodoItem[];
+};
+
+type TodoItem = {
+  text: string;
+  due: string;
+  member: string;
+  done: boolean;
+};
+
+type TodoState = TodoList[];
+
+type TodoAction =
+  | { type: 'ADD_LIST'; payload: string }
+  | { type: 'ADD_ITEM'; payload: TodoItem; listIndex: number }
+  | {
+      type: 'MOVE_ITEM';
+      payload: {
+        source: { droppableId: number; index: number };
+        destination: { droppableId: number; index: number };
+      };
+    };
+
+const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
     case 'ADD_LIST':
       return [...state, { title: action.payload, items: [] }];
@@ -168,10 +193,10 @@ function TodoMini() {
 
   const dueDateRef = useRef(null);
 
-  const addItem = (listIndex) => {
+  const addItem = (listIndex: number) => {
     const text = prompt('Enter item text');
-    const dueDateString = dueDateRef.current.value; // "YYYY-MM-DD"
-    const due = new Date(dueDateString);
+    const dueDateString = dueDateRef.current?.value; // add the "?." operator
+    const due = dueDateString ? new Date(dueDateString) : null; // handle the case where `dueDateString` is null
 
     const member = prompt('Enter member name');
     const done = false;

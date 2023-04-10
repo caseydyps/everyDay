@@ -9,7 +9,8 @@ const TimelineWrapper = styled.div`
   transform: translateX(-50%);
   background-color: #aaa;
 `;
-const TimelineDot = styled.div`
+
+const TimelineDot = styled.div<{ top: number }>`
   position: absolute;
   top: ${(props) => props.top}px;
   left: -5px;
@@ -19,7 +20,7 @@ const TimelineDot = styled.div`
   background-color: #aaa;
 `;
 
-function getDatesRange(startDate: Date, endDate: Date) {
+function getDatesRange(startDate: Date, endDate: Date): Date[] {
   const dates = [];
   let currentDate = new Date(startDate);
   while (currentDate <= endDate) {
@@ -38,10 +39,14 @@ type TimelineProps = {
   events: Event[];
 };
 
-const Timeline = ({ events }: TimelineProps) => {
+const Timeline = ({ events }: TimelineProps): JSX.Element => {
   const eventDates = events.map((event) => event.date.toDateString());
-  const startDate = new Date(Math.min(...events.map((event) => event.date)));
-  const endDate = new Date(Math.max(...events.map((event) => event.date)));
+  const startDate = new Date(
+    Math.min(...events.map((event) => event.date.getTime()))
+  );
+  const endDate = new Date(
+    Math.max(...events.map((event) => event.date.getTime()))
+  );
   const dateRange = getDatesRange(startDate, endDate);
 
   return (
@@ -49,7 +54,9 @@ const Timeline = ({ events }: TimelineProps) => {
       {dateRange.map((date) => {
         const hasEvent = eventDates.includes(date.toDateString());
         return (
-          <TimelineDot key={date}>{hasEvent && <TimelineDot />}</TimelineDot>
+          <TimelineDot key={date.getTime()} top={0}>
+            {hasEvent && <TimelineDot top={5} />}
+          </TimelineDot>
         );
       })}
     </TimelineWrapper>

@@ -27,7 +27,10 @@ const DragNDropGroup = styled.div`
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.01);
 `;
 
-const DragNDropItem = styled.div`
+type DragNDropItemProps = {
+  isDragging: boolean;
+};
+const DragNDropItem = styled.div<DragNDropItemProps>`
   padding: 40px;
   margin: 10px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
@@ -73,8 +76,11 @@ const CheckContainer = styled.label`
   position: relative;
   cursor: pointer;
 `;
+type CheckmarkProps = {
+  checked: boolean;
+};
 
-const Checkmark = styled.div`
+const Checkmark = styled.div<CheckmarkProps>`
   display: inline-block;
   width: 25px;
   height: 25px;
@@ -119,19 +125,47 @@ const RowWrap = styled.div`
   flex-direction: row;
 `;
 
-function DragNDrop({ data }) {
-  const [list, setList] = useState(data);
-  const [dragging, setDragging] = useState(false);
-  const [sortOrder, setSortOrder] = useState('ascending');
+type DataItem = {
+  id: number;
+  text: string;
+  completed: boolean;
+};
+
+type DragNDropProps = {
+  data: DataItem[];
+};
+
+type DragNDropState = {
+  list: DataItem[];
+  dragging: boolean;
+  sortOrder: 'ascending' | 'descending';
+};
+
+function DragNDrop({ data }: DragNDropProps) {
+  const [list, setList] = useState<DataItem[]>(data);
+  const [dragging, setDragging] = useState<boolean>(false);
+  const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(
+    'ascending'
+  );
 
   useEffect(() => {
     setList(data);
   }, [setList, data]);
 
-  const dragItem = useRef();
-  const dragItemNode = useRef();
+  const dragItem = useRef<ItemType>();
+  const dragItemNode = useRef<HTMLDivElement>(null);
 
-  const handletDragStart = (e, item) => {
+  type ItemType = {
+    id: number;
+    name: string;
+    description: string;
+    groupIndex: number;
+    itemIndex: number;
+  };
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    item: ItemType
+  ) => {
     console.log('Starting to drag', item);
 
     dragItemNode.current = e.target;
@@ -142,7 +176,10 @@ function DragNDrop({ data }) {
       setDragging(true);
     }, 0);
   };
-  const handleDragEnter = (e, targetItem) => {
+  const handleDragEnter = (
+    e: React.DragEvent<HTMLDivElement>,
+    targetItem: ItemType
+  ) => {
     console.log('Entering a drag target', targetItem);
     if (dragItemNode.current !== e.target) {
       console.log('Target is NOT the same as dragged item');
@@ -171,11 +208,11 @@ function DragNDrop({ data }) {
   const [hideChecked, setHideChecked] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
-  const handleDateChange = (event) => {
+  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
   };
 
-  const addItem = (groupIndex, { title, due, member }) => {
+  const addItem = (groupIndex: number, { title, due, member }) => {
     const text = title;
     console.log(due);
     const dueDate = due ? due : null;
@@ -197,24 +234,35 @@ function DragNDrop({ data }) {
     }
   };
 
-  const addNoDueItem = (groupIndex) => {
-    const text = prompt('Enter item text');
+  // const addNoDueItem = (groupIndex) => {
+  //   const text = prompt('Enter item text');
 
-    const member = prompt('Enter member name');
+  //   const member = prompt('Enter member name');
 
-    if (text && member) {
-      console.log('adding No due item');
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList[groupIndex].items.push({ text, member, done: false });
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
-    }
+  //   if (text && member) {
+  //     console.log('adding No due item');
+  //     setList((prevList) => {
+  //       const newList = [...prevList];
+  //       newList[groupIndex].items.push({ text, member, done: false });
+  //       localStorage.setItem('List', JSON.stringify(newList));
+  //       return newList;
+  //     });
+  //   }
+  // };
+  type Item = {
+    text: string;
+    due: string | null;
+    member: string;
+    done: boolean;
   };
 
-  const deleteItem = (groupIndex, itemIndex) => {
-    setList((prevList) => {
+  type Group = {
+    title: string;
+    items: Item[];
+  };
+  type List = Group[];
+  const deleteItem = (groupIndex: number, itemIndex: number): void => {
+    setList((prevList: List) => {
       const newList = [...prevList];
       newList[groupIndex].items.splice(itemIndex, 1);
       localStorage.setItem('List', JSON.stringify(newList));
@@ -222,17 +270,17 @@ function DragNDrop({ data }) {
     });
   };
 
-  const editItem = (groupIndex, itemIndex) => {
-    setList((prevList) => {
+  const editItem = (groupIndex: number, itemIndex: number) => {
+    setList((prevList: List) => {
       const newList = [...prevList];
       newList[groupIndex].items.splice(itemIndex, 1);
       localStorage.setItem('List', JSON.stringify(newList));
       return newList;
     });
   };
-  const handleChange = (e, groupIndex, itemIndex, field) => {
+  const handleChange = (e, groupIndex: number, itemIndex: number, field) => {
     const value = e.target.value;
-    setList((prevList) => {
+    setList((prevList: List) => {
       const newList = [...prevList];
       newList[groupIndex].items[itemIndex] = {
         ...newList[groupIndex].items[itemIndex],
@@ -243,9 +291,9 @@ function DragNDrop({ data }) {
     });
   };
 
-  const handleDoneChange = (e, groupIndex, itemIndex) => {
+  const handleDoneChange = (e, groupIndex: number, itemIndex: number) => {
     const checked = e.target.checked;
-    setList((prevList) => {
+    setList((prevList: List) => {
       const newList = [...prevList];
       newList[groupIndex].items[itemIndex] = {
         ...newList[groupIndex].items[itemIndex],
@@ -256,7 +304,7 @@ function DragNDrop({ data }) {
     });
   };
 
-  function deleteList(listIndex) {
+  function deleteList(listIndex: number) {
     const confirmDelete = window.confirm(
       'Are you sure you want to delete this list?'
     );
@@ -270,7 +318,13 @@ function DragNDrop({ data }) {
     }
   }
 
-  function getTotalTaskCount(group) {
+  type GroupType = {
+    id: number;
+    title: string;
+    items: ItemType[];
+  };
+
+  function getTotalTaskCount(group: GroupType): number {
     let count = 0;
 
     for (const item of group.items) {
@@ -392,10 +446,20 @@ function DragNDrop({ data }) {
                   console.log('Current date:', new Date());
                   const dueDate = new Date(item.due); // convert date string to Date object
                   const currentDate = new Date(); // get current date
-                  const formattedDueDate = dueDate.toLocaleDateString();
-                  const formattedCurrentDate = currentDate.toLocaleDateString();
+                  const formattedDueDate = new Date(
+                    dueDate.getFullYear(),
+                    dueDate.getMonth(),
+                    dueDate.getDate()
+                  );
+                  const formattedCurrentDate = new Date(
+                    currentDate.getFullYear(),
+                    currentDate.getMonth(),
+                    currentDate.getDate()
+                  );
                   const isOverdue = formattedDueDate < formattedCurrentDate; // check if due date is before current date
                   const isToday = formattedDueDate === formattedCurrentDate;
+                  console.log(formattedDueDate);
+                  console.log(formattedCurrentDate);
                   console.log('Is overdue:', isOverdue);
                   console.log('Is today:', isToday);
                   return (
@@ -403,7 +467,7 @@ function DragNDrop({ data }) {
                       draggable
                       key={item}
                       onDragStart={(e) =>
-                        handletDragStart(e, { groupIndex, itemIndex })
+                        handleDragStart(e, { groupIndex, itemIndex })
                       }
                       onDragEnter={
                         dragging

@@ -32,8 +32,10 @@ function Voting() {
 
     // Save to local storage
     const vote: { title: string; options: string[] } = { title, options };
-    const votes: { title: string; options: string[] }[] =
-      JSON.parse(localStorage.getItem('votes')) || [];
+    const savedVotes = localStorage.getItem('votes');
+    const votes: { title: string; options: string[] }[] = savedVotes
+      ? JSON.parse(savedVotes)
+      : [];
     votes.push(vote);
     localStorage.setItem('votes', JSON.stringify(votes));
     setVoteCreated(true);

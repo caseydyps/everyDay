@@ -44,7 +44,7 @@ const defaultData = [
     items: [
       {
         text: 'take out garbage',
-        due: '2023-04-07',
+        due: '2023-04-12',
         member:
           'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
         done: false,
@@ -58,7 +58,7 @@ const defaultData = [
       },
       {
         text: '繳費',
-        due: '2023-04-07',
+        due: '2023-04-11',
         member:
           'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
         done: false,
@@ -119,7 +119,52 @@ const defaultData = [
   },
 ];
 
-const todoReducer = (state, action) => {
+type TodoItem = {
+  text: string;
+  due: string;
+  member: string;
+  done: boolean;
+};
+
+type TodoList = {
+  title: string;
+  items: TodoItem[];
+};
+
+type TodoState = TodoList[];
+
+interface AddListAction {
+  type: 'ADD_LIST';
+  payload: string;
+}
+
+interface AddItemAction {
+  type: 'ADD_ITEM';
+  payload: {
+    text: string;
+    due: string;
+    member: string;
+  };
+  listIndex: number;
+}
+
+interface MoveItemAction {
+  type: 'MOVE_ITEM';
+  payload: {
+    source: {
+      droppableId: number;
+      index: number;
+    };
+    destination: {
+      droppableId: number;
+      index: number;
+    };
+  };
+}
+
+type TodoAction = AddListAction | AddItemAction | MoveItemAction;
+
+const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
     case 'ADD_LIST':
       return [...state, { title: action.payload, items: [] }];
@@ -174,7 +219,7 @@ function Todo() {
 
   const dueDateRef = useRef(null);
 
-  const addItem = (listIndex) => {
+  const addItem = (listIndex: number) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current.value; // "YYYY-MM-DD"
     const due = new Date(dueDateString);

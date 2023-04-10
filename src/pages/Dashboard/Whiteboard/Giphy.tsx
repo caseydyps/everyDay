@@ -1,27 +1,31 @@
 import { GiphyFetch } from '@giphy/js-fetch-api';
+import { GifsResult } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
 import { Carousel } from '@giphy/react-components';
 import React, { useState } from 'react';
 
 const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
-function Giphy() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [modalGif, setModalGif] = useState(null);
-  const [showCarousel, setShowCarousel] = useState(false);
-  const [selectedGif, setSelectedGif] = useState(null);
+function Giphy(): JSX.Element {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [modalGif, setModalGif] = useState<IGif | null>(null);
+  const [showCarousel, setShowCarousel] = useState<boolean>(false);
+  const [selectedGif, setSelectedGif] = useState<IGif | null>(null);
 
-  const handleSearch = () => {
+  const handleSearch = (): void => {
     setShowCarousel(true);
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
     setSearchTerm(event.target.value);
     setShowCarousel(false);
   };
 
-  const fetchGifs = (offset: number) => {
-    return giphyFetch.search(searchTerm, { offset, limit: 10 });
+  const fetchGifs = async (offset: number): Promise<GifsResult> => {
+    const gifs = await giphyFetch.search(searchTerm, { offset, limit: 10 });
+    return gifs;
   };
 
   return (
@@ -41,7 +45,9 @@ function Giphy() {
             fetchGifs={fetchGifs}
             gifHeight={200}
             gutter={6}
-            onGifClick={(gif) => setSelectedGif(gif)}
+            onGifClick={(gif: IGif, e: React.SyntheticEvent<HTMLElement>) =>
+              setSelectedGif(gif)
+            }
           />
         </>
       )}

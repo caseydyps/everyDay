@@ -140,10 +140,10 @@ const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
   );
 };
 
-type MembersSelectorProps = {
-  selectedMembers: string[];
+interface MembersSelectorProps {
   onSelectMember: (selectedMembers: string[]) => void;
-};
+  selectedMembers?: string[];
+}
 const members = ['Daddy', 'Mom', 'Baby'];
 const MembersSelector = ({
   selectedMembers = ['Daddy', 'Mom', 'Baby'],
@@ -195,7 +195,11 @@ const SmartInput = () => {
     setCategory(category);
   };
 
-  const handleSelectMember = (selectedMembers: string[], member: string) => {
+  const handleSelectMember = (
+    selectedMembers: string[],
+    member: string,
+    members: string[]
+  ) => {
     if (selectedMembers.includes(member)) {
       setSelectedMembers(selectedMembers.filter((m) => m !== member));
     } else {
@@ -351,7 +355,7 @@ const SmartInput = () => {
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector
           onSelectMember={handleSelectMember}
-          selectedMembers={selectedMembers as string[]}
+          selectedMembers={selectedMembers.map(String)}
         />
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>

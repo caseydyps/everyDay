@@ -14,6 +14,7 @@ import Financial from './pages/Dashboard/Financial';
 import FamilyMemberForm from './pages/Family/Family';
 import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
+import WelcomePage from './pages/Login/Welcome';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -24,6 +25,7 @@ root.render(
       <Route path="/" element={<App />}>
         <Route index element={<Dashboard />} />
       </Route>
+      <Route path="welcome" element={<WelcomePage />} />
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="todo" element={<Todo />} />
       <Route path="album" element={<Album />} />

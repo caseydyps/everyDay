@@ -134,7 +134,11 @@ const AddButton = styled.button`
 
 const Modal = styled.div``;
 
-const EventWrapper = styled.div`
+interface EventWrapperProps {
+  category: string;
+  multiDay?: boolean;
+}
+const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
   align-items: center;
   margin: 5px 0;
@@ -193,20 +197,20 @@ const EventList = styled.ul`
 `;
 
 function Calendar() {
-  const [date, setDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [showModal, setShowModal] = useState(false);
-  const [isAllDay, setIsAllDay] = useState(false);
-  const [eventTitle, setEventTitle] = useState('');
-  const [eventDate, setEventDate] = useState('');
-  const [eventEndDate, setEventEndDate] = useState('');
-  const [eventTime, setEventTime] = useState('');
-  const [eventEndTime, setEventEndTime] = useState('');
-  const [eventCategory, setEventCategory] = useState('');
-  const [eventMember, setEventMember] = useState('');
-  const [events, setEvents] = useState([]);
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [view, setView] = useState('month');
+  const [date, setDate] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [isAllDay, setIsAllDay] = useState<boolean>(false);
+  const [eventTitle, setEventTitle] = useState<string>('');
+  const [eventDate, setEventDate] = useState<string>('');
+  const [eventEndDate, setEventEndDate] = useState<string>('');
+  const [eventTime, setEventTime] = useState<string>('');
+  const [eventEndTime, setEventEndTime] = useState<string>('');
+  const [eventCategory, setEventCategory] = useState<string>('');
+  const [eventMember, setEventMember] = useState<string>('');
+  const [events, setEvents] = useState<Event[]>([]);
+  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [view, setView] = useState<string>('month');
   const draggedEventIdRef = useRef(null);
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
@@ -224,24 +228,49 @@ function Calendar() {
     'Dec',
   ];
 
+  interface Event {
+    id: string;
+    title: string;
+    category: string;
+    date: string;
+    multiDay: boolean;
+    time: string;
+    endDate: string;
+    description: string;
+    finished: boolean;
+    member: string;
+  }
+
+  interface DateDetailsProps {
+    date: Date;
+    events: Event[];
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+    draggedEventIdRef: React.MutableRefObject<string | null>;
+    isCurrentMonth: boolean;
+  }
+
   function DateDetails({
     date,
     events,
     setEvents,
     draggedEventIdRef,
     isCurrentMonth,
-  }) {
-    const handleDragStart = (e, eventId) => {
+  }: DateDetailsProps) {
+    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, eventId) => {
       console.log(eventId);
       draggedEventIdRef.current = eventId;
       console.log(draggedEventIdRef.current);
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
     };
 
-    const handleDrop = (e, date, draggedEventIdRef) => {
+    const handleDrop = (
+      e: React.DragEvent<HTMLDivElement>,
+      date,
+      draggedEventIdRef
+    ) => {
       e.preventDefault();
       console.log('drop', date);
       console.log(draggedEventIdRef.current);
@@ -338,7 +367,7 @@ function Calendar() {
       return <div>No date selected</div>;
     }
 
-    const selectedMonthEvents = events.filter((event) => {
+    const selectedMonthEvents = events.filter((event: Event) => {
       const eventDate = new Date(event.date);
       return (
         eventDate.getMonth() === date.getMonth() &&
@@ -351,7 +380,7 @@ function Calendar() {
         <div>{`${months[date.getMonth()]} ${date.getFullYear()}`}</div>
         {selectedMonthEvents.length > 0 ? (
           <ul>
-            {selectedMonthEvents.map((event, index) => (
+            {selectedMonthEvents.map((event, index: number) => (
               <li key={index}>
                 {event.member}:{event.title} on {event.date} to {event.endDate}{' '}
                 at {event.time}
@@ -382,13 +411,13 @@ function Calendar() {
     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
     return new Date(date.setDate(diff));
   };
-  function addWeeks(date, weeks) {
+  function addWeeks(date: Date, weeks: number) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + weeks * 7);
     return newDate;
   }
 
-  function subWeeks(date, weeks) {
+  function subWeeks(date: Date, weeks: number) {
     return addWeeks(date, -weeks);
   }
 
@@ -433,17 +462,17 @@ function Calendar() {
     setSelectedDate(newDate);
   };
 
-  const handleDateClick = (day: number, row) => {
+  const handleDateClick = (day: number, row: number) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
     console.log(selectedDate);
   };
 
-  const handleWeekDateClick = (day: number, row) => {
+  const handleWeekDateClick = (day: number, row: number) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
   };
 
-  const handleEventSubmit = (event) => {
+  const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isMultiDay = eventDate !== eventEndDate;
     const newEvent = {
@@ -454,6 +483,8 @@ function Calendar() {
       member: eventMember,
       id: uuidv4(),
       multiDay: isMultiDay,
+      time: eventTime,
+      endTime: eventEndTime,
     };
     if (!isAllDay) {
       newEvent.time = eventTime;
@@ -475,7 +506,7 @@ function Calendar() {
     setShowModal(true);
   };
 
-  function getLastDayOfWeek(date) {
+  function getLastDayOfWeek(date: Date) {
     return new Date(date.setDate(date.getDate() + 6));
   }
 
@@ -483,11 +514,11 @@ function Calendar() {
     console.log(selectedRow); // log the updated value of selectedRow
   }, [selectedRow]);
 
-  const handleViewClick = (view) => {
+  const handleViewClick = (view: string) => {
     setView(view);
   };
 
-  function getWeekNumber(date) {
+  function getWeekNumber(date: Date) {
     const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
     const jan1 = new Date(date.getFullYear(), 0, 1);
     const daysSinceJan1 = Math.floor((date - jan1) / (24 * 60 * 60 * 1000)) + 1;
@@ -542,7 +573,7 @@ function Calendar() {
   const weekNumber = getWeekNumber(date);
 
   // handleEditEvent function
-  const handleEditEvent = (event) => {
+  const handleEditEvent = (event: Event) => {
     // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
@@ -586,7 +617,7 @@ function Calendar() {
   };
 
   // handleDeleteEvent function
-  const handleDeleteEvent = (event) => {
+  const handleDeleteEvent = (event: Event) => {
     // Prompt the user to confirm deletion
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${event.title}"?`
@@ -599,7 +630,7 @@ function Calendar() {
   };
 
   // handleFinishEvent function
-  const handleFinishEvent = (event) => {
+  const handleFinishEvent = (event: Event) => {
     // Update the event's "finished" property to its opposite value
     const updatedEvent = { ...event, finished: !event.finished };
     // Update the events list with the new event object
