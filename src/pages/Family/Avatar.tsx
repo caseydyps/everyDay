@@ -27,9 +27,10 @@ const Button = styled.button`
 `;
 
 type AvatarCreatorProps = {
-  onSave: (avatarUrl: string) => void;
+  onSave: (avatarUrl: string | number) => void;
+  avatarIndex: number;
 };
-function AvatarCreator({ onSave }: AvatarCreatorProps) {
+function AvatarCreator({ index, onSave }: AvatarCreatorProps) {
   const [seed, setSeed] = useState<string>('Sassy');
   const [eyebrows, setEyebrows] = useState<string>('variant01');
   const [eyes, setEyes] = useState<string>('variant01');
@@ -104,8 +105,39 @@ function AvatarCreator({ onSave }: AvatarCreatorProps) {
   };
 
   const handleSaveClick = () => {
-    onSave(avatarUrl);
+    onSave(
+      avatarUrl,
+      seed,
+      eyebrows,
+      eyes,
+      hair,
+      hairColor,
+      mouth,
+      background,
+      feature,
+      featuresProbability
+    );
   };
+
+  const handleLoadAvatar = () => {
+    const avatarDetails = JSON.parse(localStorage.getItem('members'));
+    console.log(avatarDetails, index);
+    if (avatarDetails) {
+      setSeed(avatarDetails[index].seed);
+      setEyebrows(avatarDetails[avatarIndex].eyebrows);
+      setEyes(avatarDetails[avatarIndex].eyes);
+      setHair(avatarDetails[avatarIndex].hair);
+      setHairColor(avatarDetails[avatarIndex].hairColor);
+      setMouth(avatarDetails[avatarIndex].mouth);
+      setBackground(avatarDetails[avatarIndex].background);
+      setFeature(avatarDetails[avatarIndex].feature);
+      setFeaturesProbability(avatarDetails[avatarIndex].featuresProbability);
+    }
+  };
+
+  useEffect(() => {
+    handleLoadAvatar();
+  }, [avatarIndex]);
 
   return (
     <>

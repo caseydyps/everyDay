@@ -7,7 +7,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import Whiteboard from './pages/Dashboard/Whiteboard/Whiteboard';
 import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
-import Settings from './pages/Family/Family';
+import Settings from './pages/Family/FamilyForm';
 import styled from 'styled-components';
 import Sidebar from './Components/SideBar/SideBar';
 const Content = styled.div`

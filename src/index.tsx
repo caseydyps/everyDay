@@ -11,7 +11,7 @@ import Milestone from './pages/Dashboard/Milestone';
 import Album from './pages/Dashboard/Album/Album';
 import Calendar from './pages/Dashboard/Calendar/Calendar';
 import Financial from './pages/Dashboard/Financial';
-import FamilyMemberForm from './pages/Family/Family';
+import FamilyMemberForm from './pages/Family/FamilyForm';
 import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import WelcomePage from './pages/Login/Welcome';
