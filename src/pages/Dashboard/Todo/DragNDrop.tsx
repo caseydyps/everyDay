@@ -13,6 +13,7 @@ import {
   getDoc,
   setDoc,
   writeBatch,
+  deleteDoc,
   doc,
   query,
   where,
@@ -160,6 +161,7 @@ type DragNDropState = {
 
 function DragNDrop({ data }: DragNDropProps) {
   console.log(data);
+
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(
@@ -271,21 +273,7 @@ function DragNDrop({ data }: DragNDropProps) {
       }
     }
   };
-  // const addNoDueItem = (groupIndex) => {
-  //   const text = prompt('Enter item text');
 
-  //   const member = prompt('Enter member name');
-
-  //   if (text && member) {
-  //     console.log('adding No due item');
-  //     setList((prevList) => {
-  //       const newList = [...prevList];
-  //       newList[groupIndex].items.push({ text, member, done: false });
-  //       localStorage.setItem('List', JSON.stringify(newList));
-  //       return newList;
-  //     });
-  //   }
-  // };
   type Item = {
     text: string;
     due: string | null;
@@ -299,20 +287,21 @@ function DragNDrop({ data }: DragNDropProps) {
   };
   type List = Group[];
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
-    const docRef = doc(
+    const todoRef = doc(
       db,
       'Family',
       'Nkl0MgxpE9B1ieOsOoJ9',
       'todo',
-      'JcAbVxLQw1oSCVyri7qe'
+      list[groupIndex].title
     );
-    getDoc(docRef)
+
+    getDoc(todoRef)
       .then((doc) => {
         if (doc.exists()) {
           const data = doc.data();
           const items = data.items;
           items.splice(itemIndex, 1);
-          updateDoc(docRef, { items: items })
+          updateDoc(todoRef, { items: items })
             .then(() =>
               console.log(itemIndex, 'Item has been deleted from Firestore!')
             )
@@ -336,43 +325,112 @@ function DragNDrop({ data }: DragNDropProps) {
       return newList;
     });
   };
-  const handleChange = (e, groupIndex: number, itemIndex: number, field) => {
+  const handleChange = async (
+    e,
+    groupIndex: number,
+    itemIndex: number,
+    field
+  ) => {
     const value = e.target.value;
-    setList((prevList: List) => {
-      const newList = [...prevList];
-      newList[groupIndex].items[itemIndex] = {
-        ...newList[groupIndex].items[itemIndex],
-        [field]: value,
-      };
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
+
+    if (!value) return;
+
+    const todoRef = doc(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'todo',
+      list[groupIndex].title
+    );
+
+    try {
+      // Get the existing items array from the todo document
+      const todoDoc = await getDoc(todoRef);
+      const items = todoDoc.exists() ? todoDoc.data().items : [];
+
+      // Update the specific item in the items array
+      const updatedItems = [...items];
+      updatedItems[itemIndex][field] = value;
+
+      // Update the items array in the todo document
+      await setDoc(todoRef, {
+        items: updatedItems,
+        title: list[groupIndex].title,
+      });
+
+      console.log('Item has been updated in Firestore!');
+    } catch (error) {
+      console.error('Error updating item in Firestore: ', error);
+    }
   };
 
-  const handleDoneChange = (e, groupIndex: number, itemIndex: number) => {
+  const handleDoneChange = async (e, groupIndex: number, itemIndex: number) => {
     const checked = e.target.checked;
-    setList((prevList: List) => {
-      const newList = [...prevList];
-      newList[groupIndex].items[itemIndex] = {
-        ...newList[groupIndex].items[itemIndex],
-        done: checked,
-      };
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
+    console.log(checked);
+    const group = list[groupIndex];
+    console.log(group);
+    if (!group) return; // exit early if group doesn't exist
+    const item = group.items[itemIndex];
+    console.log(item);
+    console.log(list[groupIndex].title);
+    if (!item) return; // exit early if item doesn't exist
+    const newItem = { ...item, done: checked };
+
+    try {
+      const todoRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'todo',
+        list[groupIndex].title
+      );
+
+      const todoDoc = await getDoc(todoRef);
+      const items = todoDoc.exists() ? todoDoc.data().items : [];
+
+      // update the entire items array with the new checked item
+      const updatedItems = items.map((item, index) =>
+        index === itemIndex ? newItem : item
+      );
+
+      await setDoc(todoRef, {
+        items: updatedItems,
+        title: list[groupIndex].title,
+      });
+
+      console.log('Item has been updated on Firestore!');
+    } catch (error) {
+      console.error('Error updating item on Firestore: ', error);
+    }
   };
 
-  function deleteList(listIndex: number) {
+  async function deleteList(listIndex: number) {
     const confirmDelete = window.confirm(
       'Are you sure you want to delete this list?'
     );
     if (confirmDelete) {
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList.splice(listIndex, 1);
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
+      try {
+        const todoRef = doc(
+          db,
+          'Family',
+          'Nkl0MgxpE9B1ieOsOoJ9',
+          'todo',
+          list[listIndex].title
+        );
+
+        // Delete the document corresponding to the list
+        await deleteDoc(todoRef);
+
+        setList((prevList) => {
+          const newList = [...prevList];
+          newList.splice(listIndex, 1);
+          return newList;
+        });
+
+        console.log('List has been deleted from Firestore!');
+      } catch (error) {
+        console.error('Error deleting list from Firestore: ', error);
+      }
     }
   }
 
