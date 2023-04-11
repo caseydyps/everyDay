@@ -261,7 +261,6 @@ const Todo = () => {
 
   useEffect(() => {
     const familyDocRef = doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9');
-
     async function updateData() {
       try {
         await updateDoc(familyDocRef, { todo: data });

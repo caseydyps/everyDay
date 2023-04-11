@@ -3,29 +3,80 @@ import styled from 'styled-components/macro';
 import Sidebar from '../../Components/SideBar/SideBar';
 // import AvatarCreator from './Avatar';
 // import { handleLoadAvatar } from './Avatar';
+import { db } from '../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+  doc,
+  writeBatch,
+  query,
+  where,
+} from 'firebase/firestore';
 
 const FamilyMemberForm = () => {
   const [numberOfMembers, setNumberOfMembers] = useState<number>(0);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
 
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(members);
 
-    // Save members to localStorage
-    localStorage.setItem('members', JSON.stringify(members));
+    const usersRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'users');
 
-    setFormSubmitted(true);
+    try {
+      // Delete all existing user documents
+      const querySnapshot = await getDocs(usersRef);
+      const batch = writeBatch(db);
+      querySnapshot.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+
+      // Save each member as a separate document in the users collection
+      members.forEach(async (member) => {
+        await setDoc(doc(usersRef, member.name), member);
+      });
+
+      console.log('Members have been saved to Firestore!');
+      setFormSubmitted(true);
+    } catch (error) {
+      console.error('Error saving members to Firestore: ', error);
+    }
   };
 
+  // useEffect(() => {
+  //   // Load members from localStorage
+  //   const storedMembers = localStorage.getItem('members');
+  //   if (storedMembers) {
+  //     setFormSubmitted(true);
+  //     setMembers(JSON.parse(storedMembers));
+  //   }
+  // }, []);
+
   useEffect(() => {
-    // Load members from localStorage
-    const storedMembers = localStorage.getItem('members');
-    if (storedMembers) {
-      setFormSubmitted(true);
-      setMembers(JSON.parse(storedMembers));
-    }
+    const fetchMembers = async () => {
+      const familyDocRef = collection(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'users'
+      );
+      const membersData = await getDocs(familyDocRef).then((querySnapshot) =>
+        querySnapshot.docs.map((doc) => ({ ...doc.data() }))
+      );
+      console.log(membersData);
+      setMembers(membersData);
+
+      if (membersData.length > 0) {
+        setFormSubmitted(true);
+      }
+    };
+    fetchMembers();
   }, []);
 
   // const handleLoadAvatar = () => {

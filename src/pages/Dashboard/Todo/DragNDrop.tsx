@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useReducer } from 'react';
+
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
 import { db } from '../../../config/firebase.config';
@@ -10,6 +11,8 @@ import {
   addDoc,
   getDocs,
   getDoc,
+  setDoc,
+  writeBatch,
   doc,
   query,
   where,
@@ -227,10 +230,12 @@ function DragNDrop({ data }: DragNDropProps) {
     setSelectedDate(event.target.value);
   };
 
-  const addItem = (groupIndex: number, { title, due, member }) => {
+  const addItem = async (groupIndex: number, { title, due, member }) => {
     const text = title;
     const dueDate = due ? due : null;
     const memberAvatarSrc = member.avatarSrc;
+    console.log(groupIndex);
+    console.log(list[groupIndex].title);
     if (text && memberAvatarSrc) {
       const newItem = {
         text,
@@ -238,21 +243,34 @@ function DragNDrop({ data }: DragNDropProps) {
         member: memberAvatarSrc,
         done: false,
       };
-      const docRef = doc(
+
+      const todoRef = doc(
         db,
         'Family',
         'Nkl0MgxpE9B1ieOsOoJ9',
         'todo',
-        'JcAbVxLQw1oSCVyri7qe'
+        list[groupIndex].title
       );
-      updateDoc(docRef, { items: arrayUnion(newItem) })
-        .then(() => console.log('Item has been saved to Firestore!'))
-        .catch((error) =>
-          console.error('Error saving item to Firestore: ', error)
-        );
+      try {
+        // Get the existing items array from the todo document
+        const todoDoc = await getDoc(todoRef);
+        const items = todoDoc.exists() ? todoDoc.data().items : [];
+
+        // Add the new item to the items array
+        const updatedItems = [...items, newItem];
+
+        // Update the items array in the todo document
+        await setDoc(todoRef, {
+          items: updatedItems,
+          title: list[groupIndex].title,
+        });
+
+        console.log('Item has been saved to Firestore!');
+      } catch (error) {
+        console.error('Error saving item to Firestore: ', error);
+      }
     }
   };
-
   // const addNoDueItem = (groupIndex) => {
   //   const text = prompt('Enter item text');
 
@@ -613,7 +631,7 @@ function DragNDrop({ data }: DragNDropProps) {
                   );
                 })}
 
-              <AddItemForm groupIndex={0} onAddItem={addItem} />
+              <AddItemForm groupIndex={groupIndex} onAddItem={addItem} />
 
               {/* <button>My task only</button> */}
             </DragNDropGroup>
