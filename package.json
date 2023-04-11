@@ -19,6 +19,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.26",
     "brew": "^0.0.8",
+    "firebase": "^9.19.1",
     "moment": "^2.29.4",
     "openai": "^3.2.1",
     "react": "^18.2.0",
@@ -59,5 +60,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-datepicker": "^4.10.0"
   }
 }

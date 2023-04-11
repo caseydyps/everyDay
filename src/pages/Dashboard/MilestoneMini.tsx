@@ -255,7 +255,7 @@ function MilestoneMini() {
   };
 
   const handleEditEvent = (event: Event) => {
-    EditEventForm;
+    EditEventForm();
     setEditedEvent(event);
     setIsEditing(true);
   };
@@ -295,10 +295,10 @@ function MilestoneMini() {
     title: '',
   });
 
-  const handleEditFormSubmit = (editedData) => {
+  const handleEditFormSubmit = (editedData: Event) => {
     setEvents((prevEvents) =>
       prevEvents.map((event) =>
-        event.id === editedEvent.id ? { ...event, ...editedData } : event
+        event.id === editedData.id ? { ...event, ...editedData } : event
       )
     );
     setIsEditing(false);
@@ -308,11 +308,26 @@ function MilestoneMini() {
     setEvents(events.filter((event) => event.id !== id));
   };
 
-  function EditEventForm({ event, onEdit }) {
+  type EditEventFormProps = {
+    event: EventType;
+    onEdit: (event: EventType) => void;
+  };
+
+  type EventType = {
+    id: number;
+    title: string;
+    date: Date;
+    member: string;
+    image: string | null;
+  };
+
+  function EditEventForm({ event, onEdit }: EditEventFormProps) {
     const [title, setTitle] = useState(event.title);
     const [date, setDate] = useState(event.date.toISOString().slice(0, 10));
     const [member, setMember] = useState(event.member);
-    const [image, setImage] = useState(event.image);
+    const [image, setImage] = useState<string | Blob | MediaSource | null>(
+      event.image
+    );
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -322,7 +337,10 @@ function MilestoneMini() {
         title,
         date: new Date(date),
         member,
-        image: URL.createObjectURL(image),
+        image:
+          image instanceof Blob || image instanceof MediaSource
+            ? URL.createObjectURL(image)
+            : null,
       };
 
       onEdit(editedEvent);

@@ -1,6 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
+import { db } from '../../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  addDoc,
+  getDocs,
+  getDoc,
+  doc,
+  query,
+  where,
+  arrayUnion,
+} from 'firebase/firestore';
 
 const DragNDropWrapper = styled.div`
   display: flex;
@@ -142,6 +156,7 @@ type DragNDropState = {
 };
 
 function DragNDrop({ data }: DragNDropProps) {
+  console.log(data);
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(
@@ -214,23 +229,27 @@ function DragNDrop({ data }: DragNDropProps) {
 
   const addItem = (groupIndex: number, { title, due, member }) => {
     const text = title;
-    console.log(due);
     const dueDate = due ? due : null;
-    console.log(dueDate);
     const memberAvatarSrc = member.avatarSrc;
     if (text && memberAvatarSrc) {
-      console.log('adding item');
-      setList((prevList) => {
-        const newList = [...prevList];
-        newList[groupIndex].items.push({
-          text,
-          due: dueDate,
-          member: memberAvatarSrc,
-          done: false,
-        });
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
-      });
+      const newItem = {
+        text,
+        due: dueDate,
+        member: memberAvatarSrc,
+        done: false,
+      };
+      const docRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'todo',
+        'JcAbVxLQw1oSCVyri7qe'
+      );
+      updateDoc(docRef, { items: arrayUnion(newItem) })
+        .then(() => console.log('Item has been saved to Firestore!'))
+        .catch((error) =>
+          console.error('Error saving item to Firestore: ', error)
+        );
     }
   };
 
@@ -262,12 +281,33 @@ function DragNDrop({ data }: DragNDropProps) {
   };
   type List = Group[];
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
-    setList((prevList: List) => {
-      const newList = [...prevList];
-      newList[groupIndex].items.splice(itemIndex, 1);
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
+    const docRef = doc(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'todo',
+      'JcAbVxLQw1oSCVyri7qe'
+    );
+    getDoc(docRef)
+      .then((doc) => {
+        if (doc.exists()) {
+          const data = doc.data();
+          const items = data.items;
+          items.splice(itemIndex, 1);
+          updateDoc(docRef, { items: items })
+            .then(() =>
+              console.log(itemIndex, 'Item has been deleted from Firestore!')
+            )
+            .catch((error) =>
+              console.error('Error deleting item from Firestore: ', error)
+            );
+        } else {
+          console.error('No such document exists!');
+        }
+      })
+      .catch((error) =>
+        console.error('Error fetching document from Firestore: ', error)
+      );
   };
 
   const editItem = (groupIndex: number, itemIndex: number) => {
@@ -441,7 +481,7 @@ function DragNDrop({ data }: DragNDropProps) {
                     return bDueDate - aDueDate;
                   }
                 })
-                .map((item, itemIndex) => {
+                .map((item, itemIndex: number) => {
                   console.log('Due date:', item.due);
                   console.log('Current date:', new Date());
                   const dueDate = new Date(item.due); // convert date string to Date object

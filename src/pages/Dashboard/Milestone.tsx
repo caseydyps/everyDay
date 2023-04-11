@@ -225,19 +225,21 @@ function Milestone() {
     title: string;
     date: Date;
     member: string;
-    image: string;
+    image: string | null;
   };
 
   const [events, setEvents] = useState<EventType[]>([]);
-  const [newEventTitle, setNewEventTitle] = useState('');
-  const [newEventDate, setNewEventDate] = useState('');
-  const [newEventMember, setNewEventMember] = useState('');
-  const [newEventImage, setNewEventImage] = useState('');
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedEvent, setEditedEvent] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [newEventTitle, setNewEventTitle] = useState<string>('');
+  const [newEventDate, setNewEventDate] = useState<string>('');
+  const [newEventMember, setNewEventMember] = useState<string>('');
+  const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
+    null
+  );
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const [file, setFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [imagePreview, setImagePreview] = useState<string | undefined>();
   type NewEvent = {
     id: number;
     title: string;
@@ -265,7 +267,7 @@ function Milestone() {
     setNewEventTitle('');
     setNewEventDate('');
     setNewEventMember('');
-    setNewEventImage('');
+    setNewEventImage(null);
   };
 
   type AvatarPreviewProps = {
@@ -277,7 +279,7 @@ function Milestone() {
   };
 
   const handleEditEvent = (event: EventType) => {
-    EditEventForm;
+    EditEventForm();
     setEditedEvent(event);
     setIsEditing(true);
   };
@@ -317,13 +319,15 @@ function Milestone() {
     title: '',
   });
 
-  const handleEditFormSubmit = (editedData) => {
-    setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === editedEvent.id ? { ...event, ...editedData } : event
-      )
-    );
-    setIsEditing(false);
+  const handleEditFormSubmit = (editedData: EventType) => {
+    if (editedEvent) {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.id === editedEvent.id ? { ...event, ...editedData } : event
+        )
+      );
+      setIsEditing(false);
+    }
   };
 
   const handleDeleteEvent = (id: number) => {
@@ -336,7 +340,7 @@ function Milestone() {
     const [member, setMember] = useState(event.member);
     const [image, setImage] = useState(event.image);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const editedEvent = {
@@ -572,7 +576,9 @@ function Milestone() {
             <Timeline events={events} />
 
             {filterEvents(events)
-              .sort((a, b) => a.date - b.date)
+              .sort(
+                (a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0)
+              )
               .map((event, index) => (
                 <>
                   <EventBox
@@ -587,7 +593,7 @@ function Milestone() {
                       Edit
                     </EditButton>
                     <ColumnWrap>
-                      <EventImage src={event.image} alt="Event" />
+                      <EventImage src={event.image || undefined} alt="Event" />
                       <EventTitle>{event.title}</EventTitle>
                       <EventDate>{event.date.toDateString()}</EventDate>
                       <EventMember>Member: {event.member}</EventMember>s

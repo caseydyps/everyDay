@@ -191,7 +191,7 @@ function TodoMini() {
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
-  const dueDateRef = useRef(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
 
   const addItem = (listIndex: number) => {
     const text = prompt('Enter item text');

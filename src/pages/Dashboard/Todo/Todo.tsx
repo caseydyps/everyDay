@@ -2,7 +2,17 @@ import styled from 'styled-components/macro';
 import { useState, useEffect, useReducer, useRef } from 'react';
 import DragNDrop from './DragNDrop';
 import Sidebar from '../../../Components/SideBar/SideBar';
-
+import { db } from '../../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  doc,
+  query,
+  where,
+} from 'firebase/firestore';
 const Wrapper = styled.div`
   width: 80vw;
   height: auto;
@@ -200,14 +210,23 @@ const todoReducer = (state: TodoState, action: TodoAction) => {
           ],
         },
       };
+    case 'SET_DATA':
+      return action.payload; // update state with todosData
     default:
       return state;
   }
 };
+const getTodosData = async () => {
+  const familyDocRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'todo');
+  const querySnapshot = await getDocs(familyDocRef);
+  const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+  return todosData;
+};
 
-function Todo() {
-  const [data, dispatch] = useReducer(todoReducer, defaultData);
+const Todo = () => {
+  const [data, dispatch] = useReducer(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  console.log(data);
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(data));
   }, [data]);
@@ -217,11 +236,11 @@ function Todo() {
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
-  const dueDateRef = useRef(null);
+  const dueDateRef = useRef<HTMLInputElement>(null);
 
   const addItem = (listIndex: number) => {
     const text = prompt('Enter item text');
-    const dueDateString = dueDateRef.current.value; // "YYYY-MM-DD"
+    const dueDateString = dueDateRef.current ? dueDateRef.current.value : '';
     const due = new Date(dueDateString);
 
     const member = prompt('Enter member name');
@@ -231,6 +250,29 @@ function Todo() {
       dispatch({ type: 'ADD_ITEM', payload: newItem, listIndex });
     }
   };
+
+  useEffect(() => {
+    const fetchTodosData = async () => {
+      const todosData = await getTodosData();
+      dispatch({ type: 'SET_DATA', payload: todosData }); // update data state with todosData
+    };
+    fetchTodosData();
+  }, []);
+
+  useEffect(() => {
+    const familyDocRef = doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9');
+
+    async function updateData() {
+      try {
+        await updateDoc(familyDocRef, { todo: data });
+        console.log('Data has been updated in Firestore!');
+      } catch (error) {
+        console.error('Error updating data in Firestore: ', error);
+      }
+    }
+
+    updateData();
+  }, [data]);
 
   return (
     <Container>
@@ -246,6 +288,6 @@ function Todo() {
       </Wrapper>
     </Container>
   );
-}
+};
 
 export default Todo;

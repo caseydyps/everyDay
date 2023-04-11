@@ -72,7 +72,8 @@ const Album = () => {
     },
   ]);
 
-  const handleUpload = (file: File, albumId: number) => {
+  const handleUpload = (file: File | null, albumId: string) => {
+    if (!file) return;
     // Generate a unique ID for the new photo
     const newId = Date.now();
     // Create a new photo object with the file information and ID
@@ -98,7 +99,7 @@ const Album = () => {
     updatedAlbum.photos.push(newPhoto);
     // Create a new array of albums with the updated album
     const updatedAlbums = albums.map((album) =>
-      album.id === albumId ? updatedAlbum : album
+      album.id === Number(albumId) ? updatedAlbum : album
     );
     // Update the state with the new array of albums
     setAlbums(updatedAlbums);
@@ -133,23 +134,26 @@ const Album = () => {
       <ColumnWrap>
         <h1>Photo Albums</h1>
         <AlbumList albums={albums} onAlbumClick={handleAlbumClick} />
-        <UploadForm albums={albums} onUpload={handleUpload} />
+        <UploadForm
+          albums={albums}
+          onUpload={(file, albumId) => handleUpload(file, albumId.toString())}
+        />
       </ColumnWrap>
       {currentAlbum ? (
         <div>
           <h2>{currentAlbum.title}</h2>
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {currentAlbum.photos.map((photo) => (
+            {currentAlbum.photos.map((photo: Photo) => (
               <Photo key={photo.id} photo={photo} onClick={handlePhotoClick} />
             ))}
           </div>
         </div>
       ) : (
-        albums.map((album) => (
+        albums.map((album: Album) => (
           <div key={album.id}>
             <h2>{album.title}</h2>
             <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              {album.photos.map((photo) => (
+              {album.photos.map((photo: Photo) => (
                 <Photo
                   key={photo.id}
                   photo={photo}

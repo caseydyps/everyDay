@@ -198,13 +198,12 @@ const SmartInput = () => {
   const handleSelectMember = (
     selectedMembers: string[],
     member: string,
-    members: string[]
+    memberIndex: number
   ) => {
-    if (selectedMembers.includes(member)) {
-      setSelectedMembers(selectedMembers.filter((m) => m !== member));
-    } else {
-      setSelectedMembers([...selectedMembers, member]);
-    }
+    const updatedSelectedMembers = selectedMembers.includes(member)
+      ? selectedMembers.filter((m) => m !== member)
+      : [...selectedMembers, member];
+    setSelectedMembers(updatedSelectedMembers);
   };
 
   const handleClick = (category: string) => {
@@ -354,9 +353,16 @@ const SmartInput = () => {
         <h2>Smart Input</h2>
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector
-          onSelectMember={handleSelectMember}
+          onSelectMember={(selectedMembers: string[]) =>
+            handleSelectMember(
+              selectedMembers,
+              selectedMembers[0],
+              selectedMembers.indexOf(selectedMembers[0])
+            )
+          }
           selectedMembers={selectedMembers.map(String)}
         />
+
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>
             Input:

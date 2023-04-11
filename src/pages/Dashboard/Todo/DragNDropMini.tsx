@@ -127,8 +127,21 @@ const RowWrap = styled.div`
   flex-direction: row;
 `;
 
-function DragNDropMini({ data }) {
-  const [list, setList] = useState(data);
+type DataType = {
+  id: number;
+  name: string;
+  items: ItemType[]; // <-- add this line
+};
+
+type ItemType = {
+  id: number;
+  name: string;
+  done: boolean;
+  due: string;
+};
+
+function DragNDropMini({ data }: { data: DataType[] }) {
+  const [list, setList] = useState<DataType[]>(data);
   const [dragging, setDragging] = useState(false);
   const [sortOrder, setSortOrder] = useState('ascending');
 
@@ -136,13 +149,15 @@ function DragNDropMini({ data }) {
     setList(data);
   }, [setList, data]);
 
-  const dragItem = useRef();
-  const dragItemNode = useRef();
+  const dragItem = useRef<DataType | null>(null);
+  const dragItemNode = useRef<HTMLDivElement>(null);
 
-  const handletDragStart = (e: React.DragEvent<HTMLDivElement>, item) => {
+  const handleDragStart = (
+    e: React.DragEvent<HTMLDivElement>,
+    item: DataType
+  ) => {
     console.log('Starting to drag', item);
-
-    dragItemNode.current = e.target;
+    dragItemNode.current = e.target as HTMLDivElement;
     dragItemNode.current.addEventListener('dragend', handleDragEnd);
     dragItem.current = item;
 
@@ -256,7 +271,7 @@ function DragNDropMini({ data }) {
     groupIndex: number,
     itemIndex: number
   ) => {
-    const checked = e.target.checked;
+    const checked = (e.target as HTMLInputElement).checked;
     setList((prevList) => {
       const newList = [...prevList];
       newList[groupIndex].items[itemIndex] = {
@@ -360,7 +375,8 @@ function DragNDropMini({ data }) {
         >
           {hideChecked ? 'Show Completed' : 'Hide Completed'}
         </button> */}
-        {list.map((group, groupIndex) => (
+
+        {list.map((group: Group, groupIndex: number) => (
           <div>
             <h3>{group.title}</h3>
             {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
@@ -390,16 +406,16 @@ function DragNDropMini({ data }) {
               }
             >
               {group.items
-                .sort((a, b) => {
+                .sort((a: ItemType, b: ItemType) => {
                   const aDueDate = new Date(a.due);
                   const bDueDate = new Date(b.due);
                   if (sortOrder === 'ascending') {
-                    return aDueDate - bDueDate;
+                    return (new Date(a.due) as any) - (new Date(b.due) as any);
                   } else {
-                    return bDueDate - aDueDate;
+                    return (new Date(b.due) as any) - (new Date(a.due) as any);
                   }
                 })
-                .map((item, itemIndex) => {
+                .map((item, itemIndex: number) => {
                   console.log('Due date:', item.due);
                   console.log('Current date:', new Date());
                   const dueDate = new Date(item.due); // convert date string to Date object
@@ -415,7 +431,7 @@ function DragNDropMini({ data }) {
                       draggable
                       key={item}
                       onDragStart={(e) =>
-                        handletDragStart(e, { groupIndex, itemIndex })
+                        handleDragStart(e, { groupIndex, itemIndex })
                       }
                       onDragEnter={
                         dragging

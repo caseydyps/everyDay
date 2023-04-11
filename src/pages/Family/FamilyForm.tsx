@@ -1,26 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
 import Sidebar from '../../Components/SideBar/SideBar';
-import AvatarCreator from './Avatar';
-import { handleLoadAvatar } from './Avatar';
-
-interface FamilyMember {
-  name: string;
-  avatar: string;
-  birthday: string;
-  role: string;
-  seed: string;
-  eyebrows: string;
-  eyes: string;
-  hair: string;
-  hairProbability: number;
-  hairColor: string;
-  mouth: string;
-  background: string;
-  feature: string;
-  featuresProbability: number;
-  anniversaries: { date: string; description: string }[];
-}
+// import AvatarCreator from './Avatar';
+// import { handleLoadAvatar } from './Avatar';
 
 const FamilyMemberForm = () => {
   const [numberOfMembers, setNumberOfMembers] = useState<number>(0);
@@ -66,6 +48,24 @@ const FamilyMemberForm = () => {
   //   handleLoadAvatar();
   // }, []);
 
+  interface FamilyMember {
+    name: string;
+    avatar: string;
+    birthday: string;
+    role: string;
+    seed: string;
+    eyebrows: string;
+    eyes: string;
+    hair: string;
+    hairProbability: number;
+    hairColor: string;
+    mouth: string;
+    background: string;
+    feature: string;
+    featuresProbability: number;
+    anniversaries: { date: string; description: string }[];
+  }
+
   const handleNumberOfMembersChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -74,13 +74,25 @@ const FamilyMemberForm = () => {
     setMembers(
       Array(numberOfMembers)
         .fill(undefined)
-        .map(() => ({
-          name: '',
-          avatar: '',
-          birthday: '',
-          role: '',
-          anniversaries: [],
-        }))
+        .map(
+          (): FamilyMember => ({
+            name: '',
+            avatar: '',
+            birthday: '',
+            role: '',
+            anniversaries: [],
+            seed: '',
+            eyebrows: '',
+            eyes: '',
+            hair: '',
+            hairColor: '',
+            hairProbability: 0,
+            mouth: '',
+            background: '',
+            feature: '',
+            featuresProbability: 0,
+          })
+        )
     );
   };
   const handleMemberNameChange = (
@@ -168,6 +180,16 @@ const FamilyMemberForm = () => {
         birthday: '',
         role: '',
         anniversaries: [],
+        seed: '',
+        eyebrows: '',
+        eyes: '',
+        hair: '',
+        hairColor: '',
+        hairProbability: 0,
+        mouth: '',
+        background: '',
+        feature: '',
+        featuresProbability: 0,
       },
     ]);
   };
@@ -197,8 +219,6 @@ const FamilyMemberForm = () => {
   function getAvatarUrl(member: any): string {
     return `https://api.dicebear.com/6.x/adventurer/svg?seed=${member.seed}&eyebrows=${member.eyebrows}&eyes=${member.eyes}&hair=${member.hair}&hairProbability=${member.hairProbability}&hairColor=${member.hairColor}&mouth=${member.mouth}&backgroundColor=${member.background}&features=${member.feature}&featuresProbability=${member.featuresProbability}`;
   }
-
-  const memberAvatarUrls = members.map((member) => getAvatarUrl(member));
 
   useEffect(() => {
     const member = {
@@ -551,19 +571,19 @@ const FamilyMemberForm = () => {
 
                     <div
                       key={index}
-                      index={index}
-                      onSave={(
-                        avatarUrl,
-                        seed,
-                        eyebrows,
-                        eyes,
-                        hair,
-                        hairColor,
-                        hairProbability,
-                        mouth,
-                        background,
-                        feature,
-                        featuresProbability
+                      data-index={index}
+                      data-on-Save={(
+                        avatarUrl: string,
+                        seed: string,
+                        eyebrows: string,
+                        eyes: string,
+                        hair: string,
+                        hairColor: string,
+                        hairProbability: number,
+                        mouth: string,
+                        background: string,
+                        feature: string,
+                        featuresProbability: number
                       ) =>
                         handleAvatarSave(
                           avatarUrl,
@@ -572,8 +592,8 @@ const FamilyMemberForm = () => {
                           eyebrows,
                           eyes,
                           hair,
-                          hairColor,
                           hairProbability,
+                          hairColor,
                           mouth,
                           background,
                           feature,
@@ -707,8 +727,8 @@ const FamilyMemberForm = () => {
                           eyebrows,
                           eyes,
                           hair,
-                          hairColor,
                           hairProbability,
+                          hairColor,
                           mouth,
                           background,
                           feature,

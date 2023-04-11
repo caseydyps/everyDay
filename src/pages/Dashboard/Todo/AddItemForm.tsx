@@ -2,10 +2,27 @@ import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function AddItemForm({ groupIndex, onAddItem }) {
+type FamilyMember = {
+  name: string;
+  role: string;
+  avatarSrc: string;
+};
+
+type Item = {
+  title: string;
+  due: string | null;
+  member: FamilyMember;
+};
+
+type AddItemFormProps = {
+  groupIndex: number;
+  onAddItem: (groupIndex: number, item: Item) => void;
+};
+
+function AddItemForm({ groupIndex, onAddItem }: AddItemFormProps) {
   const [title, setTitle] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date>(new Date());
-  const [selectedMember, setSelectedMember] = useState<string[]>([]);
+  const [selectedMember, setSelectedMember] = useState<number | null>(null);
   const [dueDateNeeded, setDueDateNeeded] = useState(false);
   const family = [
     {
@@ -35,22 +52,24 @@ function AddItemForm({ groupIndex, onAddItem }) {
     setDueDate(date);
   }
 
-  function handleMemberChange(event: React.ChangeEvent<HTMLSelectElement>) {
+  function handleMemberChange(event: React.ChangeEvent<HTMLInputElement>) {
     const memberIndex = parseInt(event.target.value);
     setSelectedMember(memberIndex);
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const member = family[selectedMember];
-    const due = dueDateNeeded ? dueDate.toLocaleDateString() : null;
-    console.log('Title:', title);
-    console.log('Due:', due);
-    onAddItem(groupIndex, { title, due, member });
-    setTitle('');
-    setDueDate(new Date());
-    setSelectedMember(null);
-    setDueDateNeeded(false);
+    if (selectedMember !== null) {
+      const member = family[selectedMember];
+      const due = dueDateNeeded ? dueDate.toLocaleDateString() : null;
+      console.log('Title:', title);
+      console.log('Due:', due);
+      onAddItem(groupIndex, { title, due, member });
+      setTitle('');
+      setDueDate(new Date());
+      setSelectedMember(null);
+      setDueDateNeeded(false);
+    }
   }
 
   function handleDueDateNeededChange(
