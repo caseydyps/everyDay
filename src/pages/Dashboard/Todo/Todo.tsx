@@ -174,7 +174,7 @@ interface MoveItemAction {
 
 type TodoAction = AddListAction | AddItemAction | MoveItemAction;
 
-const todoReducer = (state: TodoState, action: TodoAction) => {
+export const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
     case 'ADD_LIST':
       return [...state, { title: action.payload, items: [] }];

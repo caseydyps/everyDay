@@ -1,7 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import Sidebar from '../../../Components/SideBar/SideBar';
-
+import { db } from '../../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  doc,
+  addDoc,
+  deleteDoc,
+  setDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
 const CalendarContainer = styled.div`
@@ -249,6 +262,103 @@ function Calendar() {
     isCurrentMonth: boolean;
   }
 
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      const eventsData = await getCalendarData();
+      console.log(eventsData);
+      setEvents(eventsData);
+    };
+    fetchCalendarData();
+  }, []);
+
+  const getCalendarData = async () => {
+    const familyDocRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Calendar'
+    );
+    const querySnapshot = await getDocs(familyDocRef);
+    const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return todosData;
+  };
+
+  const postEventToFirestore = async (data) => {
+    const familyDocRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Calendar'
+    );
+    try {
+      const docRef = await addDoc(familyDocRef, data);
+      console.log('Document written with ID: ', docRef.id);
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  };
+
+  const deleteEventFromFirestore = async (eventId) => {
+    const eventRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Calendar'
+    );
+    const querySnapshot = await getDocs(eventRef);
+    querySnapshot.forEach(async (doc) => {
+      const data = doc.data();
+      if (data.id === eventId) {
+        try {
+          await deleteDoc(doc.ref);
+          console.log('Document successfully deleted!');
+        } catch (error) {
+          console.error('Error removing document: ', error);
+        }
+      }
+    });
+  };
+
+  const editEventtoFirestore = async (eventId, updatedData) => {
+    const eventRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Calendar'
+    );
+
+    // Query for the document with the matching ID
+    const querySnapshot = await getDocs(
+      query(eventRef, where('id', '==', eventId))
+    );
+
+    // Update the document with the new data
+    querySnapshot.forEach(async (doc) => {
+      try {
+        await updateDoc(doc.ref, updatedData);
+        console.log('Document successfully edited!');
+      } catch (error) {
+        console.error('Error editing document: ', error);
+      }
+    });
+  };
+
+  const updateEventToFirestore = async (eventId: string, finished: boolean) => {
+    const eventRef = doc(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Calendar',
+      eventId
+    );
+    try {
+      await updateDoc(eventRef, { finished: finished });
+      console.log('Document successfully updated!');
+    } catch (error) {
+      console.error('Error updating document: ', error);
+    }
+  };
+
   function DateDetails({
     date,
     events,
@@ -345,9 +455,9 @@ function Calendar() {
                       <button onClick={() => handleDeleteEvent(event)}>
                         Delete
                       </button>
-                      <button onClick={() => handleFinishEvent(event)}>
+                      {/* <button onClick={() => handleFinishEvent(event)}>
                         Finish
-                      </button>
+                      </button> */}
                     </div>
                   </EventWrapper>
                 </li>
@@ -490,6 +600,7 @@ function Calendar() {
       newEvent.time = eventTime;
       newEvent.endTime = eventEndTime;
     }
+    postEventToFirestore(newEvent); // post new event to Firestore
     setEvents([...events, newEvent]);
     setShowModal(false);
     setEventTitle('');
@@ -573,7 +684,7 @@ function Calendar() {
   const weekNumber = getWeekNumber(date);
 
   // handleEditEvent function
-  const handleEditEvent = (event: Event) => {
+  const handleEditEvent = async (event: Event) => {
     // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
@@ -613,32 +724,43 @@ function Calendar() {
     const updatedEvents = events.map((e) =>
       e.id === event.id ? updatedEvent : e
     );
+    await editEventtoFirestore(event.id, updatedEvent);
     setEvents(updatedEvents);
   };
 
   // handleDeleteEvent function
-  const handleDeleteEvent = (event: Event) => {
+  const handleDeleteEvent = async (event: Event) => {
     // Prompt the user to confirm deletion
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${event.title}"?`
     );
     if (confirmDelete) {
       // Remove the event from the events list
-      const updatedEvents = events.filter((e) => e.id !== event.id);
+      const updatedEvents = events.filter((e) => {
+        console.log(e.id);
+        console.log(event.id);
+        return e.id !== event.id;
+      });
       setEvents(updatedEvents);
+      console.log(events);
+      console.log(event.id);
+      await deleteEventFromFirestore(event.id);
     }
   };
 
-  // handleFinishEvent function
-  const handleFinishEvent = (event: Event) => {
-    // Update the event's "finished" property to its opposite value
-    const updatedEvent = { ...event, finished: !event.finished };
-    // Update the events list with the new event object
-    const updatedEvents = events.map((e) =>
-      e.id === event.id ? updatedEvent : e
-    );
-    setEvents(updatedEvents);
-  };
+  // // handleFinishEvent function
+  // const handleFinishEvent = (event: Event) => {
+  //   // Update the event's "finished" property to its opposite value
+  //   const updatedEvent = { ...event, finished: !event.finished };
+  //   // Update the events list with the new event object
+  //   const updatedEvents = events.map((e) =>
+  //     e.id === event.id ? updatedEvent : e
+  //   );
+  //   // Update the event in Firestore
+  //   updateEventToFirestore(event.id, updatedEvent.finished);
+  //   // Update the state with the new events list
+  //   setEvents(updatedEvents);
+  // };
 
   useEffect(() => {
     console.log(events);

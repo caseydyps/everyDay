@@ -1,6 +1,21 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
 import Timeline from './Timeline';
+import { db } from '../../config/firebase.config';
+import {
+  collection,
+  updateDoc,
+  addDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  writeBatch,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  arrayUnion,
+} from 'firebase/firestore';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -393,175 +408,193 @@ function MilestoneMini() {
     return { minYear, maxYear };
   }
 
-  useEffect(() => {
-    // Fetch events from server or set initial events
-    const initialEvents = [
-      {
-        id: 1,
-        title: 'Get married',
-        date: new Date(2023, 3, 15),
-        member: 'John Doe',
-        image:
-          'https://fastly.picsum.photos/id/238/200/200.jpg?hmac=O4Jc6lqHVfaKVzLf8bWssNTbWzQoaRUC0TDXod9xDdM',
-      },
-      {
-        id: 2,
-        title: 'Event 2',
-        date: new Date(2023, 3, 17),
-        member: 'Jane Smith',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-    ];
+  // useEffect(() => {
+  //   // Fetch events from server or set initial events
+  //   const initialEvents = [
+  //     {
+  //       id: 1,
+  //       title: 'Get married',
+  //       date: new Date(2023, 3, 15),
+  //       member: 'John Doe',
+  //       image:
+  //         'https://fastly.picsum.photos/id/238/200/200.jpg?hmac=O4Jc6lqHVfaKVzLf8bWssNTbWzQoaRUC0TDXod9xDdM',
+  //     },
+  //     {
+  //       id: 2,
+  //       title: 'Event 2',
+  //       date: new Date(2023, 3, 17),
+  //       member: 'Jane Smith',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //     {
+  //       id: 3,
+  //       title: 'Event 3',
+  //       date: new Date(2023, 3, 22),
+  //       member: 'Bob Johnson',
+  //       image: 'https://picsum.photos/200',
+  //     },
+  //   ];
 
-    setEvents(initialEvents);
+  //   setEvents(initialEvents);
+  // }, []);
+  useEffect(() => {
+    const familyDocRef = doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9');
+
+    async function fetchData() {
+      try {
+        const docSnap = await getDoc(familyDocRef);
+        const data = docSnap.data();
+        if (data && data.milestone) {
+          setEvents(data.milestone);
+        }
+      } catch (error) {
+        console.error('Error fetching data from Firestore: ', error);
+      }
+    }
+
+    fetchData();
   }, []);
+
   console.log(events);
 
   return (
@@ -661,7 +694,7 @@ function MilestoneMini() {
         </FormWrapper> */}
 
         <EventContainer>
-          <Timeline events={events} />
+          {/* <Timeline events={events} /> */}
 
           {filterEvents(events)
             .sort((a, b) => a.date - b.date)

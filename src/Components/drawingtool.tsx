@@ -1,5 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components/macro';
+import { db } from '../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  doc,
+  addDoc,
+  deleteDoc,
+  setDoc,
+  getDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 const CanvasWrap = styled.div`
   display: flex;
   justify-content: center;
@@ -146,14 +161,26 @@ const DrawingTool = () => {
     }
   };
 
-  const saveCanvas = () => {
+  const saveCanvas = async () => {
     const canvas = canvasRef.current;
     const dataURL = canvas ? canvas.toDataURL() : null;
     if (dataURL) {
-      localStorage.setItem('savedCanvas', dataURL);
+      const canvaDocRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'canva',
+        'xoQi8suQkRBSHmELkazx'
+      );
+      try {
+        await setDoc(canvaDocRef, { dataURL });
+        console.log('Canvas data has been saved to Firestore!');
+      } catch (error) {
+        console.error('Error saving canvas data to Firestore: ', error);
+      }
     }
   };
-  const loadCanvas = () => {
+  const loadCanvas = async () => {
     const canvas = canvasRef.current;
     if (!canvas) {
       return;
@@ -163,15 +190,35 @@ const DrawingTool = () => {
       return;
     }
 
-    const savedData = localStorage.getItem('savedCanvas');
-    if (savedData) {
-      const image = new Image();
-      image.onload = () => {
-        canvas.width = image.width;
-        canvas.height = image.height;
-        context.drawImage(image, 0, 0);
-      };
-      image.src = savedData;
+    const familyDocRef = doc(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'canva',
+      'xoQi8suQkRBSHmELkazx'
+    );
+    try {
+      const docSnapshot = await getDoc(familyDocRef);
+      if (docSnapshot.exists()) {
+        const dataURL = docSnapshot.data().dataURL;
+        console.log(dataURL);
+        const image = new Image();
+        image.onload = () => {
+          canvas.width = image.width;
+          canvas.height = image.height;
+          context.drawImage(image, 0, 0);
+
+          // Set context properties
+          contextRef.current = context;
+          contextRef.current.scale(2, 2);
+          contextRef.current.lineCap = 'round';
+          contextRef.current.lineWidth = width;
+          contextRef.current.strokeStyle = color;
+        };
+        image.src = dataURL;
+      }
+    } catch (error) {
+      console.error('Error loading canvas data from Firestore: ', error);
     }
   };
 

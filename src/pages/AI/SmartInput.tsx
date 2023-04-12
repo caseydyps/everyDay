@@ -2,7 +2,22 @@ import styled from 'styled-components';
 import React, { useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/SideBar/SideBar';
-
+import { v4 as uuidv4 } from 'uuid';
+import { db } from '../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  getDoc,
+  addDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 const Wrapper = styled.div`
   width: 80vw;
   height: autp;
@@ -230,16 +245,16 @@ const SmartInput = () => {
 
       行事曆：
       {
-        "event": "事件名稱",
-        "category": ${category},
-      
-        "startTime": "開始時間 (YYYY-MM-DD HH:MM)",
-        "endTime": "結束時間 (YYYY-MM-DD HH:MM)",
-        "members": ${selectedMembers},
-        
+        "title": "事件名稱",
+        "category": "類別:work, personal, school",
+        "date": "開始日期 (YYYY-MM-DD)",
+        "endDate": "結束日期 (YYYY-MM-DD)",
+        "time": "開始時間 (HH:MM)",
+        "endTime": "結束時間 (HH:MM)",
+        "member": ${selectedMembers},
+        "event": ${category},
         "response": "${categoryFeedback} 回應訊息"
       }
-    
     `;
 
       let response = await openai.createCompletion({
@@ -261,16 +276,13 @@ const SmartInput = () => {
 
   待辦事項：
   {
-    "task": "任務描述",
-    "category": ${category},
-    "dueTime": "截止時間 (YYYY-MM-DD HH:MM)",
-    "members": ${selectedMembers},
-    "completed": false,
+    "text": "任務描述",
+    "event": ${category},
+    "due": "截止時間 (YYYY-MM-DD)",
+    "member": ${selectedMembers},
+    "done": false,
     "response": "完成任務後，請不要忘記將其標記為完成。回應訊息"
   }
-
-    
-
     `;
 
       let response = await openai.createCompletion({
@@ -289,16 +301,16 @@ const SmartInput = () => {
   今天日期是 ${formattedDate}
   請依照繁體中文格式，生成以下 JSON 回應：
 
-
   便利貼：
   {
-    "title": "便利貼標題",
-    "category": ${category},
+    "id": ${uuidv4()},
+    "event": ${category},
     "content": "便利貼內容",
-    "response": "此便利貼已添加到您的便利貼列表。回應訊息"
+    "color": "便利貼顏色",
+    "response": "此便利貼已添加到您的便利貼列表。回應訊息",
+    "x":150,
+    "y":150,
   }
-
-
     `;
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -319,10 +331,11 @@ const SmartInput = () => {
 
     里程碑:
     {
-      "milestone": "里程碑描述",
-      "category": ${category},
+      "title": "里程碑描述",
+      "event": ${category},
       "date": "里程碑日期（YYYY-MM-DD）",
-      "members": ${selectedMembers},
+      "member": ${selectedMembers},
+      "image": "里程碑圖片",
       "response": "恭喜您達成里程碑！回應信息"
     }
   `;
@@ -344,6 +357,38 @@ const SmartInput = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     await runPrompt();
+  };
+
+  const handleNewEventSubmit: HandleNewEventSubmit = async (responseValue) => {
+    console.log(JSON.parse(responseValue));
+    console.log(JSON.parse(responseValue).title);
+    console.log(JSON.parse(responseValue).date);
+    const newEvent = {
+      id: uuidv4(),
+      title: JSON.parse(responseValue).title,
+      date: JSON.parse(responseValue).date,
+      member: JSON.parse(responseValue).member,
+      image: JSON.parse(responseValue).image || null,
+    };
+
+    try {
+      const eventsRef = collection(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'Milestone'
+      );
+      await addDoc(eventsRef, newEvent);
+      console.log('New event has been added to Firestore!');
+    } catch (error) {
+      console.error('Error adding new event to Firestore: ', error);
+    }
+
+    // // Clear the form fields
+    // setNewEventTitle('');
+    // setNewEventDate('');
+    // setNewEventMember('');
+    // setNewEventImage('');
   };
 
   return (
@@ -378,6 +423,10 @@ const SmartInput = () => {
           <ResponseDisplay>
             <p>Response:</p>
             <p>{responseValue}</p>
+            <button onClick={() => handleNewEventSubmit(responseValue)}>
+              {' '}
+              add this event?
+            </button>
           </ResponseDisplay>
         )}
 

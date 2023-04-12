@@ -2,6 +2,483 @@ import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
 import Timeline from './Timeline';
 import Sidebar from '../../Components/SideBar/SideBar';
+import { db } from '../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  collection,
+  updateDoc,
+  addDoc,
+  getDocs,
+  getDoc,
+  setDoc,
+  writeBatch,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  arrayUnion,
+} from 'firebase/firestore';
+
+function Milestone() {
+  type EventType = {
+    id: number;
+    title: string;
+    date: Date;
+    member: string;
+    image: string | null;
+  };
+
+  const [events, setEvents] = useState<EventType[]>([]);
+  const [newEventTitle, setNewEventTitle] = useState<string>('');
+  const [newEventDate, setNewEventDate] = useState<string>('');
+  const [newEventMember, setNewEventMember] = useState<string>('');
+  const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
+    null
+  );
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [file, setFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  type NewEvent = {
+    id: number;
+    title: string;
+    date: Date;
+    member: string;
+    image: string;
+  };
+
+  type HandleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => void;
+
+  const handleNewEventSubmit: HandleNewEventSubmit = async (e) => {
+    e.preventDefault();
+    console.log(newEventDate);
+    const newEvent = {
+      id: uuidv4(),
+      title: newEventTitle,
+      date: newEventDate,
+      member: newEventMember,
+      image: file ? URL.createObjectURL(file) : null,
+    };
+
+    try {
+      const eventsRef = collection(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'Milestone'
+      );
+      await setDoc(doc(eventsRef, newEvent.id), newEvent);
+      console.log('New event has been added to Firestore!');
+      setEvents((prevEvents) => [...prevEvents, newEvent]);
+    } catch (error) {
+      console.error('Error adding new event to Firestore: ', error);
+    }
+
+    // Clear the form fields
+    setNewEventTitle('');
+    setNewEventDate('');
+    setNewEventMember('');
+    setNewEventImage('');
+  };
+
+  type AvatarPreviewProps = {
+    avatar: string;
+  };
+
+  const AvatarPreview = ({ avatar }: AvatarPreviewProps) => {
+    return <img src={avatar} alt="Avatar" />;
+  };
+
+  const handleEditEvent = (event: EventType) => {
+    setEditedEvent(event);
+    setIsEditing(true);
+  };
+
+  const filterEvents = (events: EventType[]) => {
+    return events.filter((event) => {
+      let match = true;
+
+      if (filter.member !== '') {
+        match =
+          match &&
+          event.member.toLowerCase().includes(filter.member.toLowerCase());
+      }
+
+      if (filter.startDate !== null) {
+        match = match && event.date >= filter.startDate;
+      }
+
+      if (filter.endDate !== null) {
+        match = match && event.date <= filter.endDate;
+      }
+
+      if (filter.title !== null) {
+        match =
+          match &&
+          event.title.toLowerCase().includes(filter.title.toLowerCase());
+      }
+
+      return match;
+    });
+  };
+
+  const [filter, setFilter] = useState({
+    member: '',
+    startDate: null,
+    endDate: null,
+    title: '',
+  });
+  type HandleEditFormSubmit = (editedEvent: EventType) => void;
+  const handleEditFormSubmit: HandleEditFormSubmit = async (editedEvent) => {
+    try {
+      const eventsRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'Milestone',
+        editedEvent.id
+      );
+      await updateDoc(eventsRef, editedEvent);
+      console.log('Event updated successfully!');
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.id === editedEvent.id ? editedEvent : event
+        )
+      );
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating event: ', error);
+    }
+  };
+
+  const handleDeleteEvent = async (id) => {
+    console.log(id);
+    try {
+      await deleteDoc(
+        doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'Milestone', id)
+      );
+      setEvents(events.filter((event) => event.id !== id));
+      console.log(events);
+      console.log('Event deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting event: ', error);
+    }
+  };
+
+  const EditEventForm = ({
+    event,
+    onEdit,
+  }: {
+    event: EventType;
+    onEdit: HandleEditFormSubmit;
+  }) => {
+    const [title, setTitle] = useState(event.title);
+    const [date, setDate] = useState(event.date);
+    const [member, setMember] = useState(event.member);
+    const [image, setImage] = useState<File | null>(null);
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const editedEvent = {
+        ...event,
+        title,
+        date: date,
+        member,
+        image: image ? URL.createObjectURL(image) : null,
+      };
+
+      onEdit(editedEvent);
+    };
+
+    return (
+      <form onSubmit={handleSubmit}>
+        <FormField>
+          <FormLabel>Title:</FormLabel>
+          <FormInput
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </FormField>
+        <FormField>
+          <FormLabel>Date:</FormLabel>
+          <FormInput
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </FormField>
+        <FormField>
+          <FormLabel>Member:</FormLabel>
+          <FormInput
+            type="text"
+            value={member}
+            onChange={(e) => setMember(e.target.value)}
+          />
+        </FormField>
+        <FormField>
+          <FormLabel>Image:</FormLabel>
+          <FormInput
+            type="file"
+            onChange={(e) => setImage(e.target.files?.[0] || null)}
+          />
+        </FormField>
+        <button type="submit">Save</button>
+      </form>
+    );
+  };
+
+  //   useEffect(() => {
+  //     // Fetch events from server or set initial events
+  //     const initialEvents = [
+  //       {
+  //         id: 1,
+  //         title: 'Get married',
+  //         date: new Date(2023, 3, 15),
+  //         member: 'John Doe',
+  //         image:
+  //           'https://fastly.picsum.photos/id/238/200/200.jpg?hmac=O4Jc6lqHVfaKVzLf8bWssNTbWzQoaRUC0TDXod9xDdM',
+  //       },
+  //       {
+  //         id: 2,
+  //         title: '第一次站起來',
+  //         date: new Date(2023, 3, 17),
+  //         member: 'Jane Smith',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: '生日',
+  //         date: new Date(2023, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: '第一次走路',
+  //         date: new Date(2023, 3, 23),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: '一週年',
+  //         date: new Date(2021, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: '二週年',
+  //         date: new Date(2024, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: 'Event 3',
+  //         date: new Date(2025, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: 'Event 3',
+  //         date: new Date(2023, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: 'Event 3',
+  //         date: new Date(2023, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //       {
+  //         id: 3,
+  //         title: 'Event 3',
+  //         date: new Date(2023, 3, 22),
+  //         member: 'Bob Johnson',
+  //         image: 'https://picsum.photos/200',
+  //       },
+  //     ];
+
+  //     setEvents(initialEvents);
+  //   }, []);
+  useEffect(() => {
+    const familyDocRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'Milestone'
+    );
+
+    async function fetchData() {
+      try {
+        const querySnapshot = await getDocs(familyDocRef);
+        const data = querySnapshot.docs.map((doc) => ({
+          ...doc.data(),
+        }));
+        console.log(data);
+        setEvents(data);
+      } catch (error) {
+        console.error('Error fetching data from Firestore: ', error);
+      }
+    }
+
+    fetchData();
+  }, []);
+  console.log(events);
+  console.log(isEditing);
+
+  return (
+    <Container>
+      <Sidebar />
+      <Wrapper>
+        <Header>Milestone</Header>
+        <Wrap>
+          <h3>Filter</h3>
+          <FormField>
+            <FormLabel>Title:</FormLabel>
+            <FormInput
+              type="text"
+              value={filter.title}
+              onChange={(e) => setFilter({ ...filter, title: e.target.value })}
+            />
+          </FormField>
+
+          <FormField>
+            <FormLabel>Member:</FormLabel>
+            <FormInput
+              type="text"
+              value={filter.member}
+              onChange={(e) => setFilter({ ...filter, member: e.target.value })}
+            />
+          </FormField>
+
+          <FormField>
+            <FormLabel>Start Date:</FormLabel>
+            <FormInput
+              type="date"
+              value={filter.startDate}
+              onChange={(e) =>
+                setFilter({ ...filter, startDate: new Date(e.target.value) })
+              }
+            />
+          </FormField>
+
+          <FormField>
+            <FormLabel>End Date:</FormLabel>
+            <FormInput
+              type="date"
+              value={filter.endDate}
+              onChange={(e) =>
+                setFilter({ ...filter, endDate: new Date(e.target.value) })
+              }
+            />
+          </FormField>
+        </Wrap>
+
+        <ContentWrapper>
+          <FormWrapper>
+            <Form onSubmit={handleNewEventSubmit}>
+              <FormField>
+                <FormLabel>Title:</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newEventTitle}
+                  onChange={(e) => setNewEventTitle(e.target.value)}
+                />
+              </FormField>
+              <FormField>
+                <FormLabel>Date:</FormLabel>
+                <FormInput
+                  type="date"
+                  value={newEventDate}
+                  onChange={(e) => setNewEventDate(e.target.value)}
+                />
+              </FormField>
+              <FormField>
+                <FormLabel>Member:</FormLabel>
+                <FormInput
+                  type="text"
+                  value={newEventMember}
+                  onChange={(e) => setNewEventMember(e.target.value)}
+                />
+              </FormField>
+              <FormField>
+                <FormLabel>Image:</FormLabel>
+
+                {imagePreview ? (
+                  <AvatarPreview src={imagePreview} alt="Preview" />
+                ) : (
+                  <input
+                    type="file"
+                    onChange={(e) => setFile(e.target.files[0])}
+                  />
+                )}
+              </FormField>
+              <FormButton type="submit">Add Event</FormButton>
+            </Form>
+          </FormWrapper>
+
+          <EventContainer>
+            {/* <Timeline events={events} /> */}
+
+            {filterEvents(events)
+              .sort(
+                (a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+              )
+              .map((event, index) => (
+                <>
+                  <EventBox
+                    key={event.id}
+                    style={{
+                      alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                      marginTop: index % 2 === 0 ? '0px' : '400px',
+                      marginBottom: index % 2 === 0 ? '400px' : '0px',
+                    }}
+                  >
+                    <EditButton onClick={() => handleEditEvent(event)}>
+                      Edit
+                    </EditButton>
+                    <ColumnWrap>
+                      <EventImage src={event.image} alt="Event" />
+                      <EventTitle>{event.title}</EventTitle>
+                      <EventDate>{event.date}</EventDate>
+                      <EventMember>Member: {event.member}</EventMember>s
+                    </ColumnWrap>
+
+                    <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
+                      Delete
+                    </DeleteButton>
+                  </EventBox>
+                  <EventDot
+                    style={{
+                      alignSelf: 'center',
+                    }}
+                  />
+                </>
+              ))}
+          </EventContainer>
+          {isEditing ? (
+            <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
+          ) : (
+            <form onSubmit={handleNewEventSubmit} />
+          )}
+        </ContentWrapper>
+      </Wrapper>
+    </Container>
+  );
+}
+
+export default Milestone;
 
 const Wrapper = styled.div`
   width: 80vw;
@@ -218,410 +695,3 @@ const Container = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
 `;
-
-function Milestone() {
-  type EventType = {
-    id: number;
-    title: string;
-    date: Date;
-    member: string;
-    image: string | null;
-  };
-
-  const [events, setEvents] = useState<EventType[]>([]);
-  const [newEventTitle, setNewEventTitle] = useState<string>('');
-  const [newEventDate, setNewEventDate] = useState<string>('');
-  const [newEventMember, setNewEventMember] = useState<string>('');
-  const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
-    null
-  );
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>('');
-  const [file, setFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState<string | undefined>();
-  type NewEvent = {
-    id: number;
-    title: string;
-    date: Date;
-    member: string;
-    image: string;
-  };
-
-  type HandleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => void;
-
-  const handleNewEventSubmit: HandleNewEventSubmit = (e) => {
-    e.preventDefault();
-
-    const newEvent = {
-      id: events.length + 1,
-      title: newEventTitle,
-      date: new Date(newEventDate),
-      member: newEventMember,
-      image: file ? URL.createObjectURL(file) : null,
-    };
-
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
-
-    // Clear the form fields
-    setNewEventTitle('');
-    setNewEventDate('');
-    setNewEventMember('');
-    setNewEventImage(null);
-  };
-
-  type AvatarPreviewProps = {
-    avatar: string;
-  };
-
-  const AvatarPreview = ({ avatar }: AvatarPreviewProps) => {
-    return <img src={avatar} alt="Avatar" />;
-  };
-
-  const handleEditEvent = (event: EventType) => {
-    EditEventForm();
-    setEditedEvent(event);
-    setIsEditing(true);
-  };
-
-  const filterEvents = (events: EventType[]) => {
-    return events.filter((event) => {
-      let match = true;
-
-      if (filter.member !== '') {
-        match =
-          match &&
-          event.member.toLowerCase().includes(filter.member.toLowerCase());
-      }
-
-      if (filter.startDate !== null) {
-        match = match && event.date >= filter.startDate;
-      }
-
-      if (filter.endDate !== null) {
-        match = match && event.date <= filter.endDate;
-      }
-
-      if (filter.title !== null) {
-        match =
-          match &&
-          event.title.toLowerCase().includes(filter.title.toLowerCase());
-      }
-
-      return match;
-    });
-  };
-
-  const [filter, setFilter] = useState({
-    member: '',
-    startDate: null,
-    endDate: null,
-    title: '',
-  });
-
-  const handleEditFormSubmit = (editedData: EventType) => {
-    if (editedEvent) {
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === editedEvent.id ? { ...event, ...editedData } : event
-        )
-      );
-      setIsEditing(false);
-    }
-  };
-
-  const handleDeleteEvent = (id: number) => {
-    setEvents(events.filter((event) => event.id !== id));
-  };
-
-  function EditEventForm({ event, onEdit }) {
-    const [title, setTitle] = useState(event.title);
-    const [date, setDate] = useState(event.date.toISOString().slice(0, 10));
-    const [member, setMember] = useState(event.member);
-    const [image, setImage] = useState(event.image);
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-
-      const editedEvent = {
-        ...event,
-        title,
-        date: new Date(date),
-        member,
-        image: URL.createObjectURL(image),
-      };
-
-      onEdit(editedEvent);
-    };
-
-    return (
-      <Form onSubmit={handleSubmit}>
-        <FormField>
-          <FormLabel>Title:</FormLabel>
-          <FormInput
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </FormField>
-        <FormField>
-          <FormLabel>Date:</FormLabel>
-          <FormInput
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </FormField>
-        <FormField>
-          <FormLabel>Member:</FormLabel>
-          <FormInput
-            type="text"
-            value={member}
-            onChange={(e) => setMember(e.target.value)}
-          />
-        </FormField>
-        <FormField>
-          <FormLabel>Image:</FormLabel>
-
-          {imagePreview ? (
-            <AvatarPreview src={imagePreview} alt="Preview" />
-          ) : (
-            <input type="file" onChange={(e) => setImage(e.target.files[0])} />
-          )}
-        </FormField>
-        <FormButton type="submit">Save Changes</FormButton>
-      </Form>
-    );
-  }
-
-  useEffect(() => {
-    // Fetch events from server or set initial events
-    const initialEvents = [
-      {
-        id: 1,
-        title: 'Get married',
-        date: new Date(2023, 3, 15),
-        member: 'John Doe',
-        image:
-          'https://fastly.picsum.photos/id/238/200/200.jpg?hmac=O4Jc6lqHVfaKVzLf8bWssNTbWzQoaRUC0TDXod9xDdM',
-      },
-      {
-        id: 2,
-        title: '第一次站起來',
-        date: new Date(2023, 3, 17),
-        member: 'Jane Smith',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: '生日',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: '第一次走路',
-        date: new Date(2023, 3, 23),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: '一週年',
-        date: new Date(2021, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: '二週年',
-        date: new Date(2024, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2025, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-      {
-        id: 3,
-        title: 'Event 3',
-        date: new Date(2023, 3, 22),
-        member: 'Bob Johnson',
-        image: 'https://picsum.photos/200',
-      },
-    ];
-
-    setEvents(initialEvents);
-  }, []);
-  console.log(events);
-
-  return (
-    <Container>
-      <Sidebar />
-      <Wrapper>
-        <Header>Milestone</Header>
-        <SearchInputField
-          type="text"
-          placeholder="Search events..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-
-        <Wrap>
-          <h3>Filter</h3>
-          <FormField>
-            <FormLabel>Title:</FormLabel>
-            <FormInput
-              type="text"
-              value={filter.title}
-              onChange={(e) => setFilter({ ...filter, title: e.target.value })}
-            />
-          </FormField>
-
-          <FormField>
-            <FormLabel>Member:</FormLabel>
-            <FormInput
-              type="text"
-              value={filter.member}
-              onChange={(e) => setFilter({ ...filter, member: e.target.value })}
-            />
-          </FormField>
-
-          <FormField>
-            <FormLabel>Start Date:</FormLabel>
-            <FormInput
-              type="date"
-              value={filter.startDate}
-              onChange={(e) =>
-                setFilter({ ...filter, startDate: new Date(e.target.value) })
-              }
-            />
-          </FormField>
-
-          <FormField>
-            <FormLabel>End Date:</FormLabel>
-            <FormInput
-              type="date"
-              value={filter.endDate}
-              onChange={(e) =>
-                setFilter({ ...filter, endDate: new Date(e.target.value) })
-              }
-            />
-          </FormField>
-        </Wrap>
-
-        <ContentWrapper>
-          <FormWrapper>
-            <Form onSubmit={handleNewEventSubmit}>
-              <FormField>
-                <FormLabel>Title:</FormLabel>
-                <FormInput
-                  type="text"
-                  value={newEventTitle}
-                  onChange={(e) => setNewEventTitle(e.target.value)}
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Date:</FormLabel>
-                <FormInput
-                  type="date"
-                  value={newEventDate}
-                  onChange={(e) => setNewEventDate(e.target.value)}
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Member:</FormLabel>
-                <FormInput
-                  type="text"
-                  value={newEventMember}
-                  onChange={(e) => setNewEventMember(e.target.value)}
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Image:</FormLabel>
-
-                {imagePreview ? (
-                  <AvatarPreview src={imagePreview} alt="Preview" />
-                ) : (
-                  <input
-                    type="file"
-                    onChange={(e) => setFile(e.target.files[0])}
-                  />
-                )}
-              </FormField>
-              <FormButton type="submit">Add Event</FormButton>
-            </Form>
-          </FormWrapper>
-
-          <EventContainer>
-            <Timeline events={events} />
-
-            {filterEvents(events)
-              .sort(
-                (a, b) => (a.date?.getTime() ?? 0) - (b.date?.getTime() ?? 0)
-              )
-              .map((event, index) => (
-                <>
-                  <EventBox
-                    key={event.id}
-                    style={{
-                      alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                      marginTop: index % 2 === 0 ? '0px' : '400px',
-                      marginBottom: index % 2 === 0 ? '400px' : '0px',
-                    }}
-                  >
-                    <EditButton onClick={() => handleEditEvent(event)}>
-                      Edit
-                    </EditButton>
-                    <ColumnWrap>
-                      <EventImage src={event.image || undefined} alt="Event" />
-                      <EventTitle>{event.title}</EventTitle>
-                      <EventDate>{event.date.toDateString()}</EventDate>
-                      <EventMember>Member: {event.member}</EventMember>s
-                    </ColumnWrap>
-
-                    <DeleteButton onClick={() => handleDeleteEvent(event.id)}>
-                      Delete
-                    </DeleteButton>
-                  </EventBox>
-                  <EventDot
-                    style={{
-                      alignSelf: 'center',
-                    }}
-                  />
-                </>
-              ))}
-
-            {isEditing && (
-              <EditEventForm
-                event={editedEvent}
-                onEdit={handleEditFormSubmit}
-              />
-            )}
-          </EventContainer>
-        </ContentWrapper>
-      </Wrapper>
-    </Container>
-  );
-}
-
-export default Milestone;

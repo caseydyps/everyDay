@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
 import DrawingTool from '../../../Components/drawingtool';
 import axios from 'axios';
 import TenorGif from './Giphy';
@@ -9,7 +10,21 @@ import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
 import Voting from './Voting';
 import Sidebar from '../../../Components/SideBar/SideBar';
-
+import { db } from '../../../config/firebase.config';
+import firebase from 'firebase/app';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  getDoc,
+  addDoc,
+  deleteDoc,
+  doc,
+  setDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 //import './piece.scss';
 
 type Sticker = {
@@ -178,13 +193,50 @@ export const Whiteboard = () => {
   }, [stickers, stickerText]);
 
   useLayoutEffect(() => {
+    const container = document.getElementById('Wrapper');
+    const updateStickerPosition = async (
+      id: number,
+      newX: number,
+      newY: number
+    ) => {
+      try {
+        const familyDocRef = doc(
+          db,
+          'Family',
+          'Nkl0MgxpE9B1ieOsOoJ9',
+          'stickers',
+          id.toString()
+        );
+        const docSnapshot = await getDoc(familyDocRef);
+
+        if (docSnapshot.exists()) {
+          const updatedSticker = { ...docSnapshot.data(), x: newX, y: newY };
+          await updateDoc(familyDocRef, updatedSticker);
+          console.log('Sticker position has been updated in Firestore!');
+        }
+      } catch (error) {
+        console.error('Error updating sticker position in Firestore: ', error);
+      }
+    };
+
     const onMouseMove = (e: MouseEvent) => {
       if (dragging !== null) {
-        const newX = e.clientX - offset.x;
+        const newX = e.clientX - offset.x - 344;
         const newY = e.clientY - offset.y;
+        console.log(
+          'newX:',
+          newX,
+          'newY:',
+          newY,
+          'offset.x:',
+          offset.x,
+          'offset.y:',
+          offset.y
+        );
+        updateStickerPosition(stickers[dragging].id, newX, newY);
         const newStickers = [...stickers];
         newStickers[dragging] = { ...newStickers[dragging], x: newX, y: newY };
-        setStickers(newStickers);
+        window.requestAnimationFrame(() => setStickers(newStickers));
       }
     };
 
@@ -206,50 +258,115 @@ export const Whiteboard = () => {
     if (locked) return;
     setDragging(id);
     const index = stickers.findIndex((sticker) => sticker.id === id);
+
     const rect = stickerRefs.current[index]?.getBoundingClientRect();
+    console.log('rect:', rect);
     if (rect) {
-      const offsetX = isNaN(rect.offsetLeft) ? 0 : e.clientX - rect.offsetLeft;
-      const offsetY = isNaN(rect.offsetTop) ? 0 : e.clientY - rect.offsetTop;
-      setOffset({ x: offsetX, y: offsetY });
+      setOffset({
+        x: e.clientX - (rect.left + window.pageXOffset),
+        y: e.clientY - (rect.top + window.pageYOffset),
+      });
     }
   };
 
-  const addSticker = (color: string) => {
+  useEffect(() => {
+    const fetchStickers = async () => {
+      const stickers = await getStickers();
+      console.log(stickers);
+      setStickers(stickers);
+    };
+    fetchStickers();
+  }, []);
+
+  const getStickers = async () => {
+    const familyDocRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'stickers'
+    );
+    const querySnapshot = await getDocs(familyDocRef);
+
+    const stickersData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    console.log(stickersData);
+    return stickersData;
+  };
+
+  const addSticker = async (color: string) => {
     const newSticker = {
-      id: Date.now(),
+      id: uuidv4(),
       x: 150,
       y: 150,
       content: 'New note',
       color: color,
+      member: 'Nina',
     };
 
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
+    try {
+      const familyDocRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'stickers',
+        newSticker.id
+      );
+      await setDoc(familyDocRef, newSticker);
+      console.log('Sticker has been added to Firestore!');
+      setStickers([...stickers, newSticker]);
+      setStickerText([...stickerText, '']);
+    } catch (error) {
+      console.error('Error adding sticker to Firestore: ', error);
+    }
   };
 
   const addGif = async (color) => {
     const gifUrl = selectedGif.images.original.url;
-
     const newSticker = {
-      id: Date.now(),
+      id: uuidv4(),
       x: 150,
       y: 150,
       content: gifUrl,
       color: color,
+      member: 'Nina',
     };
 
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
+    try {
+      const familyDocRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'stickers',
+        newSticker.id
+      );
+      await setDoc(familyDocRef, newSticker);
+      console.log('Sticker has been added to Firestore!');
+      setStickers([...stickers, newSticker]);
+      setStickerText([...stickerText, '']);
+    } catch (error) {
+      console.error('Error adding sticker to Firestore: ', error);
+    }
   };
 
-  const deleteSticker = (index: number) => {
-    const newStickers = [...stickers];
-    newStickers.splice(index, 1);
-    setStickers(newStickers);
-
-    const newStickerText = [...stickerText];
-    newStickerText.splice(index, 1);
-    setStickerText(newStickerText);
+  const deleteSticker = async (id: string) => {
+    console.log(id);
+    console.log(stickers);
+    try {
+      const familyDocRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'stickers',
+        stickers[id].id
+      );
+      await deleteDoc(familyDocRef);
+      console.log('Sticker has been deleted from Firestore!');
+      const newStickers = stickers.filter(
+        (sticker) => sticker.id !== stickers[id].id
+      );
+      setStickers(newStickers);
+    } catch (error) {
+      console.error('Error deleting sticker from Firestore: ', error);
+    }
   };
 
   const handleLockClick = (index: number) => {
@@ -264,7 +381,7 @@ export const Whiteboard = () => {
   return (
     <Container>
       <Sidebar />
-      <Wrapper>
+      <Wrapper id="Wrapper">
         {stickers.map((sticker, index) => (
           <Sticker
             key={sticker.id}
@@ -286,6 +403,25 @@ export const Whiteboard = () => {
                 const newStickerText = [...stickerText];
                 newStickerText[index] = e.target.value;
                 setStickerText(newStickerText);
+
+                const stickerId = stickers[index].id;
+                const familyDocRef = doc(
+                  db,
+                  'Family',
+                  'Nkl0MgxpE9B1ieOsOoJ9',
+                  'stickers',
+                  stickerId
+                );
+                updateDoc(familyDocRef, { content: e.target.value })
+                  .then(() =>
+                    console.log('Sticker text has been updated in Firestore!')
+                  )
+                  .catch((error) =>
+                    console.error(
+                      'Error updating sticker text in Firestore: ',
+                      error
+                    )
+                  );
               }}
               disabled={lockedStickers[index]}
             />
@@ -303,24 +439,7 @@ export const Whiteboard = () => {
           </Sticker>
         ))}
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
-        <RowWrap>
-          <ColorButton onClick={() => addGif('transparent')}>
-            Add Gif
-          </ColorButton>
-          <ColorButton onClick={() => addSticker('#FFF9C4')}>
-            Add Yellow Sticker
-          </ColorButton>
-          <ColorButton onClick={() => addSticker('#EF9A9A')}>
-            Add Red Sticker
-          </ColorButton>
-          <ColorButton onClick={() => addSticker('#81D4FA')}>
-            Add Blue Sticker
-          </ColorButton>
-          <ColorButton onClick={() => addSticker('#A5D6A7')}>
-            Add Blue Sticker
-          </ColorButton>
-          <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
-        </RowWrap>
+
         <div>
           <input type="text" value={searchTerm} onChange={handleInputChange} />
           <button onClick={handleSearch}>Search</button>
@@ -344,7 +463,26 @@ export const Whiteboard = () => {
             <button onClick={() => setShowResults(false)}>Hide Results</button>
           </>
         )}
-        <Voting />
+        <RowWrap>
+          <ColorButton onClick={() => addGif('transparent')}>
+            Add Gif
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#FFF9C4')}>
+            Add Yellow Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#EF9A9A')}>
+            Add Red Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#81D4FA')}>
+            Add Blue Sticker
+          </ColorButton>
+          <ColorButton onClick={() => addSticker('#A5D6A7')}>
+            Add Blue Sticker
+          </ColorButton>
+          <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
+          <Voting />
+        </RowWrap>
+
         <DrawingTool />
       </Wrapper>
     </Container>

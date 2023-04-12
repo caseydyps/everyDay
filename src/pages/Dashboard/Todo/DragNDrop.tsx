@@ -1,7 +1,14 @@
-import React, { useState, useRef, useEffect, useReducer } from 'react';
+import React, {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useReducer,
+} from 'react';
 
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
+import { todoReducer } from './Todo';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -160,6 +167,7 @@ type DragNDropState = {
 };
 
 function DragNDrop({ data }: DragNDropProps) {
+  const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
 
   const [list, setList] = useState<DataItem[]>(data);
@@ -258,7 +266,6 @@ function DragNDrop({ data }: DragNDropProps) {
         const todoDoc = await getDoc(todoRef);
         const items = todoDoc.exists() ? todoDoc.data().items : [];
 
-        // Add the new item to the items array
         const updatedItems = [...items, newItem];
 
         // Update the items array in the todo document
@@ -267,7 +274,11 @@ function DragNDrop({ data }: DragNDropProps) {
           title: list[groupIndex].title,
         });
 
-        console.log('Item has been saved to Firestore!');
+        setList((oldList) => {
+          const newList = [...oldList];
+          newList[groupIndex].items = updatedItems;
+          return newList;
+        });
       } catch (error) {
         console.error('Error saving item to Firestore: ', error);
       }
@@ -302,9 +313,14 @@ function DragNDrop({ data }: DragNDropProps) {
           const items = data.items;
           items.splice(itemIndex, 1);
           updateDoc(todoRef, { items: items })
-            .then(() =>
-              console.log(itemIndex, 'Item has been deleted from Firestore!')
-            )
+            .then(() => {
+              console.log(itemIndex, 'Item has been deleted from Firestore!');
+              setList((oldList) => {
+                const newList = [...oldList];
+                newList[groupIndex].items = items;
+                return newList;
+              });
+            })
             .catch((error) =>
               console.error('Error deleting item from Firestore: ', error)
             );
@@ -357,7 +373,18 @@ function DragNDrop({ data }: DragNDropProps) {
         items: updatedItems,
         title: list[groupIndex].title,
       });
-
+      setList((oldList) => {
+        const newList = [...oldList];
+        const group = newList[groupIndex];
+        group.items = group.items.map((item, index) => {
+          if (index === itemIndex) {
+            return { ...item, [field]: value };
+          } else {
+            return item;
+          }
+        });
+        return newList;
+      });
       console.log('Item has been updated in Firestore!');
     } catch (error) {
       console.error('Error updating item in Firestore: ', error);
@@ -397,7 +424,11 @@ function DragNDrop({ data }: DragNDropProps) {
         items: updatedItems,
         title: list[groupIndex].title,
       });
-
+      setList((prevList) => {
+        const newList = [...prevList];
+        newList[groupIndex].items[itemIndex] = newItem;
+        return newList;
+      });
       console.log('Item has been updated on Firestore!');
     } catch (error) {
       console.error('Error updating item on Firestore: ', error);

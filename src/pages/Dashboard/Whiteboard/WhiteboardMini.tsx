@@ -38,8 +38,8 @@ const Sticker = styled.div<{
   left: ${(props) => props.offsetX}px;
   background-color: ${({ color }) => color};
   cursor: ${(props) => (props.dragging ? 'grabbing' : 'grab')};
-  width: 250px;
-  height: 250px;
+  width: 150px;
+  height: 150px;
   border: 0px solid black;
   border-radius: 5px;
   display: flex;
@@ -178,8 +178,8 @@ export const WhiteboardMini = () => {
   useLayoutEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
       if (dragging !== null) {
-        const newX = e.clientX - offset.x;
-        const newY = e.clientY - offset.y;
+        const newX = e.clientX - offset.x - 180;
+        const newY = e.clientY - offset.y - 50;
         const newStickers = [...stickers];
         newStickers[dragging] = { ...newStickers[dragging], x: newX, y: newY };
         setStickers(newStickers);

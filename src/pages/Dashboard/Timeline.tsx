@@ -40,12 +40,13 @@ type TimelineProps = {
 };
 
 const Timeline = ({ events }: TimelineProps): JSX.Element => {
-  const eventDates = events.map((event) => event.date.toDateString());
+  const eventDates = events.map((event) => event.date.toDate());
   const startDate = new Date(
-    Math.min(...events.map((event) => event.date.getTime()))
+    Math.min(...eventDates.map((date) => date.getTime()))
   );
+
   const endDate = new Date(
-    Math.max(...events.map((event) => event.date.getTime()))
+    Math.max(...eventDates.map((date) => date.getTime()))
   );
   const dateRange = getDatesRange(startDate, endDate);
 
