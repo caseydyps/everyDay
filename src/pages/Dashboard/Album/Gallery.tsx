@@ -5,7 +5,10 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import styled from 'styled-components/macro';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
+import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import {
   collection,
   updateDoc,
@@ -27,9 +30,14 @@ function Gallery() {
   const [albumId, setAlbumId] = useState('');
   const [albums, setAlbums] = useState([]);
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
+  const [selectedAlbumTitle, setSelectedAlbumTitle] = useState('');
+  const [isFavorite, setIsFavorite] = useState(false);
   const handleAlbumTitleChange = (e) => {
     setAlbumTitle(e.target.value);
   };
+
+  const regularStar = farStar;
+  const solidStar = fasStar;
 
   const handleMembersChange = (e) => {
     const selectedOptions = Array.from(
@@ -71,6 +79,7 @@ function Gallery() {
           members: members,
           description: description,
           photos: [],
+          favorite: false,
         });
       } else {
         // If an album already exists with the same name, use its document reference
@@ -105,6 +114,8 @@ function Gallery() {
         await updateDoc(albumDoc, { photos: updatedPhotos });
         console.log('Photo added to album data in Firestore!');
       }
+      fetchAlbums();
+
       // Reset the file input and album form
       setFile(null);
       setAlbumTitle('');
@@ -119,6 +130,38 @@ function Gallery() {
   const handleAlbumSelect = (e) => {
     setAlbumTitle(e.target.value);
     console.log('Album Title: ', e.target.value);
+  };
+
+  const fetchAlbums = async () => {
+    const familyDocRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'photos'
+    );
+
+    const querySnapshot = await getDocs(familyDocRef);
+    const albumsData = [];
+
+    querySnapshot.docs.forEach((doc) => {
+      console.log(doc.data());
+    });
+    for (const albumDoc of querySnapshot.docs) {
+      const album = albumDoc.data();
+      console.log('Album:', album);
+      const firstPhoto = album.photos[0];
+      console.log('First photo:', firstPhoto);
+
+      if (firstPhoto) {
+        const photoRef = ref(storage, firstPhoto.url);
+        console.log('Photo ref:', photoRef);
+        const downloadURL = await getDownloadURL(photoRef);
+        albumsData.push({ ...album, firstPhotoURL: downloadURL });
+      } else {
+        albumsData.push({ ...album, firstPhotoURL: null });
+      }
+    }
+    setAlbums(albumsData);
   };
 
   useEffect(() => {
@@ -156,6 +199,77 @@ function Gallery() {
 
     fetchAlbums();
   }, []);
+
+  const handleDeleteAlbum = async (album) => {
+    console.log(album.title);
+
+    try {
+      const albumsRef = collection(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'photos'
+      );
+
+      const querySnapshot = await getDocs(
+        query(albumsRef, where('title', '==', album.title))
+      );
+
+      if (querySnapshot.empty) {
+        console.log('No matching album found');
+        return;
+      }
+      // Delete the album document
+      const albumDoc = querySnapshot.docs[0].ref;
+      await deleteDoc(albumDoc);
+      console.log('Album deleted successfully!');
+      // Reset the selected album state
+      const updatedAlbums = albums.filter((a) => a.id !== album.id);
+      setAlbums(updatedAlbums);
+      setSelectedAlbumId('');
+      setSelectedAlbumTitle('');
+      fetchAlbums();
+    } catch (error) {
+      console.error('Error deleting album: ', error);
+    }
+  };
+
+  const handleToggleFavorite = async (album) => {
+    console.log('Hi');
+    const albumRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'photos');
+
+    try {
+      // Update the favorite property of the album document
+      const querySnapshot = await getDocs(
+        query(albumRef, where('title', '==', album.title))
+      );
+
+      if (querySnapshot.empty) {
+        console.log('No matching album found');
+        return;
+      }
+
+      const albumDocRef = querySnapshot.docs[0].ref;
+      await updateDoc(albumDocRef, { favorite: !album.favorite });
+      console.log('Album favorite status updated successfully!');
+
+      // Update the selected album state
+      const updatedAlbums = albums.map((a) => {
+        if (a.id === album.id) {
+          return {
+            ...a,
+            favorite: !a.favorite,
+          };
+        } else {
+          return a;
+        }
+      });
+      setAlbums(updatedAlbums);
+      fetchAlbums();
+    } catch (error) {
+      console.error('Error updating album favorite status: ', error);
+    }
+  };
 
   return (
     <>
@@ -212,6 +326,14 @@ function Gallery() {
         {albums.map((album) => (
           <AlbumWrapper key={album.id}>
             <AlbumTitle>{album.title}</AlbumTitle>
+            <button onClick={() => handleToggleFavorite(album)}>
+              {album.favorite ? (
+                <FontAwesomeIcon icon={solidStar} />
+              ) : (
+                <FontAwesomeIcon icon={regularStar} />
+              )}
+              Add to Favorites
+            </button>
             <AlbumDescription>{album.description}</AlbumDescription>
             <AlbumMembers>{album.members}</AlbumMembers>
             {album.firstPhotoURL ? (
@@ -224,7 +346,9 @@ function Gallery() {
               <NoPhotosText>No photos in this album</NoPhotosText>
             )}
             <h3>Click for more!</h3>
-
+            <button onClick={() => handleDeleteAlbum(album)}>
+              Delete Album
+            </button>
             {selectedAlbumId === album.id && (
               <div>
                 <h3>Photos in {album.title}</h3>
