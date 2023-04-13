@@ -74,10 +74,25 @@ const Album = () => {
 
   useEffect(() => {
     const fetchAlbums = async () => {
-      const albumData = await getAlbumData();
-      console.log(albumData);
-      setAlbums(albumData);
+      const albumsQuery = query(collection(db, 'albums'));
+      const albumsSnapshot = await getDocs(albumsQuery);
+
+      const albumsData = [];
+      for (const albumDoc of albumsSnapshot.docs) {
+        const album = albumDoc.data();
+        const firstPhoto = album.photos[0];
+
+        if (firstPhoto) {
+          const photoRef = ref(storage, firstPhoto.path);
+          const downloadURL = await getDownloadURL(photoRef);
+          albumsData.push({ ...album, firstPhotoURL: downloadURL });
+        } else {
+          albumsData.push({ ...album, firstPhotoURL: null });
+        }
+      }
+      setAlbums(albumsData);
     };
+
     fetchAlbums();
   }, []);
 

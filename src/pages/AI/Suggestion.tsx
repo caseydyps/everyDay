@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/SideBar/SideBar';
