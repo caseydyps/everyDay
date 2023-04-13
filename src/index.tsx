@@ -15,7 +15,7 @@ import FamilyMemberForm from './pages/Family/FamilyForm';
 import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import WelcomePage from './pages/Login/Welcome';
-
+import Gallery from './pages/Dashboard/Album/Gallery';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -29,6 +29,7 @@ root.render(
       <Route path="dashboard" element={<Dashboard />} />
       <Route path="todo" element={<Todo />} />
       <Route path="album" element={<Album />} />
+      <Route path="gallery" element={<Gallery />} />
       <Route path="whiteboard" element={<Whiteboard />} />
       <Route path="milestone" element={<Milestone />} />
       <Route path="calendar" element={<Calendar />} />

@@ -15,6 +15,7 @@ type PhotoProps = {
 };
 
 const Photo = ({ photo, members = [], hashtags = [] }: PhotoProps) => {
+  console.log(photo);
   return (
     <div>
       <img src={photo.url} alt={photo.caption} />

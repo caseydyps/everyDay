@@ -10,6 +10,7 @@ import Suggestion from './pages/AI/Suggestion';
 import Settings from './pages/Family/FamilyForm';
 import styled from 'styled-components';
 import Sidebar from './Components/SideBar/SideBar';
+
 const Content = styled.div`
   width: auto;
 
