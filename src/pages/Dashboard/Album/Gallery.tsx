@@ -27,6 +27,7 @@ function Gallery() {
   const [albumTitle, setAlbumTitle] = useState('');
   const [members, setMembers] = useState([]);
   const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
   const [albumId, setAlbumId] = useState('');
   const [albums, setAlbums] = useState([]);
   const [selectedAlbumId, setSelectedAlbumId] = useState(null);
@@ -35,6 +36,8 @@ function Gallery() {
   const handleAlbumTitleChange = (e) => {
     setAlbumTitle(e.target.value);
   };
+  const [selectedMember, setSelectedMember] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
 
   const regularStar = farStar;
   const solidStar = fasStar;
@@ -80,6 +83,7 @@ function Gallery() {
           description: description,
           photos: [],
           favorite: false,
+          date: date,
         });
       } else {
         // If an album already exists with the same name, use its document reference
@@ -271,6 +275,26 @@ function Gallery() {
     }
   };
 
+  const filteredAlbums = albums.filter((album) => {
+    let memberMatch = true;
+    let dateMatch = true;
+
+    if (selectedMember && !album.members.includes(selectedMember)) {
+      memberMatch = false;
+    }
+
+    if (selectedDate) {
+      const albumDate = new Date(album.date);
+      const selectedDateObj = new Date(selectedDate);
+      dateMatch =
+        albumDate.getFullYear() === selectedDateObj.getFullYear() &&
+        albumDate.getMonth() === selectedDateObj.getMonth() &&
+        albumDate.getDate() === selectedDateObj.getDate();
+    }
+
+    return memberMatch && dateMatch;
+  });
+
   return (
     <>
       <div>
@@ -319,9 +343,60 @@ function Gallery() {
           Description:
           <textarea value={description} onChange={handleDescriptionChange} />
         </label>
+        <label>
+          Date:
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </label>
         <br />
         <button onClick={handleUpload}>Upload</button>
       </div>
+      <div>
+        <label>
+          Filter by member:
+          <select
+            value={selectedMember}
+            onChange={(e) => setSelectedMember(e.target.value)}
+          >
+            <option value="">All</option>
+            <option value="Alice">Alice</option>
+            <option value="Bob">Bob</option>
+            <option value="Charlie">Charlie</option>
+            <option value="David">David</option>
+          </select>
+        </label>
+        <br />
+        <label>
+          Filter by date:
+          <input
+            type="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+          />
+        </label>
+        <br />
+        <ul>
+          {filteredAlbums.map((album) => (
+            <li key={album.id}>
+              <AlbumTitle>{album.title}</AlbumTitle>
+              <AlbumMembers>{album.members.join(', ')}</AlbumMembers>
+              <div>{album.date}</div>
+              {album.photos.map((photo) => (
+                <img
+                  key={photo.id}
+                  src={photo.url}
+                  alt={photo.title}
+                  style={{ width: '200px', height: 'auto' }}
+                />
+              ))}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <GalleryWrapper>
         {albums.map((album) => (
           <AlbumWrapper key={album.id}>
