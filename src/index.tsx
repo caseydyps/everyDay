@@ -16,6 +16,7 @@ import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import WelcomePage from './pages/Login/Welcome';
 import Gallery from './pages/Dashboard/Album/Gallery';
+import ChatApp from './pages/Family/ChatApp';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -37,6 +38,7 @@ root.render(
       <Route path="family" element={<FamilyMemberForm />} />
       <Route path="ai" element={<SmartInput />} />
       <Route path="suggestion" element={<Suggestion />} />
+      <Route path="chat" element={<ChatApp />} />
     </Routes>
   </BrowserRouter>
 );

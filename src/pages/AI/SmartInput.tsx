@@ -129,9 +129,9 @@ const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
   const categories = [
     '#Calendar',
     '#Todo',
-    '#Album',
-    '#AI',
-    '#StickyNotes',
+    // '#Album',
+    // '#AI',
+    // '#StickyNotes',
     '#Milestone',
   ];
 
@@ -241,9 +241,8 @@ const SmartInput = () => {
       User input: ${inputValue}
       today is ${formattedDate}
       
-      請依照傳統行事曆格式，生成以下 JSON 回應：
+      請依照傳統行事曆格式，生成以下 JSON回應：
 
-      行事曆：
       {
         "title": "事件名稱",
         "category": "類別:work, personal, school",
@@ -274,7 +273,7 @@ const SmartInput = () => {
   今天日期是 ${formattedDate}
   請依照繁體中文格式，生成以下 JSON 回應：
 
-  待辦事項：
+  
   {
     "text": "任務描述",
     "event": ${category},
@@ -301,16 +300,16 @@ const SmartInput = () => {
   今天日期是 ${formattedDate}
   請依照繁體中文格式，生成以下 JSON 回應：
 
-  便利貼：
-  {
-    "id": ${uuidv4()},
-    "event": ${category},
-    "content": "便利貼內容",
-    "color": "便利貼顏色",
-    "response": "此便利貼已添加到您的便利貼列表。回應訊息",
-    "x":150,
-    "y":150,
-  }
+  
+  // {
+  //   "id": ${uuidv4()},
+  //   "event": ${category},
+  //   "content": "便利貼內容",
+  //   "color": "便利貼顏色",
+  //   "response": "此便利貼已添加到您的便利貼列表。回應訊息",
+  //   "x":150,
+  //   "y":150,
+  // }
     `;
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -329,7 +328,7 @@ const SmartInput = () => {
 
     請生成一個包含以下字段的JSON回應：
 
-    里程碑:
+    
     {
       "title": "里程碑描述",
       "event": ${category},
@@ -360,42 +359,107 @@ const SmartInput = () => {
   };
 
   const handleNewEventSubmit: HandleNewEventSubmit = async (responseValue) => {
-    console.log(JSON.parse(responseValue));
-    console.log(JSON.parse(responseValue).title);
-    console.log(JSON.parse(responseValue).date);
-    const newEvent = {
-      id: uuidv4(),
-      title: JSON.parse(responseValue).title,
-      date: JSON.parse(responseValue).date,
-      member: JSON.parse(responseValue).member,
-      image: JSON.parse(responseValue).image || null,
-    };
+    console.log(category);
+    console.log(responseValue);
 
-    try {
-      const eventsRef = collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'Milestone'
-      );
-      await addDoc(eventsRef, newEvent);
-      console.log('New event has been added to Firestore!');
-    } catch (error) {
-      console.error('Error adding new event to Firestore: ', error);
+    if (category === '#Calendar') {
+      console.log('calendar');
+
+      const postEventToFirestore = async (data) => {
+        const familyDocRef = collection(
+          db,
+          'Family',
+          'Nkl0MgxpE9B1ieOsOoJ9',
+          'Calendar'
+        );
+        try {
+          const docRef = await addDoc(familyDocRef, data);
+          console.log('Document written with ID: ', docRef.id);
+        } catch (error) {
+          console.error('Error adding document: ', error);
+        }
+      };
+      const isMultiDay =
+        JSON.parse(responseValue).date !== JSON.parse(responseValue).endDate;
+      const newEvent = {
+        title: JSON.parse(responseValue).title,
+        date: JSON.parse(responseValue).date,
+        endDate: JSON.parse(responseValue).endDate,
+        category: JSON.parse(responseValue).category,
+        member: JSON.parse(responseValue).member,
+        id: uuidv4(),
+        multiDay: isMultiDay,
+        time: JSON.parse(responseValue).time,
+        endTime: JSON.parse(responseValue).endTime,
+        note: '',
+      };
+      postEventToFirestore(newEvent);
+    } else if (category === '#Todo') {
+      console.log('#Todo');
+      const newItem = {
+        text: JSON.parse(responseValue).text,
+        due: JSON.parse(responseValue).due,
+        member: JSON.parse(responseValue).member,
+        done: false,
+      };
+      const postEventToFirestore = async (data) => {
+        const todoRef = doc(
+          db,
+          'Family',
+          'Nkl0MgxpE9B1ieOsOoJ9',
+          'todo',
+          'todo'
+        );
+        try {
+          // Get the existing items array from the todo document
+          console.log('here');
+          const todoDoc = await getDoc(todoRef);
+          const items = todoDoc.exists() ? todoDoc.data().items : [];
+
+          const updatedItems = [...items, newItem];
+
+          // Update the items array in the todo document
+          await setDoc(todoRef, {
+            items: updatedItems,
+            title: 'todo',
+          });
+        } catch (error) {
+          console.error('Error saving item to Firestore: ', error);
+        }
+      };
+
+      postEventToFirestore(newItem);
+    } else if (category === '#StickyNotes') {
+      console.log('#StickyNotes');
+    } else if (category === '#Milestone') {
+      const newEvent = {
+        id: uuidv4(),
+        title: JSON.parse(responseValue).title,
+        date: JSON.parse(responseValue).date,
+        member: JSON.parse(responseValue).member,
+        image: JSON.parse(responseValue).image || null,
+      };
+
+      try {
+        const eventsRef = collection(
+          db,
+          'Family',
+          'Nkl0MgxpE9B1ieOsOoJ9',
+          'Milestone'
+        );
+        await addDoc(eventsRef, newEvent);
+        console.log('New event has been added to Firestore!');
+      } catch (error) {
+        console.error('Error adding new event to Firestore: ', error);
+      }
+    } else {
     }
-
-    // // Clear the form fields
-    // setNewEventTitle('');
-    // setNewEventDate('');
-    // setNewEventMember('');
-    // setNewEventImage('');
   };
 
   return (
     <Container>
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Wrapper>
-        <h2>Smart Input</h2>
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector
           onSelectMember={(selectedMembers: string[]) =>

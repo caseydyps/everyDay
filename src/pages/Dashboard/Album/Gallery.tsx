@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
+import Slideshow from './SlideShow';
 import {
   collection,
   updateDoc,
@@ -409,7 +410,9 @@ function Gallery() {
               )}
               Add to Favorites
             </button>
+            <Slideshow photos={album.photos} />
             <AlbumDescription>{album.description}</AlbumDescription>
+
             <AlbumMembers>{album.members}</AlbumMembers>
             {album.firstPhotoURL ? (
               <AlbumCover

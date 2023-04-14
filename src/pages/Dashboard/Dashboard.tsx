@@ -9,7 +9,7 @@ import MilestoneMini from './MilestoneMini';
 import Sidebar from '../../Components/SideBar/SideBar';
 import Navbar from '../../Components/Navbar/Navbar';
 import React from 'react';
-
+import Socket from '../../Components/Chatbot/socket';
 const Container = styled.div`
   display: flex;
   flex-direction: row; ;
@@ -146,6 +146,7 @@ const Dashboard = () => {
   return (
     <Container>
       <Sidebar />
+      <Socket />
       <ColumnWrap>
         <Navbar />
         {rows.map((row, index) => (
