@@ -7,11 +7,11 @@ const style = {
 
 const LogOut = () => {
   const signOut = () => {
-    signOut(auth);
+    auth.signOut();
   };
 
   return (
-    <button onClick={() => auth.signOut()} className={style.button}>
+    <button onClick={signOut} className={style.button}>
       Logout
     </button>
   );

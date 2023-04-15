@@ -8,6 +8,10 @@ const style = {
   button: `w-[20%] bg-green-500`,
 };
 
+interface SendMessageProps {
+  scroll: React.RefObject<HTMLDivElement>;
+}
+
 const Input = styled.input`
   flex: 1;
   margin-right: 10px;
@@ -43,10 +47,10 @@ const VoteButton = styled(Button)`
   }
 `;
 
-const SendMessage = ({ scroll }) => {
+const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
   const [input, setInput] = useState('');
 
-  const sendMessage = async (e) => {
+  const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input === '') {
       alert('Please enter a valid message');

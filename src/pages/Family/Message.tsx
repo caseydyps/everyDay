@@ -2,7 +2,7 @@ import React from 'react';
 import { auth } from '../../config/firebase.config';
 import styled from 'styled-components';
 
-const MessageBubble = styled.div`
+const MessageBubble = styled.div<MessageBubbleProps>`
   display: flex;
   align-items: center;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
@@ -19,34 +19,29 @@ const SenderName = styled.p`
   font-size: 0.8rem;
 `;
 
-const PinButton = styled.button`
-  margin-left: auto;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-`;
+interface MessageProps {
+  message: {
+    uid: string;
+    name: string;
+    text: string;
+  };
+}
 
-const MessageContainer = styled.div`
-  //   position: ${(props) => (props.isPinned ? 'absolute' : 'relative')};
-  //   top: ${(props) => (props.isPinned ? 0 : 'auto')};
-  //   left: ${(props) => (props.isPinned ? 0 : 'auto')};
-  //   right: ${(props) => (props.isPinned ? 0 : 'auto')};
-  //   z-index: ${(props) => (props.isPinned ? 1 : 'auto')};
-`;
+interface MessageBubbleProps {
+  isSent: boolean;
+}
 
-const Message = ({ message, isPinned, onPinMessage }) => {
-  const isSent = message.uid === auth.currentUser.uid;
+const MessageContainer = styled.div``;
+
+const Message: React.FC<MessageProps> = ({ message }) => {
+  const isSent = message.uid === auth.currentUser?.uid;
 
   return (
-    <MessageContainer isPinned={isPinned}>
-      <MessageBubble isSent={isSent} isPinned={isPinned}>
+    <MessageContainer>
+      <MessageBubble isSent={isSent}>
         <SenderName>{message.name}</SenderName>
         <p>{message.text}</p>
-        <PinButton onClick={onPinMessage}>
-          {isPinned ? 'Unpin' : 'Pin'}
-        </PinButton>
       </MessageBubble>
-      {/* {isPinned ? <p>{message.text}</p> : null} */}
     </MessageContainer>
   );
 };

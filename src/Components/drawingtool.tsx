@@ -10,8 +10,11 @@ import {
   doc,
   addDoc,
   deleteDoc,
+  onSnapshot,
   setDoc,
   getDoc,
+  writeBatch,
+  startAfter,
   query,
   where,
 } from 'firebase/firestore';
@@ -46,6 +49,7 @@ const DrawingTool = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
+  const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -73,14 +77,11 @@ const DrawingTool = () => {
     contextRef.current.beginPath();
     contextRef.current.moveTo(offsetX, offsetY);
     setIsPainting(true);
-    // undoStack.push(
-    //   contextRef.current.getImageData(
-    //     0,
-    //     0,
-    //     canvasRef.current.width,
-    //     canvasRef.current.height
-    //   )
-    // );
+
+    // Add this line to start a new path when starting to draw
+    contextRef.current.beginPath();
+
+    prevOffset.current = { x: offsetX, y: offsetY };
   };
 
   const endPaint = () => {
@@ -107,6 +108,30 @@ const DrawingTool = () => {
     };
   };
 
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      collection(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'canva',
+        'xoQi8suQkRBSHmELkazx',
+        'strokes'
+      ),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === 'added') {
+            handleStrokeUpdate(change.doc.data());
+          }
+        });
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const stackLimit = 500; // maximum stack size
 
   const paint = throttle(
@@ -119,22 +144,51 @@ const DrawingTool = () => {
       if (canvas) {
         const context = canvas.getContext('2d');
         if (context) {
+          const startX = prevOffset.current.x;
+          const startY = prevOffset.current.y;
           context.lineTo(offsetX, offsetY);
           context.stroke();
-          console.log(undoStack.length);
-          if (undoStack.length < stackLimit) {
-            undoStack.push(
-              context.getImageData(0, 0, canvas.width, canvas.height)
-            ); // save the current state
-          } else {
-            alert("You've reached the maximum number of strokes!");
-            setUndoStack([]);
-          }
+
+          // Save the stroke to Firestore
+          addStroke({
+            startX,
+            startY,
+            endX: offsetX,
+            endY: offsetY,
+            color,
+            width,
+          });
+
+          prevOffset.current = { x: offsetX, y: offsetY };
         }
       }
     },
     20
   );
+
+  const addStroke = async (strokeData) => {
+    const strokesCollectionRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'canva',
+      'xoQi8suQkRBSHmELkazx',
+      'strokes'
+    );
+    await addDoc(strokesCollectionRef, strokeData);
+  };
+
+  const handleStrokeUpdate = (strokeData) => {
+    if (!canvasRef.current || !contextRef.current) return;
+    const context = contextRef.current;
+
+    context.beginPath();
+    context.moveTo(strokeData.startX, strokeData.startY);
+    context.lineTo(strokeData.endX, strokeData.endY);
+    context.lineWidth = strokeData.width;
+    context.strokeStyle = strokeData.color;
+    context.stroke();
+  };
 
   const handleChangeColor = (newColor: string) => {
     setColor(newColor);
@@ -143,11 +197,47 @@ const DrawingTool = () => {
   const handleChangeLineWidth = (newWidth: number) => {
     setWidth(newWidth);
   };
-  const clearCanvas = () => {
+  const clearCanvas = async () => {
     if (!canvasRef.current) return;
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     context?.clearRect(0, 0, canvas.width, canvas.height);
+    const strokesCollectionRef = collection(
+      db,
+      'Family',
+      'Nkl0MgxpE9B1ieOsOoJ9',
+      'canva',
+      'xoQi8suQkRBSHmELkazx',
+      'strokes'
+    );
+
+    const deleteDocumentsInBatch = async (querySnapshot) => {
+      const batch = writeBatch(db);
+
+      querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+
+      await batch.commit();
+    };
+
+    const deleteAllStrokes = async () => {
+      let querySnapshot = await getDocs(strokesCollectionRef);
+
+      while (!querySnapshot.empty) {
+        // Process the documents in batches
+        await deleteDocumentsInBatch(querySnapshot);
+
+        // Get the next batch of documents
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        const nextQuerySnapshot = await getDocs(
+          query(strokesCollectionRef, startAfter(lastVisible))
+        );
+        querySnapshot = nextQuerySnapshot;
+      }
+    };
+
+    await deleteAllStrokes();
   };
 
   const undoStroke = () => {
@@ -161,25 +251,25 @@ const DrawingTool = () => {
     }
   };
 
-  const saveCanvas = async () => {
-    const canvas = canvasRef.current;
-    const dataURL = canvas ? canvas.toDataURL() : null;
-    if (dataURL) {
-      const canvaDocRef = doc(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'canva',
-        'xoQi8suQkRBSHmELkazx'
-      );
-      try {
-        await setDoc(canvaDocRef, { dataURL });
-        console.log('Canvas data has been saved to Firestore!');
-      } catch (error) {
-        console.error('Error saving canvas data to Firestore: ', error);
-      }
-    }
-  };
+  // const saveCanvas = async () => {
+  //   const canvas = canvasRef.current;
+  //   const dataURL = canvas ? canvas.toDataURL() : null;
+  //   if (dataURL) {
+  //     const canvaDocRef = doc(
+  //       db,
+  //       'Family',
+  //       'Nkl0MgxpE9B1ieOsOoJ9',
+  //       'canva',
+  //       'xoQi8suQkRBSHmELkazx'
+  //     );
+  //     try {
+  //       await setDoc(canvaDocRef, { dataURL });
+  //       console.log('Canvas data has been saved to Firestore!');
+  //     } catch (error) {
+  //       console.error('Error saving canvas data to Firestore: ', error);
+  //     }
+  //   }
+  // };
   const loadCanvas = async () => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -229,12 +319,13 @@ const DrawingTool = () => {
         <button onClick={() => handleChangeColor('red')}>Red</button>
         <button onClick={() => handleChangeColor('green')}>Green</button>
         <button onClick={() => handleChangeColor('blue')}>Blue</button>
+        <button onClick={() => handleChangeColor('white')}>Eraser</button>
         <button onClick={() => handleChangeLineWidth(5)}>Default</button>
         <button onClick={() => handleChangeLineWidth(1)}>Thin</button>
         <button onClick={() => handleChangeLineWidth(30)}>Wide</button>
         <button onClick={undoStroke}>Undo</button>
         <button onClick={clearCanvas}>Clear</button>
-        <button onClick={saveCanvas}>Save</button>
+        <button onClick={addStroke}>Save</button>
         <button onClick={loadCanvas}>load</button>
       </ButtonWrap>
 

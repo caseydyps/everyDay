@@ -358,6 +358,8 @@ const SmartInput = () => {
     await runPrompt();
   };
 
+  type HandleNewEventSubmit = (responseValue: string) => Promise<void>;
+
   const handleNewEventSubmit: HandleNewEventSubmit = async (responseValue) => {
     console.log(category);
     console.log(responseValue);
@@ -365,7 +367,7 @@ const SmartInput = () => {
     if (category === '#Calendar') {
       console.log('calendar');
 
-      const postEventToFirestore = async (data) => {
+      const postEventToFirestore = async (data: EventData) => {
         const familyDocRef = collection(
           db,
           'Family',
@@ -402,7 +404,7 @@ const SmartInput = () => {
         member: JSON.parse(responseValue).member,
         done: false,
       };
-      const postEventToFirestore = async (data) => {
+      const postEventToFirestore = async (data: EventData) => {
         const todoRef = doc(
           db,
           'Family',
@@ -455,6 +457,33 @@ const SmartInput = () => {
     } else {
     }
   };
+
+  type EventData =
+    | {
+        title: string;
+        date: string;
+        endDate: string;
+        category: string;
+        member: string;
+        id: string;
+        multiDay: boolean;
+        time: string;
+        endTime: string;
+        note: string;
+      }
+    | {
+        text: string;
+        due: string;
+        member: string;
+        done: boolean;
+      }
+    | {
+        id: string;
+        title: string;
+        date: string;
+        member: string;
+        image: string | null;
+      };
 
   return (
     <Container>

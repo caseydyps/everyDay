@@ -43,7 +43,9 @@ const openai = new OpenAIApi(config);
 const Suggestion = () => {
   const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
-  const [milestoneData, setMilestoneData] = useState([]);
+  const [milestoneData, setMilestoneData] = useState<
+    { id: string; title: string; date: Date; member: string; image: string }[]
+  >([]);
   const [todoData, setTodoData] = useState([]);
   const moment = require('moment');
   useEffect(() => {
@@ -61,7 +63,15 @@ const Suggestion = () => {
           ...doc.data(),
         }));
         console.log(data);
-        setMilestoneData(data);
+        setMilestoneData(
+          data as {
+            id: string;
+            title: string;
+            date: Date;
+            member: string;
+            image: string;
+          }[]
+        );
       } catch (error) {
         console.error('Error fetching data from Firestore: ', error);
       }
@@ -117,33 +127,6 @@ const Suggestion = () => {
       response: 'Shower scheduled',
     },
   ];
-
-  // const todoData = [
-  //   {
-  //     task: 'Buy diapers',
-  //     category: '#Todo',
-  //     dueTime: moment('2023-04-07 17:00').toDate(),
-  //     members: ['mom'],
-  //     completed: false,
-  //     response: 'Task assigned',
-  //   },
-  //   {
-  //     task: 'Schedule doctor checkup',
-  //     category: '#Todo',
-  //     dueTime: moment('2023-04-12 17:00').toDate(),
-  //     members: ['dad'],
-  //     completed: false,
-  //     response: 'Task assigned',
-  //   },
-  //   {
-  //     task: 'Research car seats',
-  //     category: '#Todo',
-  //     dueTime: moment('2023-04-17 17:00').toDate(),
-  //     members: ['mom', 'dad'],
-  //     completed: false,
-  //     response: 'Task assigned',
-  //   },
-  // ];
 
   const stickyNotesData = [
     {
@@ -205,7 +188,7 @@ const Suggestion = () => {
       // "Q2": "下週行程安排是：...",
       // "Q3": "待辦事項有：...",
       // "Q4": "重要日期或事件是：..."
-      const conversationHistory = getConversationHistory();
+
       const response = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt,

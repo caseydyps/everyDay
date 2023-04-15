@@ -49,14 +49,6 @@ const FamilyMemberForm = () => {
     }
   };
 
-  // useEffect(() => {
-  //   // Load members from localStorage
-  //   const storedMembers = localStorage.getItem('members');
-  //   if (storedMembers) {
-  //     setFormSubmitted(true);
-  //     setMembers(JSON.parse(storedMembers));
-  //   }
-  // }, []);
 
   useEffect(() => {
     const fetchMembers = async () => {

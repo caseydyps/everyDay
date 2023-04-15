@@ -8,7 +8,6 @@ import { GiphyFetch } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
-import Voting from './Voting';
 import Sidebar from '../../../Components/SideBar/SideBar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -25,6 +24,8 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import Voting from './Voting';
+
 //import './piece.scss';
 
 type Sticker = {
@@ -174,6 +175,8 @@ export const Whiteboard = () => {
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
+  <button onClick={() => voteSticker(name)}>Vote</button>;
+  const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
 
   const handleSearch = async () => {
@@ -319,7 +322,8 @@ export const Whiteboard = () => {
     }
   };
 
-  const addGif = async (color) => {
+  const addGif = async (color: string) => {
+    console.log(selectedGif);
     const gifUrl = selectedGif.images.original.url;
     const newSticker = {
       id: uuidv4(),
@@ -350,6 +354,7 @@ export const Whiteboard = () => {
   const deleteSticker = async (id: string) => {
     console.log(id);
     console.log(stickers);
+
     try {
       const familyDocRef = doc(
         db,
@@ -381,62 +386,71 @@ export const Whiteboard = () => {
   return (
     <Container>
       <Sidebar />
+
       <Wrapper id="Wrapper">
         {stickers.map((sticker, index) => (
-          <Sticker
-            key={sticker.id}
-            color={sticker.color}
-            onMouseDown={
-              lockedStickers[index] ? null : (e) => onStickerMouseDown(index, e)
-            }
-            ref={(el) => (stickerRefs.current[index] = el)}
-            style={{
-              left: sticker.x - (dragging === index ? offset.x : 0),
-              top: sticker.y - (dragging === index ? offset.y : 0),
-            }}
-            locked={lockedStickers[index]}
-          >
-            <StickerInput
-              type="text"
-              value={stickerText[index]}
-              onChange={(e) => {
-                const newStickerText = [...stickerText];
-                newStickerText[index] = e.target.value;
-                setStickerText(newStickerText);
-
-                const stickerId = stickers[index].id;
-                const familyDocRef = doc(
-                  db,
-                  'Family',
-                  'Nkl0MgxpE9B1ieOsOoJ9',
-                  'stickers',
-                  stickerId
-                );
-                updateDoc(familyDocRef, { content: e.target.value })
-                  .then(() =>
-                    console.log('Sticker text has been updated in Firestore!')
-                  )
-                  .catch((error) =>
-                    console.error(
-                      'Error updating sticker text in Firestore: ',
-                      error
-                    )
-                  );
+          <>
+            <Sticker
+              key={sticker.id}
+              color={sticker.color}
+              onMouseDown={
+                lockedStickers[index]
+                  ? null
+                  : (e) => onStickerMouseDown(index, e)
+              }
+              ref={(el) => (stickerRefs.current[index] = el)}
+              style={{
+                left: sticker.x - (dragging === index ? offset.x : 0),
+                top: sticker.y - (dragging === index ? offset.y : 0),
               }}
-              disabled={lockedStickers[index]}
-            />
-            {sticker.content !== 'New note' && (
-              <img
-                src={sticker.content}
-                alt=""
-                style={{ width: '100%', height: '100%' }}
+              locked={lockedStickers[index]}
+            >
+              <StickerInput
+                type="text"
+                value={stickerText[index]}
+                onChange={(e) => {
+                  const newStickerText = [...stickerText];
+                  newStickerText[index] = e.target.value;
+                  setStickerText(newStickerText);
+
+                  const stickerId = stickers[index].id;
+                  const familyDocRef = doc(
+                    db,
+                    'Family',
+                    'Nkl0MgxpE9B1ieOsOoJ9',
+                    'stickers',
+                    stickerId
+                  );
+                  updateDoc(familyDocRef, { content: e.target.value })
+                    .then(() =>
+                      console.log('Sticker text has been updated in Firestore!')
+                    )
+                    .catch((error) =>
+                      console.error(
+                        'Error updating sticker text in Firestore: ',
+                        error
+                      )
+                    );
+                }}
+                disabled={lockedStickers[index]}
               />
-            )}
-            <DeleteButton onClick={() => deleteSticker(index)}>X</DeleteButton>
-            <LockButton onClick={() => handleLockClick(index)}>
-              {lockedStickers[index] ? 'Unlock' : 'Lock'}
-            </LockButton>
-          </Sticker>
+              {sticker.content !== 'New note' && (
+                <>
+                  <img
+                    src={sticker.content}
+                    alt=""
+                    style={{ width: '100%', height: '100%' }}
+                  />
+                </>
+              )}
+              <DeleteButton onClick={() => deleteSticker(index)}>
+                X
+              </DeleteButton>
+              <LockButton onClick={() => handleLockClick(index)}>
+                {lockedStickers[index] ? 'Unlock' : 'Lock'}
+              </LockButton>
+            </Sticker>
+          </>
         ))}
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
@@ -467,6 +481,9 @@ export const Whiteboard = () => {
           <ColorButton onClick={() => addGif('transparent')}>
             Add Gif
           </ColorButton>
+          <ColorButton onClick={() => addSticker('transparent')}>
+            Add Text
+          </ColorButton>
           <ColorButton onClick={() => addSticker('#FFF9C4')}>
             Add Yellow Sticker
           </ColorButton>
@@ -480,7 +497,6 @@ export const Whiteboard = () => {
             Add Blue Sticker
           </ColorButton>
           <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
-          <Voting />
         </RowWrap>
 
         <DrawingTool />

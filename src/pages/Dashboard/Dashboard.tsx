@@ -9,7 +9,7 @@ import MilestoneMini from './MilestoneMini';
 import Sidebar from '../../Components/SideBar/SideBar';
 import Navbar from '../../Components/Navbar/Navbar';
 import React from 'react';
-import Socket from '../../Components/Chatbot/socket';
+
 const Container = styled.div`
   display: flex;
   flex-direction: row; ;
@@ -33,76 +33,6 @@ const Block = styled.div`
   display: flex;
   flex: 1;
 `;
-// const Wrapper = styled.div`
-//   width: 100vw;
-//   height: auto;
-//   border: 2px solid black;
-//   display: flex;
-//   flex-direction: column;
-//   flex-wrap: wrap;
-// `;
-
-// function Dashboard() {
-//   const [componentOrder, setComponentOrder] = useState([
-//     'WhiteboardMini',
-//     'CalendarMini',
-//     'TodoMini',
-//     'AlbumMini',
-//     'MilestoneMini',
-//   ]);
-
-//   const components = {
-//     WhiteboardMini,
-//     CalendarMini,
-//     TodoMini,
-//     AlbumMini,
-//     MilestoneMini,
-//   };
-
-//   const moveComponentUp = (index) => {
-//     if (index === 0) {
-//       return;
-//     }
-//     const newOrder = [...componentOrder];
-//     [newOrder[index - 1], newOrder[index]] = [
-//       newOrder[index],
-//       newOrder[index - 1],
-//     ];
-//     setComponentOrder(newOrder);
-//   };
-
-//   const moveComponentDown = (index) => {
-//     if (index === componentOrder.length - 1) {
-//       return;
-//     }
-//     const newOrder = [...componentOrder];
-//     [newOrder[index], newOrder[index + 1]] = [
-//       newOrder[index + 1],
-//       newOrder[index],
-//     ];
-//     setComponentOrder(newOrder);
-//   };
-//   return (
-//     <Container>
-//       <Sidebar />
-//       <Wrapper>
-//         {componentOrder.map((component, index) => (
-//           <RowWrap key={index}>
-//             {React.createElement(components[component], {})}
-//             <div>
-//               <button onClick={() => moveComponentUp(index)}>Move Up</button>
-//               <button onClick={() => moveComponentDown(index)}>
-//                 Move Down
-//               </button>
-//             </div>
-//           </RowWrap>
-//         ))}
-//       </Wrapper>
-//     </Container>
-//   );
-// }
-
-// export default Dashboard;
 
 const Dashboard = () => {
   const [rows, setRows] = useState([
@@ -146,7 +76,7 @@ const Dashboard = () => {
   return (
     <Container>
       <Sidebar />
-      <Socket />
+
       <ColumnWrap>
         <Navbar />
         {rows.map((row, index) => (
