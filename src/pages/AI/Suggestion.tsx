@@ -46,7 +46,7 @@ const Suggestion = () => {
   const [milestoneData, setMilestoneData] = useState<
     { id: string; title: string; date: Date; member: string; image: string }[]
   >([]);
-  const [todoData, setTodoData] = useState([]);
+  const [todoData, setTodoData] = useState<Todo[]>([]);
   const moment = require('moment');
   useEffect(() => {
     const familyDocRef = collection(
@@ -92,11 +92,23 @@ const Suggestion = () => {
     return todosData;
   };
 
+  interface Todo {
+    id: string;
+    title: string;
+    completed: boolean;
+  }
+
   useEffect(() => {
     const fetchTodosData = async () => {
       const todoData = await getTodosData();
       console.log(todoData);
-      setTodoData(todoData);
+      setTodoData(
+        todoData as {
+          id: string;
+          title: string;
+          completed: boolean;
+        }[]
+      );
     };
     fetchTodosData();
   }, []);

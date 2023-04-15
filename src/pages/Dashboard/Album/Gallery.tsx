@@ -23,27 +23,63 @@ import {
   where,
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+type Album = {
+  id: string;
+  title: string;
+  members: string[];
+  description: string;
+  date: string;
+  favorite: boolean;
+  photos: Photo[];
+  firstPhotoURL: string;
+};
+
+type Photo = {
+  id: string;
+  url: string;
+  title: string;
+};
+
+interface AlbumData {
+  id: string;
+  title: string;
+  members: string[];
+  description: string;
+  date: string;
+  isFavorite: boolean;
+  photos: Photo[];
+}
+
+type PhotoType = Photo & {
+  caption: string;
+  date: Date;
+  location: string;
+  tags: string[];
+};
+
+type AlbumArray = Album[];
+
 function Gallery() {
-  const [file, setFile] = useState(null);
-  const [albumTitle, setAlbumTitle] = useState('');
-  const [members, setMembers] = useState([]);
-  const [description, setDescription] = useState('');
-  const [date, setDate] = useState('');
-  const [albumId, setAlbumId] = useState('');
-  const [albums, setAlbums] = useState([]);
-  const [selectedAlbumId, setSelectedAlbumId] = useState(null);
-  const [selectedAlbumTitle, setSelectedAlbumTitle] = useState('');
-  const [isFavorite, setIsFavorite] = useState(false);
-  const handleAlbumTitleChange = (e) => {
+  const [file, setFile] = useState<File[] | null>(null);
+  const [albumTitle, setAlbumTitle] = useState<string>('');
+  const [members, setMembers] = useState<string[]>([]);
+  const [description, setDescription] = useState<string>('');
+  const [date, setDate] = useState<string>('');
+  const [albumId, setAlbumId] = useState<string>('');
+  const [albums, setAlbums] = useState<Album[]>([]);
+  const [selectedAlbumId, setSelectedAlbumId] = useState<string>(null);
+  const [selectedAlbumTitle, setSelectedAlbumTitle] = useState<string>('');
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlbumTitle(e.target.value);
   };
-  const [selectedMember, setSelectedMember] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedMember, setSelectedMember] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>('');
 
   const regularStar = farStar;
   const solidStar = fasStar;
 
-  const handleMembersChange = (e) => {
+  const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,
       (option) => option.value
@@ -51,11 +87,14 @@ function Gallery() {
     setMembers(selectedOptions);
   };
 
-  const handleDescriptionChange = (e) => {
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setDescription(e.target.value);
   };
-  const handleFileChange = (e) => {
-    setFile(e.target.files);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      setFile([files.item(0)]);
+    }
   };
 
   const handleUpload = async () => {
@@ -92,8 +131,8 @@ function Gallery() {
       }
 
       // Retrieve the current photos array from Firestore
-      const albumData = (await getDoc(albumDoc)).data();
-      const currentPhotos = albumData.photos || [];
+      const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
+      const currentPhotos: PhotoType[] = albumData.photos || [];
 
       for (let i = 0; i < file.length; i++) {
         const currFile = file[i];
@@ -132,7 +171,7 @@ function Gallery() {
     }
   };
 
-  const handleAlbumSelect = (e) => {
+  const handleAlbumSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setAlbumTitle(e.target.value);
     console.log('Album Title: ', e.target.value);
   };
@@ -205,7 +244,7 @@ function Gallery() {
     fetchAlbums();
   }, []);
 
-  const handleDeleteAlbum = async (album) => {
+  const handleDeleteAlbum = async (album: Album) => {
     console.log(album.title);
 
     try {
@@ -239,7 +278,7 @@ function Gallery() {
     }
   };
 
-  const handleToggleFavorite = async (album) => {
+  const handleToggleFavorite = async (album: Album) => {
     console.log('Hi');
     const albumRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'photos');
 
@@ -317,7 +356,7 @@ function Gallery() {
         {selectedAlbumId ? (
           <p>
             Selected album:{' '}
-            {albums.find((album) => album.id === selectedAlbumId).title}
+            {albums.find((album) => album.id === selectedAlbumId)?.title}
           </p>
         ) : (
           <label>

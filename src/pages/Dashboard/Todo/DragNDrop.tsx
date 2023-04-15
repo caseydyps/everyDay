@@ -26,6 +26,7 @@ import {
   where,
   arrayUnion,
 } from 'firebase/firestore';
+import { Item } from 'firebase/analytics';
 
 const DragNDropWrapper = styled.div`
   display: flex;
@@ -54,6 +55,7 @@ const DragNDropGroup = styled.div`
 
 type DragNDropItemProps = {
   isDragging: boolean;
+  item: DataItem;
 };
 const DragNDropItem = styled.div<DragNDropItemProps>`
   padding: 40px;
@@ -152,8 +154,23 @@ const RowWrap = styled.div`
 
 type DataItem = {
   id: number;
+  name: string;
+  description: string;
+  groupIndex: number;
+  itemIndex: number;
+  done: boolean;
+  title: string;
+  items: Item[];
+};
+
+type Item = {
+  id: number;
+  title: string;
+  description: string;
+  due: Date | null | string;
+  done: boolean;
   text: string;
-  completed: boolean;
+  member: string;
 };
 
 type DragNDropProps = {
@@ -167,7 +184,7 @@ type DragNDropState = {
 };
 
 function DragNDrop({ data }: DragNDropProps) {
-  const [state, dispatch] = useReducer(todoReducer, []);
+  // const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
 
   const [list, setList] = useState<DataItem[]>(data);
@@ -180,8 +197,8 @@ function DragNDrop({ data }: DragNDropProps) {
     setList(data);
   }, [setList, data]);
 
-  const dragItem = useRef<ItemType>();
-  const dragItemNode = useRef<HTMLDivElement>(null);
+  const dragItem = useRef<ItemType | null>(null);
+  const dragItemNode = useRef<HTMLDivElement | null>(null);
 
   type ItemType = {
     id: number;
@@ -189,14 +206,16 @@ function DragNDrop({ data }: DragNDropProps) {
     description: string;
     groupIndex: number;
     itemIndex: number;
+    done: boolean;
   };
+
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     item: ItemType
   ) => {
     console.log('Starting to drag', item);
 
-    dragItemNode.current = e.target;
+    dragItemNode.current = e.target as HTMLDivElement;
     dragItemNode.current.addEventListener('dragend', handleDragEnd);
     dragItem.current = item;
 
@@ -227,7 +246,10 @@ function DragNDrop({ data }: DragNDropProps) {
       });
     }
   };
-  const handleDragEnd = (e) => {
+  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+    if (!dragItemNode.current) {
+      return;
+    }
     setDragging(false);
     dragItem.current = null;
     dragItemNode.current.removeEventListener('dragend', handleDragEnd);
@@ -240,12 +262,23 @@ function DragNDrop({ data }: DragNDropProps) {
     setSelectedDate(event.target.value);
   };
 
-  const addItem = async (groupIndex: number, { title, due, member }) => {
+  type TodoItem = {
+    title: string;
+    due: Date;
+    member: Member;
+  };
+  interface Member {
+    name: string;
+    avatarSrc: string;
+  }
+
+  const addItem = async (
+    groupIndex: number,
+    { title, due, member }: TodoItem
+  ) => {
     const text = title;
     const dueDate = due ? due : null;
     const memberAvatarSrc = member.avatarSrc;
-    console.log(groupIndex);
-    console.log(list[groupIndex].title);
     if (text && memberAvatarSrc) {
       const newItem = {
         text,
@@ -296,7 +329,10 @@ function DragNDrop({ data }: DragNDropProps) {
     title: string;
     items: Item[];
   };
-  type List = Group[];
+  type List = {
+    items: ItemType[];
+    title: string;
+  };
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
     const todoRef = doc(
       db,
@@ -333,19 +369,19 @@ function DragNDrop({ data }: DragNDropProps) {
       );
   };
 
-  const editItem = (groupIndex: number, itemIndex: number) => {
-    setList((prevList: List) => {
-      const newList = [...prevList];
-      newList[groupIndex].items.splice(itemIndex, 1);
-      localStorage.setItem('List', JSON.stringify(newList));
-      return newList;
-    });
-  };
+  // const editItem = (groupIndex: number, itemIndex: number) => {
+  //   setList((prevList: List) => {
+  //     const newList = [...prevList];
+  //     newList[groupIndex].items.splice(itemIndex, 1);
+  //     localStorage.setItem('List', JSON.stringify(newList));
+  //     return newList;
+  //   });
+  // };
   const handleChange = async (
-    e,
+    e: React.ChangeEvent<HTMLInputElement>,
     groupIndex: number,
     itemIndex: number,
-    field
+    field: string
   ) => {
     const value = e.target.value;
 
@@ -391,7 +427,11 @@ function DragNDrop({ data }: DragNDropProps) {
     }
   };
 
-  const handleDoneChange = async (e, groupIndex: number, itemIndex: number) => {
+  const handleDoneChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    groupIndex: number,
+    itemIndex: number
+  ) => {
     const checked = e.target.checked;
     console.log(checked);
     const group = list[groupIndex];
@@ -416,7 +456,7 @@ function DragNDrop({ data }: DragNDropProps) {
       const items = todoDoc.exists() ? todoDoc.data().items : [];
 
       // update the entire items array with the new checked item
-      const updatedItems = items.map((item, index) =>
+      const updatedItems = items.map((item: Item, index: number) =>
         index === itemIndex ? newItem : item
       );
 
@@ -471,7 +511,7 @@ function DragNDrop({ data }: DragNDropProps) {
     items: ItemType[];
   };
 
-  function getTotalTaskCount(group: GroupType): number {
+  function getTotalTaskCount(group: DataItem): number {
     let count = 0;
 
     for (const item of group.items) {
@@ -481,7 +521,7 @@ function DragNDrop({ data }: DragNDropProps) {
     return count;
   }
 
-  function getUnfinishedTaskCount(group) {
+  function getUnfinishedTaskCount(group: DataItem) {
     let count = 0;
 
     for (const item of group.items) {
@@ -493,7 +533,7 @@ function DragNDrop({ data }: DragNDropProps) {
     return count;
   }
 
-  function getfinishedTaskCount(group) {
+  function getfinishedTaskCount(group: DataItem) {
     let count = 0;
 
     for (const item of group.items) {
@@ -505,7 +545,7 @@ function DragNDrop({ data }: DragNDropProps) {
     return count;
   }
 
-  function getListProgress(list) {
+  function getListProgress(list: DataItem) {
     const totalTasks = getTotalTaskCount(list);
     const unfinishedTasks = getUnfinishedTaskCount(list);
     const finishedTasks = getfinishedTaskCount(list);
@@ -580,12 +620,15 @@ function DragNDrop({ data }: DragNDropProps) {
             >
               {group.items
                 .sort((a, b) => {
-                  const aDueDate = new Date(a.due);
-                  const bDueDate = new Date(b.due);
+                  const aDueDate = a.due ? new Date(a.due) : null;
+                  const bDueDate = b.due ? new Date(b.due) : null;
+                  if (!aDueDate && !bDueDate) return 0;
+                  if (!aDueDate) return sortOrder === 'ascending' ? 1 : -1;
+                  if (!bDueDate) return sortOrder === 'ascending' ? -1 : 1;
                   if (sortOrder === 'ascending') {
-                    return aDueDate - bDueDate;
+                    return aDueDate.getTime() - bDueDate.getTime();
                   } else {
-                    return bDueDate - aDueDate;
+                    return bDueDate.getTime() - aDueDate.getTime();
                   }
                 })
                 .map((item, itemIndex: number) => {

@@ -7,13 +7,14 @@ import { GiphyFetch } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
-import Voting from './Voting';
-
-//import './piece.scss';
 
 type Sticker = {
   x: number;
   y: number;
+  id: number;
+  color: string;
+  content: string;
+  member: string[];
 };
 
 const Wrapper = styled.div`
@@ -203,57 +204,43 @@ export const WhiteboardMini = () => {
   const onStickerMouseDown = (id: number, e: React.MouseEvent) => {
     if (locked) return;
     setDragging(id);
-    const index = stickers.findIndex((sticker) => sticker.id === id);
+    const index = stickers.findIndex((sticker: Sticker) => sticker.id === id);
     const rect = stickerRefs.current[index]?.getBoundingClientRect();
     if (rect) {
-      const offsetX = isNaN(rect.offsetLeft) ? 0 : e.clientX - rect.offsetLeft;
-      const offsetY = isNaN(rect.offsetTop) ? 0 : e.clientY - rect.offsetTop;
-      setOffset({ x: offsetX, y: offsetY });
+      setOffset({
+        x: e.clientX - (rect.left + window.pageXOffset),
+        y: e.clientY - (rect.top + window.pageYOffset),
+      });
     }
   };
 
-  const addSticker = (color) => {
-    const newSticker = {
-      id: Date.now(),
-      x: 150,
-      y: 150,
-      content: 'New note',
-      color: color,
-    };
+  // const addSticker = (color) => {
+  //   const newSticker = {
+  //     id: Date.now(),
+  //     x: 150,
+  //     y: 150,
+  //     content: 'New note',
+  //     color: color,
+  //   };
 
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
-  };
+  //   setStickers([...stickers, newSticker]);
+  //   setStickerText([...stickerText, '']);
+  // };
 
-  const addGif = async (color) => {
-    const gifUrl = selectedGif.images.original.url;
+  // const addGif = async (color) => {
+  //   const gifUrl = selectedGif.images.original.url;
 
-    const newSticker = {
-      id: Date.now(),
-      x: 150,
-      y: 150,
-      content: gifUrl,
-      color: color,
-    };
+  //   const newSticker = {
+  //     id: Date.now(),
+  //     x: 150,
+  //     y: 150,
+  //     content: gifUrl,
+  //     color: color,
+  //   };
 
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
-  };
-
-  const addVote = async (color) => {
-    const gifUrl = selectedGif.images.original.url;
-
-    const newSticker = {
-      id: Date.now(),
-      x: 150,
-      y: 150,
-      content: gifUrl,
-      color: color,
-    };
-
-    setStickers([...stickers, newSticker]);
-    setStickerText([...stickerText, '']);
-  };
+  //   setStickers([...stickers, newSticker]);
+  //   setStickerText([...stickerText, '']);
+  // };
 
   const deleteSticker = (index: number) => {
     const newStickers = [...stickers];
@@ -265,7 +252,7 @@ export const WhiteboardMini = () => {
     setStickerText(newStickerText);
   };
 
-  const handleLockClick = (index) => {
+  const handleLockClick = (index: number) => {
     const newLockedStickers = [...lockedStickers];
     newLockedStickers[index] = !newLockedStickers[index];
     setLockedStickers(newLockedStickers);
@@ -278,7 +265,7 @@ export const WhiteboardMini = () => {
     <Container>
       <Wrapper>
         <DrawingTool />
-        {stickers.map((sticker, index) => (
+        {stickers.map((sticker: Sticker, index: number) => (
           <Sticker
             key={sticker.id}
             color={sticker.color}

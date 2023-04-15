@@ -81,7 +81,7 @@ function Milestone() {
     setNewEventTitle('');
     setNewEventDate('');
     setNewEventMember('');
-    setNewEventImage('');
+    setNewEventImage(null);
   };
 
   type AvatarPreviewProps = {
@@ -125,7 +125,13 @@ function Milestone() {
     });
   };
 
-  const [filter, setFilter] = useState({
+  type FilterType = {
+    member: string;
+    startDate: Date | null;
+    endDate: Date | null;
+    title: string;
+  };
+  const [filter, setFilter] = useState<FilterType>({
     member: '',
     startDate: null,
     endDate: null,
@@ -232,84 +238,6 @@ function Milestone() {
     );
   };
 
-  //   useEffect(() => {
-  //     // Fetch events from server or set initial events
-  //     const initialEvents = [
-  //       {
-  //         id: 1,
-  //         title: 'Get married',
-  //         date: new Date(2023, 3, 15),
-  //         member: 'John Doe',
-  //         image:
-  //           'https://fastly.picsum.photos/id/238/200/200.jpg?hmac=O4Jc6lqHVfaKVzLf8bWssNTbWzQoaRUC0TDXod9xDdM',
-  //       },
-  //       {
-  //         id: 2,
-  //         title: '第一次站起來',
-  //         date: new Date(2023, 3, 17),
-  //         member: 'Jane Smith',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: '生日',
-  //         date: new Date(2023, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: '第一次走路',
-  //         date: new Date(2023, 3, 23),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: '一週年',
-  //         date: new Date(2021, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: '二週年',
-  //         date: new Date(2024, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: 'Event 3',
-  //         date: new Date(2025, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: 'Event 3',
-  //         date: new Date(2023, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: 'Event 3',
-  //         date: new Date(2023, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //       {
-  //         id: 3,
-  //         title: 'Event 3',
-  //         date: new Date(2023, 3, 22),
-  //         member: 'Bob Johnson',
-  //         image: 'https://picsum.photos/200',
-  //       },
-  //     ];
-
-  //     setEvents(initialEvents);
-  //   }, []);
   useEffect(() => {
     const familyDocRef = collection(
       db,

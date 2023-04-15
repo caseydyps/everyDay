@@ -11,6 +11,7 @@ import {
   addDoc,
   deleteDoc,
   onSnapshot,
+  QuerySnapshot,
   setDoc,
   getDoc,
   writeBatch,
@@ -41,6 +42,15 @@ const ButtonWrap = styled.div`
   width: 100%;
   max-width: 800px;
 `;
+
+type StrokeData = {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  color: string;
+  width: number;
+};
 
 const DrawingTool = () => {
   const [isPainting, setIsPainting] = useState<boolean>(false);
@@ -159,6 +169,10 @@ const DrawingTool = () => {
             width,
           });
 
+          // Update the undo stack
+          const state = context.getImageData(0, 0, canvas.width, canvas.height);
+          setUndoStack((prevStack) => [...prevStack, state]);
+
           prevOffset.current = { x: offsetX, y: offsetY };
         }
       }
@@ -166,7 +180,7 @@ const DrawingTool = () => {
     20
   );
 
-  const addStroke = async (strokeData) => {
+  const addStroke = async (strokeData: StrokeData) => {
     const strokesCollectionRef = collection(
       db,
       'Family',
@@ -178,7 +192,7 @@ const DrawingTool = () => {
     await addDoc(strokesCollectionRef, strokeData);
   };
 
-  const handleStrokeUpdate = (strokeData) => {
+  const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
 
@@ -211,7 +225,7 @@ const DrawingTool = () => {
       'strokes'
     );
 
-    const deleteDocumentsInBatch = async (querySnapshot) => {
+    const deleteDocumentsInBatch = async (querySnapshot: StrokeData[]) => {
       const batch = writeBatch(db);
 
       querySnapshot.forEach((doc) => {
@@ -238,6 +252,7 @@ const DrawingTool = () => {
     };
 
     await deleteAllStrokes();
+    setUndoStack([]);
   };
 
   const undoStroke = () => {
@@ -251,25 +266,6 @@ const DrawingTool = () => {
     }
   };
 
-  // const saveCanvas = async () => {
-  //   const canvas = canvasRef.current;
-  //   const dataURL = canvas ? canvas.toDataURL() : null;
-  //   if (dataURL) {
-  //     const canvaDocRef = doc(
-  //       db,
-  //       'Family',
-  //       'Nkl0MgxpE9B1ieOsOoJ9',
-  //       'canva',
-  //       'xoQi8suQkRBSHmELkazx'
-  //     );
-  //     try {
-  //       await setDoc(canvaDocRef, { dataURL });
-  //       console.log('Canvas data has been saved to Firestore!');
-  //     } catch (error) {
-  //       console.error('Error saving canvas data to Firestore: ', error);
-  //     }
-  //   }
-  // };
   const loadCanvas = async () => {
     const canvas = canvasRef.current;
     if (!canvas) {
@@ -285,7 +281,8 @@ const DrawingTool = () => {
       'Family',
       'Nkl0MgxpE9B1ieOsOoJ9',
       'canva',
-      'xoQi8suQkRBSHmELkazx'
+      'xoQi8suQkRBSHmELkazx',
+      'strokes'
     );
     try {
       const docSnapshot = await getDoc(familyDocRef);
@@ -312,6 +309,10 @@ const DrawingTool = () => {
     }
   };
 
+  if (undoStack.length < stackLimit) {
+    undoStack.shift();
+    undoStack.pop();
+  }
   return (
     <>
       <ButtonWrap>
@@ -325,10 +326,10 @@ const DrawingTool = () => {
         <button onClick={() => handleChangeLineWidth(30)}>Wide</button>
         <button onClick={undoStroke}>Undo</button>
         <button onClick={clearCanvas}>Clear</button>
-        <button onClick={addStroke}>Save</button>
-        <button onClick={loadCanvas}>load</button>
+        {/* <button onClick={addStroke}>Save</button>
+        <button onClick={loadCanvas}>load</button> */}
       </ButtonWrap>
-
+      <div>{`Strokes: ${undoStack.length}`}</div>
       <CanvasWrap>
         <canvas
           id="canvas"

@@ -4,7 +4,7 @@ import DragNDrop from './DragNDropDashboard';
 import TodoMini from './Todo/TodoMini';
 import CalendarMini from './Calendar/CalendarMini';
 import WhiteboardMini from './Whiteboard/WhiteboardMini';
-import AlbumMini from './Album/AlbumMini';
+import Gallery from './Album/Gallery';
 import MilestoneMini from './MilestoneMini';
 import Sidebar from '../../Components/SideBar/SideBar';
 import Navbar from '../../Components/Navbar/Navbar';
@@ -44,7 +44,7 @@ const Dashboard = () => {
     {
       id: 2,
       color: '#90CAF9',
-      components: [<TodoMini />, <CalendarMini />, <AlbumMini />],
+      components: [<TodoMini />, <CalendarMini />, <Gallery />],
     },
     {
       id: 3,

@@ -31,6 +31,10 @@ import Voting from './Voting';
 type Sticker = {
   x: number;
   y: number;
+  id: number;
+  color: string;
+  content: string;
+  member: string[];
 };
 
 const Wrapper = styled.div`
@@ -260,7 +264,7 @@ export const Whiteboard = () => {
   const onStickerMouseDown = (id: number, e: React.MouseEvent) => {
     if (locked) return;
     setDragging(id);
-    const index = stickers.findIndex((sticker) => sticker.id === id);
+    const index = stickers.findIndex((sticker: Sticker) => sticker.id === id);
 
     const rect = stickerRefs.current[index]?.getBoundingClientRect();
     console.log('rect:', rect);
@@ -324,7 +328,7 @@ export const Whiteboard = () => {
 
   const addGif = async (color: string) => {
     console.log(selectedGif);
-    const gifUrl = selectedGif.images.original.url;
+    const gifUrl = selectedGif ? selectedGif.images.original.url : '';
     const newSticker = {
       id: uuidv4(),
       x: 150,
@@ -351,7 +355,7 @@ export const Whiteboard = () => {
     }
   };
 
-  const deleteSticker = async (id: string) => {
+  const deleteSticker = async (id: number) => {
     console.log(id);
     console.log(stickers);
 
@@ -366,7 +370,7 @@ export const Whiteboard = () => {
       await deleteDoc(familyDocRef);
       console.log('Sticker has been deleted from Firestore!');
       const newStickers = stickers.filter(
-        (sticker) => sticker.id !== stickers[id].id
+        (sticker: Sticker) => sticker.id !== stickers[id].id
       );
       setStickers(newStickers);
     } catch (error) {
@@ -388,7 +392,7 @@ export const Whiteboard = () => {
       <Sidebar />
 
       <Wrapper id="Wrapper">
-        {stickers.map((sticker, index) => (
+        {stickers.map((sticker: Sticker, index: number) => (
           <>
             <Sticker
               key={sticker.id}
@@ -478,25 +482,33 @@ export const Whiteboard = () => {
           </>
         )}
         <RowWrap>
-          <ColorButton onClick={() => addGif('transparent')}>
+          <ColorButton
+            color="transparent"
+            onClick={() => addGif('transparent')}
+          >
             Add Gif
           </ColorButton>
-          <ColorButton onClick={() => addSticker('transparent')}>
+          <ColorButton
+            color="transparent"
+            onClick={() => addSticker('transparent')}
+          >
             Add Text
           </ColorButton>
-          <ColorButton onClick={() => addSticker('#FFF9C4')}>
+          <ColorButton color="#FFF9C4" onClick={() => addSticker('#FFF9C4')}>
             Add Yellow Sticker
           </ColorButton>
-          <ColorButton onClick={() => addSticker('#EF9A9A')}>
+          <ColorButton color="#EF9A9A" onClick={() => addSticker('#EF9A9A')}>
             Add Red Sticker
           </ColorButton>
-          <ColorButton onClick={() => addSticker('#81D4FA')}>
+          <ColorButton color="#81D4FA" onClick={() => addSticker('#81D4FA')}>
             Add Blue Sticker
           </ColorButton>
-          <ColorButton onClick={() => addSticker('#A5D6A7')}>
+          <ColorButton color="#A5D6A7" onClick={() => addSticker('#A5D6A7')}>
             Add Blue Sticker
           </ColorButton>
-          <ColorButton onClick={() => setStickers([])}>Clear</ColorButton>
+          <ColorButton color="" onClick={() => setStickers([])}>
+            Clear
+          </ColorButton>
         </RowWrap>
 
         <DrawingTool />

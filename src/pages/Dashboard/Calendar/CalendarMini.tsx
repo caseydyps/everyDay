@@ -138,7 +138,13 @@ const AddButton = styled.button`
 
 const Modal = styled.div``;
 
-const EventWrapper = styled.div`
+interface EventWrapperProps {
+  category: string;
+  multiDay?: boolean;
+  finished?: boolean;
+}
+
+const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
   align-items: center;
   margin: 5px 0;
@@ -175,7 +181,9 @@ const EventTime = styled.div`
 `;
 
 interface EventTitleProps {
+  title: string;
   finished: boolean;
+  children?: React.ReactNode;
 }
 
 const EventTitle: React.FC<EventTitleProps> = styled.div<EventTitleProps>`
@@ -232,24 +240,53 @@ function CalendarMini() {
     'Dec',
   ];
 
+  interface DateDetailsProps {
+    date: Date;
+    events: Event[];
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+    draggedEventIdRef: React.MutableRefObject<string | null>;
+    isCurrentMonth: boolean;
+  }
+
+  interface Event {
+    id: string;
+    title: string;
+    category: string;
+    date: string;
+    multiDay: boolean;
+    time: string;
+    endDate: string;
+    endTime: string;
+    description: string;
+    finished: boolean;
+    member: string;
+  }
+
   function DateDetails({
     date,
     events,
     setEvents,
     draggedEventIdRef,
     isCurrentMonth,
-  }) {
-    const handleDragStart = (e, eventId) => {
+  }: DateDetailsProps) {
+    const handleDragStart = (
+      e: React.DragEvent<HTMLDivElement>,
+      eventId: string
+    ) => {
       console.log(eventId);
       draggedEventIdRef.current = eventId;
       console.log(draggedEventIdRef.current);
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
     };
 
-    const handleDrop = (e, date, draggedEventIdRef) => {
+    const handleDrop = (
+      e: React.DragEvent<HTMLDivElement>,
+      date: Date,
+      draggedEventIdRef: React.MutableRefObject<string | null>
+    ) => {
       e.preventDefault();
       console.log('drop', date);
       console.log(draggedEventIdRef.current);
@@ -314,7 +351,7 @@ function CalendarMini() {
                     <EventMember>{event.member}</EventMember>
 
                     <EventTime>{event.time}</EventTime>
-                    <EventTitle finished={event.finished}>
+                    <EventTitle title={event.title} finished={event.finished}>
                       {event.title}
                     </EventTitle>
                     <div>
@@ -390,13 +427,13 @@ function CalendarMini() {
   //     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
   //     return new Date(date.setDate(diff));
   //   };
-  function addWeeks(date, weeks) {
+  function addWeeks(date: Date, weeks: number) {
     const newDate = new Date(date);
     newDate.setDate(newDate.getDate() + weeks * 7);
     return newDate;
   }
 
-  function subWeeks(date, weeks) {
+  function subWeeks(date: Date, weeks: number) {
     return addWeeks(date, -weeks);
   }
 
@@ -462,6 +499,8 @@ function CalendarMini() {
       member: eventMember,
       id: uuidv4(),
       multiDay: isMultiDay,
+      time: "",
+      endTime: "",
     };
     if (!isAllDay) {
       newEvent.time = eventTime;
@@ -495,10 +534,11 @@ function CalendarMini() {
   //     setView(view);
   //   };
 
-  function getWeekNumber(date) {
+  function getWeekNumber(date: Date) {
     const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
     const jan1 = new Date(date.getFullYear(), 0, 1);
-    const daysSinceJan1 = Math.floor((date - jan1) / (24 * 60 * 60 * 1000)) + 1;
+    const daysSinceJan1 =
+      Math.floor((date.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
     const weekNumber = Math.floor((daysSinceJan1 + (7 - dayOfWeek)) / 7);
 
     return weekNumber;
@@ -550,7 +590,7 @@ function CalendarMini() {
   const weekNumber = getWeekNumber(date);
 
   // handleEditEvent function
-  const handleEditEvent = (event) => {
+  const handleEditEvent = (event: Event) => {
     // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
@@ -594,7 +634,7 @@ function CalendarMini() {
   };
 
   // handleDeleteEvent function
-  const handleDeleteEvent = (event) => {
+  const handleDeleteEvent = (event: Event) => {
     // Prompt the user to confirm deletion
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${event.title}"?`
@@ -607,7 +647,7 @@ function CalendarMini() {
   };
 
   // handleFinishEvent function
-  const handleFinishEvent = (event) => {
+  const handleFinishEvent = (event: Event) => {
     // Update the event's "finished" property to its opposite value
     const updatedEvent = { ...event, finished: !event.finished };
     // Update the events list with the new event object

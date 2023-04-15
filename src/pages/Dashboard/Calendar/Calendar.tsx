@@ -150,6 +150,7 @@ const Modal = styled.div``;
 interface EventWrapperProps {
   category: string;
   multiDay?: boolean;
+  finished?: boolean;
 }
 const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
@@ -187,7 +188,11 @@ const EventTime = styled.div`
   font-weight: bold;
 `;
 
-const EventTitle = styled.div`
+interface EventTitleProps {
+  finished?: boolean;
+}
+
+const EventTitle = styled.div<EventTitleProps>`
   font-size: 24px;
   font-weight: bold;
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
@@ -222,9 +227,9 @@ function Calendar() {
   const [eventCategory, setEventCategory] = useState<string>('');
   const [eventMember, setEventMember] = useState<string>('');
   const [events, setEvents] = useState<Event[]>([]);
-  const [selectedRow, setSelectedRow] = useState<number | null>(null);
+  const [selectedRow, setSelectedRow] = useState<number | null>(0);
   const [view, setView] = useState<string>('month');
-  const draggedEventIdRef = useRef(null);
+  const draggedEventIdRef = useRef<string | null>(null);
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
     'Jan',
@@ -249,23 +254,24 @@ function Calendar() {
     multiDay: boolean;
     time: string;
     endDate: string;
+    endTime: string;
     description: string;
     finished: boolean;
     member: string;
   }
 
-  interface DateDetailsProps {
+  type DateDetailsProps = {
     date: Date;
+    month: string;
     events: Event[];
     setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
-    draggedEventIdRef: React.MutableRefObject<string | null>;
-    isCurrentMonth: boolean;
-  }
+    draggedEventIdRef?: React.MutableRefObject<string | null>;
+    isCurrentMonth?: boolean;
+  };
 
   useEffect(() => {
     const fetchCalendarData = async () => {
-      const eventsData = await getCalendarData();
-      console.log(eventsData);
+      const eventsData: any[] = await getCalendarData();
       setEvents(eventsData);
     };
     fetchCalendarData();
@@ -283,7 +289,7 @@ function Calendar() {
     return todosData;
   };
 
-  const postEventToFirestore = async (data) => {
+  const postEventToFirestore = async (data: Event) => {
     const familyDocRef = collection(
       db,
       'Family',
@@ -298,7 +304,7 @@ function Calendar() {
     }
   };
 
-  const deleteEventFromFirestore = async (eventId) => {
+  const deleteEventFromFirestore = async (eventId: string) => {
     const eventRef = collection(
       db,
       'Family',
@@ -319,7 +325,7 @@ function Calendar() {
     });
   };
 
-  const editEventtoFirestore = async (eventId, updatedData) => {
+  const editEventtoFirestore = async (eventId: string, updatedData: Event) => {
     const eventRef = collection(
       db,
       'Family',
@@ -366,10 +372,14 @@ function Calendar() {
     draggedEventIdRef,
     isCurrentMonth,
   }: DateDetailsProps) {
-    const handleDragStart = (e: React.DragEvent<HTMLDivElement>, eventId) => {
-      console.log(eventId);
+    console.log(isCurrentMonth);
+    const handleDragStart = (
+      e: React.DragEvent<HTMLDivElement>,
+      eventId: string
+    ) => {
+      // console.log(eventId);
       draggedEventIdRef.current = eventId;
-      console.log(draggedEventIdRef.current);
+      // console.log(draggedEventIdRef.current);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -378,8 +388,8 @@ function Calendar() {
 
     const handleDrop = (
       e: React.DragEvent<HTMLDivElement>,
-      date,
-      draggedEventIdRef
+      date: Date,
+      draggedEventIdRef: React.MutableRefObject<string | null>
     ) => {
       e.preventDefault();
       console.log('drop', date);
@@ -407,19 +417,26 @@ function Calendar() {
       return <div>今天沒事~</div>;
     }
     const selectedEvents = events.filter((event) => {
-      const startDate = new Date(event.date);
-      if (event.endDate === event.date) {
-        // Single day event
-        return startDate.getDate() === date.getDate();
+      const eventDate = new Date(event.date);
+      if (eventDate.getMonth() === date.getMonth()) {
+        const startDate = new Date(eventDate);
+        if (event.endDate === event.date) {
+          // Single day event
+          return startDate.getDate() === date.getDate();
+        } else {
+          // Multiday event
+          startDate.setDate(startDate.getDate() - 1);
+          const endDate = new Date(event.endDate);
+          return date >= startDate && date <= endDate;
+        }
       } else {
-        // Multiday event
-        startDate.setDate(startDate.getDate() - 1);
-        const endDate = new Date(event.endDate);
-        return date >= startDate && date <= endDate;
+        return false;
       }
     });
 
-    // console.log(selectedEvents);
+    console.log(selectedEvents);
+    console.log(isCurrentMonth);
+    console.log(date.getMonth());
 
     return (
       <div
@@ -441,6 +458,7 @@ function Calendar() {
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
                   >
+                    <EventCategory>{event.date}</EventCategory>
                     <EventCategory>{event.category}</EventCategory>
                     <EventMember>{event.member}</EventMember>
 
@@ -471,7 +489,12 @@ function Calendar() {
     );
   }
 
-  function MonthDetails({ date, events }) {
+  type MonthDetailsProps = {
+    date: Date | null;
+    events: Event[];
+  };
+
+  function MonthDetails({ date, events }: MonthDetailsProps) {
     console.log(date);
     if (!date) {
       return <div>No date selected</div>;
@@ -550,7 +573,9 @@ function Calendar() {
     const lastRowOfMonth = Math.ceil(getDaysInMonth(date) / 7) - 1;
     setDate(newDate);
     setSelectedRow(
-      newMonth === currentMonth ? Math.max(selectedRow - 1, 0) : lastRowOfMonth
+      newMonth === currentMonth
+        ? Math.max(selectedRow ? selectedRow - 1 : 0, 0)
+        : lastRowOfMonth
     );
   };
 
@@ -559,7 +584,9 @@ function Calendar() {
     const newMonth = newDate.getMonth();
     const currentMonth = date.getMonth();
     setDate(newDate);
-    setSelectedRow(newMonth === currentMonth ? selectedRow + 1 : 0);
+    setSelectedRow(
+      newMonth === currentMonth ? (selectedRow ? selectedRow + 1 : 0) : 0
+    );
   };
 
   const handlePrevDay = () => {
@@ -595,6 +622,8 @@ function Calendar() {
       multiDay: isMultiDay,
       time: eventTime,
       endTime: eventEndTime,
+      description: '',
+      finished: false,
     };
     if (!isAllDay) {
       newEvent.time = eventTime;
@@ -888,6 +917,7 @@ function Calendar() {
                     const isFirstWeek = dayOfMonth <= 0;
                     const isLastWeek = dayOfMonth > getDaysInMonth(date);
                     const isCurrentMonth = !isFirstWeek && !isLastWeek;
+                    console.log(isCurrentMonth);
                     const isToday =
                       isCurrentMonth &&
                       dayOfMonth === new Date().getDate() &&
@@ -921,6 +951,7 @@ function Calendar() {
                               dayOfMonth
                             )
                           }
+                          month={date.getMonth()}
                           events={events}
                           setEvents={setEvents}
                           draggedEventIdRef={draggedEventIdRef}
@@ -1041,7 +1072,9 @@ function Calendar() {
               {' '}
               {[...Array(7).keys()].map((weekday) => {
                 const dayOfMonth =
-                  selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1; // Use row 0
+                  selectedRow !== null
+                    ? selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1
+                    : 0;
                 const isFirstWeek = dayOfMonth <= 0;
                 const isLastWeek = dayOfMonth > getDaysInMonth(date);
                 const isCurrentMonth = !isFirstWeek && !isLastWeek;
@@ -1099,7 +1132,12 @@ function Calendar() {
             } ${date.getFullYear()}`}</MonthLabel>
             <Button onClick={handleNextDay}>Next</Button>
           </MonthContainer>
-          <DateDetails date={selectedDate} events={events} />
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+            draggedEventIdRef={draggedEventIdRef}
+          />
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           {showModal && (
             <Modal>

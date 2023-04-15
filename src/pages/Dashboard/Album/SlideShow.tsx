@@ -41,7 +41,18 @@ const ThumbnailImage = styled.img`
   }
 `;
 
-const Slideshow = ({ interval = 2000, photos }) => {
+type Photo = {
+  src: string;
+  alt: string;
+  url: string;
+};
+
+type SlideshowProps = {
+  interval?: number;
+  photos: Photo[];
+};
+
+const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {

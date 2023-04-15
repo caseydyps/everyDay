@@ -30,6 +30,7 @@ const DragNDropGroup = styled.div`
 
 type DragNDropItemProps = {
   isDragging: boolean;
+  item: Item;
 };
 
 const DragNDropItem = styled.div<DragNDropItemProps>`
@@ -130,16 +131,25 @@ const RowWrap = styled.div`
 type DataType = {
   id: number;
   name: string;
-  items: ItemType[]; // <-- add this line
+  items: ItemType[];
+  title: string;
+};
+
+type Item = {
+  id: number;
+  title: string;
+  description: string;
+  due: Date | null;
+  done: boolean;
+  text: string;
 };
 
 type ItemType = {
-  id: number;
-  name: string;
+  text: string;
   done: boolean;
-  due: string;
+  member: string;
+  due: string | null;
 };
-
 function DragNDropMini({ data }: { data: DataType[] }) {
   const [list, setList] = useState<DataType[]>(data);
   const [dragging, setDragging] = useState(false);
@@ -376,7 +386,7 @@ function DragNDropMini({ data }: { data: DataType[] }) {
           {hideChecked ? 'Show Completed' : 'Hide Completed'}
         </button> */}
 
-        {list.map((group: Group, groupIndex: number) => (
+        {list.map((group: DataType, groupIndex: number) => (
           <div>
             <h3>{group.title}</h3>
             {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
@@ -415,7 +425,7 @@ function DragNDropMini({ data }: { data: DataType[] }) {
                     return (new Date(b.due) as any) - (new Date(a.due) as any);
                   }
                 })
-                .map((item, itemIndex: number) => {
+                .map((item: ItemType, itemIndex: number) => {
                   console.log('Due date:', item.due);
                   console.log('Current date:', new Date());
                   const dueDate = new Date(item.due); // convert date string to Date object

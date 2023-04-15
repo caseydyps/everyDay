@@ -172,7 +172,25 @@ interface MoveItemAction {
   };
 }
 
-type TodoAction = AddListAction | AddItemAction | MoveItemAction;
+interface SetDataAction {
+  type: 'SET_DATA';
+  payload: {
+    source: {
+      droppableId: number;
+      index: number;
+    };
+    destination: {
+      droppableId: number;
+      index: number;
+    };
+  };
+}
+
+type TodoAction =
+  | AddListAction
+  | AddItemAction
+  | MoveItemAction
+  | SetDataAction;
 
 export const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {

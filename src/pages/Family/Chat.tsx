@@ -28,12 +28,13 @@ interface Message {
     nanoseconds: number;
     seconds: number;
   };
+  id: string;
 }
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [copiedMessage, setCopiedMessage] = useState(null);
-  const scroll = useRef();
+  const scroll = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const q = query(
@@ -42,9 +43,17 @@ const Chat = () => {
     );
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      let messages = [];
+      let messages: Message[] = [];
       querySnapshot.forEach((doc) => {
-        messages.push({ ...doc.data(), id: doc.id });
+        const data = doc.data();
+        const message = {
+          uid: data.uid,
+          name: data.name,
+          text: data.text,
+          timestamp: data.timestamp,
+          id: doc.id,
+        };
+        messages.push(message);
       });
       setMessages(messages);
     });
