@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-import Timeline from './Timeline';
+// import Timeline from './Timeline';
 import { db } from '../../config/firebase.config';
 import {
   collection,
@@ -253,7 +253,7 @@ function MilestoneMini() {
       title: newEventTitle,
       date: new Date(newEventDate),
       member: newEventMember,
-      image: URL.createObjectURL(file),
+      image: file ? URL.createObjectURL(file) : '',
     };
 
     setEvents((prevEvents) => [...prevEvents, newEvent]);
@@ -265,17 +265,17 @@ function MilestoneMini() {
     setNewEventImage('');
   };
 
-  const AvatarPreview: React.FC<AvatarPreviewProps> = ({ avatar }) => {
+  const AvatarPreview: any = ({ avatar }: any) => {
     return <img src={avatar} alt="Avatar" />;
   };
 
   const handleEditEvent = (event: Event) => {
-    EditEventForm();
+    EditEventForm(event);
     setEditedEvent(event);
     setIsEditing(true);
   };
 
-  const filterEvents = (events: []) => {
+  const filterEvents = (events: Event[]) => {
     return events.filter((event: Event) => {
       let match = true;
 
@@ -303,7 +303,14 @@ function MilestoneMini() {
     });
   };
 
-  const [filter, setFilter] = useState({
+  type FilterType = {
+    member: string;
+    startDate: Date | null;
+    endDate: Date | null;
+    title: string;
+  };
+
+  const [filter, setFilter] = useState<FilterType>({
     member: '',
     startDate: null,
     endDate: null,
@@ -336,7 +343,7 @@ function MilestoneMini() {
     image: string | null;
   };
 
-  function EditEventForm({ event, onEdit }: EditEventFormProps) {
+  function EditEventForm({ event, onEdit }: any) {
     const [title, setTitle] = useState(event.title);
     const [date, setDate] = useState(event.date.toISOString().slice(0, 10));
     const [member, setMember] = useState(event.member);
@@ -393,7 +400,13 @@ function MilestoneMini() {
           {imagePreview ? (
             <AvatarPreview src={imagePreview} alt="Preview" />
           ) : (
-            <input type="file" onChange={(e) => setImage(e.target.files[0])} />
+            <input
+              type="file"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setImage(file);
+              }}
+            />
           )}
         </FormField>
         <FormButton type="submit">Save Changes</FormButton>
@@ -697,7 +710,7 @@ function MilestoneMini() {
           {/* <Timeline events={events} /> */}
 
           {filterEvents(events)
-            .sort((a, b) => a.date - b.date)
+            .sort((a: any, b: any) => a.date - b.date)
             .map((event: Event, index) => (
               <>
                 <EventBox

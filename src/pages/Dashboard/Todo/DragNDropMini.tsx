@@ -17,7 +17,7 @@ const DeleteListButton = styled.button`
   flex:direction: column;
 `;
 
-const DragNDropGroup = styled.div`
+const DragNDropGroup: any = styled.div`
   display: flex;
   flex-direction: column;
   width: 80%;
@@ -33,7 +33,7 @@ type DragNDropItemProps = {
   item: Item;
 };
 
-const DragNDropItem = styled.div<DragNDropItemProps>`
+const DragNDropItem: any = styled.div<DragNDropItemProps>`
   padding: 20px;
   margin: 10px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
@@ -133,6 +133,8 @@ type DataType = {
   name: string;
   items: ItemType[];
   title: string;
+  groupIndex: number;
+  itemIndex: number;
 };
 
 type Item = {
@@ -148,9 +150,21 @@ type ItemType = {
   text: string;
   done: boolean;
   member: string;
-  due: string | null;
+  due: string | null | number;
 };
-function DragNDropMini({ data }: { data: DataType[] }) {
+
+interface DragNDropMiniProps {
+  data: any; // Consider using a more specific type instead of 'any'
+  onItemAdd: (listIndex: number) => void;
+  selectedItemIndex: number | null;
+  setSelectedItemIndex: React.Dispatch<React.SetStateAction<number | null>>;
+}
+const DragNDropMini: React.FC<DragNDropMiniProps> = ({
+  data,
+  onItemAdd,
+  selectedItemIndex,
+  setSelectedItemIndex,
+}) => {
   const [list, setList] = useState<DataType[]>(data);
   const [dragging, setDragging] = useState(false);
   const [sortOrder, setSortOrder] = useState('ascending');
@@ -160,46 +174,58 @@ function DragNDropMini({ data }: { data: DataType[] }) {
   }, [setList, data]);
 
   const dragItem = useRef<DataType | null>(null);
-  const dragItemNode = useRef<HTMLDivElement>(null);
+  const dragItemNode: any = useRef<HTMLDivElement>(null);
 
-  const handleDragStart = (
+  const handleDragStart: any = (
     e: React.DragEvent<HTMLDivElement>,
     item: DataType
   ) => {
     console.log('Starting to drag', item);
     dragItemNode.current = e.target as HTMLDivElement;
-    dragItemNode.current.addEventListener('dragend', handleDragEnd);
+    if (dragItemNode.current) {
+      dragItemNode.current.addEventListener('dragend', handleDragEnd);
+    }
     dragItem.current = item;
 
     setTimeout(() => {
       setDragging(true);
     }, 0);
   };
-  const handleDragEnter = (e: React.DragEvent<HTMLDivElement>, targetItem) => {
+
+  const handleDragEnter: any = (
+    e: React.DragEvent<HTMLDivElement>,
+    targetItem: any
+  ) => {
     console.log('Entering a drag target', targetItem);
     if (dragItemNode.current !== e.target) {
       console.log('Target is NOT the same as dragged item');
       setList((oldList) => {
-        let newList = JSON.parse(JSON.stringify(oldList));
-        newList[targetItem.groupIndex].items.splice(
-          targetItem.itemIndex,
-          0,
-          newList[dragItem.current.groupIndex].items.splice(
-            dragItem.current.itemIndex,
-            1
-          )[0]
-        );
-        dragItem.current = targetItem;
-        localStorage.setItem('List', JSON.stringify(newList));
-        return newList;
+        if (dragItem.current !== null) {
+          let newList = JSON.parse(JSON.stringify(oldList));
+          newList[targetItem.groupIndex].items.splice(
+            targetItem.itemIndex,
+            0,
+            newList[dragItem.current.groupIndex].items.splice(
+              dragItem.current.itemIndex,
+              1
+            )[0]
+          );
+          dragItem.current = targetItem;
+          //localStorage.setItem('List', JSON.stringify(newList));
+          return newList;
+        }
+        return oldList;
       });
     }
   };
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnd: any = (e: React.DragEvent<HTMLDivElement>) => {
     setDragging(false);
     dragItem.current = null;
-    dragItemNode.current.removeEventListener('dragend', handleDragEnd);
-    dragItemNode.current = null;
+    if (dragItemNode.current) {
+      dragItemNode.current.removeEventListener('dragend', handleDragEnd);
+      const updatedDragItemNode: any = dragItemNode.current;
+      updatedDragItemNode.current = null;
+    }
   };
   const [hideChecked, setHideChecked] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -276,7 +302,7 @@ function DragNDropMini({ data }: { data: DataType[] }) {
   //   });
   // };
 
-  const handleDoneChange = (
+  const handleDoneChange: any = (
     e: React.DragEvent<HTMLDivElement>,
     groupIndex: number,
     itemIndex: number
@@ -411,21 +437,20 @@ function DragNDropMini({ data }: { data: DataType[] }) {
               key={group.title}
               onDragEnter={
                 dragging && !group.items.length
-                  ? (e) => handleDragEnter(e, { groupIndex, itemIndex: 0 })
+                  ? (e: React.DragEvent<HTMLDivElement>) =>
+                      handleDragEnter(e, { groupIndex, itemIndex: 0 })
                   : null
               }
             >
               {group.items
-                .sort((a: ItemType, b: ItemType) => {
-                  const aDueDate = new Date(a.due);
-                  const bDueDate = new Date(b.due);
+                .sort((a: any, b: any) => {
                   if (sortOrder === 'ascending') {
                     return (new Date(a.due) as any) - (new Date(b.due) as any);
                   } else {
                     return (new Date(b.due) as any) - (new Date(a.due) as any);
                   }
                 })
-                .map((item: ItemType, itemIndex: number) => {
+                .map((item: any, itemIndex: number) => {
                   console.log('Due date:', item.due);
                   console.log('Current date:', new Date());
                   const dueDate = new Date(item.due); // convert date string to Date object
@@ -440,12 +465,13 @@ function DragNDropMini({ data }: { data: DataType[] }) {
                     <DragNDropItem
                       draggable
                       key={item}
-                      onDragStart={(e) =>
+                      onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
                         handleDragStart(e, { groupIndex, itemIndex })
                       }
                       onDragEnter={
                         dragging
-                          ? (e) => handleDragEnter(e, { groupIndex, itemIndex })
+                          ? (e: React.DragEvent<HTMLDivElement>) =>
+                              handleDragEnter(e, { groupIndex, itemIndex })
                           : null
                       }
                       style={{
@@ -558,6 +584,6 @@ function DragNDropMini({ data }: { data: DataType[] }) {
   } else {
     return null;
   }
-}
+};
 
 export default DragNDropMini;

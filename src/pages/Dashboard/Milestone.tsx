@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect } from 'react';
-import Timeline from './Timeline';
+import { useState, useEffect, ChangeEvent } from 'react';
+// import Timeline from './Timeline';
 import Sidebar from '../../Components/SideBar/SideBar';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -40,8 +40,8 @@ function Milestone() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [file, setFile] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
+  const [file, setFile] = useState<any>(null);
+  const [imagePreview, setImagePreview] = useState<ImageType | null>(null);
   type NewEvent = {
     id: number;
     title: string;
@@ -72,7 +72,7 @@ function Milestone() {
       );
       await setDoc(doc(eventsRef, newEvent.id), newEvent);
       console.log('New event has been added to Firestore!');
-      setEvents((prevEvents) => [...prevEvents, newEvent]);
+      setEvents((prevEvents: any) => [...prevEvents, newEvent]);
     } catch (error) {
       console.error('Error adding new event to Firestore: ', error);
     }
@@ -86,9 +86,10 @@ function Milestone() {
 
   type AvatarPreviewProps = {
     avatar: string;
+    src: string;
   };
 
-  const AvatarPreview = ({ avatar }: AvatarPreviewProps) => {
+  const AvatarPreview = ({ avatar }: any) => {
     return <img src={avatar} alt="Avatar" />;
   };
 
@@ -145,7 +146,7 @@ function Milestone() {
         'Family',
         'Nkl0MgxpE9B1ieOsOoJ9',
         'Milestone',
-        editedEvent.id
+        editedEvent.id.toString()
       );
       await updateDoc(eventsRef, editedEvent);
       console.log('Event updated successfully!');
@@ -160,11 +161,11 @@ function Milestone() {
     }
   };
 
-  const handleDeleteEvent = async (id) => {
+  const handleDeleteEvent = async (id: any) => {
     console.log(id);
     try {
       await deleteDoc(
-        doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'Milestone', id)
+        doc<any>(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'Milestone', id)
       );
       setEvents(events.filter((event) => event.id !== id));
       console.log(events);
@@ -174,7 +175,7 @@ function Milestone() {
     }
   };
 
-  const EditEventForm = ({
+  const EditEventForm: any = ({
     event,
     onEdit,
   }: {
@@ -182,14 +183,14 @@ function Milestone() {
     onEdit: HandleEditFormSubmit;
   }) => {
     const [title, setTitle] = useState(event.title);
-    const [date, setDate] = useState(event.date);
+    const [date, setDate] = useState<string | Date>(event.date);
     const [member, setMember] = useState(event.member);
     const [image, setImage] = useState<File | null>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const editedEvent = {
+      const editedEvent: any = {
         ...event,
         title,
         date: date,
@@ -207,7 +208,9 @@ function Milestone() {
           <FormInput
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setTitle(e.target.value)
+            }
           />
         </FormField>
         <FormField>
@@ -215,7 +218,9 @@ function Milestone() {
           <FormInput
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setDate(e.target.value)
+            }
           />
         </FormField>
         <FormField>
@@ -223,14 +228,18 @@ function Milestone() {
           <FormInput
             type="text"
             value={member}
-            onChange={(e) => setMember(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setMember(e.target.value)
+            }
           />
         </FormField>
         <FormField>
           <FormLabel>Image:</FormLabel>
           <FormInput
             type="file"
-            onChange={(e) => setImage(e.target.files?.[0] || null)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) =>
+              setImage(e.target.files?.[0] || null)
+            }
           />
         </FormField>
         <button type="submit">Save</button>
@@ -249,7 +258,7 @@ function Milestone() {
     async function fetchData() {
       try {
         const querySnapshot = await getDocs(familyDocRef);
-        const data = querySnapshot.docs.map((doc) => ({
+        const data: any = querySnapshot.docs.map((doc) => ({
           ...doc.data(),
         }));
         console.log(data);
@@ -266,7 +275,6 @@ function Milestone() {
 
   return (
     <Container>
-      <Sidebar />
       <Wrapper>
         <Header>Milestone</Header>
         <Wrap>
@@ -276,7 +284,9 @@ function Milestone() {
             <FormInput
               type="text"
               value={filter.title}
-              onChange={(e) => setFilter({ ...filter, title: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFilter({ ...filter, title: e.target.value })
+              }
             />
           </FormField>
 
@@ -285,7 +295,9 @@ function Milestone() {
             <FormInput
               type="text"
               value={filter.member}
-              onChange={(e) => setFilter({ ...filter, member: e.target.value })}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFilter({ ...filter, member: e.target.value })
+              }
             />
           </FormField>
 
@@ -294,7 +306,7 @@ function Milestone() {
             <FormInput
               type="date"
               value={filter.startDate}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setFilter({ ...filter, startDate: new Date(e.target.value) })
               }
             />
@@ -305,7 +317,7 @@ function Milestone() {
             <FormInput
               type="date"
               value={filter.endDate}
-              onChange={(e) =>
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setFilter({ ...filter, endDate: new Date(e.target.value) })
               }
             />
@@ -320,7 +332,9 @@ function Milestone() {
                 <FormInput
                   type="text"
                   value={newEventTitle}
-                  onChange={(e) => setNewEventTitle(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setNewEventTitle(e.target.value)
+                  }
                 />
               </FormField>
               <FormField>
@@ -328,7 +342,9 @@ function Milestone() {
                 <FormInput
                   type="date"
                   value={newEventDate}
-                  onChange={(e) => setNewEventDate(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setNewEventDate(e.target.value)
+                  }
                 />
               </FormField>
               <FormField>
@@ -336,7 +352,9 @@ function Milestone() {
                 <FormInput
                   type="text"
                   value={newEventMember}
-                  onChange={(e) => setNewEventMember(e.target.value)}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setNewEventMember(e.target.value)
+                  }
                 />
               </FormField>
               <FormField>
@@ -347,7 +365,12 @@ function Milestone() {
                 ) : (
                   <input
                     type="file"
-                    onChange={(e) => setFile(e.target.files[0])}
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files && files.length > 0) {
+                        setFile(files[0]);
+                      }
+                    }}
                   />
                 )}
               </FormField>
@@ -488,7 +511,7 @@ const EventTitle = styled.div`
   margin-top: 10px;
 `;
 
-const EventDate = styled.div`
+const EventDate: any = styled.div`
   font-size: 18px;
   text-align: center;
 `;
@@ -497,8 +520,11 @@ const EventMember = styled.div`
   font-size: 18px;
   text-align: center;
 `;
-
-const EventImage = styled.img`
+type ImageType = {
+  src: string;
+  alt: string;
+};
+const EventImage = styled.img<any>`
   width: 100%;
   height: 150px;
   object-fit: cover;
@@ -529,7 +555,7 @@ const FormLabel = styled.label`
   margin-bottom: 5px;
 `;
 
-const FormInput = styled.input`
+const FormInput: any = styled.input`
   font-size: 16px;
   padding: 5px;
   border: none;

@@ -264,7 +264,6 @@ const Suggestion = () => {
 
   return (
     <Container>
-      <Sidebar />
       <Wrapper>
         <p>輸入問題:</p>
         <form onSubmit={handleSubmit}>

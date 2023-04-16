@@ -186,7 +186,7 @@ interface EventTitleProps {
   children?: React.ReactNode;
 }
 
-const EventTitle: React.FC<EventTitleProps> = styled.div<EventTitleProps>`
+const EventTitle: any = styled.div<EventTitleProps>`
   font-size: 24px;
   font-weight: bold;
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
@@ -220,6 +220,7 @@ function CalendarMini() {
   const [eventEndTime, setEventEndTime] = useState<string>('');
   const [eventCategory, setEventCategory] = useState<string>('');
   const [eventMember, setEventMember] = useState<string>('');
+  const [eventNote, setEventNote] = useState<string>('');
   const [events, setEvents] = useState<Event[]>([]);
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [view, setView] = useState<'month' | 'day' | 'week'>('day');
@@ -260,6 +261,7 @@ function CalendarMini() {
     description: string;
     finished: boolean;
     member: string;
+    note: string;
   }
 
   function DateDetails({
@@ -268,7 +270,7 @@ function CalendarMini() {
     setEvents,
     draggedEventIdRef,
     isCurrentMonth,
-  }: DateDetailsProps) {
+  }: any) {
     const handleDragStart = (
       e: React.DragEvent<HTMLDivElement>,
       eventId: string
@@ -290,14 +292,18 @@ function CalendarMini() {
       e.preventDefault();
       console.log('drop', date);
       console.log(draggedEventIdRef.current);
-      const updatedEvents = events.map((event) => {
+      const updatedEvents = events.map((event: Event) => {
         console.log(draggedEventIdRef.current);
         console.log(event.id + ' ' + draggedEventIdRef.current);
         if (event.id === draggedEventIdRef.current) {
           console.log('same');
           console.log(event.date);
           console.log('targetDate' + date);
-          const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+          const options: any = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          };
           const dateString = date.toLocaleDateString('en-US', options);
           console.log(dateString);
           return { ...event, date: dateString, endDate: dateString };
@@ -312,7 +318,7 @@ function CalendarMini() {
     if (!date) {
       return <div>今天沒事~</div>;
     }
-    const selectedEvents = events.filter((event) => {
+    const selectedEvents = events.filter((event: Event) => {
       const startDate = new Date(event.date);
       if (event.endDate === event.date) {
         // Single day event
@@ -337,7 +343,7 @@ function CalendarMini() {
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         {selectedEvents.length > 0 ? (
           <EventList>
-            {selectedEvents.map((event, index: number) =>
+            {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
                   <EventWrapper
@@ -488,7 +494,7 @@ function CalendarMini() {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
   };
 
-  const handleEventSubmit = (event) => {
+  const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isMultiDay = eventDate !== eventEndDate;
     const newEvent = {
@@ -499,8 +505,11 @@ function CalendarMini() {
       member: eventMember,
       id: uuidv4(),
       multiDay: isMultiDay,
-      time: "",
-      endTime: "",
+      time: '',
+      endTime: '',
+      description: '',
+      finished: false,
+      note: eventNote,
     };
     if (!isAllDay) {
       newEvent.time = eventTime;
@@ -515,6 +524,7 @@ function CalendarMini() {
     setEventEndTime('');
     setEventCategory('');
     setEventMember('');
+    setEventNote('');
     setIsAllDay(false);
   };
 
@@ -627,7 +637,7 @@ function CalendarMini() {
     };
 
     // Update the events list with the new event object
-    const updatedEvents = events.map((e) =>
+    const updatedEvents: any = events.map((e) =>
       e.id === event.id ? updatedEvent : e
     );
     setEvents(updatedEvents);

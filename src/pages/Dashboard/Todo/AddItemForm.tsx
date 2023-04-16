@@ -19,7 +19,7 @@ type AddItemFormProps = {
   onAddItem: (groupIndex: number, item: Item) => void;
 };
 
-function AddItemForm({ groupIndex, onAddItem }: AddItemFormProps) {
+function AddItemForm({ groupIndex, onAddItem }: any) {
   const [title, setTitle] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [selectedMember, setSelectedMember] = useState<number | null>(null);

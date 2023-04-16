@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-import DragNDrop from './DragNDropDashboard';
+// import DragNDrop from './DragNDropDashboard';
 import TodoMini from './Todo/TodoMini';
 import CalendarMini from './Calendar/CalendarMini';
 import WhiteboardMini from './Whiteboard/WhiteboardMini';
@@ -75,8 +75,6 @@ const Dashboard = () => {
 
   return (
     <Container>
-      <Sidebar />
-
       <ColumnWrap>
         <Navbar />
         {rows.map((row, index) => (

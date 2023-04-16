@@ -12,7 +12,8 @@ const Sidebar = () => {
       <Link to="/milestone">Milestone</Link>
       <Link to="/family">Family</Link>
       <Link to="/whiteboard">Whiteboard</Link>
-      <Link to="/album">Album</Link>
+      <Link to="/gallery">Gallery</Link>
+      <Link to="/chat">Chat</Link>
     </SidebarWrapper>
   );
 };

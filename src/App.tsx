@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { createGlobalStyle } from 'styled-components';
 import './App.css';
 import Header from './Components/Header/Header';
@@ -13,7 +14,6 @@ import Sidebar from './Components/SideBar/SideBar';
 
 const Content = styled.div`
   width: auto;
-
   border: 2px solid black;
 `;
 
@@ -29,14 +29,7 @@ function App() {
     <Wrap>
       <Sidebar />
       {/* <Header /> */}
-      <Content>
-        <SmartInput />
-        <Suggestion />
-        <Whiteboard />
-        <Dashboard />
-        {/* <Settings /> */}
-      </Content>
-
+      <Outlet />
       {/* <Footer /> */}
     </Wrap>
   );

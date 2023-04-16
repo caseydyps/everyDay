@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import Sidebar from '../../../Components/SideBar/SideBar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
+import { getISOWeek } from 'date-fns';
 import 'firebase/firestore';
 import {
   collection,
@@ -16,6 +17,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+import HourlyView from './HourView';
 
 const CalendarContainer = styled.div`
   display: flex;
@@ -226,7 +228,15 @@ function Calendar() {
   const [eventEndTime, setEventEndTime] = useState<string>('');
   const [eventCategory, setEventCategory] = useState<string>('');
   const [eventMember, setEventMember] = useState<string>('');
+  const [eventNote, setEventNote] = useState<string>('');
+  const [eventDay, setEventDay] = useState<string>('');
+  const [eventEndDay, setEventEndDay] = useState<string>('');
   const [events, setEvents] = useState<Event[]>([]);
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth();
+  const day = selectedDate.getDate();
+  const isoWeekNumber = getISOWeek(new Date(year, month, day));
+  const [weekNumber, setWeekNumber] = useState<number>(isoWeekNumber);
   const [selectedRow, setSelectedRow] = useState<number | null>(0);
   const [view, setView] = useState<string>('month');
   const draggedEventIdRef = useRef<string | null>(null);
@@ -258,6 +268,7 @@ function Calendar() {
     description: string;
     finished: boolean;
     member: string;
+    note: string;
   }
 
   type DateDetailsProps = {
@@ -325,7 +336,7 @@ function Calendar() {
     });
   };
 
-  const editEventtoFirestore = async (eventId: string, updatedData: Event) => {
+  const editEventtoFirestore = async (eventId: string, updatedData: any) => {
     const eventRef = collection(
       db,
       'Family',
@@ -371,7 +382,7 @@ function Calendar() {
     setEvents,
     draggedEventIdRef,
     isCurrentMonth,
-  }: DateDetailsProps) {
+  }: any) {
     console.log(isCurrentMonth);
     const handleDragStart = (
       e: React.DragEvent<HTMLDivElement>,
@@ -394,14 +405,18 @@ function Calendar() {
       e.preventDefault();
       console.log('drop', date);
       console.log(draggedEventIdRef.current);
-      const updatedEvents = events.map((event) => {
+      const updatedEvents = events.map((event: Event) => {
         console.log(draggedEventIdRef.current);
         console.log(event.id + ' ' + draggedEventIdRef.current);
         if (event.id === draggedEventIdRef.current) {
           console.log('same');
           console.log(event.date);
           console.log('targetDate' + date);
-          const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+          const options: any = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+          };
           const dateString = date.toLocaleDateString('en-US', options);
           console.log(dateString);
           return { ...event, date: dateString, endDate: dateString };
@@ -416,7 +431,7 @@ function Calendar() {
     if (!date) {
       return <div>今天沒事~</div>;
     }
-    const selectedEvents = events.filter((event) => {
+    const selectedEvents = events.filter((event: Event) => {
       const eventDate = new Date(event.date);
       if (eventDate.getMonth() === date.getMonth()) {
         const startDate = new Date(eventDate);
@@ -434,21 +449,21 @@ function Calendar() {
       }
     });
 
-    console.log(selectedEvents);
-    console.log(isCurrentMonth);
-    console.log(date.getMonth());
+    // console.log(selectedEvents);
+    // console.log(isCurrentMonth);
+    // console.log(date.getMonth());
 
     return (
       <div
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e, date, draggedEventIdRef)}
       >
-        <div>{`${
+        <div>{`Week:${weekNumber}${
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         {selectedEvents.length > 0 ? (
           <EventList>
-            {selectedEvents.map((event, index) =>
+            {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
                   <EventWrapper
@@ -539,31 +554,18 @@ function Calendar() {
     return new Date(year, month, 1).getDay();
   };
 
-  const getFirstDayOfWeek = (date: Date): Date => {
-    const dayOfWeek = date.getDay();
-    const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
-    return new Date(date.setDate(diff));
-  };
-  function addWeeks(date: Date, weeks: number) {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + weeks * 7);
-    return newDate;
-  }
-
-  function subWeeks(date: Date, weeks: number) {
-    return addWeeks(date, -weeks);
-  }
-
   const handlePrevMonth = () => {
     const year = date.getFullYear();
     const month = date.getMonth() - 1;
     setDate(new Date(year, month, 1));
+    getWeekNumber(new Date(year, month, 1));
   };
 
   const handleNextMonth = () => {
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     setDate(new Date(year, month, 1));
+    getWeekNumber(new Date(year, month, 1));
   };
 
   const handlePrevWeek = () => {
@@ -577,6 +579,7 @@ function Calendar() {
         ? Math.max(selectedRow ? selectedRow - 1 : 0, 0)
         : lastRowOfMonth
     );
+    getWeekNumber(newDate);
   };
 
   const handleNextWeek = () => {
@@ -587,22 +590,28 @@ function Calendar() {
     setSelectedRow(
       newMonth === currentMonth ? (selectedRow ? selectedRow + 1 : 0) : 0
     );
+    console.log(newDate);
+    getWeekNumber(newDate);
   };
 
   const handlePrevDay = () => {
     const newDate = new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000);
     setSelectedDate(newDate);
+    getWeekNumber(new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000));
   };
 
   const handleNextDay = () => {
     const newDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000);
     setSelectedDate(newDate);
+    getWeekNumber(new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000));
   };
 
-  const handleDateClick = (day: number, row: number) => {
+  const handleDateClick = (day: number, row: number | null) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
     console.log(selectedDate);
+    getWeekNumber(new Date(date.getFullYear(), date.getMonth(), day));
+    console.log(weekNumber);
   };
 
   const handleWeekDateClick = (day: number, row: number) => {
@@ -624,6 +633,9 @@ function Calendar() {
       endTime: eventEndTime,
       description: '',
       finished: false,
+      note: '',
+      day: eventDay,
+      endDay: eventEndDay,
     };
     if (!isAllDay) {
       newEvent.time = eventTime;
@@ -639,7 +651,10 @@ function Calendar() {
     setEventEndTime('');
     setEventCategory('');
     setEventMember('');
+    setEventNote('');
     setIsAllDay(false);
+    setEventDay('');
+    setEventEndDay('');
   };
 
   const handleAddEvent = () => {
@@ -661,8 +676,30 @@ function Calendar() {
   function getWeekNumber(date: Date) {
     const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
     const jan1 = new Date(date.getFullYear(), 0, 1);
-    const daysSinceJan1 = Math.floor((date - jan1) / (24 * 60 * 60 * 1000)) + 1;
+    const daysSinceJan1 =
+      Math.floor((date.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
     const weekNumber = Math.floor((daysSinceJan1 + (7 - dayOfWeek)) / 7);
+    console.log(weekNumber);
+    setWeekNumber(weekNumber);
+  }
+
+  function getISOWeek(date: Date): number {
+    const dayOfWeek = date.getDay();
+    const dayOfMonth = date.getDate();
+
+    // Calculate the Thursday of the current week
+    const thursday = new Date(
+      date.getTime() + (3 - ((dayOfWeek + 6) % 7)) * 86400000
+    );
+
+    // Calculate the difference in days between the Thursday and the first day of the year
+    const january1st = new Date(date.getFullYear(), 0, 1);
+    const daysSinceJanuary1st = Math.floor(
+      (thursday.getTime() - january1st.getTime()) / 86400000
+    );
+
+    // Calculate the ISO week number
+    const weekNumber = Math.floor((daysSinceJanuary1st + 3) / 7) + 1;
 
     return weekNumber;
   }
@@ -692,6 +729,7 @@ function Calendar() {
       'December',
     ];
     console.log('selectedDate ' + selectedDate);
+    console.log('week ' + weekNumber);
     if (!selectedDate) {
       selectedDate = new Date();
     }
@@ -709,8 +747,6 @@ function Calendar() {
       </div>
     );
   }
-
-  const weekNumber = getWeekNumber(date);
 
   // handleEditEvent function
   const handleEditEvent = async (event: Event) => {
@@ -750,7 +786,7 @@ function Calendar() {
     };
 
     // Update the events list with the new event object
-    const updatedEvents = events.map((e) =>
+    const updatedEvents: any = events.map((e) =>
       e.id === event.id ? updatedEvent : e
     );
     await editEventtoFirestore(event.id, updatedEvent);
@@ -795,9 +831,35 @@ function Calendar() {
     console.log(events);
   }, [events]);
 
+  const handleDateChange = (date) => {
+    console.log('hi');
+    console.log(date);
+    const dateObj = new Date(date);
+    const selectedDayOfWeek = dateObj.toLocaleDateString(undefined, {
+      weekday: 'long',
+    });
+
+    console.log(selectedDayOfWeek);
+    setEventDate(date);
+    setEventDay(selectedDayOfWeek);
+    getWeekNumber(date);
+    console.log(weekNumber);
+  };
+
+  const handleEndDateChange = (date) => {
+    console.log(date);
+    const dateObj = new Date(date);
+    const selectedDayOfWeek = dateObj.toLocaleDateString(undefined, {
+      weekday: 'long',
+    });
+
+    console.log(selectedDayOfWeek);
+    setEventEndDate(date);
+    setEventEndDay(selectedDayOfWeek);
+  };
+
   return (
     <Container>
-      <Sidebar />
       <Wrap>
         <Button onClick={() => handleViewClick('day')}>Day</Button>
         <Button onClick={() => handleViewClick('week')}>Week</Button>
@@ -844,7 +906,7 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
                 <label>
@@ -852,7 +914,7 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventEndDate}
-                    onChange={(e) => setEventEndDate(e.target.value)}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
                   />
                 </label>
                 <label>
@@ -860,6 +922,7 @@ function Calendar() {
                   <input
                     type="time"
                     value={eventTime}
+                    step="1800"
                     onChange={(e) => setEventTime(e.target.value)}
                   />
                 </label>
@@ -868,6 +931,7 @@ function Calendar() {
                   <input
                     type="time"
                     value={eventEndTime}
+                    step="1800"
                     onChange={(e) => setEventEndTime(e.target.value)}
                   />
                 </label>
@@ -911,7 +975,7 @@ function Calendar() {
                 ),
               ].map((_, row) => (
                 <tr key={row}>
-                  {[...Array(7).keys()].map((weekday) => {
+                  {Array.from(Array(7).keys()).map((weekday) => {
                     const dayOfMonth =
                       row * 7 + weekday - getFirstDayOfMonth(date) + 1;
                     const isFirstWeek = dayOfMonth <= 0;
@@ -978,6 +1042,7 @@ function Calendar() {
             } ${date.getFullYear()}`}</MonthLabel>
             <Button onClick={handleNextWeek}>Next</Button>
           </MonthContainer>
+
           <DateDetails
             date={selectedDate}
             events={events}
@@ -1009,7 +1074,7 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
                 <label>
@@ -1017,13 +1082,14 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventEndDate}
-                    onChange={(e) => setEventEndDate(e.target.value)}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
                   />
                 </label>
                 <label>
                   Time:
                   <input
                     type="time"
+                    step="1800"
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                   />
@@ -1032,6 +1098,7 @@ function Calendar() {
                   Time:
                   <input
                     type="time"
+                    step="1800"
                     value={eventEndTime}
                     onChange={(e) => setEventEndTime(e.target.value)}
                   />
@@ -1067,10 +1134,10 @@ function Calendar() {
             </Modal>
           )}
 
-          <tbody>
+          {/* <tbody>
             <tr key={selectedRow}>
               {' '}
-              {[...Array(7).keys()].map((weekday) => {
+              {Array.from(Array(7).keys()).map((weekday) => {
                 const dayOfMonth =
                   selectedRow !== null
                     ? selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1
@@ -1121,7 +1188,8 @@ function Calendar() {
                 );
               })}
             </tr>
-          </tbody>
+          </tbody> */}
+          <HourlyView events={events} weekNumber={weekNumber} date={date} />
         </WeekWrap>
         <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
           {/* <h2>{formatDate(selectedDate)}</h2> */}
@@ -1163,7 +1231,7 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventDate}
-                    onChange={(e) => setEventDate(e.target.value)}
+                    onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
                 <label>
@@ -1171,13 +1239,14 @@ function Calendar() {
                   <input
                     type="date"
                     value={eventEndDate}
-                    onChange={(e) => setEventEndDate(e.target.value)}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
                   />
                 </label>
                 <label>
                   Time:
                   <input
                     type="time"
+                    step="1800"
                     value={eventTime}
                     onChange={(e) => setEventTime(e.target.value)}
                   />
@@ -1186,6 +1255,7 @@ function Calendar() {
                   Time:
                   <input
                     type="time"
+                    step="1800"
                     value={eventEndTime}
                     onChange={(e) => setEventEndTime(e.target.value)}
                   />
@@ -1236,9 +1306,9 @@ function Calendar() {
                 selectedDateObj.getDate()
               );
 
-              console.log(eventDate);
-              console.log(selectedDateOnly);
-              console.log(new Date(event.endDate));
+              // console.log(eventDate);
+              // console.log(selectedDateOnly);
+              // console.log(new Date(event.endDate));
               if (
                 selectedDateOnly === eventDateOnly ||
                 (selectedDateOnly >= eventDateOnly &&

@@ -56,7 +56,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
       alert('Please enter a valid message');
       return;
     }
-    const { uid, displayName } = auth.currentUser;
+    const { uid, displayName }: any = auth.currentUser;
     await addDoc(collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'messages'), {
       text: input,
       name: displayName,
@@ -64,7 +64,9 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
       timestamp: serverTimestamp(),
     });
     setInput('');
-    scroll.current.scrollIntoView({ behavior: 'smooth' });
+    if (scroll.current) {
+      scroll.current.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   return (

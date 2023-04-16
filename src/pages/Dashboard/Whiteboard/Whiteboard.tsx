@@ -24,8 +24,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import Voting from './Voting';
-
+// import Voting from './Voting';
 //import './piece.scss';
 
 type Sticker = {
@@ -48,7 +47,7 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 
-const Sticker = styled.div<{
+const Sticker: any = styled.div<{
   dragging: boolean;
   offsetX: number;
   offsetY: number;
@@ -179,7 +178,7 @@ export const Whiteboard = () => {
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
-  <button onClick={() => voteSticker(name)}>Vote</button>;
+  // <button onClick={() => voteSticker(name)}>Vote</button>;
   const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
 
@@ -389,8 +388,6 @@ export const Whiteboard = () => {
 
   return (
     <Container>
-      <Sidebar />
-
       <Wrapper id="Wrapper">
         {stickers.map((sticker: Sticker, index: number) => (
           <>
@@ -400,9 +397,10 @@ export const Whiteboard = () => {
               onMouseDown={
                 lockedStickers[index]
                   ? null
-                  : (e) => onStickerMouseDown(index, e)
+                  : (e: React.MouseEvent<HTMLDivElement>) =>
+                      onStickerMouseDown(index, e)
               }
-              ref={(el) => (stickerRefs.current[index] = el)}
+              ref={(el: any) => (stickerRefs.current[index] = el)}
               style={{
                 left: sticker.x - (dragging === index ? offset.x : 0),
                 top: sticker.y - (dragging === index ? offset.y : 0),

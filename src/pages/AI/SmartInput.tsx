@@ -487,7 +487,6 @@ const SmartInput = () => {
 
   return (
     <Container>
-      {/* <Sidebar /> */}
       <Wrapper>
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector

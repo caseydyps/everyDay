@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer, useRef } from 'react';
+import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
 import DragNDrop from './DragNDrop';
 import Sidebar from '../../../Components/SideBar/SideBar';
 import { db } from '../../../config/firebase.config';
@@ -28,7 +28,7 @@ const Container = styled.div`
   flex-wrap: wrap;
 `;
 
-const AddListButton = styled.button`
+const AddListButton: any = styled.button`
   padding: 10px;
   border-radius: 5px;
   border: none;
@@ -185,6 +185,25 @@ interface SetDataAction {
     };
   };
 }
+type ActionType =
+  | {
+      type: 'ADD_ITEM';
+      payload: {
+        text: string;
+        due: Date;
+        member: string;
+        done: boolean;
+      };
+      listIndex: number;
+    }
+  | {
+      type: 'ADD_LIST';
+      payload: string;
+    }
+  | {
+      type: 'SET_DATA';
+      payload: any;
+    };
 
 type TodoAction =
   | AddListAction
@@ -242,21 +261,21 @@ const getTodosData = async () => {
 };
 
 const Todo = () => {
-  const [data, dispatch] = useReducer(todoReducer, []);
+  const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(data));
   }, [data]);
 
-  const addList = () => {
+  const addList = (dispatch: Dispatch<ActionType>) => {
     const title = prompt('Enter list title');
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
   const dueDateRef = useRef<HTMLInputElement>(null);
 
-  const addItem = (listIndex: number) => {
+  const addItem = (listIndex: number, dispatch: Dispatch<ActionType>) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current ? dueDateRef.current.value : '';
     const due = new Date(dueDateString);
@@ -270,11 +289,11 @@ const Todo = () => {
   };
 
   useEffect(() => {
-    const fetchTodosData = async () => {
+    const fetchTodosData = async (dispatch: Dispatch<ActionType>) => {
       const todosData = await getTodosData();
       dispatch({ type: 'SET_DATA', payload: todosData }); // update data state with todosData
     };
-    fetchTodosData();
+    fetchTodosData(dispatch);
   }, []);
 
   useEffect(() => {
@@ -293,7 +312,6 @@ const Todo = () => {
 
   return (
     <Container>
-      <Sidebar />
       <Wrapper>
         <AddListButton onClick={addList}>Add New List</AddListButton>
         <DragNDrop

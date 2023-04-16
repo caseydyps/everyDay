@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer, useRef } from 'react';
+import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
 import DragNDropMini from './DragNDropMini';
 
 const Wrapper = styled.div`
@@ -32,7 +32,7 @@ const Input = styled.input`
   margin: 10px;
 `;
 
-const defaultData: TodoState = [
+const defaultData: any = [
   {
     title: '家事🏠',
     items: [
@@ -116,6 +116,8 @@ const defaultData: TodoState = [
 type TodoList = {
   title: string;
   items: TodoItem[];
+  id: string;
+  name: string;
 };
 
 type TodoItem = {
@@ -136,6 +138,26 @@ type TodoAction =
         source: { droppableId: number; index: number };
         destination: { droppableId: number; index: number };
       };
+    };
+
+type ActionType =
+  | {
+      type: 'ADD_ITEM';
+      payload: {
+        text: string;
+        due: Date;
+        member: string;
+        done: boolean;
+      };
+      listIndex: number;
+    }
+  | {
+      type: 'ADD_LIST';
+      payload: string;
+    }
+  | {
+      type: 'SET_DATA';
+      payload: any;
     };
 
 const todoReducer = (state: TodoState, action: TodoAction) => {
@@ -180,20 +202,20 @@ const todoReducer = (state: TodoState, action: TodoAction) => {
 };
 
 function TodoMini() {
-  const [data, dispatch] = useReducer(todoReducer, defaultData);
-  const [selectedItemIndex, setSelectedItemIndex] = useState(null);
+  const [data, dispatch] = useReducer<any>(todoReducer, defaultData);
+  const [selectedItemIndex, setSelectedItemIndex] = useState<any>(null);
   useEffect(() => {
     localStorage.setItem('List', JSON.stringify(data));
   }, [data]);
 
-  const addList = () => {
-    const title = prompt('Enter list title');
-    title && dispatch({ type: 'ADD_LIST', payload: title });
-  };
+  // const addList = () => {
+  //   const title = prompt('Enter list title');
+  //   title && dispatch({ type: 'ADD_LIST', payload: title });
+  // };
 
   const dueDateRef = useRef<HTMLInputElement>(null);
 
-  const addItem = (listIndex: number) => {
+  const addItem:any = (listIndex: number, dispatch: Dispatch<ActionType>) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current?.value; // add the "?." operator
     const due = dueDateString ? new Date(dueDateString) : null; // handle the case where `dueDateString` is null

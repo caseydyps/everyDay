@@ -16,6 +16,7 @@ import {
   getDoc,
   writeBatch,
   startAfter,
+  CollectionReference,
   query,
   where,
 } from 'firebase/firestore';
@@ -131,7 +132,7 @@ const DrawingTool = () => {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           if (change.type === 'added') {
-            handleStrokeUpdate(change.doc.data());
+            handleStrokeUpdate(change.doc.data() as StrokeData);
           }
         });
       }
@@ -216,7 +217,7 @@ const DrawingTool = () => {
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
     context?.clearRect(0, 0, canvas.width, canvas.height);
-    const strokesCollectionRef = collection(
+    const strokesCollectionRef: CollectionReference = collection(
       db,
       'Family',
       'Nkl0MgxpE9B1ieOsOoJ9',
@@ -225,7 +226,9 @@ const DrawingTool = () => {
       'strokes'
     );
 
-    const deleteDocumentsInBatch = async (querySnapshot: StrokeData[]) => {
+    const deleteDocumentsInBatch:any = async (
+      querySnapshot: QuerySnapshot<StrokeData>
+    ) => {
       const batch = writeBatch(db);
 
       querySnapshot.forEach((doc) => {
@@ -244,7 +247,7 @@ const DrawingTool = () => {
 
         // Get the next batch of documents
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        const nextQuerySnapshot = await getDocs(
+        const nextQuerySnapshot:any = await getDocs(
           query(strokesCollectionRef, startAfter(lastVisible))
         );
         querySnapshot = nextQuerySnapshot;

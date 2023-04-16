@@ -28,7 +28,7 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 
-const Sticker = styled.div<{
+const Sticker:any = styled.div<{
   dragging: boolean;
   offsetX: number;
   offsetY: number;
@@ -270,9 +270,9 @@ export const WhiteboardMini = () => {
             key={sticker.id}
             color={sticker.color}
             onMouseDown={
-              lockedStickers[index] ? null : (e) => onStickerMouseDown(index, e)
+              lockedStickers[index] ? null : (e:React.MouseEvent<HTMLDivElement>) => onStickerMouseDown(index, e)
             }
-            ref={(el) => (stickerRefs.current[index] = el)}
+            ref={(el:any) => (stickerRefs.current[index] = el)}
             style={{
               left: sticker.x - (dragging === index ? offset.x : 0),
               top: sticker.y - (dragging === index ? offset.y : 0),

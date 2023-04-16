@@ -9,6 +9,7 @@ const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: 100%;
+  width: 85vw;
 `;
 
 const CopiedMessage = styled.div`
@@ -65,7 +66,7 @@ const Chat = () => {
     <ChatContainer>
       <main>
         {messages.map((message) => (
-          <Message key={message.id} message={message} />
+          <Message key={message.id} message={message}  />
         ))}
       </main>
       <SendMessage scroll={scroll} />

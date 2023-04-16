@@ -49,7 +49,6 @@ const FamilyMemberForm = () => {
     }
   };
 
-
   useEffect(() => {
     const fetchMembers = async () => {
       const familyDocRef = collection(
@@ -58,8 +57,8 @@ const FamilyMemberForm = () => {
         'Nkl0MgxpE9B1ieOsOoJ9',
         'users'
       );
-      const membersData = await getDocs(familyDocRef).then((querySnapshot) =>
-        querySnapshot.docs.map((doc) => ({ ...doc.data() }))
+      const membersData: any = await getDocs(familyDocRef).then(
+        (querySnapshot) => querySnapshot.docs.map((doc) => ({ ...doc.data() }))
       );
       console.log(membersData);
       setMembers(membersData);
@@ -466,7 +465,6 @@ const FamilyMemberForm = () => {
 
   return (
     <Container>
-      <Sidebar />
       {formSubmitted ? (
         <div>
           <p>家庭成員:</p>

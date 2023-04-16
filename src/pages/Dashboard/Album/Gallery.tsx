@@ -38,6 +38,8 @@ type Photo = {
   id: string;
   url: string;
   title: string;
+  src: string;
+  alt: string;
 };
 
 interface AlbumData {
@@ -60,14 +62,14 @@ type PhotoType = Photo & {
 type AlbumArray = Album[];
 
 function Gallery() {
-  const [file, setFile] = useState<File[] | null>(null);
+  const [file, setFile] = useState<any>(null);
   const [albumTitle, setAlbumTitle] = useState<string>('');
   const [members, setMembers] = useState<string[]>([]);
   const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [albumId, setAlbumId] = useState<string>('');
   const [albums, setAlbums] = useState<Album[]>([]);
-  const [selectedAlbumId, setSelectedAlbumId] = useState<string>(null);
+  const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [selectedAlbumTitle, setSelectedAlbumTitle] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,13 +89,18 @@ function Gallery() {
     setMembers(selectedOptions);
   };
 
-  const handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setDescription(e.target.value);
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      setFile([files.item(0)]);
+      const selectedFile = files.item(0);
+      if (selectedFile) {
+        setFile(selectedFile);
+      }
     }
   };
 
@@ -132,7 +139,7 @@ function Gallery() {
 
       // Retrieve the current photos array from Firestore
       const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
-      const currentPhotos: PhotoType[] = albumData.photos || [];
+      const currentPhotos: any = albumData.photos || [];
 
       for (let i = 0; i < file.length; i++) {
         const currFile = file[i];
@@ -185,7 +192,7 @@ function Gallery() {
     );
 
     const querySnapshot = await getDocs(familyDocRef);
-    const albumsData = [];
+    const albumsData: any = [];
 
     querySnapshot.docs.forEach((doc) => {
       console.log(doc.data());
@@ -218,7 +225,7 @@ function Gallery() {
       );
 
       const querySnapshot = await getDocs(familyDocRef);
-      const albumsData = [];
+      const albumsData: any = [];
 
       querySnapshot.docs.forEach((doc) => {
         console.log(doc.data());
@@ -344,7 +351,7 @@ function Gallery() {
         <h3>Create an Album</h3>
         <label>
           Select album:
-          <select value={selectedAlbumId} onChange={handleAlbumSelect}>
+          <select value={selectedAlbumId || ''} onChange={handleAlbumSelect}>
             <option value="">-- Select an album --</option>
             {albums.map((album) => (
               <option key={album.id} value={album.id}>

@@ -26,7 +26,7 @@ import {
   where,
   arrayUnion,
 } from 'firebase/firestore';
-import { Item } from 'firebase/analytics';
+// import { Item } from 'firebase/analytics';
 
 const DragNDropWrapper = styled.div`
   display: flex;
@@ -42,7 +42,7 @@ const DeleteListButton = styled.button`
   flex:direction: column;
 `;
 
-const DragNDropGroup = styled.div`
+const DragNDropGroup: any = styled.div`
   display: flex;
   flex-direction: column;
   width: 80%;
@@ -57,7 +57,7 @@ type DragNDropItemProps = {
   isDragging: boolean;
   item: DataItem;
 };
-const DragNDropItem = styled.div<DragNDropItemProps>`
+const DragNDropItem: any = styled.div<DragNDropItemProps>`
   padding: 40px;
   margin: 10px;
   background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
@@ -183,7 +183,7 @@ type DragNDropState = {
   sortOrder: 'ascending' | 'descending';
 };
 
-function DragNDrop({ data }: DragNDropProps) {
+function DragNDrop({ data }: any) {
   // const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
 
@@ -204,12 +204,12 @@ function DragNDrop({ data }: DragNDropProps) {
     id: number;
     name: string;
     description: string;
+    done: boolean;
     groupIndex: number;
     itemIndex: number;
-    done: boolean;
   };
 
-  const handleDragStart = (
+  const handleDragStart: any = (
     e: React.DragEvent<HTMLDivElement>,
     item: ItemType
   ) => {
@@ -223,7 +223,7 @@ function DragNDrop({ data }: DragNDropProps) {
       setDragging(true);
     }, 0);
   };
-  const handleDragEnter = (
+  const handleDragEnter: any = (
     e: React.DragEvent<HTMLDivElement>,
     targetItem: ItemType
   ) => {
@@ -232,21 +232,23 @@ function DragNDrop({ data }: DragNDropProps) {
       console.log('Target is NOT the same as dragged item');
       setList((oldList) => {
         let newList = JSON.parse(JSON.stringify(oldList));
-        newList[targetItem.groupIndex].items.splice(
-          targetItem.itemIndex,
-          0,
-          newList[dragItem.current.groupIndex].items.splice(
-            dragItem.current.itemIndex,
-            1
-          )[0]
-        );
-        dragItem.current = targetItem;
+        if (dragItem.current) {
+          newList[targetItem.groupIndex].items.splice(
+            targetItem.itemIndex,
+            0,
+            newList[dragItem.current.groupIndex].items.splice(
+              dragItem.current.itemIndex,
+              1
+            )[0]
+          );
+          dragItem.current = targetItem;
+        }
         localStorage.setItem('List', JSON.stringify(newList));
         return newList;
       });
     }
   };
-  const handleDragEnd = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragEnd: any = (e: React.DragEvent<HTMLDivElement>) => {
     if (!dragItemNode.current) {
       return;
     }
@@ -377,7 +379,7 @@ function DragNDrop({ data }: DragNDropProps) {
   //     return newList;
   //   });
   // };
-  const handleChange = async (
+  const handleChange: any = async (
     e: React.ChangeEvent<HTMLInputElement>,
     groupIndex: number,
     itemIndex: number,
@@ -614,7 +616,8 @@ function DragNDrop({ data }: DragNDropProps) {
               key={group.title}
               onDragEnter={
                 dragging && !group.items.length
-                  ? (e) => handleDragEnter(e, { groupIndex, itemIndex: 0 })
+                  ? (e: React.DragEvent) =>
+                      handleDragEnter(e, { groupIndex, itemIndex: 0 })
                   : null
               }
             >
@@ -634,19 +637,23 @@ function DragNDrop({ data }: DragNDropProps) {
                 .map((item, itemIndex: number) => {
                   console.log('Due date:', item.due);
                   console.log('Current date:', new Date());
-                  const dueDate = new Date(item.due); // convert date string to Date object
+                  const dueDate = item.due ? new Date(item.due) : null; // convert date string to Date object
                   const currentDate = new Date(); // get current date
-                  const formattedDueDate = new Date(
-                    dueDate.getFullYear(),
-                    dueDate.getMonth(),
-                    dueDate.getDate()
-                  );
+                  const formattedDueDate = dueDate
+                    ? new Date(
+                        dueDate.getFullYear(),
+                        dueDate.getMonth(),
+                        dueDate.getDate()
+                      )
+                    : null;
                   const formattedCurrentDate = new Date(
                     currentDate.getFullYear(),
                     currentDate.getMonth(),
                     currentDate.getDate()
                   );
-                  const isOverdue = formattedDueDate < formattedCurrentDate; // check if due date is before current date
+                  const isOverdue = formattedDueDate
+                    ? formattedDueDate < formattedCurrentDate
+                    : false;
                   const isToday = formattedDueDate === formattedCurrentDate;
                   console.log(formattedDueDate);
                   console.log(formattedCurrentDate);
@@ -656,12 +663,13 @@ function DragNDrop({ data }: DragNDropProps) {
                     <DragNDropItem
                       draggable
                       key={item}
-                      onDragStart={(e) =>
+                      onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
                         handleDragStart(e, { groupIndex, itemIndex })
                       }
                       onDragEnter={
                         dragging
-                          ? (e) => handleDragEnter(e, { groupIndex, itemIndex })
+                          ? (e: React.DragEvent<HTMLDivElement>) =>
+                              handleDragEnter(e, { groupIndex, itemIndex })
                           : null
                       }
                       style={{
