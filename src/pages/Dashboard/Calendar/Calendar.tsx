@@ -18,7 +18,7 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 import HourlyView from './HourView';
-
+import DailyHourlyView from './DailyHourView';
 const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -458,7 +458,7 @@ function Calendar() {
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e, date, draggedEventIdRef)}
       >
-        <div>{`Week:${weekNumber}${
+        <div>{`${
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div>
         {selectedEvents.length > 0 ? (
@@ -473,11 +473,10 @@ function Calendar() {
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
                   >
-                    <EventCategory>{event.date}</EventCategory>
                     <EventCategory>{event.category}</EventCategory>
                     <EventMember>{event.member}</EventMember>
-
                     <EventTime>{event.time}</EventTime>
+                    <EventTime>{`~${event.endTime}`}</EventTime>
                     <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
@@ -1329,6 +1328,12 @@ function Calendar() {
               }
             })}
           </Td>
+          <DailyHourlyView
+            events={events}
+            weekNumber={weekNumber}
+            date={date}
+            selectedDate={selectedDate}
+          />
         </DayWrap>
       </Wrap>
     </Container>

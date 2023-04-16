@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 
-const HourlyView = ({ events, weekNumber, date }) => {
+const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
   console.log(events);
   const [hoveredEventId, setHoveredEventId] = useState(null);
 
@@ -131,6 +131,9 @@ const HourlyView = ({ events, weekNumber, date }) => {
     date.getFullYear()
   );
   console.log(datesOfWeekNumber);
+  console.log(selectedDate);
+  const selectedDayOfWeek = days[selectedDate.getDay()]; // Get the day of the week for the selected date
+  const dateOfSelectedDay = selectedDate.toLocaleDateString();
 
   return (
     <Container>
@@ -138,41 +141,32 @@ const HourlyView = ({ events, weekNumber, date }) => {
         <thead>
           <tr>
             <TableHeader></TableHeader>
-            {days.map((day, index) => (
-              <>
-                <TableHeader key={index}>
-                  {datesOfWeekNumber[index]}
-                </TableHeader>
-              </>
-            ))}
+            <TableHeader>{selectedDayOfWeek}</TableHeader>
           </tr>
 
           <tr>
             <TableHeader></TableHeader>
-            {days.map((day, index) => (
-              <TableData key={`${day}`}>
-                <EventList
-                  events={events.filter((event) => {
-                    const eventWeekNumber = getWeekNumber(event.date);
-                    console.log(event);
-                    console.log(event.multiDay);
 
-                    const weekArray = getDatesForWeekNumber(
-                      weekNumber,
-                      date.getFullYear()
-                    );
-                    console.log(weekArray[index]);
+            <TableData>
+              <EventList
+                events={events.filter((event) => {
+                  const eventWeekNumber = getWeekNumber(event.date);
+                  console.log(event);
+                  console.log(event.multiDay);
 
-                    return (
-                      event.date <= weekArray[index] &&
-                      event.endDate >= weekArray[index] &&
-                      event.multiDay &&
-                      eventWeekNumber === weekNumber
-                    );
-                  })}
-                />
-              </TableData>
-            ))}
+                  const weekArray = getDatesForWeekNumber(
+                    weekNumber,
+                    date.getFullYear()
+                  );
+
+                  return (
+                    event.day === selectedDayOfWeek &&
+                    event.multiDay &&
+                    eventWeekNumber === weekNumber
+                  );
+                })}
+              />
+            </TableData>
           </tr>
         </thead>
         <tbody>
@@ -180,24 +174,22 @@ const HourlyView = ({ events, weekNumber, date }) => {
             <TableRow key={hour}>
               <TableHeader>{hour}</TableHeader>
 
-              {days.map((day) => (
-                <TableData key={`${day}_${hour}`}>
-                  <EventList
-                    events={events.filter((event) => {
-                      const eventWeekNumber = getWeekNumber(event.date);
-                      return (
-                        event.day === day &&
-                        event.time <= hour &&
-                        eventWeekNumber === weekNumber &&
-                        event.endTime >= hour &&
-                        event.day === day &&
-                        eventWeekNumber === weekNumber &&
-                        event.multiDay === false
-                      );
-                    })}
-                  />
-                </TableData>
-              ))}
+              <TableData key={`${selectedDayOfWeek}_${hour}`}>
+                <EventList
+                  events={events.filter((event) => {
+                    const eventWeekNumber = getWeekNumber(event.date);
+                    return (
+                      event.day === selectedDayOfWeek &&
+                      event.time <= hour &&
+                      eventWeekNumber === weekNumber &&
+                      event.endTime >= hour &&
+                      event.day === selectedDayOfWeek &&
+                      eventWeekNumber === weekNumber &&
+                      event.multiDay === false
+                    );
+                  })}
+                />
+              </TableData>
             </TableRow>
           ))}
         </tbody>
@@ -251,4 +243,4 @@ const ColumnWrap = styled.div`
   flex-direction: column;
 `;
 
-export default HourlyView;
+export default DailyHourlyView;
