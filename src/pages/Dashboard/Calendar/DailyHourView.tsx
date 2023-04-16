@@ -1,14 +1,39 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 
-const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
+interface Event {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  multiDay: boolean;
+  day: string;
+  date: string;
+  endDate: string;
+  time: string;
+}
+
+interface Props {
+  events: Event[];
+  weekNumber: number;
+  date: Date;
+  selectedDate: Date;
+}
+
+const DailyHourlyView: any = ({
+  events,
+  weekNumber,
+  date,
+  selectedDate,
+}: Props) => {
   console.log(events);
-  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const [hoveredEventId, setHoveredEventId] = useState<any>(null);
 
   // Generate hours array
-  const hours = [...Array(24).keys()].map((h) => {
-    return `${h.toString().padStart(2, '0')}:00`;
-  });
+  const hours = [];
+  for (let h = 0; h < 24; h++) {
+    hours.push(`${h.toString().padStart(2, '0')}:00`);
+  }
 
   // Generate days array
   const days = [
@@ -21,21 +46,26 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
     '星期六',
   ];
 
-  const handleDragStart = (event, id) => {
-    event.dataTransfer.setData('eventID', id);
+  const handleDragStart = (event: DragEvent, id: string) => {
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('eventID', id);
+    }
   };
 
-  const handleDragOver = (event) => {
+  const handleDragOver = (event: DragEvent) => {
     event.preventDefault();
   };
 
-  const handleDrop = (event) => {
+  const handleDrop = (event: DragEvent) => {
     event.preventDefault();
-    const eventID = event.dataTransfer.getData('eventID');
+    const eventID = event.dataTransfer
+      ? event.dataTransfer.getData('eventID')
+      : '';
+
     console.log('Dropped event with ID:', eventID);
   };
 
-  const handleMouseEnter = (eventId) => {
+  const handleMouseEnter = (eventId: string) => {
     console.log('enter');
     console.log(eventId);
     setHoveredEventId(eventId);
@@ -47,10 +77,10 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
     setHoveredEventId(null);
   };
 
-  const EventList = ({ events }) => {
+  const EventList = ({ events }: any) => {
     return (
       <ul>
-        {events.map((event) => {
+        {events.map((event: any) => {
           console.log(event.id + hoveredEventId);
           return (
             <TableCell
@@ -59,9 +89,9 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
               key={event.id}
               rowSpan={event.endTime - event.time + 1}
               draggable="true"
-              onDragStart={(event) => handleDragStart(event, event.id)}
-              onDragOver={(event) => handleDragOver(event)}
-              onDrop={(event) => handleDrop(event, event.id)}
+              //   onDragStart={(event) => handleDragStart(event, event.id)}
+              //   onDragOver={(event) => handleDragOver(event)}
+              //   onDrop={(event) => handleDrop(event, event.id)}
             >
               <ColumnWrap>
                 {event.title} - {event.member}
@@ -72,7 +102,6 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
                   <p>
                     {event.time} - {event.endTime}
                   </p>
-                  <p>{event.location}</p>
                 </div>
               )}
             </TableCell>
@@ -82,7 +111,7 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
     );
   };
 
-  function getWeekNumber(date: Date) {
+  function getWeekNumber(date: any) {
     console.log(typeof date);
     const dateObj = new Date(date);
     const dayOfWeek = (dateObj.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
@@ -95,7 +124,7 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
     return weekNumber;
   }
 
-  function getDatesForWeekNumber(weekNumber, year) {
+  function getDatesForWeekNumber(weekNumber: number, year: number) {
     // Get the first day of the year
     const firstDayOfYear = new Date(year, 0, 1);
 
@@ -145,7 +174,7 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
           </tr>
 
           <tr>
-            <TableHeader></TableHeader>
+            <TableHeader>整天事件</TableHeader>
 
             <TableData>
               <EventList
@@ -153,14 +182,19 @@ const DailyHourlyView = ({ events, weekNumber, date, selectedDate }) => {
                   const eventWeekNumber = getWeekNumber(event.date);
                   console.log(event);
                   console.log(event.multiDay);
+                  console.log(event.date);
 
-                  const weekArray = getDatesForWeekNumber(
-                    weekNumber,
-                    date.getFullYear()
-                  );
+                  const dateString = `${selectedDate.getFullYear()}-${String(
+                    selectedDate.getMonth() + 1
+                  ).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(
+                    2,
+                    '0'
+                  )}`;
+                  console.log(dateString);
 
                   return (
-                    event.day === selectedDayOfWeek &&
+                    event.date <= dateString &&
+                    event.endDate >= dateString &&
                     event.multiDay &&
                     eventWeekNumber === weekNumber
                   );

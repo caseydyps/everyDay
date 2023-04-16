@@ -830,7 +830,7 @@ function Calendar() {
     console.log(events);
   }, [events]);
 
-  const handleDateChange = (date) => {
+  const handleDateChange = (date: string) => {
     console.log('hi');
     console.log(date);
     const dateObj = new Date(date);
@@ -841,11 +841,11 @@ function Calendar() {
     console.log(selectedDayOfWeek);
     setEventDate(date);
     setEventDay(selectedDayOfWeek);
-    getWeekNumber(date);
+    getWeekNumber(new Date(date));
     console.log(weekNumber);
   };
 
-  const handleEndDateChange = (date) => {
+  const handleEndDateChange = (date: string) => {
     console.log(date);
     const dateObj = new Date(date);
     const selectedDayOfWeek = dateObj.toLocaleDateString(undefined, {

@@ -1,14 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 
-const HourlyView = ({ events, weekNumber, date }) => {
+interface Event {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: number;
+  multiDay: boolean;
+  day: string;
+  date: string;
+  endDate: string;
+  time: number;
+  member: string;
+  location: string;
+}
+
+interface Props {
+  events: Event[];
+  weekNumber: number;
+  date: Date;
+}
+
+const HourlyView: any = ({ events, weekNumber, date }: Props) => {
   console.log(events);
-  const [hoveredEventId, setHoveredEventId] = useState(null);
+  const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
 
   // Generate hours array
-  const hours = [...Array(24).keys()].map((h) => {
-    return `${h.toString().padStart(2, '0')}:00`;
-  });
+  const hours = [];
+  for (let h = 0; h < 24; h++) {
+    hours.push(`${h.toString().padStart(2, '0')}:00`);
+  }
 
   // Generate days array
   const days = [
@@ -21,21 +42,26 @@ const HourlyView = ({ events, weekNumber, date }) => {
     '星期六',
   ];
 
-  const handleDragStart = (event, id) => {
-    event.dataTransfer.setData('eventID', id);
+  const handleDragStart = (event: DragEvent, id: string) => {
+    if (event.dataTransfer) {
+      event.dataTransfer.setData('eventID', id);
+    }
   };
 
-  const handleDragOver = (event) => {
+  const handleDragOver = (event: DragEvent) => {
     event.preventDefault();
   };
 
-  const handleDrop = (event) => {
+  const handleDrop = (event: DragEvent) => {
     event.preventDefault();
-    const eventID = event.dataTransfer.getData('eventID');
+    const eventID = event.dataTransfer
+      ? event.dataTransfer.getData('eventID')
+      : '';
+
     console.log('Dropped event with ID:', eventID);
   };
 
-  const handleMouseEnter = (eventId) => {
+  const handleMouseEnter = (eventId: string) => {
     console.log('enter');
     console.log(eventId);
     setHoveredEventId(eventId);
@@ -47,7 +73,7 @@ const HourlyView = ({ events, weekNumber, date }) => {
     setHoveredEventId(null);
   };
 
-  const EventList = ({ events }) => {
+  const EventList: any = ({ events }: Props) => {
     return (
       <ul>
         {events.map((event) => {
@@ -59,9 +85,9 @@ const HourlyView = ({ events, weekNumber, date }) => {
               key={event.id}
               rowSpan={event.endTime - event.time + 1}
               draggable="true"
-              onDragStart={(event) => handleDragStart(event, event.id)}
-              onDragOver={(event) => handleDragOver(event)}
-              onDrop={(event) => handleDrop(event, event.id)}
+              //   onDragStart={(event) => handleDragStart(event, event.id)}
+              //   onDragOver={(event) => handleDragOver(event)}
+              //   onDrop={(event) => handleDrop(event, event.id)}
             >
               <ColumnWrap>
                 {event.title} - {event.member}
@@ -72,7 +98,6 @@ const HourlyView = ({ events, weekNumber, date }) => {
                   <p>
                     {event.time} - {event.endTime}
                   </p>
-                  <p>{event.location}</p>
                 </div>
               )}
             </TableCell>
@@ -82,7 +107,7 @@ const HourlyView = ({ events, weekNumber, date }) => {
     );
   };
 
-  function getWeekNumber(date: Date) {
+  function getWeekNumber(date: any) {
     console.log(typeof date);
     const dateObj = new Date(date);
     const dayOfWeek = (dateObj.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
@@ -95,7 +120,7 @@ const HourlyView = ({ events, weekNumber, date }) => {
     return weekNumber;
   }
 
-  function getDatesForWeekNumber(weekNumber, year) {
+  function getDatesForWeekNumber(weekNumber: number, year: number) {
     // Get the first day of the year
     const firstDayOfYear = new Date(year, 0, 1);
 
@@ -176,7 +201,7 @@ const HourlyView = ({ events, weekNumber, date }) => {
           </tr>
         </thead>
         <tbody>
-          {hours.map((hour) => (
+          {hours.map((hour: any) => (
             <TableRow key={hour}>
               <TableHeader>{hour}</TableHeader>
 

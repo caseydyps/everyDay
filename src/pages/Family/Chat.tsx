@@ -66,7 +66,7 @@ const Chat = () => {
     <ChatContainer>
       <main>
         {messages.map((message) => (
-          <Message key={message.id} message={message}  />
+          <Message key={message.id} message={message} />
         ))}
       </main>
       <SendMessage scroll={scroll} />

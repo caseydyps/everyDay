@@ -18,17 +18,6 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-const Wrapper = styled.div`
-  width: 100vw;
-  height: 300px;
-  border: 2px solid black;
-`;
-
-const Container = styled.div`
-  width: 100vw;
-  display: flex;
-  flex-direction: row;
-`;
 
 const configJs = require('../../config/config.js');
 
@@ -265,25 +254,109 @@ const Suggestion = () => {
   return (
     <Container>
       <Wrapper>
-        <p>輸入問題:</p>
+        <p
+          style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#ed143d',
+            marginBottom: '20px',
+          }}
+        >
+          Everyday AI
+        </p>
         <form onSubmit={handleSubmit}>
-          <label>
+          <InputLabel>
             Input:
-            <input
+            <Input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
             />
-          </label>
-          <button type="submit">Submit</button>
+          </InputLabel>
+          <SubmitButton type="submit">Submit</SubmitButton>
         </form>
-        <div>
+        <Response>
           <p>Response:</p>
           <p>{responseValue}</p>
-        </div>
+        </Response>
       </Wrapper>
     </Container>
   );
 };
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  background-color: #242424;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  width: 1000px;
+  height: 100%;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+  background-color: #1d1d1d;
+`;
+
+const InputLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+`;
+
+const Input = styled.input`
+  padding: 8px;
+  border-radius: 5px;
+  border: none;
+  margin-left: 10px;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  background-color: #3c3c3c;
+  color: #fff;
+  width: 300px;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px #7f7f7f;
+  }
+`;
+
+const SubmitButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: none;
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #ed143d;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #c90d31;
+  }
+`;
+
+const Response = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+`;
 
 export default Suggestion;
