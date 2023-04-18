@@ -18,8 +18,12 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-
+import UserAuthData from '../../Components/Login/Auth';
 const FamilyMemberForm = () => {
+  const { user, userName, googleAvatarUrl, userEmail, hasSetup } =
+    UserAuthData();
+  console.log('user', user);
+  console.log('hasSetup', hasSetup);
   const [numberOfMembers, setNumberOfMembers] = useState<number>(0);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
@@ -345,7 +349,7 @@ const FamilyMemberForm = () => {
     }
 
     // Update the members array in local storage and state
-    localStorage.setItem('members', JSON.stringify(newMembers));
+    // localStorage.setItem('members', JSON.stringify(newMembers));
     setMembers(newMembers);
   };
 
@@ -464,20 +468,18 @@ const FamilyMemberForm = () => {
   }
 
   return (
-   
-   
-   <Container>
-      {formSubmitted ? (
+    <Container>
+      {hasSetup && formSubmitted ? (
         <div>
           <p>家庭成員:</p>
           <ColumnWrap>
             {members.map((member, index) => (
               <div key={index}>
-                <p>Name: {member.name}</p>
-                <p>Birthday: {member.birthday}</p>
+                <p>姓名: {member.name}</p>
+                <p>生日: {member.birthday}</p>
                 <p>Role: {member.role}</p>
                 <p>
-                  Anniversaries:{' '}
+                  紀念日:{' '}
                   {member.anniversaries.map((anniversary, anniversaryIndex) => (
                     <span key={anniversaryIndex}>
                       {anniversary.date} - {anniversary.description}{' '}
@@ -505,84 +507,93 @@ const FamilyMemberForm = () => {
             onIncrement={handleNumberOfMembersIncrement}
             onDecrement={handleNumberOfMembersDecrement}
           >
-            How many family members do you have?
+            您有幾位家庭成員?
           </AddMinusInput>
+          {numberOfMembers > 0 && (
+            <>
+              <RowWrap>
+                {members.map((member, index) => {
+                  console.log(member);
+                  console.log(member.hairProbability);
+                  return (
+                    <div key={index}>
+                      <FormField>
+                        <FormLabel>Name of Family Member {index + 1}</FormLabel>
+                        <FormInput
+                          type="text"
+                          value={member.name}
+                          onChange={(event) =>
+                            handleMemberNameChange(index, event)
+                          }
+                        />
+                      </FormField>
 
-          <RowWrap>
-            {members.map((member, index) => {
-              console.log(member);
-              console.log(member.hairProbability);
-              return (
-                <div key={index}>
-                  <FormField>
-                    <FormLabel>Name of Family Member {index + 1}</FormLabel>
-                    <FormInput
-                      type="text"
-                      value={member.name}
-                      onChange={(event) => handleMemberNameChange(index, event)}
-                    />
-                  </FormField>
+                      <FormField>
+                        <FormLabel>
+                          Birthday of Family Member {index + 1}
+                        </FormLabel>
+                        <FormInput
+                          type="date"
+                          value={member.birthday}
+                          onChange={(event) =>
+                            handleMemberBirthdayChange(index, event)
+                          }
+                        />
+                      </FormField>
 
-                  <FormField>
-                    <FormLabel>Birthday of Family Member {index + 1}</FormLabel>
-                    <FormInput
-                      type="date"
-                      value={member.birthday}
-                      onChange={(event) =>
-                        handleMemberBirthdayChange(index, event)
-                      }
-                    />
-                  </FormField>
+                      <FormField>
+                        <FormLabel>Role of Family Member {index + 1}</FormLabel>
+                        <FormInput
+                          type="text"
+                          value={member.role}
+                          onChange={(event) =>
+                            handleMemberRoleChange(index, event)
+                          }
+                        />
+                      </FormField>
 
-                  <FormField>
-                    <FormLabel>Role of Family Member {index + 1}</FormLabel>
-                    <FormInput
-                      type="text"
-                      value={member.role}
-                      onChange={(event) => handleMemberRoleChange(index, event)}
-                    />
-                  </FormField>
+                      <FormField>
+                        <FormLabel>
+                          Anniversary of Family Member {index + 1}
+                        </FormLabel>
+                        {member.anniversaries.map(
+                          (anniversary, anniversaryIndex) => (
+                            <div key={anniversaryIndex}>
+                              <FormInput
+                                type="date"
+                                value={anniversary.date}
+                                onChange={(event) =>
+                                  handleMemberAnniversaryDateChange(
+                                    index,
+                                    anniversaryIndex,
+                                    event
+                                  )
+                                }
+                              />
+                              <FormInput
+                                type="text"
+                                value={anniversary.description}
+                                onChange={(event) =>
+                                  handleMemberAnniversaryDescriptionChange(
+                                    index,
+                                    anniversaryIndex,
+                                    event
+                                  )
+                                }
+                              />
+                            </div>
+                          )
+                        )}
+                        <button onClick={() => handleAddAnniversary(index)}>
+                          Add Anniversary
+                        </button>
+                      </FormField>
 
-                  <FormField>
-                    <FormLabel>
-                      Anniversary of Family Member {index + 1}
-                    </FormLabel>
-                    {member.anniversaries.map(
-                      (anniversary, anniversaryIndex) => (
-                        <div key={anniversaryIndex}>
-                          <FormInput
-                            type="date"
-                            value={anniversary.date}
-                            onChange={(event) =>
-                              handleMemberAnniversaryDateChange(
-                                index,
-                                anniversaryIndex,
-                                event
-                              )
-                            }
-                          />
-                          <FormInput
-                            type="text"
-                            value={anniversary.description}
-                            onChange={(event) =>
-                              handleMemberAnniversaryDescriptionChange(
-                                index,
-                                anniversaryIndex,
-                                event
-                              )
-                            }
-                          />
-                        </div>
-                      )
-                    )}
-                    <button onClick={() => handleAddAnniversary(index)}>
-                      Add Anniversary
-                    </button>
-                  </FormField>
-
-                  <FormField>
-                    <FormLabel>Avatar of Family Member {index + 1}</FormLabel>
-                    {/* <AvatarCreator
+                      <FormField>
+                        <FormLabel>
+                          Avatar of Family Member {index + 1}
+                        </FormLabel>
+                        {/* <AvatarCreator
                     index={index}
                     onSave={(
                       avatarUrl,
@@ -612,184 +623,198 @@ const FamilyMemberForm = () => {
                     }
                   /> */}
 
-                    <div
-                      key={index}
-                      data-index={index}
-                      data-on-Save={(
-                        avatarUrl: string,
-                        seed: string,
-                        eyebrows: string,
-                        eyes: string,
-                        hair: string,
-                        hairColor: string,
-                        hairProbability: number,
-                        mouth: string,
-                        background: string,
-                        feature: string,
-                        featuresProbability: number
-                      ) =>
-                        handleAvatarSave(
-                          avatarUrl,
-                          index,
-                          seed,
-                          eyebrows,
-                          eyes,
-                          hair,
-                          hairProbability,
-                          hairColor,
-                          mouth,
-                          background,
-                          feature,
-                          featuresProbability
-                        )
-                      }
-                    >
-                      <label htmlFor="seed-select">Select a seed:</label>
-                      <select
-                        id="seed-select"
-                        value={member.seed}
-                        onChange={(event) => handleSeedChange(index, event)}
-                      >
-                        <option value="Precious">Precious</option>
-                        <option value="Cookie">Cookie</option>
-                        <option value="Sassy">Sassy</option>
-                      </select>
-                      <br />
-                      <label htmlFor="eyebrows-select">Select eyebrows:</label>
-                      <select
-                        id="eyebrows-select"
-                        value={member.eyebrows}
-                        onChange={(event) => handleEyebrowsChange(index, event)}
-                      >
-                        <option value="variant01">Thick</option>
-                        <option value="variant02">Variant 2</option>
-                        <option value="variant03">Variant 3</option>
-                        <option value="variant04">Variant 4</option>
-                        <option value="variant05">Variant 5</option>
-                      </select>
-                      <br />
-                      <label htmlFor="eyes-select">Select eyes:</label>
-                      <select
-                        id="eyes-select"
-                        value={member.eyes}
-                        onChange={(event) => handleEyesChange(index, event)}
-                      >
-                        <option value="variant01">Variant 1</option>
-                        <option value="variant02">Variant 2</option>
-                        <option value="variant03">Variant 3</option>
-                      </select>
-                      <br />
-                      <label htmlFor="hair-select">Select hair style:</label>
-                      <select
-                        id="hair-select"
-                        value={member.hair}
-                        onChange={(event) => handleHairChange(index, event)}
-                      >
-                        <option value="long03">中短髮</option>
-                        <option value="long06">大波浪</option>
-                        <option value="long08">花圈</option>
-                        <option value="long15">雙馬尾</option>
-                        <option value="long16">馬尾</option>
-                        <option value="short01">瀏海</option>
-                        <option value="short04">平頭</option>
-                        <option value="short07">韓系</option>
-                        <option value="short09">韓系2</option>
-                        <option value="short12">呆頭</option>
-                        <option value="short15">8+9</option>
-                        <option value="short16">刺蝟</option>
-                        <option value="short19">當兵</option>
-                        <option value="none">光頭</option>
-                      </select>
+                        <div
+                          key={index}
+                          data-index={index}
+                          data-on-Save={(
+                            avatarUrl: string,
+                            seed: string,
+                            eyebrows: string,
+                            eyes: string,
+                            hair: string,
+                            hairColor: string,
+                            hairProbability: number,
+                            mouth: string,
+                            background: string,
+                            feature: string,
+                            featuresProbability: number
+                          ) =>
+                            handleAvatarSave(
+                              avatarUrl,
+                              index,
+                              seed,
+                              eyebrows,
+                              eyes,
+                              hair,
+                              hairProbability,
+                              hairColor,
+                              mouth,
+                              background,
+                              feature,
+                              featuresProbability
+                            )
+                          }
+                        >
+                          <label htmlFor="seed-select">Select a seed:</label>
+                          <select
+                            id="seed-select"
+                            value={member.seed}
+                            onChange={(event) => handleSeedChange(index, event)}
+                          >
+                            <option value="Precious">Precious</option>
+                            <option value="Cookie">Cookie</option>
+                            <option value="Sassy">Sassy</option>
+                          </select>
+                          <br />
+                          <label htmlFor="eyebrows-select">
+                            Select eyebrows:
+                          </label>
+                          <select
+                            id="eyebrows-select"
+                            value={member.eyebrows}
+                            onChange={(event) =>
+                              handleEyebrowsChange(index, event)
+                            }
+                          >
+                            <option value="variant01">Thick</option>
+                            <option value="variant02">Variant 2</option>
+                            <option value="variant03">Variant 3</option>
+                            <option value="variant04">Variant 4</option>
+                            <option value="variant05">Variant 5</option>
+                          </select>
+                          <br />
+                          <label htmlFor="eyes-select">Select eyes:</label>
+                          <select
+                            id="eyes-select"
+                            value={member.eyes}
+                            onChange={(event) => handleEyesChange(index, event)}
+                          >
+                            <option value="variant01">Variant 1</option>
+                            <option value="variant02">Variant 2</option>
+                            <option value="variant03">Variant 3</option>
+                          </select>
+                          <br />
+                          <label htmlFor="hair-select">
+                            Select hair style:
+                          </label>
+                          <select
+                            id="hair-select"
+                            value={member.hair}
+                            onChange={(event) => handleHairChange(index, event)}
+                          >
+                            <option value="long03">中短髮</option>
+                            <option value="long06">大波浪</option>
+                            <option value="long08">花圈</option>
+                            <option value="long15">雙馬尾</option>
+                            <option value="long16">馬尾</option>
+                            <option value="short01">瀏海</option>
+                            <option value="short04">平頭</option>
+                            <option value="short07">韓系</option>
+                            <option value="short09">韓系2</option>
+                            <option value="short12">呆頭</option>
+                            <option value="short15">8+9</option>
+                            <option value="short16">刺蝟</option>
+                            <option value="short19">當兵</option>
+                            <option value="none">光頭</option>
+                          </select>
 
-                      <label htmlFor="hair-color-select">
-                        Select hair color:
-                      </label>
-                      <select
-                        id="hair-color-select"
-                        value={member.hairColor}
-                        onChange={(event) =>
-                          handleHairColorChange(index, event)
-                        }
-                      >
-                        <option value="0e0e0e">Black</option>
-                        <option value="562306">Brown</option>
-                        <option value="e6c770">Blonde</option>
-                        <option value="6a4e35">Red</option>
-                        <option value="796a45">Gray</option>
-                        <option value="914b2d">Auburn</option>
-                        <option value="733d1f">Chestnut</option>
-                        <option value="f5d23d">Blonde Highlights</option>
-                        <option value="221b15">Dark Brown</option>
-                        <option value="b38a58">Light Brown</option>
-                      </select>
-                      <br />
-                      <label htmlFor="feature-select">Select feature:</label>
-                      <select
-                        id="feature-select"
-                        value={member.feature}
-                        onChange={(event) => handleFeatureChange(index, event)}
-                      >
-                        <option value="blush">blush</option>
-                        <option value="freckles">freckles</option>
-                        <option value="none">none</option>
-                      </select>
+                          <label htmlFor="hair-color-select">
+                            Select hair color:
+                          </label>
+                          <select
+                            id="hair-color-select"
+                            value={member.hairColor}
+                            onChange={(event) =>
+                              handleHairColorChange(index, event)
+                            }
+                          >
+                            <option value="0e0e0e">Black</option>
+                            <option value="562306">Brown</option>
+                            <option value="e6c770">Blonde</option>
+                            <option value="6a4e35">Red</option>
+                            <option value="796a45">Gray</option>
+                            <option value="914b2d">Auburn</option>
+                            <option value="733d1f">Chestnut</option>
+                            <option value="f5d23d">Blonde Highlights</option>
+                            <option value="221b15">Dark Brown</option>
+                            <option value="b38a58">Light Brown</option>
+                          </select>
+                          <br />
+                          <label htmlFor="feature-select">
+                            Select feature:
+                          </label>
+                          <select
+                            id="feature-select"
+                            value={member.feature}
+                            onChange={(event) =>
+                              handleFeatureChange(index, event)
+                            }
+                          >
+                            <option value="blush">blush</option>
+                            <option value="freckles">freckles</option>
+                            <option value="none">none</option>
+                          </select>
 
-                      <label htmlFor="mouth-select">Select mouth:</label>
-                      <select
-                        id="mouth-select"
-                        value={member.mouth}
-                        onChange={(event) => handleMouthChange(index, event)}
-                      >
-                        <option value="variant01">Variant 1</option>
-                        <option value="variant02">Variant 2</option>
-                        <option value="variant03">Variant 3</option>
-                      </select>
-                      <label htmlFor="background-color-select">
-                        Select background color:
-                      </label>
-                      <select
-                        id="background-color-select"
-                        value={member.background}
-                        onChange={(event) =>
-                          handleBackgroundChange(index, event)
-                        }
-                      >
-                        <option value="f5f5f5">Light Gray</option>
-                        <option value="b6e3f4">Blue</option>
-                        <option value="d1d4f9">Purple</option>
-                        <option value="transparent">Transparent</option>
-                      </select>
+                          <label htmlFor="mouth-select">Select mouth:</label>
+                          <select
+                            id="mouth-select"
+                            value={member.mouth}
+                            onChange={(event) =>
+                              handleMouthChange(index, event)
+                            }
+                          >
+                            <option value="variant01">Variant 1</option>
+                            <option value="variant02">Variant 2</option>
+                            <option value="variant03">Variant 3</option>
+                          </select>
+                          <label htmlFor="background-color-select">
+                            Select background color:
+                          </label>
+                          <select
+                            id="background-color-select"
+                            value={member.background}
+                            onChange={(event) =>
+                              handleBackgroundChange(index, event)
+                            }
+                          >
+                            <option value="f5f5f5">Light Gray</option>
+                            <option value="b6e3f4">Blue</option>
+                            <option value="d1d4f9">Purple</option>
+                            <option value="transparent">Transparent</option>
+                          </select>
+                        </div>
+
+                        <Button
+                          onClick={() =>
+                            handleAvatarSave(
+                              avatarUrl,
+                              index,
+                              seed,
+                              eyebrows,
+                              eyes,
+                              hair,
+                              hairProbability,
+                              hairColor,
+                              mouth,
+                              background,
+                              feature,
+                              featuresProbability
+                            )
+                          }
+                        >
+                          Save Avatar
+                        </Button>
+                      </FormField>
                     </div>
-
-                    <Button
-                      onClick={() =>
-                        handleAvatarSave(
-                          avatarUrl,
-                          index,
-                          seed,
-                          eyebrows,
-                          eyes,
-                          hair,
-                          hairProbability,
-                          hairColor,
-                          mouth,
-                          background,
-                          feature,
-                          featuresProbability
-                        )
-                      }
-                    >
-                      Save Avatar
-                    </Button>
-                  </FormField>
-                </div>
-              );
-            })}
-          </RowWrap>
-          <AvatarContainer>
-            <img src={avatarUrl} alt="avatar"></img>
-          </AvatarContainer>
-          <FormButton type="submit">Submit</FormButton>
+                  );
+                })}
+              </RowWrap>
+              <AvatarContainer>
+                <img src={avatarUrl} alt="avatar"></img>
+              </AvatarContainer>
+              <FormButton type="submit">Submit</FormButton>
+            </>
+          )}
         </Form>
       )}
     </Container>
@@ -798,9 +823,22 @@ const FamilyMemberForm = () => {
 
 export default FamilyMemberForm;
 
+const colors = {
+  primary: '#007bff',
+  secondary: '#6c757d',
+  success: '#28a745',
+  danger: '#dc3545',
+  warning: '#ffc107',
+  info: '#17a2b8',
+  light: '#f8f9fa',
+  dark: '#343a40',
+};
+
 const Form = styled.form`
   display: flex;
   flex-direction: column;
+  max-width: 600px;
+  margin: 0 auto;
 `;
 
 const FormField = styled.div`
@@ -808,20 +846,40 @@ const FormField = styled.div`
 `;
 
 const FormLabel = styled.label`
-  font-weight: bold;
+  display: block;
   margin-bottom: 0.5rem;
+  font-weight: bold;
 `;
 
 const FormInput = styled.input`
+  display: block;
+  width: 100%;
   padding: 0.5rem;
+  border: 1px solid ${colors.dark};
+  border-radius: 0.25rem;
   font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+
+  &:focus {
+    outline: none;
+    border-color: ${colors.primary};
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
 `;
 
 const AvatarContainer = styled.div`
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1rem;
+
+  > img {
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
 `;
 
 const AvatarImage = styled.img`
@@ -833,7 +891,7 @@ const Button = styled.button`
   margin-top: 1rem;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
-  background-color: #0077cc;
+  background-color: ${colors.primary};
   color: white;
   font-size: 1rem;
   border: none;
@@ -872,6 +930,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  background-color: #f5f5f5;
 `;
 
 const RowWrap = styled.div`

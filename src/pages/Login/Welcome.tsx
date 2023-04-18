@@ -21,33 +21,47 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import UserAuthData from '../../Components/Login/Auth';
+import checkIfUserExists from '../../Components/Login/Auth';
+
+const { v4: uuidv4 } = require('uuid');
 
 function WelcomePage() {
-  const [user] = useAuthState(auth);
-  const userName = user ? user.displayName : null;
-  const avatarUrl = user ? user.photoURL : null;
-  const userEmail = user ? user.email : null;
-  const [hasSetup, setHasSetup] = useState(null);
-  useEffect(() => {
-    async function checkIfUserExists() {
-      if (userEmail) {
-        console.log('has email');
-        const familyCollection = collection(db, 'Family');
-        const queryUser = where('users', '==', userEmail);
-        const matchingDocs = await getDocs(query(familyCollection, queryUser));
-        if (matchingDocs.size > 0) {
-          // A document with the user's email address exists
-          setHasSetup(true);
-          console.log('has setup');
-        } else {
-          // No document with the user's email address exists
-          setHasSetup(false);
-          console.log('not yet setup');
-        }
-      }
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    hasCreateFamily,
+    setHasCreateFamily,
+  } = UserAuthData();
+  const familyId: string = uuidv4();
+  const handleFamilyCreate = async (
+    userName: string,
+    userEmail: string,
+    familyId: string
+  ) => {
+    const familyDocRef = doc(db, 'Family', familyId);
+    const familyData = {
+      familyId,
+      familyMembers: [{ userEmail }],
+      isSettingDone: false,
+    };
+
+    try {
+      await setDoc(familyDocRef, familyData);
+      console.log('Family created successfully!');
+      setHasCreateFamily(true);
+    } catch (error) {
+      console.error('Error creating family:', error);
+      alert('Failed to create family. Please try again.');
     }
-    checkIfUserExists();
-  }, [userEmail]);
+  };
+
+  console.log('user', user);
+  console.log('hasSetup', hasSetup);
+  console.log('hasCreateFamily', hasCreateFamily);
 
   return (
     <Container>
@@ -85,11 +99,22 @@ function WelcomePage() {
           ) : (
             <>
               <WelcomeMessage style={{ marginTop: '300px' }}>
-                您似乎還未設定家庭成員, 請點選下方進行設定
+                您似乎還未完成家庭成員設定, 請點選下方進行設定
               </WelcomeMessage>
-              <LinkButton style={{ fontSize: '64px' }} to="/family">
-                設定家庭成員
-              </LinkButton>
+              {hasCreateFamily ? (
+                <LinkButton to="/family" style={{ fontSize: '64px' }}>
+                  進行家庭成員設定
+                </LinkButton>
+              ) : (
+                <LinkButton
+                  onClick={() =>
+                    handleFamilyCreate(userName, userEmail, familyId)
+                  }
+                  style={{ fontSize: '64px' }}
+                >
+                  建立家庭
+                </LinkButton>
+              )}
             </>
           )}
         </>
@@ -102,7 +127,7 @@ function WelcomePage() {
         <CircleButton>
           <ColumnWrap>
             <NavLink to="/family">
-              {avatarUrl && <Avatar src={avatarUrl} alt="" />}
+              {googleAvatarUrl && <Avatar src={googleAvatarUrl} alt="" />}
             </NavLink>
             <Slogan>Login in seconds!</Slogan>
             <SignIn />
@@ -113,16 +138,15 @@ function WelcomePage() {
   );
 }
 
-const WelcomeMessage = styled.h1`
-  color: white;
-  font-size: 128px;
-  font-weight: bold;
+const WelcomeMessage = styled.div`
   text-align: center;
-  margin-bottom: 20px;
-  margin-top: 50px;
+  margin: auto;
+  font-size: 108px;
+  font-weight: bold;
+  color: white;
 `;
 
-const gradientAnimation = keyframes`
+const GradientAnimation = keyframes`
   0% {
     background-position: 0% 50%;
   }
@@ -151,7 +175,7 @@ const Container = styled.div`
   border-top: 4px solid white;
   flex-direction: column;
   justify-content: center;
-  animation: ${gradientAnimation} 20s ease-in-out infinite;
+  animation: ${GradientAnimation} 20s ease-in-out infinite;
   background-size: 200% 500%;
 `;
 
