@@ -35,29 +35,10 @@ function WelcomePage() {
     hasSetup,
     hasCreateFamily,
     setHasCreateFamily,
+    handleFamilyCreate,
   } = UserAuthData();
+  // const [loggedfamilyId, setLoggedFamilyId] = useState<string | null>(null);
   const familyId: string = uuidv4();
-  const handleFamilyCreate = async (
-    userName: string,
-    userEmail: string,
-    familyId: string
-  ) => {
-    const familyDocRef = doc(db, 'Family', familyId);
-    const familyData = {
-      familyId,
-      familyMembers: [{ userEmail }],
-      isSettingDone: false,
-    };
-
-    try {
-      await setDoc(familyDocRef, familyData);
-      console.log('Family created successfully!');
-      setHasCreateFamily(true);
-    } catch (error) {
-      console.error('Error creating family:', error);
-      alert('Failed to create family. Please try again.');
-    }
-  };
 
   console.log('user', user);
   console.log('hasSetup', hasSetup);
@@ -146,7 +127,7 @@ const WelcomeMessage = styled.div`
   color: white;
 `;
 
-const GradientAnimation = keyframes`
+export const GradientAnimation = keyframes`
   0% {
     background-position: 0% 50%;
   }
@@ -159,7 +140,7 @@ const GradientAnimation = keyframes`
   
 `;
 
-const Container = styled.div`
+export const Container = styled.div`
   width: 100%;
   height: 100vh;
   background: linear-gradient(

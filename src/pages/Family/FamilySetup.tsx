@@ -10,9 +10,9 @@ const FamilySetup = () => {
     hasSetup,
     hasCreateFamily,
   } = UserAuthData();
-  console.log('user', user);
+  //   console.log('user', user);
   console.log('hasSetup', hasSetup);
-  return hasCreateFamily ? <FamilyMemberForm /> : null;
+  return <FamilyMemberForm />;
 };
 
 export default FamilySetup;

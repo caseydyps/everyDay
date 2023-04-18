@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import Sidebar from '../../Components/Nav/Navbar';
 // import AvatarCreator from './Avatar';
 // import { handleLoadAvatar } from './Avatar';
@@ -20,21 +20,36 @@ import {
 } from 'firebase/firestore';
 import UserAuthData from '../../Components/Login/Auth';
 const FamilyMemberForm = () => {
-  const { user, userName, googleAvatarUrl, userEmail, hasSetup } =
-    UserAuthData();
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+  } = UserAuthData();
   console.log('user', user);
   console.log('hasSetup', hasSetup);
   const [numberOfMembers, setNumberOfMembers] = useState<number>(0);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-
+  const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(members);
-
-    const usersRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'users');
-
+    const familyRef = collection(db, 'Family');
+    const usersRef = collection(db, 'Family', familyId, 'members');
+    const familyCollection = collection(db, 'Family');
+    const queryUser = where('familyMembers', 'array-contains', {
+      userEmail: userEmail,
+    });
     try {
+      const matchingDocs = await getDocs(query(familyCollection, queryUser));
+      const matchingDocRef = matchingDocs.docs[0].ref;
+      console.log(matchingDocs);
+      await updateDoc(matchingDocRef, { isSettingDone: true });
+
       // Delete all existing user documents
       const querySnapshot = await getDocs(usersRef);
       const batch = writeBatch(db);
@@ -48,6 +63,7 @@ const FamilyMemberForm = () => {
 
       console.log('Members have been saved to Firestore!');
       setFormSubmitted(true);
+      setHasSetup(true);
     } catch (error) {
       console.error('Error saving members to Firestore: ', error);
     }
@@ -55,24 +71,35 @@ const FamilyMemberForm = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      const familyDocRef = collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'users'
-      );
-      const membersData: any = await getDocs(familyDocRef).then(
-        (querySnapshot) => querySnapshot.docs.map((doc) => ({ ...doc.data() }))
-      );
-      console.log(membersData);
-      setMembers(membersData);
+      console.log(familyId);
+      const familyDocRef = collection(db, 'Family', familyId, 'members');
 
+      //const familyCollection = collection(db, 'Family', familyId, 'users');
+      // const queryUser = where('familyId', '==', {
+      //   userId: familyId,
+      // });
+
+      const membersData: any = await getDocs(familyDocRef)
+        .then((querySnapshot) =>
+          querySnapshot.docs.map((doc) => ({ ...doc.data() }))
+        )
+        .catch((error) =>
+          console.error('Error retrieving members data:', error)
+        );
+      console.log(membersData);
+      const matchingData = membersData.find(
+        (data) => data.familyId === familyId
+      );
+      console.log(matchingData);
+      //todo: set members by fetching firestore
+      setMembers(membersData);
+      //console.log(matchingData.familyMembers.length);
       if (membersData.length > 0) {
         setFormSubmitted(true);
       }
     };
     fetchMembers();
-  }, []);
+  }, [familyId]);
 
   // const handleLoadAvatar = () => {
   //   const avatarDetails = JSON.parse(localStorage.getItem('members'));
@@ -106,6 +133,7 @@ const FamilyMemberForm = () => {
     hairProbability: number;
     hairColor: string;
     mouth: string;
+    email: string;
     background: string;
     feature: string;
     featuresProbability: number;
@@ -147,6 +175,15 @@ const FamilyMemberForm = () => {
   ) => {
     const newMembers = [...members];
     newMembers[index].name = event.target.value;
+    setMembers(newMembers);
+  };
+
+  const handleMemberEmailChange = (
+    index: number,
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const newMembers = [...members];
+    newMembers[index].email = event.target.value;
     setMembers(newMembers);
   };
 
@@ -455,116 +492,153 @@ const FamilyMemberForm = () => {
     return (
       <FormField>
         <FormLabel>{children}</FormLabel>
-        <button onClick={onDecrement}>-</button>
-        <input
+        <Button onClick={onDecrement}>-</Button>
+        <Input
           type="number"
           min={numberOfMembers}
           value={value}
           onChange={() => {}}
         />
-        <button onClick={onIncrement}>+</button>
+        <Button onClick={onIncrement}>+</Button>
       </FormField>
     );
   }
 
+  console.log('hasSetup', hasSetup, 'formSubmitted', formSubmitted);
+
   return (
     <Container>
-      {hasSetup && formSubmitted ? (
-        <div>
-          <p>家庭成員:</p>
+      {hasSetup ? (
+        <Wrap>
+          <Title>家庭成員</Title>
           <ColumnWrap>
-            {members.map((member, index) => (
-              <div key={index}>
-                <p>姓名: {member.name}</p>
-                <p>生日: {member.birthday}</p>
-                <p>Role: {member.role}</p>
-                <p>
-                  紀念日:{' '}
-                  {member.anniversaries.map((anniversary, anniversaryIndex) => (
-                    <span key={anniversaryIndex}>
-                      {anniversary.date} - {anniversary.description}{' '}
-                    </span>
-                  ))}
-                </p>
-                <img src={member.avatar} alt="avatar"></img>
-              </div>
-            ))}
+            <RowWrap>
+              {members.map((member, index) => (
+                <Card key={index}>
+                  <p>姓名: {member.name}</p>
+                  <p>生日: {member.birthday}</p>
+                  <p>Role: {member.role}</p>
+                  <p>
+                    紀念日:{' '}
+                    {member.anniversaries.map(
+                      (anniversary, anniversaryIndex) => (
+                        <span key={anniversaryIndex}>
+                          {anniversary.date} - {anniversary.description}{' '}
+                        </span>
+                      )
+                    )}
+                  </p>
+                  <img src={member.avatar} alt="avatar"></img>
+                </Card>
+              ))}
+            </RowWrap>
           </ColumnWrap>
 
-          <button
+          <Button
             onClick={() => {
+              setHasSetup(false);
               setFormSubmitted(false);
               setNumberOfMembers(members.length);
             }}
           >
             Edit
-          </button>
-        </div>
+          </Button>
+        </Wrap>
       ) : (
-        <Form onSubmit={handleFormSubmit}>
-          <AddMinusInput
-            value={numberOfMembers}
-            onIncrement={handleNumberOfMembersIncrement}
-            onDecrement={handleNumberOfMembersDecrement}
-          >
-            您有幾位家庭成員?
-          </AddMinusInput>
-          {numberOfMembers > 0 && (
-            <>
+        <FormContainer>
+          <Form onSubmit={handleFormSubmit}>
+            <AddMinusInput
+              value={numberOfMembers}
+              onIncrement={handleNumberOfMembersIncrement}
+              onDecrement={handleNumberOfMembersDecrement}
+            >
+              您有幾位家庭成員?
+            </AddMinusInput>
+            {numberOfMembers > 0 && (
               <RowWrap>
-                {members.map((member, index) => {
-                  console.log(member);
-                  console.log(member.hairProbability);
-                  return (
-                    <div key={index}>
+                <RowWrap>
+                  <FormDropdown
+                    value={currentMemberIndex}
+                    onChange={(event) =>
+                      setCurrentMemberIndex(parseInt(event.target.value))
+                    }
+                  >
+                    {members.map((member, index) => (
+                      <option key={index} value={index}>
+                        {`Family Member ${index + 1}`}
+                      </option>
+                    ))}
+                  </FormDropdown>
+                  {members[currentMemberIndex] && (
+                    <div>
                       <FormField>
-                        <FormLabel>Name of Family Member {index + 1}</FormLabel>
+                        <FormLabel>
+                          Name of Family Member {currentMemberIndex + 1}
+                        </FormLabel>
                         <FormInput
                           type="text"
-                          value={member.name}
+                          value={members[currentMemberIndex].name}
                           onChange={(event) =>
-                            handleMemberNameChange(index, event)
+                            handleMemberNameChange(currentMemberIndex, event)
                           }
                         />
                       </FormField>
 
                       <FormField>
                         <FormLabel>
-                          Birthday of Family Member {index + 1}
+                          Email of Family Member {currentMemberIndex + 1}
+                        </FormLabel>
+                        <FormInput
+                          type="text"
+                          value={members[currentMemberIndex].email}
+                          onChange={(event) =>
+                            handleMemberEmailChange(currentMemberIndex, event)
+                          }
+                        />
+                      </FormField>
+
+                      <FormField>
+                        <FormLabel>
+                          Birthday of Family Member {currentMemberIndex + 1}
                         </FormLabel>
                         <FormInput
                           type="date"
-                          value={member.birthday}
+                          value={members[currentMemberIndex].birthday}
                           onChange={(event) =>
-                            handleMemberBirthdayChange(index, event)
-                          }
-                        />
-                      </FormField>
-
-                      <FormField>
-                        <FormLabel>Role of Family Member {index + 1}</FormLabel>
-                        <FormInput
-                          type="text"
-                          value={member.role}
-                          onChange={(event) =>
-                            handleMemberRoleChange(index, event)
+                            handleMemberBirthdayChange(
+                              currentMemberIndex,
+                              event
+                            )
                           }
                         />
                       </FormField>
 
                       <FormField>
                         <FormLabel>
-                          Anniversary of Family Member {index + 1}
+                          Role of Family Member {currentMemberIndex + 1}
                         </FormLabel>
-                        {member.anniversaries.map(
+                        <FormInput
+                          type="text"
+                          value={members[currentMemberIndex].role}
+                          onChange={(event) =>
+                            handleMemberRoleChange(currentMemberIndex, event)
+                          }
+                        />
+                      </FormField>
+
+                      <FormField>
+                        <FormLabel>
+                          Anniversary of Family Member {currentMemberIndex + 1}
+                        </FormLabel>
+                        {members[currentMemberIndex].anniversaries.map(
                           (anniversary, anniversaryIndex) => (
-                            <div key={anniversaryIndex}>
+                            <ColumnWrap key={anniversaryIndex}>
                               <FormInput
                                 type="date"
                                 value={anniversary.date}
                                 onChange={(event) =>
                                   handleMemberAnniversaryDateChange(
-                                    index,
+                                    currentMemberIndex,
                                     anniversaryIndex,
                                     event
                                   )
@@ -575,57 +649,32 @@ const FamilyMemberForm = () => {
                                 value={anniversary.description}
                                 onChange={(event) =>
                                   handleMemberAnniversaryDescriptionChange(
-                                    index,
+                                    currentMemberIndex,
                                     anniversaryIndex,
                                     event
                                   )
                                 }
                               />
-                            </div>
+                            </ColumnWrap>
                           )
                         )}
-                        <button onClick={() => handleAddAnniversary(index)}>
+                        <Button
+                          onClick={() =>
+                            handleAddAnniversary(currentMemberIndex)
+                          }
+                        >
                           Add Anniversary
-                        </button>
+                        </Button>
                       </FormField>
 
                       <FormField>
                         <FormLabel>
-                          Avatar of Family Member {index + 1}
+                          Avatar of Family Member {currentMemberIndex + 1}
                         </FormLabel>
-                        {/* <AvatarCreator
-                    index={index}
-                    onSave={(
-                      avatarUrl,
-                      seed,
-                      eyebrows,
-                      eyes,
-                      hair,
-                      hairColor,
-                      mouth,
-                      background,
-                      feature,
-                      featuresProbability
-                    ) =>
-                      handleAvatarSave(
-                        avatarUrl,
-                        index,
-                        seed,
-                        eyebrows,
-                        eyes,
-                        hair,
-                        hairColor,
-                        mouth,
-                        background,
-                        feature,
-                        featuresProbability
-                      )
-                    }
-                  /> */}
 
-                        <div
-                          key={index}
-                          data-index={index}
+                        <RowWrap
+                          key={currentMemberIndex}
+                          data-index={currentMemberIndex}
                           data-on-Save={(
                             avatarUrl: string,
                             seed: string,
@@ -641,7 +690,7 @@ const FamilyMemberForm = () => {
                           ) =>
                             handleAvatarSave(
                               avatarUrl,
-                              index,
+                              currentMemberIndex,
                               seed,
                               eyebrows,
                               eyes,
@@ -655,25 +704,27 @@ const FamilyMemberForm = () => {
                             )
                           }
                         >
-                          <label htmlFor="seed-select">Select a seed:</label>
-                          <select
+                          <Label htmlFor="seed-select">Select a seed:</Label>
+                          <Select
                             id="seed-select"
-                            value={member.seed}
-                            onChange={(event) => handleSeedChange(index, event)}
+                            value={members[currentMemberIndex].seed}
+                            onChange={(event) =>
+                              handleSeedChange(currentMemberIndex, event)
+                            }
                           >
                             <option value="Precious">Precious</option>
                             <option value="Cookie">Cookie</option>
                             <option value="Sassy">Sassy</option>
-                          </select>
+                          </Select>
                           <br />
-                          <label htmlFor="eyebrows-select">
+                          <Label htmlFor="eyebrows-select">
                             Select eyebrows:
-                          </label>
-                          <select
+                          </Label>
+                          <Select
                             id="eyebrows-select"
-                            value={member.eyebrows}
+                            value={members[currentMemberIndex].eyebrows}
                             onChange={(event) =>
-                              handleEyebrowsChange(index, event)
+                              handleEyebrowsChange(currentMemberIndex, event)
                             }
                           >
                             <option value="variant01">Thick</option>
@@ -681,26 +732,30 @@ const FamilyMemberForm = () => {
                             <option value="variant03">Variant 3</option>
                             <option value="variant04">Variant 4</option>
                             <option value="variant05">Variant 5</option>
-                          </select>
+                          </Select>
                           <br />
-                          <label htmlFor="eyes-select">Select eyes:</label>
-                          <select
+                          <Label htmlFor="eyes-select">Select eyes:</Label>
+                          <Select
                             id="eyes-select"
-                            value={member.eyes}
-                            onChange={(event) => handleEyesChange(index, event)}
+                            value={members[currentMemberIndex].eyes}
+                            onChange={(event) =>
+                              handleEyesChange(currentMemberIndex, event)
+                            }
                           >
                             <option value="variant01">Variant 1</option>
                             <option value="variant02">Variant 2</option>
                             <option value="variant03">Variant 3</option>
-                          </select>
+                          </Select>
                           <br />
-                          <label htmlFor="hair-select">
+                          <Label htmlFor="hair-select">
                             Select hair style:
-                          </label>
-                          <select
+                          </Label>
+                          <Select
                             id="hair-select"
-                            value={member.hair}
-                            onChange={(event) => handleHairChange(index, event)}
+                            value={members[currentMemberIndex].hair}
+                            onChange={(event) =>
+                              handleHairChange(currentMemberIndex, event)
+                            }
                           >
                             <option value="long03">中短髮</option>
                             <option value="long06">大波浪</option>
@@ -716,16 +771,16 @@ const FamilyMemberForm = () => {
                             <option value="short16">刺蝟</option>
                             <option value="short19">當兵</option>
                             <option value="none">光頭</option>
-                          </select>
+                          </Select>
 
-                          <label htmlFor="hair-color-select">
+                          <Label htmlFor="hair-color-select">
                             Select hair color:
-                          </label>
-                          <select
+                          </Label>
+                          <Select
                             id="hair-color-select"
-                            value={member.hairColor}
+                            value={members[currentMemberIndex].hairColor}
                             onChange={(event) =>
-                              handleHairColorChange(index, event)
+                              handleHairColorChange(currentMemberIndex, event)
                             }
                           >
                             <option value="0e0e0e">Black</option>
@@ -738,57 +793,57 @@ const FamilyMemberForm = () => {
                             <option value="f5d23d">Blonde Highlights</option>
                             <option value="221b15">Dark Brown</option>
                             <option value="b38a58">Light Brown</option>
-                          </select>
+                          </Select>
                           <br />
-                          <label htmlFor="feature-select">
+                          <Label htmlFor="feature-select">
                             Select feature:
-                          </label>
-                          <select
+                          </Label>
+                          <Select
                             id="feature-select"
-                            value={member.feature}
+                            value={members[currentMemberIndex].feature}
                             onChange={(event) =>
-                              handleFeatureChange(index, event)
+                              handleFeatureChange(currentMemberIndex, event)
                             }
                           >
                             <option value="blush">blush</option>
                             <option value="freckles">freckles</option>
                             <option value="none">none</option>
-                          </select>
+                          </Select>
 
-                          <label htmlFor="mouth-select">Select mouth:</label>
-                          <select
+                          <Label htmlFor="mouth-select">Select mouth:</Label>
+                          <Select
                             id="mouth-select"
-                            value={member.mouth}
+                            value={members[currentMemberIndex].mouth}
                             onChange={(event) =>
-                              handleMouthChange(index, event)
+                              handleMouthChange(currentMemberIndex, event)
                             }
                           >
                             <option value="variant01">Variant 1</option>
                             <option value="variant02">Variant 2</option>
                             <option value="variant03">Variant 3</option>
-                          </select>
-                          <label htmlFor="background-color-select">
+                          </Select>
+                          <Label htmlFor="background-color-select">
                             Select background color:
-                          </label>
-                          <select
+                          </Label>
+                          <Select
                             id="background-color-select"
-                            value={member.background}
+                            value={members[currentMemberIndex].background}
                             onChange={(event) =>
-                              handleBackgroundChange(index, event)
+                              handleBackgroundChange(currentMemberIndex, event)
                             }
                           >
                             <option value="f5f5f5">Light Gray</option>
                             <option value="b6e3f4">Blue</option>
                             <option value="d1d4f9">Purple</option>
                             <option value="transparent">Transparent</option>
-                          </select>
-                        </div>
+                          </Select>
+                        </RowWrap>
 
                         <Button
                           onClick={() =>
                             handleAvatarSave(
                               avatarUrl,
-                              index,
+                              currentMemberIndex,
                               seed,
                               eyebrows,
                               eyes,
@@ -806,16 +861,21 @@ const FamilyMemberForm = () => {
                         </Button>
                       </FormField>
                     </div>
-                  );
-                })}
+                  )}
+                </RowWrap>
+                <ColumnWrap>
+                  {numberOfMembers > 0 && (
+                    <AvatarContainer>
+                      <img src={avatarUrl} alt="avatar"></img>
+                    </AvatarContainer>
+                  )}
+
+                  <FormButton type="submit">Save</FormButton>
+                </ColumnWrap>
               </RowWrap>
-              <AvatarContainer>
-                <img src={avatarUrl} alt="avatar"></img>
-              </AvatarContainer>
-              <FormButton type="submit">Submit</FormButton>
-            </>
-          )}
-        </Form>
+            )}
+          </Form>
+        </FormContainer>
       )}
     </Container>
   );
@@ -837,12 +897,14 @@ const colors = {
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  max-width: 600px;
+  max-width: 1200px;
   margin: 0 auto;
 `;
 
 const FormField = styled.div`
   margin-bottom: 1rem;
+  margin: 0 auto;
+  text-align: center;
 `;
 
 const FormLabel = styled.label`
@@ -855,10 +917,11 @@ const FormInput = styled.input`
   display: block;
   width: 100%;
   padding: 0.5rem;
-  border: 1px solid ${colors.dark};
-  border-radius: 0.25rem;
-  font-size: 1rem;
+  border: 5px solid #3467a1;
+  border-radius: 25px;
+  font-size: 32px;
   line-height: 1.5;
+  font-weight: bold;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 
   &:focus {
@@ -873,6 +936,7 @@ const AvatarContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 
   > img {
     width: 500px;
@@ -888,14 +952,17 @@ const AvatarImage = styled.img`
 `;
 
 const Button = styled.button`
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  background-color: ${colors.primary};
-  color: white;
-  font-size: 1rem;
+  background-color: #fff5c9;
+  color: #3467a1;
   border: none;
-  cursor: pointer;
+  border-radius: 20px;
+  font-weight: bold;
+  padding: 10px 20px;
+  margin-top: 30px;
+  font-size: 40px;
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const AvatarPlaceholder = styled.div`
@@ -922,25 +989,142 @@ const FormButton = styled.button`
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 32px;
   cursor: pointer;
 `;
 
-const Container = styled.div`
+export const GradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  
+`;
+
+export const Container = styled.div`
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(
+    45deg,
+    white,
+    #fff5c9,
+    #9bb9de,
+    #629dda,
+    #ff9f4d,
+    #142850
+  );
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  background-color: #f5f5f5;
+  border-top: 4px solid white;
+  flex-direction: column;
+  justify-content: center;
+  animation: ${GradientAnimation} 20s ease-in-out infinite;
+  background-size: 200% 500%;
 `;
 
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
 `;
 
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+`;
+
+const FormContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SettingDoneBtn = styled.button``;
+
+const Title = styled.div`
+  font-size: 72px;
+  font-weight: bold;
+  margin: 0 auto;
+  text-align: center;
+  color: white;
+`;
+
+const Card = styled.div`
+  width: calc(33.33% - 10px);
+  margin: 20px;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 36px;
+  background-color: #transparent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  p {
+    margin: 0 0 10px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 50%;
+  }
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
+const Wrap = styled.div`
+  max-width: 800px;
+  margin: 0 auto;
+  justify-content: center;
+  text-align: center;
+`;
+
+const FormDropdown = styled.select`
+  font-size: 32px;
+  padding: 8px;
+  border-radius: 25px;
+  border: 1px solid #3467a1;
+  background-color: #transparent;
+  margin-top: 20px;
+  &:focus {
+    outline: none;
+    border: 2px solid blue;
+  }
+`;
+
+const Label = styled.label`
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 20px;
+`;
+
+const Select = styled.select`
+  font-size: 32px;
+  padding: 8px;
+  margin-bottom: 20px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+`;
+
+const Input = styled.input`
+  width: 200px;
+  padding: 8px;
+
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  font-size: 32px;
+  color: #333;
+
+  &:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
 `;
