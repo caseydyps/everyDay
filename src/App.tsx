@@ -28,19 +28,11 @@ const Wrap = styled.div`
 `;
 
 function App() {
-  const { isLogin, user, loading, login, logout } = useContext(AuthContext);
-
   return (
     <>
       <GlobalStyle />
       <AuthContextProvider>
-        <Sidebar
-          isLogin={isLogin}
-          user={user}
-          loading={loading}
-          logout={logout}
-          login={login}
-        />
+        <Sidebar />
         <Outlet />
       </AuthContextProvider>
     </>

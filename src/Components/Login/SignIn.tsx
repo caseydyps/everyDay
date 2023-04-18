@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   }
 `;
 
-const googleSignIn = () => {
+ export const googleSignIn = () => {
   const provider = new GoogleAuthProvider();
   signInWithRedirect(auth, provider);
 };
