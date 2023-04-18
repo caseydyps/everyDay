@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components/macro';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 // import AvatarCreator from './Avatar';
 // import { handleLoadAvatar } from './Avatar';
 import { db } from '../../config/firebase.config';

@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect, ChangeEvent } from 'react';
 // import Timeline from './Timeline';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';

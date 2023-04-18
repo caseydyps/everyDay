@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import axios from 'axios';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 
 const Wrapper = styled.div`
   width: 80vw;

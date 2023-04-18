@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-import Sidebar from '../../../Components/SideBar/SideBar';
+import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import { getISOWeek } from 'date-fns';

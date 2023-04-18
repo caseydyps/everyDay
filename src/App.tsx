@@ -1,5 +1,6 @@
-import React from 'react';
+import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
+import { AuthContext } from './config/Context/authContext';
 import { createGlobalStyle } from 'styled-components';
 import './App.css';
 import Header from './Components/Header/Header';
@@ -10,7 +11,9 @@ import SmartInput from './pages/AI/SmartInput';
 import Suggestion from './pages/AI/Suggestion';
 import Settings from './pages/Family/FamilyForm';
 import styled from 'styled-components';
-import Sidebar from './Components/SideBar/SideBar';
+import Sidebar from './Components/Nav/Navbar';
+import { AuthContextProvider } from './config/Context/authContext';
+import { GlobalStyle } from './theme';
 
 const Content = styled.div`
   width: auto;
@@ -25,13 +28,22 @@ const Wrap = styled.div`
 `;
 
 function App() {
+  const { isLogin, user, loading, login, logout } = useContext(AuthContext);
+
   return (
-    <Wrap>
-      <Sidebar />
-      {/* <Header /> */}
-      <Outlet />
-      {/* <Footer /> */}
-    </Wrap>
+    <>
+      <GlobalStyle />
+      <AuthContextProvider>
+        <Sidebar
+          isLogin={isLogin}
+          user={user}
+          loading={loading}
+          logout={logout}
+          login={login}
+        />
+        <Outlet />
+      </AuthContextProvider>
+    </>
   );
 }
 

@@ -6,7 +6,7 @@ import CalendarMini from './Calendar/CalendarMini';
 import WhiteboardMini from './Whiteboard/WhiteboardMini';
 import Gallery from './Album/Gallery';
 import MilestoneMini from './MilestoneMini';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 import Navbar from '../../Components/Navbar/Navbar';
 import React from 'react';
 
@@ -37,19 +37,19 @@ const Block = styled.div`
 const Dashboard = () => {
   const [rows, setRows] = useState([
     {
-      id: 1,
-      color: '#BBDEFB',
-      components: [<WhiteboardMini />],
-    },
-    {
       id: 2,
       color: '#90CAF9',
       components: [<TodoMini />, <CalendarMini />, <Gallery />],
     },
     {
-      id: 3,
+      id: 1,
       color: '#64B5F6',
       components: [<MilestoneMini />],
+    },
+    {
+      id: 3,
+      color: '#BBDEFB',
+      components: [<WhiteboardMini />],
     },
   ]);
 

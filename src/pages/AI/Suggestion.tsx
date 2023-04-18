@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
@@ -225,7 +225,7 @@ const Suggestion = () => {
           {
             role: 'user',
             content: `${prompt}
-        請用幽默的口吻,依照資料庫回答使用者的問題:${inputValue}`,
+        請用幽默的口吻,依照資料庫回答使用者的問題:${inputValue},回答時請附上事件發生日期/時間`,
           },
         ],
         temperature: 0.5,

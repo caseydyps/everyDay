@@ -173,7 +173,7 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
           </tr>
 
           <tr>
-            <TableHeader></TableHeader>
+            <TableHeader>整天事件</TableHeader>
             {days.map((day, index) => (
               <TableData key={`${day}`}>
                 <EventList

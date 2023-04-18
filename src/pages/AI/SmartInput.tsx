@@ -1,7 +1,7 @@
 import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import axios from 'axios';
-import Sidebar from '../../Components/SideBar/SideBar';
+import Sidebar from '../../Components/Nav/Navbar';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';

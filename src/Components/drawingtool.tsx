@@ -21,15 +21,8 @@ import {
   where,
 } from 'firebase/firestore';
 const CanvasWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  margin: 0 auto;
-  max-width: 1200px;
-  overflow: hidden;
-
   canvas {
-    border: 1px solid #ccc;
+    border: 1px solid #;
     width: 100%;
     height: 100%;
   }
@@ -42,6 +35,10 @@ const ButtonWrap = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 800px;
+`;
+
+const Container = styled.div`
+  width: 100%;
 `;
 
 type StrokeData = {
@@ -226,7 +223,7 @@ const DrawingTool = () => {
       'strokes'
     );
 
-    const deleteDocumentsInBatch:any = async (
+    const deleteDocumentsInBatch: any = async (
       querySnapshot: QuerySnapshot<StrokeData>
     ) => {
       const batch = writeBatch(db);
@@ -247,7 +244,7 @@ const DrawingTool = () => {
 
         // Get the next batch of documents
         const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        const nextQuerySnapshot:any = await getDocs(
+        const nextQuerySnapshot: any = await getDocs(
           query(strokesCollectionRef, startAfter(lastVisible))
         );
         querySnapshot = nextQuerySnapshot;
@@ -330,10 +327,11 @@ const DrawingTool = () => {
         <button onClick={undoStroke}>Undo</button>
         <button onClick={clearCanvas}>Clear</button>
         {/* <button onClick={addStroke}>Save</button>
-        <button onClick={loadCanvas}>load</button> */}
+    <button onClick={loadCanvas}>load</button> */}
       </ButtonWrap>
       <div>{`Strokes: ${undoStack.length}`}</div>
-      <CanvasWrap>
+
+      <Container>
         <canvas
           id="canvas"
           ref={canvasRef}
@@ -341,7 +339,7 @@ const DrawingTool = () => {
           onMouseUp={endPaint}
           onMouseMove={paint}
         />
-      </CanvasWrap>
+      </Container>
     </>
   );
 };
