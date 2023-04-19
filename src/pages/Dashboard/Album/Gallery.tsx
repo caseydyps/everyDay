@@ -10,6 +10,7 @@ import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
+import Layout from '../../../Components/layout';
 import {
   collection,
   updateDoc,
@@ -343,7 +344,7 @@ function Gallery() {
   });
 
   return (
-    <>
+    <Layout>
       <div>
         <h3>Upload a Photo</h3>
         <input type="file" onChange={handleFileChange} multiple />
@@ -491,7 +492,7 @@ function Gallery() {
           </AlbumWrapper>
         ))}
       </GalleryWrapper>
-    </>
+    </Layout>
   );
 }
 

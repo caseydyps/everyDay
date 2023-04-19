@@ -50,7 +50,7 @@ function WelcomePage() {
       {user ? (
         <>
           {hasSetup ? (
-            <>
+            <Wrap>
               <WelcomeMessage>歡迎回家, {userName}</WelcomeMessage>
               <ColumnWrap>
                 <RowWrap>
@@ -75,7 +75,7 @@ function WelcomePage() {
                   ></AiInput>
                 </ColumnWrap>
               </ColumnWrap>
-            </>
+            </Wrap>
           ) : (
             <>
               <WelcomeMessage style={{ marginTop: '300px' }}>
@@ -124,7 +124,8 @@ const WelcomeMessage = styled.div`
   font-size: 5vw;
   font-weight: bold;
   color: white;
-  padding: 50px;
+  padding: 20vh;
+  flex: 1;
 `;
 
 export const GradientAnimation = keyframes`
@@ -142,7 +143,7 @@ export const GradientAnimation = keyframes`
 
 export const Container = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 50px);
   margin-top: 70px;
   background: linear-gradient(
     45deg,
@@ -180,6 +181,7 @@ const CircleButton = styled.div`
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
+  flex: 1;
 `;
 
 const RowWrap = styled.div`
@@ -187,6 +189,10 @@ const RowWrap = styled.div`
   flex-direction: row;
   text-align: center;
   margin: auto;
+`;
+
+const Wrap = styled.div`
+  flex-wrap: wrap;
 `;
 
 const Slogan = styled.h2`

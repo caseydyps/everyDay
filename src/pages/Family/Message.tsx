@@ -1,16 +1,24 @@
 import React from 'react';
 import { auth } from '../../config/firebase.config';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 
 const MessageBubble = styled.div<MessageBubbleProps>`
   display: flex;
   align-items: center;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  background-color: ${(props) => (props.isSent ? '#90CAF9' : '#e5e5ea')};
-  color: ${(props) => (props.isSent ? 'white' : 'black')};
   justify-content: ${(props) => (props.isSent ? 'flex-end' : 'flex-start')};
+  width: 50%;
+  height: 60px;
+  margin: 0 auto;
+  margin-bottom: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  background-color: ${(props) =>
+    props.isSent
+      ? '#90CAF9'
+      : 'linear-gradient(rgb(255, 143, 178) 0%, rgb(167, 151, 255) 50%, rgb(0, 229, 255) 100%)'};
+  color: ${(props) => (props.isSent ? 'white' : 'black')};
+  backdrop-filter: blur(8px);
 `;
 
 const SenderName = styled.p`
@@ -42,7 +50,13 @@ interface MessageType {
   text: string;
 }
 
-const MessageContainer = styled.div``;
+const MessageContainer = styled.div`
+  margin: 10 auto;
+  overflow: auto;
+  display: flex;
+  width: 100vw;
+  height: 100%;
+`;
 
 const Message: any = ({ message }: Props) => {
   const isSent = message.uid === auth.currentUser?.uid;
