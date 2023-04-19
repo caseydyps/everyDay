@@ -84,8 +84,14 @@ const Navbar = () => {
 };
 
 const NavbarWrapper = styled.div`
-  background-color: #9bb9de;
-  height: 100%;
+  background-color: #629dda;
+  height: 50px;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  padding: 10px;
+  position: fixed;
+  z-index: 3;
 `;
 
 const Nav = styled.div`
@@ -93,7 +99,8 @@ const Nav = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+
+  height: 100%;
 `;
 
 const Logo = styled(Link)`
@@ -144,19 +151,22 @@ const UserEmail = styled.div`
   margin: 10px;
 `;
 
-const AvatarContainer = styled.div``;
+const AvatarContainer = styled.div`
+  margin: 20px;
+  margin-top: 30px;
+`;
 
 export const NavLink = styled(Link)`
   display: block;
   color: #fff;
-  font-size: 1.5rem;
+  font-size: 16px;
   font-weight: bold;
   text-decoration: none;
-  padding: 1rem;
+  padding: 10px;
 
   &:hover {
-    background-color: #629dda;
-    transform: scale(1.2);
+    background-color: #9bb9de;
+    transform: scale(1.1);
   }
 
   &.active {
@@ -166,8 +176,8 @@ export const NavLink = styled(Link)`
 
 const PopoutMenu = styled.div`
   position: absolute;
-  top: 150px;
-  right: 0;
+  top: 90px;
+  right: 30px;
   background-color: #9bb9de;
 
   border-radius: 15px;

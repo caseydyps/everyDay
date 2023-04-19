@@ -23,6 +23,7 @@ import {
 } from 'firebase/firestore';
 import UserAuthData from '../../Components/Login/Auth';
 import checkIfUserExists from '../../Components/Login/Auth';
+import DefaultButton from '../../Components/Button/Button';
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -53,19 +54,17 @@ function WelcomePage() {
               <WelcomeMessage>歡迎回家, {userName}</WelcomeMessage>
               <ColumnWrap>
                 <RowWrap>
-                  <Wording style={{ fontSize: 72 }}>
-                    你可以: <br />
+                  <Wording>
+                    您可以: <br />
                   </Wording>
-                  <LinkButton to="/dashboard" style={{ fontSize: 60 }}>
-                    Straight to Dashboard
-                  </LinkButton>
+                  <LinkButton to="/dashboard">Straight to Dashboard</LinkButton>
                 </RowWrap>
                 <ColumnWrap>
                   <RowWrap>
-                    <Wording style={{ fontSize: 72 }}>
+                    <Wording>
                       或者, <br />
                     </Wording>
-                    <LinkButton to="/ai" style={{ fontSize: 60 }}>
+                    <LinkButton to="/ai">
                       Ask anything about your family!
                     </LinkButton>
                   </RowWrap>
@@ -122,9 +121,10 @@ function WelcomePage() {
 const WelcomeMessage = styled.div`
   text-align: center;
   margin: auto;
-  font-size: 108px;
+  font-size: 5vw;
   font-weight: bold;
   color: white;
+  padding: 50px;
 `;
 
 export const GradientAnimation = keyframes`
@@ -141,8 +141,9 @@ export const GradientAnimation = keyframes`
 `;
 
 export const Container = styled.div`
-  width: 100%;
+  width: 100vw;
   height: 100vh;
+  margin-top: 70px;
   background: linear-gradient(
     45deg,
     white,
@@ -152,8 +153,7 @@ export const Container = styled.div`
     #ff9f4d,
     #142850
   );
-  display: flex;
-  border-top: 4px solid white;
+
   flex-direction: column;
   justify-content: center;
   animation: ${GradientAnimation} 20s ease-in-out infinite;
@@ -161,9 +161,9 @@ export const Container = styled.div`
 `;
 
 const CircleButton = styled.div`
-  width: 700px;
-  height: 700px;
-  border-radius: 350px; /* half of width or height */
+  width: 500px;
+  height: 500px;
+  border-radius: 50%; /* half of width or height */
   background-color: white;
   display: flex;
   align-items: center;
@@ -193,7 +193,7 @@ const Slogan = styled.h2`
   color: white;
   background-color: #629dda;
   border-radius: 5px;
-  font-size: 48px;
+  font-size: 36px;
   font-weight: bold;
   text-align: center;
   padding: 5px;
@@ -234,24 +234,39 @@ const Wording = styled.div`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 32px;
+  font-size: 2vw;
   font-weight: bold;
   margin: auto;
 `;
 
 const AiInput = styled.input`
-  min-width: 800px;
-  height: 100px;
+  min-width: 500px;
+  height: 60px;
   margin: 50px auto;
-  padding: 10px;
+  padding: 5px;
   border: none;
   border-radius: 25px;
-  font-size: 48px;
+  font-size: 2.5vw;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   &:focus {
     outline: none;
     box-shadow: 0px 0px 5px #629dda;
   }
+`;
+
+const ConfirmButton = styled(DefaultButton)`
+  background-color: blue;
+  color: white;
+`;
+
+const CancelButton = styled(DefaultButton)`
+  background-color: white;
+  color: blue;
+`;
+
+const EditButton = styled(DefaultButton)`
+  background-color: gray;
+  color: white;
 `;
 
 const NavLink = styled(Link)``;

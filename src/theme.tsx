@@ -14,7 +14,7 @@ export const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
   body {
     font-family: 'Open Sans', sans-serif;
-    font-size: 32px;
+    font-size: 24px;
     font-weight: 400;
     font-weight: bold;
   }

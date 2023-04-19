@@ -22,11 +22,13 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/styled-components": "^5.1.26",
     "brew": "^0.0.8",
+    "canvas-confetti": "^1.6.0",
     "firebase": "^9.19.1",
     "moment": "^2.29.4",
     "openai": "^3.2.1",
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",
+    "react-color": "^2.19.3",
     "react-datepicker": "^4.11.0",
     "react-dom": "^18.2.0",
     "react-firebase-hooks": "^5.1.1",
@@ -68,6 +70,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-color": "^3.0.6",
     "@types/react-datepicker": "^4.10.0",
     "@types/uuid": "^9.0.1"
   }
