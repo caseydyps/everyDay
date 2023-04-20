@@ -23,7 +23,7 @@ const MessageBubble = styled.div<MessageBubbleProps>`
 
 const SenderName = styled.p`
   margin-top: -1.5rem;
-  color: #7a7a7a;
+  color: #142850;
   font-size: 0.8rem;
 `;
 
@@ -78,7 +78,7 @@ const Message: any = ({ message }: Props) => {
   return (
     <MessageContainer>
       <MessageBubble isSent={isSent}>
-        <SenderName>{message.name}</SenderName>
+        {isSent ? null : <SenderName>{message.name}</SenderName>}
         <p>{message.text}</p>
         {/* <p>{formatDate(date)}</p> */}
       </MessageBubble>

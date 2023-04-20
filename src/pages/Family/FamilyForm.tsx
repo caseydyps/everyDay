@@ -38,6 +38,12 @@ const FamilyMemberForm = () => {
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
+  
+  const handleFamilyConnect = async () => {
+    e.preventDefault();
+    
+  }
+  
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(members);
@@ -58,10 +64,19 @@ const FamilyMemberForm = () => {
       const batch = writeBatch(db);
       querySnapshot.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
+      const familyDocRef = doc(db, 'Family', familyId);
+      console.log(familyId);
+      const familyData = {
+        familyId: familyId,
+        familyMembers: members.map((member) => ({ userEmail: member.email })),
+        isSettingDone: true,
+      };
 
       // Save each member as a separate document in the users collection
       members.forEach(async (member) => {
         await setDoc(doc(usersRef, member.name), member);
+        await setDoc(familyDocRef, familyData);
+        console.log(member.email);
       });
 
       console.log('Members have been saved to Firestore!');

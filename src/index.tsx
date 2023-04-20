@@ -24,8 +24,7 @@ root.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}>
-        <Route index element={<Dashboard />} />
-        <Route path="welcome" element={<WelcomePage />} />
+        <Route index element={<WelcomePage />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="todo" element={<Todo />} />
         {/* <Route path="album" element={<Gallery />} /> */}
