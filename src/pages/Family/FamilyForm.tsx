@@ -38,12 +38,11 @@ const FamilyMemberForm = () => {
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
-  
+
   const handleFamilyConnect = async () => {
     e.preventDefault();
-    
-  }
-  
+  };
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(members);
@@ -80,6 +79,7 @@ const FamilyMemberForm = () => {
       });
 
       console.log('Members have been saved to Firestore!');
+      console.log(members);
       setFormSubmitted(true);
       setHasSetup(true);
     } catch (error) {

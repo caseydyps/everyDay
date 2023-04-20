@@ -4,12 +4,21 @@ import SendMessage from './SendMessage';
 import { db } from '../../config/firebase.config';
 import { query, collection, orderBy, onSnapshot } from 'firebase/firestore';
 import styled from 'styled-components';
-
+import { LoadButton } from '../../Components/Button/Button';
+import UserAuthData from '../../Components/Login/Auth';
 const ChatContainer = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 70vh;
   width: 85vw;
+  overflow: auto;
+`;
+const CenterWrap = styled.div`
+  display: flex;
+  justify-content: center; /* Center the child element horizontally */
+  align-items: center; /* Center the child element vertically */
+  height: auto;
+  flex-direction: column;
 `;
 
 const CopiedMessage = styled.div`
@@ -32,14 +41,83 @@ interface Message {
   id: string;
 }
 
+const ChatBottom = styled.span`
+  float: left;
+  clear: both;
+`;
+
+const ChatTop = styled.span`
+  float: left;
+  clear: both;
+`;
+
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [copiedMessage, setCopiedMessage] = useState(null);
+  const [stickyMessage, setStickyMessage] = useState(null);
   const scroll = useRef<HTMLDivElement>(null);
+  const scrollTop = useRef<HTMLDivElement>(null);
+  const firstMessageRef = useRef(null);
+  const [chatContainerTop, setChatContainerTop] = useState(false);
 
   useEffect(() => {
+    if (scroll.current) {
+      scroll.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
+
+  // const handleTopButtonClick = () => {
+  //   const chatContainer = document.getElementById('chat-container');
+  //   chatContainer.scrollTop = 0;
+  // };
+
+  const handleTopButtonClick = () => {
+    const chatTop = document.getElementById('chat-container');
+    const chatBottom = document.getElementById('chat-bottom');
+
+    if (chatContainerTop) {
+      // If the chat container is currently at the top, set it to the bottom position
+      scroll.current.scrollIntoView({ behavior: 'smooth' });
+      setChatContainerTop(false);
+    } else {
+      // If the chat container is currently at the bottom, set it to the top position
+      scrollTop.current.scrollIntoView({ behavior: 'smooth' });
+      setChatContainerTop(true);
+    }
+  };
+
+  const handleStickButtonClick = (message) => {
+    setStickyMessage({ ...message });
+    if (stickyMessage) {
+      setStickyMessage(null);
+    }
+  };
+
+  const handleUnstickButtonClick = () => {
+    console.log('Unstick button clicked! Sticky message:', stickyMessage);
+    setStickyMessage(null);
+  };
+
+  const messagesWithSticky = stickyMessage
+    ? [stickyMessage, ...messages.filter((m) => m.id !== stickyMessage.id)]
+    : messages;
+  console.log('Messages with sticky:', messagesWithSticky);
+
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+  } = UserAuthData();
+  useEffect(() => {
+    console.log(familyId);
+    if (!familyId) {
+      return;
+    }
     const q = query(
-      collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'messages'),
+      collection(db, 'Family', familyId, 'messages'),
       orderBy('timestamp')
     );
 
@@ -53,6 +131,7 @@ const Chat = () => {
           text: data.text,
           timestamp: data.timestamp,
           id: doc.id,
+          email: data.email,
         };
         messages.push(message);
       });
@@ -60,19 +139,73 @@ const Chat = () => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [familyId]);
 
   return (
-    <ChatContainer>
-      <main>
-        {messages.map((message) => (
-          <Message key={message.id} message={message} />
-        ))}
-      </main>
+    <ChatContainer id="chat-container">
+      <ChatTop ref={scrollTop} />
+      <TopButton onClick={handleTopButtonClick}>
+        {chatContainerTop ? 'Bottom' : 'Top'}
+      </TopButton>
+      {messagesWithSticky.map((message, index) => (
+        <div key={message.id}>
+          {/* {!stickyMessage ? (
+            <StickyButton onClick={() => handleStickButtonClick(message)}>
+              釘選
+            </StickyButton>
+          ) : index === 1 ? (
+            <CancelButton onClick={handleUnstickButtonClick}>X</CancelButton>
+          ) : null} */}
+          <Message
+            message={message}
+            ref={index === 0 ? firstMessageRef : null}
+          ></Message>
+        </div>
+      ))}
       <SendMessage scroll={scroll} />
-      <span ref={scroll}></span>
+      <ChatBottom id="chat-bottom" ref={scroll} />
     </ChatContainer>
   );
 };
+
+const TopButton = styled.button`
+  position: fixed;
+  z-index: 2;
+  top: 140px;
+  left: 50%;
+  margin-bottom: 10px;
+  transform: translateX(-50%);
+  transform-origin: center;
+  transition: transform 0.2s ease-out;
+
+  background-color: #fff5c9;
+  color: #2e46bb;
+
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  &:hover {
+    background-color: #2e46bb;
+    color: #fff5c9;
+  }
+`;
+
+const StickyButton = styled(LoadButton)`
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  font-size: 0.8rem;
+`;
+
+const CancelButton = styled(StickyButton)`
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  font-size: 0.8rem;
+  background-color: red;
+`;
 
 export default Chat;

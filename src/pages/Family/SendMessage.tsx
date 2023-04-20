@@ -2,18 +2,15 @@ import React, { useState } from 'react';
 import { auth, db } from '../../config/firebase.config';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import styled from 'styled-components';
-const style = {
-  form: `h-14 w-full max-w-[728px]  flex text-xl absolute bottom-0`,
-  input: `w-full text-xl p-3 bg-gray-900 text-white outline-none border-none`,
-  button: `w-[20%] bg-green-500`,
-};
-
+import UserAuthData from '../../Components/Login/Auth';
+import { DefaultButton } from '../../Components/Button/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 interface SendMessageProps {
   scroll: React.RefObject<HTMLDivElement>;
 }
 
 const Input = styled.input`
-  flex: 1;
   margin-right: 10px;
   padding: 10px;
   border: none;
@@ -26,8 +23,8 @@ const Button = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
-  background-color: #395dff;
-  color: white;
+  background-color: #fff5c9;
+  color: #2e46bb;
   font-size: 16px;
   cursor: pointer;
   outline: none;
@@ -35,6 +32,7 @@ const Button = styled.button`
 
   &:hover {
     background-color: #2e46bb;
+    color: white;
   }
 `;
 
@@ -49,7 +47,15 @@ const VoteButton = styled(Button)`
 
 const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
   const [input, setInput] = useState('');
-
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+  } = UserAuthData();
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input === '') {
@@ -57,9 +63,10 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
       return;
     }
     const { uid, displayName }: any = auth.currentUser;
-    await addDoc(collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'messages'), {
+    await addDoc(collection(db, 'Family', familyId, 'messages'), {
       text: input,
       name: displayName,
+      email: userEmail,
       uid,
       timestamp: serverTimestamp(),
     });
@@ -70,19 +77,26 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
   };
 
   return (
-    <form onSubmit={sendMessage} className={style.form}>
+    <Form onSubmit={sendMessage}>
       <Input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        className={style.input}
         type="text"
-        placeholder="Message"
+        placeholder="輸入訊息"
       />
-      <Button className={style.button} type="submit">
-        Send
+      <Button type="submit">
+        <FontAwesomeIcon type="submit" icon={faPaperPlane} />
       </Button>
-    </form>
+    </Form>
   );
 };
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 10px;
+`;
 
 export default SendMessage;

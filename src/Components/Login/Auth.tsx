@@ -46,7 +46,7 @@ const UserAuthData = () => {
           userEmail: userEmail,
         });
         const querySettingStatus = where('isSettingDone', '==', true);
-
+        const queryFamily = query(familyCollection, queryUser);
         // const familyDocSnapshot = await getDoc(queryUser);
 
         // if (familyDocSnapshot.exists()) {
@@ -56,6 +56,7 @@ const UserAuthData = () => {
         // } else {
         //   console.log(`No document found with ID ${familyId}`);
         // }
+
         try {
           const matchingDocs = await getDocs(
             query(familyCollection, queryUser)
@@ -66,10 +67,16 @@ const UserAuthData = () => {
             setFamilyId(doc.id);
             console.log(`Document data:`, doc.data());
           });
-
+          //get members
+          const querySnapshot = await getDocs(queryFamily);
+          const members = querySnapshot.docs[0];
+          console.log(members);
+          
           const familySettings = await getDocs(
             query(familyCollection, queryUser)
           );
+
+          const memberRefs = await getDocs(query(familyCollection, queryUser));
 
           familySettings.docs.forEach((doc) => {
             console.log(`Document ID: ${doc.id}`);

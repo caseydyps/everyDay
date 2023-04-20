@@ -36,7 +36,7 @@ const Background = styled.div`
 
 const PageContainer = styled.div`
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   margin: 0 auto;
 `;
 
