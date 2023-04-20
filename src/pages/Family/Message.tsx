@@ -160,7 +160,7 @@ const Message: any = ({ message }: Props) => {
 
 const MessageContainer = styled.div`
   margin: 10 auto;
-  overflow: auto;
+  // overflow: auto;
   display: flex;
   justify-content: center; // Center the container horizontally
   align-items: center; // Center the container vertically

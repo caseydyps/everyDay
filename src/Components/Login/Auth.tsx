@@ -23,6 +23,8 @@ const UserAuthData = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [hasSetup, setHasSetup] = useState<boolean>(false);
   const [hasCreateFamily, setHasCreateFamily] = useState<boolean>(false);
+  const [membersArray, setMembersArray] = useState<string[]>([]);
+  const [memberRolesArray, setMemberRolesArray] = useState<string[]>([]);
   const [familyId, setFamilyId] = useState<string>('');
   useEffect(() => {
     async function checkIfUserExists() {
@@ -71,7 +73,7 @@ const UserAuthData = () => {
           const querySnapshot = await getDocs(queryFamily);
           const members = querySnapshot.docs[0];
           console.log(members);
-          
+
           const familySettings = await getDocs(
             query(familyCollection, queryUser)
           );
@@ -113,6 +115,25 @@ const UserAuthData = () => {
     checkIfUserExists();
   }, [userEmail]);
 
+  useEffect(() => {
+    const fetchMembers = async () => {
+      console.log(familyId);
+      const familyDocRef = collection(db, 'Family', familyId, 'members');
+      const membersData: any = await getDocs(familyDocRef)
+        .then((querySnapshot) =>
+          querySnapshot.docs.map((doc) => ({ ...doc.data() }))
+        )
+        .catch((error) =>
+          console.error('Error retrieving members data:', error)
+        );
+      console.log(membersData);
+      const memberRoles = membersData.map((member) => member.role);
+      setMembersArray(membersData);
+      setMemberRolesArray(memberRoles);
+    };
+    fetchMembers();
+  }, [familyId]);
+
   const handleFamilyCreate = async (
     userName: string,
     userEmail: string,
@@ -148,6 +169,8 @@ const UserAuthData = () => {
     familyId,
     handleFamilyCreate,
     setHasSetup,
+    membersArray,
+    memberRolesArray,
   };
 };
 

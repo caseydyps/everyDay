@@ -15,7 +15,7 @@ export const GradientAnimation = keyframes`
 
 const Background = styled.div`
   width: 100vw;
-  margin-top: 70px;
+  margin-top: 0px;
   height: auto;
   background: linear-gradient(
     -45deg,

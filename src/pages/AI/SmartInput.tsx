@@ -1,11 +1,18 @@
 import styled from 'styled-components/macro';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/Nav/Navbar';
 import { v4 as uuidv4 } from 'uuid';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import UserAuthData from '../../Components/Login/Auth';
+
+import {
+  DefaultButton,
+  CancelButton,
+  CloseButton,
+} from '../../Components/Button/Button';
 import {
   collection,
   updateDoc,
@@ -18,10 +25,10 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+
 const Wrapper = styled.div`
-  width: 80vw;
-  height: autp;
-  border: 2px solid black;
+  max-width: 800px;
+  margin: 0 auto;
 `;
 const Container = styled.div`
   width: 100vw;
@@ -33,6 +40,14 @@ const HastagWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+`;
+
+const CategoryWrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center; /* centers child elements along the horizontal axis */
+  align-items: center;
 `;
 
 const Button = styled.button`
@@ -47,18 +62,29 @@ const InputForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
+  margin-top: 20px;
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 const InputLabel = styled.label`
-  margin-bottom: 0.5rem;
+  margin-bottom: 10px;
+  font-size: 16px;
 `;
 
 const InputField = styled.input`
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 2px solid #ccc;
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
   border-radius: 4px;
+  font-size: 16px;
   width: 100%;
 `;
 
@@ -78,12 +104,11 @@ const SubmitButton = styled.button`
 `;
 
 const ResponseDisplay = styled.div`
-  background-color: #f2f2f2;
   border-radius: 4px;
   padding: 1rem;
 `;
 
-const CategoryButton = styled.button<{ active?: boolean }>`
+const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
   font-size: 18px;
   padding: 10px;
   margin: 0 10px;
@@ -98,7 +123,7 @@ const CategoryButton = styled.button<{ active?: boolean }>`
   ${(props) =>
     props.active &&
     `
-    background-color: #007aff;
+    background-color: #3467a1;
     color: #fff;
   `}
 `;
@@ -110,6 +135,42 @@ const CategorySelectorContainer = styled.div`
   margin-bottom: 20px;
 `;
 
+const Text = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+`;
+
+const Card = styled.div`
+  width: 700px;
+
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 36px;
+  background-color: #transparent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+  p {
+    margin: 0 0 10px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 50%;
+  }
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -119,7 +180,7 @@ const config = new Configuration({
 });
 
 const openai = new OpenAIApi(config);
-
+//const [membersArray, setMembersArray] = useState<string[]>([]);
 interface CategorySelectorProps {
   onSelect: (category: string) => void;
 }
@@ -159,66 +220,82 @@ interface MembersSelectorProps {
   onSelectMember: (selectedMembers: string[]) => void;
   selectedMembers?: string[];
 }
-const members = ['Daddy', 'Mom', 'Baby'];
-const MembersSelector = ({
-  selectedMembers = ['Daddy', 'Mom', 'Baby'],
-  onSelectMember,
-}: MembersSelectorProps) => {
-  console.log(selectedMembers);
 
-  const handleSelectMember = (member: string) => {
-    if (selectedMembers.includes(member)) {
-      onSelectMember(selectedMembers.filter((m) => m !== member));
-    } else {
-      onSelectMember([...selectedMembers, member]);
-    }
+//console.log(formatDate(date));
+
+const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
+  const [selectedMember, setSelectedMember] = useState<string>('');
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
+  console.log(memberRolesArray);
+
+  console.log(selectedMember);
+  const onMemberSelect = (member: string) => {
+    event.preventDefault();
+    setSelectedMember(member);
+    onSelectMember(member);
   };
+  console.log(memberRolesArray);
+  console.log(selectedMember);
 
   return (
-    <div>
-      {members.map((member) => (
-        <button
+    <CategoryWrap>
+      {memberRolesArray.map((member) => (
+        <DefaultButton
           key={member}
           style={{
-            background: selectedMembers.includes(member) ? 'blue' : 'grey',
+            background: selectedMember === member ? '#3467a1' : '#B7CCE2',
             color: 'white',
             padding: '5px 10px',
             margin: '5px',
             borderRadius: '5px',
             cursor: 'pointer',
           }}
-          onClick={() => handleSelectMember(member)}
+          onClick={() => onMemberSelect(member)}
         >
           {member}
-        </button>
+        </DefaultButton>
       ))}
-    </div>
+    </CategoryWrap>
   );
 };
 
 const SmartInput = () => {
   const [inputValue, setInputValue] = useState('');
+  const [member, setMember] = useState<string>('');
   const [responseValue, setResponseValue] = useState('');
   const [category, setCategory] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
-  const [selectedMembers, setSelectedMembers] = useState([
-    'Daddy',
-    'Mom',
-    'Baby',
-  ]);
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
+  const [selectedMembers, setSelectedMembers] = useState(memberRolesArray);
   const handleCategorySelect = (category: string) => {
+    event.preventDefault();
     setCategory(category);
   };
 
-  const handleSelectMember = (
-    selectedMembers: string[],
-    member: string,
-    memberIndex: number
-  ) => {
-    const updatedSelectedMembers = selectedMembers.includes(member)
-      ? selectedMembers.filter((m) => m !== member)
-      : [...selectedMembers, member];
-    setSelectedMembers(updatedSelectedMembers);
+  const handleSelectMember = (member: string) => {
+    event.preventDefault();
+
+    setMember(member);
   };
 
   const handleClick = (category: string) => {
@@ -250,8 +327,8 @@ const SmartInput = () => {
         "endDate": "結束日期 (YYYY-MM-DD)",
         "time": "開始時間 (HH:MM)",
         "endTime": "結束時間 (HH:MM)",
-        "member": ${selectedMembers},
-        "event": ${category},
+        "member": ${member},
+        "type": ${category},
         "response": "${categoryFeedback} 回應訊息"
       }
     `;
@@ -276,9 +353,9 @@ const SmartInput = () => {
   
   {
     "text": "任務描述",
-    "event": ${category},
+    "type": ${category},
     "due": "截止時間 (YYYY-MM-DD)",
-    "member": ${selectedMembers},
+    "member": ${member},
     "done": false,
     "response": "完成任務後，請不要忘記將其標記為完成。回應訊息"
   }
@@ -331,9 +408,9 @@ const SmartInput = () => {
     
     {
       "title": "里程碑描述",
-      "event": ${category},
+      "type": ${category},
       "date": "里程碑日期（YYYY-MM-DD）",
-      "member": ${selectedMembers},
+      "member": ${member},
       "image": "里程碑圖片",
       "response": "恭喜您達成里程碑！回應信息"
     }
@@ -350,11 +427,13 @@ const SmartInput = () => {
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    event.preventDefault();
     setInputValue(event.target.value);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     await runPrompt();
   };
 
@@ -363,17 +442,14 @@ const SmartInput = () => {
   const handleNewEventSubmit: HandleNewEventSubmit = async (responseValue) => {
     console.log(category);
     console.log(responseValue);
+    alert(JSON.parse(responseValue).response);
+    setInputValue('');
 
     if (category === '#Calendar') {
       console.log('calendar');
 
       const postEventToFirestore = async (data: EventData) => {
-        const familyDocRef = collection(
-          db,
-          'Family',
-          'Nkl0MgxpE9B1ieOsOoJ9',
-          'Calendar'
-        );
+        const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
         try {
           const docRef = await addDoc(familyDocRef, data);
           console.log('Document written with ID: ', docRef.id);
@@ -405,13 +481,7 @@ const SmartInput = () => {
         done: false,
       };
       const postEventToFirestore = async (data: EventData) => {
-        const todoRef = doc(
-          db,
-          'Family',
-          'Nkl0MgxpE9B1ieOsOoJ9',
-          'todo',
-          'todo'
-        );
+        const todoRef = doc(db, 'Family', familyId, 'todo', 'todo');
         try {
           // Get the existing items array from the todo document
           console.log('here');
@@ -443,12 +513,7 @@ const SmartInput = () => {
       };
 
       try {
-        const eventsRef = collection(
-          db,
-          'Family',
-          'Nkl0MgxpE9B1ieOsOoJ9',
-          'Milestone'
-        );
+        const eventsRef = collection(db, 'Family', familyId, 'Milestone');
         await addDoc(eventsRef, newEvent);
         console.log('New event has been added to Firestore!');
       } catch (error) {
@@ -485,42 +550,64 @@ const SmartInput = () => {
         image: string | null;
       };
 
-  return (
-    <Container>
-      <Wrapper>
-        <CategorySelector onSelect={handleCategorySelect} />
-        <MembersSelector
-          onSelectMember={(selectedMembers: string[]) =>
-            handleSelectMember(
-              selectedMembers,
-              selectedMembers[0],
-              selectedMembers.indexOf(selectedMembers[0])
-            )
-          }
-          selectedMembers={selectedMembers.map(String)}
-        />
+  const ResponseDisplay = ({ children }: ResponseDisplayProps) => {
+    console.log(responseValue);
+    const parsedResponse = JSON.parse(responseValue);
+    let sentence = '';
+    if (parsedResponse) {
+      if (category === '#Calendar') {
+        sentence = `${parsedResponse.type} "${parsedResponse.title}" on ${parsedResponse.date} from ${parsedResponse.time} to ${parsedResponse.endTime}, member:${parsedResponse.member}.`;
+        console.log(sentence);
+      }
+      if (category === '#Todo') {
+        sentence = `${parsedResponse.type} "${parsedResponse.text}" due ${parsedResponse.due} , member:${parsedResponse.member}.`;
+        console.log(sentence);
+      }
+      if (category === '#Milestone') {
+        sentence = `${parsedResponse.type} "${parsedResponse.title}" on ${parsedResponse.date}, member:${parsedResponse.member}.`;
+        console.log(sentence);
+      }
+    }
 
+    return (
+      <Wrap>
+        {children}
+        {sentence && <Text>{sentence}</Text>}
+        <DefaultButton onClick={() => handleNewEventSubmit(responseValue)}>
+          add this event?
+        </DefaultButton>
+      </Wrap>
+    );
+  };
+
+  const handleRedo = () => {
+    setInputValue(''); // reset input value
+    setResponseValue(''); // reset response value
+    setSelectedMembers([]); // reset selected members
+    setSelectedCategory(''); // reset selected category
+  };
+
+  return (
+    <Wrapper>
+      <Card>
+        <CategorySelector onSelect={handleCategorySelect} />
+        <MembersSelector onSelectMember={handleSelectMember} />
         <InputForm onSubmit={handleSubmit}>
-          <InputLabel>
-            Input:
-            <InputField
-              type="text"
-              value={inputValue}
-              onChange={handleInputChange}
-            />
-          </InputLabel>
-          <SubmitButton type="submit">Submit</SubmitButton>
+          <InputField
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            placeholder="輸入事件, 例如: 今天晚上九點要去看電影"
+          />
+
+          <DefaultButton type="submit">Submit</DefaultButton>
         </InputForm>
-        {responseValue && (
-          <ResponseDisplay>
-            <p>Response:</p>
-            <p>{responseValue}</p>
-            <button onClick={() => handleNewEventSubmit(responseValue)}>
-              {' '}
-              add this event?
-            </button>
-          </ResponseDisplay>
-        )}
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+            重新
+          </DefaultButton>
+        </div>
+        {responseValue && <ResponseDisplay></ResponseDisplay>}
 
         {/* <iframe
           allow="microphone;"
@@ -528,8 +615,8 @@ const SmartInput = () => {
           height="1000"
           src="https://console.dialogflow.com/api-client/demo/embedded/ffb168b2-33cb-451d-9a1b-fe91dc74bd4e"
         ></iframe> */}
-      </Wrapper>
-    </Container>
+      </Card>
+    </Wrapper>
   );
 };
 

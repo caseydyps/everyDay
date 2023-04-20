@@ -12,6 +12,7 @@ const ChatContainer = styled.div`
   height: 70vh;
   width: 85vw;
   overflow: auto;
+  margin-top: 70px;
 `;
 const CenterWrap = styled.div`
   display: flex;
@@ -178,18 +179,18 @@ const TopButton = styled.button`
   transform-origin: center;
   transition: transform 0.2s ease-out;
 
-  background-color: #fff5c9;
-  color: #2e46bb;
+  background-color: transparent;
+  color: #3467a1;
 
   padding: 10px;
-  border: none;
+  border: 1px solid #3467a1;
   border-radius: 5px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   &:hover {
-    background-color: #2e46bb;
-    color: #fff5c9;
+    background-color: #3467a1;
+    color: white;
   }
 `;
 

@@ -10,8 +10,9 @@ const CenterWrapper = styled.div`
   display: flex;
   justify-content: center; /* Center the child element horizontally */
   align-items: center; /* Center the child element vertically */
-
+  margin-top: 70px;
   flex-direction: column;
+  height: 100vh;
 `;
 
 function ChatApp() {
@@ -23,7 +24,6 @@ function ChatApp() {
         {/* Navbar */}
         <Navbar />
         {user ? <Chat /> : null}
-        <SmartInput />
       </CenterWrapper>
     </Layout>
   );
