@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useCallback } from 'react';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import GoogleButton from 'react-google-button';
 import { auth } from '../../config/firebase.config';
 import {
@@ -43,7 +43,7 @@ const SignIn = () => {
 
 export default SignIn;
 
-export const AuthContextProvider = ({ children }) => {
+export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);

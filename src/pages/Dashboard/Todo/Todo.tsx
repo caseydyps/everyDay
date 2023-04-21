@@ -5,6 +5,9 @@ import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import Layout from '../../../Components/layout';
+import DefaultButton from '../../../Components/Button/Button';
+import UserAuthData from '../../../Components/Login/Auth';
 import {
   collection,
   updateDoc,
@@ -13,29 +16,50 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+} from '@fortawesome/free-solid-svg-icons';
+
 const Wrapper = styled.div`
-  width: 80vw;
-  height: auto;
-  border: 2px solid black;
+  width: 100%;
+
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  height: 80px;
 `;
 
 const Container = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 70px;
+  width: 100vw;
 `;
 
-const AddListButton: any = styled.button`
+const AddListButton: any = styled(DefaultButton)`
   padding: 10px;
-  border-radius: 5px;
-  border: none;
-  background-color: #4caf50;
-  color: white;
-  font-size: 16px;
-  margin: 10px;
+  margin-right: 20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: rgba(255, 245, 201, 0.8);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 `;
 
 const Input = styled.input`
@@ -213,8 +237,6 @@ type TodoAction =
 
 export const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
-    case 'ADD_LIST':
-      return [...state, { title: action.payload, items: [] }];
     case 'ADD_ITEM':
       const newItem = {
         text: action.payload.text,
@@ -251,25 +273,52 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
       return action.payload; // update state with todosData
     default:
       return state;
+    case 'ADD_LIST':
+      return [...state, { title: action.payload, items: [] }];
   }
 };
 const getTodosData = async () => {
-  const familyDocRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'todo');
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
+  console.log(familyId);
+  const familyDocRef = collection(db, 'Family', familyId, 'todo');
   const querySnapshot = await getDocs(familyDocRef);
   const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+  console.log(todosData);
   return todosData;
 };
 
 const Todo = () => {
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);
-  useEffect(() => {
-    localStorage.setItem('List', JSON.stringify(data));
-  }, [data]);
+  // useEffect(() => {
+  //   localStorage.setItem('List', JSON.stringify(data));
+  // }, [data]);
 
   const addList = (dispatch: Dispatch<ActionType>) => {
-    const title = prompt('Enter list title');
+    const title = prompt('輸入新清單名稱');
+    console.log(data);
     title && dispatch({ type: 'ADD_LIST', payload: title });
   };
 
@@ -290,15 +339,23 @@ const Todo = () => {
 
   useEffect(() => {
     const fetchTodosData = async (dispatch: Dispatch<ActionType>) => {
-      const todosData = await getTodosData();
+      console.log(familyId);
+      const passId = familyId;
+      const familyDocRef = collection(db, 'Family', familyId, 'todo');
+      const querySnapshot = await getDocs(familyDocRef);
+      const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+      console.log(todosData);
+      // const todosData = await getTodosData();
+
       dispatch({ type: 'SET_DATA', payload: todosData }); // update data state with todosData
     };
     fetchTodosData(dispatch);
-  }, []);
+  }, [familyId]);
 
   useEffect(() => {
-    const familyDocRef = doc(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9');
     async function updateData() {
+      console.log(familyId);
+      const familyDocRef = doc(db, 'Family', familyId);
       try {
         await updateDoc(familyDocRef, { todo: data });
         console.log('Data has been updated in Firestore!');
@@ -308,20 +365,26 @@ const Todo = () => {
     }
 
     updateData();
-  }, [data]);
+  }, [data, familyId]);
 
   return (
-    <Container>
-      <Wrapper>
-        <AddListButton onClick={addList}>Add New List</AddListButton>
-        <DragNDrop
-          data={data}
-          onItemAdd={addItem}
-          selectedItemIndex={selectedItemIndex}
-          setSelectedItemIndex={setSelectedItemIndex}
-        />
-      </Wrapper>
-    </Container>
+    <Layout>
+      <Container>
+        <Wrapper>
+          <Wrap>
+            <AddListButton onClick={() => addList(dispatch)}>
+              <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>
+            </AddListButton>
+          </Wrap>
+          <DragNDrop
+            data={data}
+            onItemAdd={addItem}
+            selectedItemIndex={selectedItemIndex}
+            setSelectedItemIndex={setSelectedItemIndex}
+          />
+        </Wrapper>
+      </Container>
+    </Layout>
   );
 };
 

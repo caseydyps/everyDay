@@ -24,7 +24,7 @@ import {
 import UserAuthData from '../../Components/Login/Auth';
 import checkIfUserExists from '../../Components/Login/Auth';
 import DefaultButton from '../../Components/Button/Button';
-
+import LoadingAnimation from '../../Components/loading';
 const { v4: uuidv4 } = require('uuid');
 
 function WelcomePage() {
@@ -78,6 +78,7 @@ function WelcomePage() {
             </Wrap>
           ) : (
             <>
+              <LoadingAnimation />
               <WelcomeMessage style={{ marginTop: '300px' }}>
                 您似乎還未完成家庭成員設定, 請點選下方進行設定
               </WelcomeMessage>
@@ -103,6 +104,7 @@ function WelcomePage() {
           <WelcomeMessage>Welcome, how's your day?</WelcomeMessage>
         </>
       )}
+
       {!user && (
         <CircleButton>
           <ColumnWrap>
@@ -114,6 +116,7 @@ function WelcomePage() {
           </ColumnWrap>
         </CircleButton>
       )}
+      <LoadingAnimation />
     </Container>
   );
 }

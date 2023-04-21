@@ -127,12 +127,15 @@ const UserAuthData = () => {
           console.error('Error retrieving members data:', error)
         );
       console.log(membersData);
-      const memberRoles = membersData.map((member) => member.role);
+      type Member = typeof membersData[number];
+      const memberRoles = membersData.map((member: Member) => member.role);
       setMembersArray(membersData);
       setMemberRolesArray(memberRoles);
     };
     fetchMembers();
   }, [familyId]);
+
+ 
 
   const handleFamilyCreate = async (
     userName: string,

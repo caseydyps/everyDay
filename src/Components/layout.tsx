@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components';
-
+import { ReactNode } from 'react';
 export const GradientAnimation = keyframes`
   0% {
     background-position: 0% 50%;
@@ -40,7 +40,7 @@ const PageContainer = styled.div`
   margin: 0 auto;
 `;
 
-const Layout = ({ children }) => {
+const Layout = ({ children }: { children: ReactNode }) => {
   return (
     <Background>
       <PageContainer>{children}</PageContainer>

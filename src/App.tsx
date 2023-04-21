@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { AuthContext } from './config/Context/authContext';
 import { createGlobalStyle } from 'styled-components';
 import './App.css';
-import Header from './Components/Header/Header';
+
 import Footer from './Components/Footer/Footer';
 import Dashboard from './pages/Dashboard/Dashboard';
 import Whiteboard from './pages/Dashboard/Whiteboard/Whiteboard';
@@ -14,6 +14,7 @@ import styled from 'styled-components';
 import Sidebar from './Components/Nav/Navbar';
 import { AuthContextProvider } from './config/Context/authContext';
 import { GlobalStyle } from './theme';
+import Layout from './Components/layout';
 
 const Content = styled.div`
   width: auto;

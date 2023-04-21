@@ -5,13 +5,15 @@ import React, {
   useEffect,
   useReducer,
 } from 'react';
-
+import UserAuthData from '../../../Components/Login/Auth';
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
 import { todoReducer } from './Todo';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { MembersSelector } from '../../AI/SmartInput';
+import { Card } from '../../../Components/Button/Button';
 import {
   collection,
   updateDoc,
@@ -26,31 +28,65 @@ import {
   where,
   arrayUnion,
 } from 'firebase/firestore';
-// import { Item } from 'firebase/analytics';
 
+import DefaultButton from '../../../Components/Button/Button';
+import { Container } from '../../Family/FamilyForm';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faArrowDownWideShort,
+  faArrowDownShortWide,
+  faPerson,
+  faCalendarDays,
+  faUsers,
+  faP,
+  faPencil,
+  faCalendar,
+  faCheck,
+} from '@fortawesome/free-solid-svg-icons';
 const DragNDropWrapper = styled.div`
+  display: flex;
+  // justify-content: space-between;
+  margin: 20px;
+  flex:direction: column;
+  overflow-x: scroll;
+  height: 100%;
+`;
+
+const Button = styled(DefaultButton)`
   display: flex;
   // justify-content: space-between;
   margin: 20px;
   flex:direction: column;
 `;
 
-const DeleteListButton = styled.button`
+const RowButton = styled(DefaultButton)`
   display: flex;
-  // justify-content: space-between;
-  margin: 20px;
+  justify-content: space-between;
+  margin: 0px;
   flex:direction: column;
+  width:20px;
+  height:20px;
+  background-color: transparent;
 `;
 
 const DragNDropGroup: any = styled.div`
   display: flex;
   flex-direction: column;
   width: 80%;
+  height: auto;
   padding: 10px;
   margin: 20px;
-  background-color: #f4f4f4;
+  background-color: transparent;
+
   border-radius: 5px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.01);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
 
 type DragNDropItemProps = {
@@ -58,13 +94,13 @@ type DragNDropItemProps = {
   item: DataItem;
 };
 const DragNDropItem: any = styled.div<DragNDropItemProps>`
-  padding: 40px;
-  margin: 10px;
-  background-color: ${(props) => (props.isDragging ? '#c7d9ff' : '#fff')};
-  border: 2px solid ${(props) => (props.isDragging ? '#c7d9ff' : '#ccc')};
-  border-radius: 5px;
-  box-shadow: ${(props) =>
-    props.isDragging ? '0px 2px 5px rgba(0, 0, 0, 0.3)' : 'none'};
+  height: 80px;
+  padding: 5px;
+  margin: 25px;
+  background-color: grey;
+position: relative;
+  border-radius: 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3)
   cursor: move;
   display: flex;
   align-items: center;
@@ -99,7 +135,7 @@ const CheckContainer = styled.label`
   display: inline-block;
   width: 20px;
   height: 20px;
-  margin-right: 8px;
+  border-radius: 50%;
   position: relative;
   cursor: pointer;
 `;
@@ -112,9 +148,10 @@ const Checkmark = styled.div<CheckmarkProps>`
   width: 25px;
   height: 25px;
   margin-right: 10px;
+  color: ${(props) => (props.checked ? '#f6ecc9' : 'black')};
   border: 1px solid black;
-  border-radius: 3px;
-  background-color: ${(props) => (props.checked ? 'green' : 'white')};
+  border-radius: 50%; /* make the border circle-shaped */
+  background-color: ${(props) => (props.checked ? 'transparent' : '#f6ecc9')};
 
   &:after {
     content: '';
@@ -129,27 +166,63 @@ const Checkmark = styled.div<CheckmarkProps>`
   }
 `;
 
-const Checkbox = styled.input.attrs({ type: 'checkbox' })`
+const Checkbox = styled.div`
   position: absolute;
   opacity: 0;
   cursor: pointer;
   height: 0;
   width: 0;
+  border-radius: 50%;
 `;
 
 const Avatar = styled.img`
-  width: 100px;
-  height: 100px;
+  width: 50px;
+  height: 50px;
+  margin-right: 1rem;
+  flex-shrink: 0;
 `;
 
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: auto;
+  width: 100%;
 `;
 
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
+  position: absolute;
+  margin: 0 auto;
+  top: -15px;
+  z-index: 3;
+`;
+
+const ListRowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 auto;
+  margin-top: 10px;
+`;
+const AvatarRowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const ListInfoWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid black;
+  border-radius: 20px;
+  margin: 10px;
+  height: 50px;
 `;
 
 type DataItem = {
@@ -186,7 +259,17 @@ type DragNDropState = {
 function DragNDrop({ data }: any) {
   // const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
-
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(
@@ -260,6 +343,7 @@ function DragNDrop({ data }: any) {
   const [hideChecked, setHideChecked] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([]);
+  const [showMembersSelector, setShowMembersSelector] = useState(false);
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedDate(event.target.value);
   };
@@ -280,19 +364,19 @@ function DragNDrop({ data }: any) {
   ) => {
     const text = title;
     const dueDate = due ? due : null;
-    const memberAvatarSrc = member.avatarSrc;
-    if (text && memberAvatarSrc) {
+    console.log(title, due, member);
+    if (text && member) {
       const newItem = {
         text,
         due: dueDate,
-        member: memberAvatarSrc,
+        member: member,
         done: false,
       };
 
       const todoRef = doc(
         db,
         'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
+        familyId,
         'todo',
         list[groupIndex].title
       );
@@ -336,13 +420,7 @@ function DragNDrop({ data }: any) {
     title: string;
   };
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
-    const todoRef = doc(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'todo',
-      list[groupIndex].title
-    );
+    const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
     getDoc(todoRef)
       .then((doc) => {
@@ -389,13 +467,7 @@ function DragNDrop({ data }: any) {
 
     if (!value) return;
 
-    const todoRef = doc(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'todo',
-      list[groupIndex].title
-    );
+    const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
     try {
       // Get the existing items array from the todo document
@@ -429,6 +501,59 @@ function DragNDrop({ data }: any) {
     }
   };
 
+  const handleMemberChange: any = async (
+    member: string,
+    groupIndex: number,
+    itemIndex: number,
+    field: string
+  ) => {
+    const getMemberAvatar = (memberName) => {
+      const member = membersArray.find((m) => m.role === memberName);
+      return member ? member.avatar : null;
+    };
+
+    console.log(membersArray);
+    const memberAvatar = getMemberAvatar(member);
+    console.log(memberAvatar);
+
+    //const value = e.target.value;
+
+    // if (!value) return;
+
+    const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
+
+    try {
+      // Get the existing items array from the todo document
+      const todoDoc = await getDoc(todoRef);
+      const items = todoDoc.exists() ? todoDoc.data().items : [];
+
+      // Update the specific item in the items array
+      const updatedItems = [...items];
+      updatedItems[itemIndex][field] = memberAvatar;
+
+      // Update the items array in the todo document
+      await setDoc(todoRef, {
+        items: updatedItems,
+        title: list[groupIndex].title,
+      });
+      setList((oldList) => {
+        const newList = [...oldList];
+        const group = newList[groupIndex];
+        group.items = group.items.map((item, index) => {
+          if (index === itemIndex) {
+            return { ...item, [field]: memberAvatar };
+          } else {
+            return item;
+          }
+        });
+        return newList;
+      });
+      console.log('Item has been updated in Firestore!');
+    } catch (error) {
+      console.error('Error updating item in Firestore: ', error);
+    }
+  };
+
   const handleDoneChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     groupIndex: number,
@@ -449,7 +574,7 @@ function DragNDrop({ data }: any) {
       const todoRef = doc(
         db,
         'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
+        familyId,
         'todo',
         list[groupIndex].title
       );
@@ -486,7 +611,7 @@ function DragNDrop({ data }: any) {
         const todoRef = doc(
           db,
           'Family',
-          'Nkl0MgxpE9B1ieOsOoJ9',
+          familyId,
           'todo',
           list[listIndex].title
         );
@@ -574,214 +699,319 @@ function DragNDrop({ data }: any) {
       </div>
     );
   }
+  const [showAdd, setShowAdd] = useState(false);
+  const showAddSection = () => {
+    setShowAdd(!showAdd);
+  };
 
   if (list) {
     return (
-      <DragNDropWrapper>
-        <button
-          onClick={() => setHideChecked(!hideChecked)}
-          style={{
-            backgroundColor: 'blue',
-            color: 'white',
-            borderRadius: '5px',
-            padding: '5px 10px',
-            cursor: 'pointer',
-            height: '50px',
-          }}
-        >
-          {hideChecked ? 'Show Completed' : 'Hide Completed'}
-        </button>
-        {list.map((group, groupIndex) => (
-          <div>
-            <h3>{group.title}</h3>
-            <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
-            <h4>Total tasks: {getTotalTaskCount(group)}</h4>
-            <h4>
-              {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
-            </h4>
-            {getListProgress(group)}
-            <DeleteListButton onClick={() => deleteList(groupIndex)}>
-              Delete List
-            </DeleteListButton>
-            <button
-              onClick={() =>
-                setSortOrder(
-                  sortOrder === 'ascending' ? 'descending' : 'ascending'
-                )
-              }
-            >
-              Sort by due date
-            </button>
-            <DragNDropGroup
-              key={group.title}
-              onDragEnter={
-                dragging && !group.items.length
-                  ? (e: React.DragEvent) =>
-                      handleDragEnter(e, { groupIndex, itemIndex: 0 })
-                  : null
-              }
-            >
-              {group.items
-                .sort((a, b) => {
-                  const aDueDate = a.due ? new Date(a.due) : null;
-                  const bDueDate = b.due ? new Date(b.due) : null;
-                  if (!aDueDate && !bDueDate) return 0;
-                  if (!aDueDate) return sortOrder === 'ascending' ? 1 : -1;
-                  if (!bDueDate) return sortOrder === 'ascending' ? -1 : 1;
-                  if (sortOrder === 'ascending') {
-                    return aDueDate.getTime() - bDueDate.getTime();
-                  } else {
-                    return bDueDate.getTime() - aDueDate.getTime();
+      <ColumnWrap>
+        <HideButton onClick={() => setHideChecked(!hideChecked)}>
+          {hideChecked ? '顯示完成' : '隱藏完成'}
+        </HideButton>
+        <DragNDropWrapper>
+          {list.map((group, groupIndex) => (
+            <List>
+              <ListInfoWrap>
+                <h3>{group.title}</h3>
+                {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
+              <h4>Total tasks: {getTotalTaskCount(group)}</h4> */}
+                <h4>
+                  {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
+                </h4>
+              </ListInfoWrap>
+              {getListProgress(group)}
+              {showAdd ? (
+                <AddItemForm groupIndex={groupIndex} onAddItem={addItem} />
+              ) : null}
+              <ListRowWrap style={{ height: '80px', margin: '0px' }}>
+                <Button onClick={() => deleteList(groupIndex)}>
+                  <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
+                </Button>
+                <Button onClick={showAddSection}>Add</Button>
+                <Button
+                  onClick={() =>
+                    setSortOrder(
+                      sortOrder === 'ascending' ? 'descending' : 'ascending'
+                    )
                   }
-                })
-                .map((item, itemIndex: number) => {
-                  console.log('Due date:', item.due);
-                  console.log('Current date:', new Date());
-                  const dueDate = item.due ? new Date(item.due) : null; // convert date string to Date object
-                  const currentDate = new Date(); // get current date
-                  const formattedDueDate = dueDate
-                    ? new Date(
-                        dueDate.getFullYear(),
-                        dueDate.getMonth(),
-                        dueDate.getDate()
-                      )
-                    : null;
-                  const formattedCurrentDate = new Date(
-                    currentDate.getFullYear(),
-                    currentDate.getMonth(),
-                    currentDate.getDate()
-                  );
-                  const isOverdue = formattedDueDate
-                    ? formattedDueDate < formattedCurrentDate
-                    : false;
-                  const isToday = formattedDueDate === formattedCurrentDate;
-                  console.log(formattedDueDate);
-                  console.log(formattedCurrentDate);
-                  console.log('Is overdue:', isOverdue);
-                  console.log('Is today:', isToday);
-                  return (
-                    <DragNDropItem
-                      draggable
-                      key={item}
-                      onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
-                        handleDragStart(e, { groupIndex, itemIndex })
-                      }
-                      onDragEnter={
-                        dragging
-                          ? (e: React.DragEvent<HTMLDivElement>) =>
-                              handleDragEnter(e, { groupIndex, itemIndex })
-                          : null
-                      }
-                      style={{
-                        display: hideChecked && item.done ? 'none' : 'block',
-                        border:
-                          item.due === null
-                            ? '2px solid gray'
-                            : isOverdue
-                            ? '2px solid red'
-                            : 'none',
-                        backgroundColor:
-                          item.due === null
-                            ? 'lightgray'
-                            : isToday
-                            ? 'yellow'
-                            : 'transparent',
-                      }}
-                    >
-                      <ColumnWrap>
-                        <Avatar src={item.member} alt="Member Avatar"></Avatar>
-                        <RowWrap>
-                          <CheckContainer>
-                            <Checkbox
-                              checked={item.done}
-                              onChange={(e) =>
-                                handleDoneChange(e, groupIndex, itemIndex)
-                              }
-                            />
-                            <Checkmark checked={item.done}></Checkmark>
-                          </CheckContainer>
-                          <div
-                            style={{
-                              textDecoration: item.done
-                                ? 'line-through'
-                                : 'none',
-                            }}
-                          >
-                            {item.text}
-                          </div>
-
-                          <div>{item.due && `${item.due}`}</div>
-                        </RowWrap>
-                      </ColumnWrap>
-
-                      <ColumnWrap>
-                        <button
-                          onClick={() => deleteItem(groupIndex, itemIndex)}
-                        >
-                          Delete
-                        </button>
-                        <button
-                          onClick={() => {
-                            const newText = prompt('Enter new text');
-                            if (newText) {
-                              handleChange(
-                                { target: { value: newText } },
-                                groupIndex,
-                                itemIndex,
-                                'text'
-                              );
-                            }
+                >
+                  {sortOrder === 'ascending' ? (
+                    <FontAwesomeIcon icon={faArrowDownShortWide} />
+                  ) : (
+                    <FontAwesomeIcon icon={faArrowDownWideShort} />
+                  )}
+                </Button>
+              </ListRowWrap>
+              <DragNDropGroup
+                key={group.title}
+                onDragEnter={
+                  dragging && !group.items.length
+                    ? (e: React.DragEvent) =>
+                        handleDragEnter(e, { groupIndex, itemIndex: 0 })
+                    : null
+                }
+              >
+                {group.items
+                  .sort((a, b) => {
+                    const aDueDate = a.due ? new Date(a.due) : null;
+                    const bDueDate = b.due ? new Date(b.due) : null;
+                    if (!aDueDate && !bDueDate) return 0;
+                    if (!aDueDate) return sortOrder === 'ascending' ? 1 : -1;
+                    if (!bDueDate) return sortOrder === 'ascending' ? -1 : 1;
+                    if (sortOrder === 'ascending') {
+                      return aDueDate.getTime() - bDueDate.getTime();
+                    } else {
+                      return bDueDate.getTime() - aDueDate.getTime();
+                    }
+                  })
+                  .map((item, itemIndex: number) => {
+                    console.log('Due date:', item.due);
+                    console.log('Current date:', new Date());
+                    const dueDate = item.due ? new Date(item.due) : null; // convert date string to Date object
+                    const currentDate = new Date(); // get current date
+                    const formattedDueDate = dueDate
+                      ? new Date(
+                          dueDate.getFullYear(),
+                          dueDate.getMonth(),
+                          dueDate.getDate()
+                        )
+                      : null;
+                    const formattedCurrentDate = new Date(
+                      currentDate.getFullYear(),
+                      currentDate.getMonth(),
+                      currentDate.getDate()
+                    );
+                    const isOverdue = formattedDueDate
+                      ? formattedDueDate < formattedCurrentDate
+                      : false;
+                    const isToday = formattedDueDate === formattedCurrentDate;
+                    console.log(formattedDueDate);
+                    console.log(formattedCurrentDate);
+                    console.log('Is overdue:', isOverdue);
+                    console.log('Is today:', isToday);
+                    return (
+                      <>
+                        <DragNDropItem
+                          draggable
+                          key={item}
+                          onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
+                            handleDragStart(e, { groupIndex, itemIndex })
+                          }
+                          onDragEnter={
+                            dragging
+                              ? (e: React.DragEvent<HTMLDivElement>) =>
+                                  handleDragEnter(e, { groupIndex, itemIndex })
+                              : null
+                          }
+                          style={{
+                            display:
+                              hideChecked && item.done ? 'none' : 'block',
+                            backgroundColor: item.done
+                              ? 'rgba(128, 128, 128, 0.5)'
+                              : isOverdue
+                              ? 'rgba(235, 122, 83, 0.8)'
+                              : 'rgba(0, 0, 255, 0.2)',
                           }}
                         >
-                          Edit Task
-                        </button>
+                          <ColumnWrap>
+                            <AvatarRowWrap>
+                              <Avatar
+                                src={item.member}
+                                alt="Member Avatar"
+                              ></Avatar>
 
-                        <button
-                          onClick={() => {
-                            const newMember = prompt('Enter new member');
-                            if (newMember) {
-                              handleChange(
-                                { target: { value: newMember } },
+                              <CheckboxContainer>
+                                <CheckboxInput
+                                  type="checkbox"
+                                  id={`checkbox-${groupIndex}-${itemIndex}`}
+                                  checked={item.done}
+                                  onChange={(e) =>
+                                    handleDoneChange(e, groupIndex, itemIndex)
+                                  }
+                                />
+                              </CheckboxContainer>
+                            </AvatarRowWrap>
+
+                            <ColumnWrap>
+                              <Text
+                                style={{
+                                  textDecoration: item.done
+                                    ? 'line-through'
+                                    : 'none',
+                                }}
+                              >
+                                {item.text}
+                              </Text>
+
+                              <Text>{item.due && `${item.due}`}</Text>
+                            </ColumnWrap>
+                            <RowWrap>
+                              <RowButton
+                                onClick={() =>
+                                  deleteItem(groupIndex, itemIndex)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrashCan}
+                                ></FontAwesomeIcon>
+                              </RowButton>
+                              <RowButton
+                                onClick={() => {
+                                  const newText = prompt('更改事件');
+                                  if (newText) {
+                                    handleChange(
+                                      { target: { value: newText } },
+                                      groupIndex,
+                                      itemIndex,
+                                      'text'
+                                    );
+                                  }
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faPencil}
+                                ></FontAwesomeIcon>
+                              </RowButton>
+
+                              <RowButton
+                                onClick={() =>
+                                  setShowMembersSelector(!showMembersSelector)
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faUsers}
+                                ></FontAwesomeIcon>
+                              </RowButton>
+                              <RowButton
+                                onClick={() => {
+                                  const newDue = prompt('更改到期日期');
+                                  if (newDue) {
+                                    handleChange(
+                                      { target: { value: newDue } },
+                                      groupIndex,
+                                      itemIndex,
+                                      'due'
+                                    );
+                                  }
+                                }}
+                              >
+                                <FontAwesomeIcon
+                                  icon={faCalendarDays}
+                                ></FontAwesomeIcon>
+                              </RowButton>
+                            </RowWrap>
+                          </ColumnWrap>
+                        </DragNDropItem>
+                        {showMembersSelector && (
+                          <MembersSelector
+                            onSelectMember={(selectedMember) => {
+                              setShowMembersSelector(false);
+                              handleMemberChange(
+                                selectedMember,
                                 groupIndex,
                                 itemIndex,
                                 'member'
                               );
-                            }
-                          }}
-                        >
-                          Edit Member
-                        </button>
-                        <button
-                          onClick={() => {
-                            const newDue = prompt('Enter new due date');
-                            if (newDue) {
-                              handleChange(
-                                { target: { value: newDue } },
-                                groupIndex,
-                                itemIndex,
-                                'due'
-                              );
-                            }
-                          }}
-                        >
-                          Edit Due Date
-                        </button>
-                      </ColumnWrap>
-                    </DragNDropItem>
-                  );
-                })}
+                            }}
+                          />
+                        )}
+                      </>
+                    );
+                  })}
 
-              <AddItemForm groupIndex={groupIndex} onAddItem={addItem} />
-
-              {/* <button>My task only</button> */}
-            </DragNDropGroup>
-          </div>
-        ))}
-      </DragNDropWrapper>
+                {/* <button>My task only</button> */}
+              </DragNDropGroup>
+            </List>
+          ))}
+        </DragNDropWrapper>
+      </ColumnWrap>
     );
   } else {
     return null;
   }
 }
+
+const HideButton = styled(DefaultButton)`
+  height: auto;
+
+  margin-top: 10px;
+  max-width: 150px;
+`;
+
+const List = styled.div`
+  width: 300px;
+  background-color: transparent;
+
+  height: 100%;
+`;
+
+const Text = styled.div`
+  font-size: 16px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+`;
+
+const CheckboxContainer = styled.div`
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+`;
+
+const CheckboxInput = styled.input`
+  width: 2rem;
+  height: 2rem;
+  color: dodgerblue;
+  vertical-align: middle;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  outline: 0;
+  flex-grow: 0;
+  border-radius: 50%;
+  background-color: #ffffff;
+  transition: background 300ms;
+  cursor: pointer;
+
+  &:before {
+    content: '';
+    color: transparent;
+    display: block;
+    width: inherit;
+    height: inherit;
+    border-radius: inherit;
+    border: 0;
+    background-color: transparent;
+    background-size: contain;
+    box-shadow: inset 0 0 0 1px #ccd3d8;
+  }
+
+  &:checked {
+    background-color: lightgray;
+    &:before {
+      box-shadow: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E %3Cpath d='M15.88 8.29L10 14.17l-1.88-1.88a.996.996 0 1 0-1.41 1.41l2.59 2.59c.39.39 1.02.39 1.41 0L17.3 9.7a.996.996 0 0 0 0-1.41c-.39-.39-1.03-.39-1.42 0z' fill='%23fff'/%3E %3C/svg%3E");
+    }
+  }
+`;
+
+const CheckboxLabel = styled.label`
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #999;
+  border-radius: 50%;
+
+  &:after {
+    content: '';
+    display: none;
+    width: 12px;
+    height: 12px;
+    background-color: #333;
+    border-radius: 50%;
+    margin: 4px;
+  }
+`;
 
 export default DragNDrop;

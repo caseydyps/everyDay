@@ -58,7 +58,7 @@ const Button = styled.button`
   color: #555;
 `;
 
-const InputForm = styled.form`
+export const InputForm = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -92,7 +92,7 @@ const SubmitButton = styled.button`
   padding: 0.5rem;
   font-size: 1rem;
   background-color: #0077cc;
-  color: #fff;
+  color: black;
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -223,7 +223,7 @@ interface MembersSelectorProps {
 
 //console.log(formatDate(date));
 
-const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
+export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   const [selectedMember, setSelectedMember] = useState<string>('');
   const {
     user,
@@ -590,6 +590,15 @@ const SmartInput = () => {
   return (
     <Wrapper>
       <Card>
+        <p
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          智慧輸入
+        </p>
         <CategorySelector onSelect={handleCategorySelect} />
         <MembersSelector onSelectMember={handleSelectMember} />
         <InputForm onSubmit={handleSubmit}>

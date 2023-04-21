@@ -12,7 +12,7 @@ import Milestone from './pages/Dashboard/Milestone';
 import Calendar from './pages/Dashboard/Calendar/Calendar';
 import Financial from './pages/Dashboard/Financial';
 import FamilySetup from './pages/Family/FamilySetup';
-import SmartInput from './pages/AI/SmartInput';
+import AI from './pages/AI/AI';
 import Suggestion from './pages/AI/Suggestion';
 import WelcomePage from './pages/Login/Welcome';
 import Gallery from './pages/Dashboard/Album/Gallery';
@@ -34,7 +34,7 @@ root.render(
         <Route path="calendar" element={<Calendar />} />
         <Route path="financial" element={<Financial />} />
         <Route path="family" element={<FamilySetup />} />
-        <Route path="ai" element={<SmartInput />} />
+        <Route path="ai" element={<AI />} />
         <Route path="suggestion" element={<Suggestion />} />
         <Route path="chat" element={<ChatApp />} />
       </Route>

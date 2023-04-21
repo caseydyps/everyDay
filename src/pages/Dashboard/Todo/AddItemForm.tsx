@@ -1,7 +1,28 @@
 import React, { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-
+import { MembersSelector } from '../../AI/SmartInput';
+import UserAuthData from '../../../Components/Login/Auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import styled from 'styled-components';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faArrowDownWideShort,
+  faArrowDownShortWide,
+  faPerson,
+  faCalendarDays,
+  faUsers,
+  faP,
+  faPencil,
+  faCalendar,
+} from '@fortawesome/free-solid-svg-icons';
+import DefaultButton from '../../../Components/Button/Button';
 type FamilyMember = {
   name: string;
   role: string;
@@ -23,6 +44,7 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
   const [title, setTitle] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [selectedMember, setSelectedMember] = useState<number | null>(null);
+  const [showMembersSelector, setShowMembersSelector] = useState(false);
   const [dueDateNeeded, setDueDateNeeded] = useState(false);
   const family = [
     {
@@ -44,6 +66,17 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
         'https://api.dicebear.com/6.x/adventurer/svg?seed=Kid&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
     },
   ];
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
   }
@@ -52,18 +85,28 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
     setDueDate(date);
   }
 
-  function handleMemberChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const memberIndex = parseInt(event.target.value);
-    setSelectedMember(memberIndex);
+  function handleMemberChange(member: React.ChangeEvent<HTMLInputElement>) {
+    console.log(member);
+    const getMemberAvatar = (memberName) => {
+      const member = membersArray.find((m) => m.role === memberName);
+      return member ? member.avatar : null;
+    };
+
+    console.log(membersArray);
+    const memberAvatar = getMemberAvatar(member);
+    console.log(memberAvatar);
+    setSelectedMember(memberAvatar);
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (selectedMember !== null) {
-      const member = family[selectedMember];
+      ///const member = family[selectedMember];
       const due = dueDateNeeded ? dueDate.toLocaleDateString() : null;
       console.log('Title:', title);
       console.log('Due:', due);
+      console.log('SelectedMember:', selectedMember);
+      const member = selectedMember;
       onAddItem(groupIndex, { title, due, member });
       setTitle('');
       setDueDate(new Date());
@@ -80,48 +123,113 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
+    <Form onSubmit={handleSubmit}>
+      <Label>
         Title:
-        <input type="text" value={title} onChange={handleTitleChange} />
-      </label>
-      <br />
-      <label>
+        <TitleInput type="text" value={title} onChange={handleTitleChange} />
+      </Label>
+
+      <Label>
         <input
           type="checkbox"
           checked={dueDateNeeded}
           onChange={handleDueDateNeededChange}
         />
         Due date needed
-      </label>
+      </Label>
 
-      {dueDateNeeded ? (
-        <label>
+      {dueDateNeeded && (
+        <DueDateLabel>
           Due Date:
           <DatePicker selected={dueDate} onChange={handleDateChange} />
-        </label>
-      ) : null}
-      <br />
+        </DueDateLabel>
+      )}
 
-      <br />
-      <label>Members:</label>
-      <br />
-      {family.map((member, index) => (
-        <label key={index}>
-          <input
-            type="radio"
-            name="family-member"
-            value={index}
-            checked={selectedMember === index}
-            onChange={handleMemberChange}
-          />
-          {member.name}
-        </label>
-      ))}
-      <br />
-      <button type="submit">Add Item</button>
-    </form>
+      <MembersSelectorWrap>
+        {/* <Button onClick={() => setShowMembersSelector(!showMembersSelector)}>
+          Add member
+        </Button> */}
+        <MembersSelector
+          onSelectMember={(selectedMember) => {
+            setShowMembersSelector(false);
+            handleMemberChange(selectedMember);
+          }}
+        />
+      </MembersSelectorWrap>
+
+      <Button type="submit">Add Todo</Button>
+    </Form>
   );
 }
+
+const Button = styled(DefaultButton)`
+  display: flex;
+  // justify-content: space-between;
+  margin: 20px;
+  flex:direction: column;
+`;
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1rem;
+  justify-content: space-between;
+  label {
+    margin-top: 0.5rem;
+  }
+
+  input[type='text'],
+  input[type='checkbox'] {
+    margin-left: 0.5rem;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    border: 1px solid #ccc;
+  }
+
+  input[type='checkbox'] {
+    margin-left: 0;
+  }
+
+  input[type='submit'] {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    border: none;
+    background-color: dodgerblue;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  input[type='submit']:hover {
+    background-color: #4a90e2;
+  }
+`;
+
+const Label = styled.label`
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+`;
+
+const TitleInput = styled.input`
+  width: 100%;
+`;
+
+const DueDateLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-top: 0.5rem;
+`;
+
+const MembersSelectorWrap = styled.div`
+  position: relative;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+`;
 
 export default AddItemForm;

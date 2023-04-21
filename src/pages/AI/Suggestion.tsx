@@ -18,7 +18,8 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-
+import DefaultButton from '../../Components/Button/Button';
+import { InputForm } from './SmartInput';
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -251,59 +252,98 @@ const Suggestion = () => {
     runPrompt();
   };
 
+  const handleRedo = () => {
+    setInputValue(''); // reset input value
+    setResponseValue(''); // reset response value
+  };
+
   return (
     <Container>
-      <Wrapper>
+      <Card>
         <p
           style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#ed143d',
-            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
         >
-          Everyday AI
+          智慧建議
         </p>
-        <form onSubmit={handleSubmit}>
+        <InputForm onSubmit={handleSubmit}>
           <InputLabel>
-            Input:
             <Input
               type="text"
               value={inputValue}
               onChange={handleInputChange}
+              placeholder="請輸入智慧建議或隨意問問題, Ex:今天有什麼事?"
             />
           </InputLabel>
-          <SubmitButton type="submit">Submit</SubmitButton>
-        </form>
-        <Response>
-          <p>Response:</p>
-          <p>{responseValue}</p>
-        </Response>
-      </Wrapper>
+          <DefaultButton type="submit">Submit</DefaultButton>
+        </InputForm>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+            重新
+          </DefaultButton>
+        </div>
+        {responseValue && (
+          <Response>
+            <Text>{responseValue}</Text>
+          </Response>
+        )}
+      </Card>
     </Container>
   );
 };
+
+const Text = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+`;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100vw;
-  background-color: #242424;
+
+  background-color: transparent;
 `;
 
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+const Card = styled.div`
+  width: 700px;
+
   padding: 20px;
-  width: 1000px;
-  height: 100%;
   border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
-  background-color: #1d1d1d;
+  font-size: 36px;
+  background-color: #transparent;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+  p {
+    margin: 0 0 10px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 50%;
+  }
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const InputLabel = styled.label`
@@ -316,37 +356,13 @@ const InputLabel = styled.label`
 `;
 
 const Input = styled.input`
-  padding: 8px;
-  border-radius: 5px;
-  border: none;
-  margin-left: 10px;
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 16px;
-  font-family: 'Roboto', sans-serif;
-  background-color: #3c3c3c;
-  color: #fff;
-  width: 300px;
-
-  &:focus {
-    outline: none;
-    box-shadow: 0px 0px 5px #7f7f7f;
-  }
-`;
-
-const SubmitButton = styled.button`
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: none;
-  margin-top: 10px;
-  font-size: 16px;
-  font-weight: bold;
-  background-color: #ed143d;
-  color: #fff;
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-
-  &:hover {
-    background-color: #c90d31;
-  }
+  width: 600px;
+  background-color: #fff;
 `;
 
 const Response = styled.div`
@@ -359,4 +375,11 @@ const Response = styled.div`
   color: #fff;
 `;
 
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+`;
 export default Suggestion;

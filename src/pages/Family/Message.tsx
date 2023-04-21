@@ -83,6 +83,7 @@ interface MessageType {
   uid: string;
   name: string;
   text: string;
+  timestamp: Date;
 }
 
 const Message: any = ({ message }: Props) => {
@@ -100,7 +101,7 @@ const Message: any = ({ message }: Props) => {
   const date = message.timestamp && message.timestamp.toDate();
 
   const [members, setMembers] = useState<string[]>([]);
-  const formatDate = (date) => {
+  const formatDate = (date: Date) => {
     if (!date || !date.getMonth) {
       return '';
     }
