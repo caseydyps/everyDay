@@ -59,6 +59,8 @@ const DragNDropWrapper = styled.div`
   height: 100%;
 `;
 
+const colors = ['#F7D44C', '#EB7A53', '#98B7DB', '#A8D672', '#F6ECC9'];
+
 const Button = styled(DefaultButton)`
   display: flex;
   // justify-content: space-between;
@@ -215,14 +217,19 @@ const AvatarRowWrap = styled.div`
 `;
 
 const ListInfoWrap = styled.div`
+  background-color: ${(props) => colors[props.index % colors.length]};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid black;
-  border-radius: 20px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+  border-radius: 25px;
   margin: 10px;
+  padding: 10px;
+  font-weight: bold;
   height: 50px;
+  color: black;
+  text-shadow: 0px 0px 1px white;
 `;
 
 type DataItem = {
@@ -713,7 +720,7 @@ function DragNDrop({ data }: any) {
         <DragNDropWrapper>
           {list.map((group, groupIndex) => (
             <List>
-              <ListInfoWrap>
+              <ListInfoWrap index={groupIndex}>
                 <h3>{group.title}</h3>
                 {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
               <h4>Total tasks: {getTotalTaskCount(group)}</h4> */}
@@ -813,6 +820,7 @@ function DragNDrop({ data }: any) {
                               : isOverdue
                               ? 'rgba(235, 122, 83, 0.8)'
                               : 'rgba(0, 0, 255, 0.2)',
+                            color: item.done ? '#737373' : 'black',
                           }}
                         >
                           <ColumnWrap>

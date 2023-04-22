@@ -3,6 +3,7 @@ import styled from 'styled-components/macro';
 import { db } from '../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import DefaultButton from './Button/Button';
 import {
   collection,
   updateDoc,
@@ -20,6 +21,25 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faMagnifyingGlass,
+  faRotateLeft,
+  faEraser,
+  faPencil,
+  faCircle,
+  faPaintRoller,
+  faClockRotateLeft,
+  faBroom,
+  faPen,
+} from '@fortawesome/free-solid-svg-icons';
 const CanvasWrap = styled.div`
   canvas {
     border: 1px solid #;
@@ -38,7 +58,24 @@ const ButtonWrap = styled.div`
 `;
 
 const Container = styled.div`
-  width: 100%;
+  max-width: 100%;
+  height: 100%;
+`;
+
+const CanvasButton = styled(DefaultButton)`
+  border-radius: 50%;
+  background-color: ${({ color }) => color};
+  margin-top: 20px;
+  color: white;
+  margin-right: 5px;
+  margin-left: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+`;
+
+const CanvasContainer = styled.div`
+  max-width: 100%;
+  height: auto;
+  margin-top: 20px;
 `;
 
 type StrokeData = {
@@ -64,9 +101,9 @@ const DrawingTool = () => {
     if (!canvas) return;
 
     canvas.width = window.innerWidth * 2;
-    canvas.height = window.innerHeight * 2;
+    canvas.height = 600 * 2;
     canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${window.innerHeight}px`;
+    canvas.style.height = `${600}px`;
 
     const context = canvas.getContext('2d');
     if (!context) return;
@@ -314,33 +351,77 @@ const DrawingTool = () => {
     undoStack.pop();
   }
   return (
-    <>
+    <Container>
       <ButtonWrap>
-        <button onClick={() => handleChangeColor('black')}>Black</button>
-        <button onClick={() => handleChangeColor('red')}>Red</button>
-        <button onClick={() => handleChangeColor('green')}>Green</button>
-        <button onClick={() => handleChangeColor('blue')}>Blue</button>
-        <button onClick={() => handleChangeColor('white')}>Eraser</button>
-        <button onClick={() => handleChangeLineWidth(5)}>Default</button>
-        <button onClick={() => handleChangeLineWidth(1)}>Thin</button>
-        <button onClick={() => handleChangeLineWidth(30)}>Wide</button>
-        <button onClick={undoStroke}>Undo</button>
-        <button onClick={clearCanvas}>Clear</button>
+        <CanvasButton
+          color="black"
+          onClick={() => handleChangeColor('black')}
+        ></CanvasButton>
+        <CanvasButton
+          color="red"
+          onClick={() => handleChangeColor('red')}
+        ></CanvasButton>
+        <CanvasButton
+          color="green"
+          onClick={() => handleChangeColor('green')}
+        ></CanvasButton>
+        <CanvasButton
+          color="blue"
+          onClick={() => handleChangeColor('blue')}
+        ></CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeColor('white')}
+        >
+          <FontAwesomeIcon icon={faEraser} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(5)}
+        >
+          <FontAwesomeIcon icon={faPen} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(1)}
+        >
+          <FontAwesomeIcon icon={faPencil} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(30)}
+        >
+          <FontAwesomeIcon icon={faPaintRoller} />
+        </CanvasButton>
+        <CanvasButton color="transparent" onClick={undoStroke}>
+          <FontAwesomeIcon icon={faClockRotateLeft} />
+        </CanvasButton>
+        <CanvasButton color="transparent" onClick={clearCanvas}>
+          <FontAwesomeIcon icon={faBroom} />
+        </CanvasButton>
         {/* <button onClick={addStroke}>Save</button>
     <button onClick={loadCanvas}>load</button> */}
       </ButtonWrap>
-      <div>{`Strokes: ${undoStack.length}`}</div>
-
-      <Container>
+      {/* <div>{`Strokes: ${undoStack.length}`}</div> */}
+      <CanvasContainer>
         <canvas
           id="canvas"
           ref={canvasRef}
           onMouseDown={startPaint}
           onMouseUp={endPaint}
           onMouseMove={paint}
+          style={{
+            height: 'auto',
+            maxWidth: '95vw',
+            maxHeight: '600px',
+            border: '2px solid transparent',
+            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
+            borderRadius: '25px',
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          }}
         />
-      </Container>
-    </>
+      </CanvasContainer>
+    </Container>
   );
 };
 
