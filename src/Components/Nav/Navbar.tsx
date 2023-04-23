@@ -5,10 +5,24 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../config/firebase.config';
 import SignIn from '../Login/SignIn';
 import LogOut from '../Login/LogOut';
+import everyday from './everyday.png';
 import logo from './logo.png';
 import { color, backgroundColor } from '../../theme';
 import UserAvatar from './Avatar';
 import googleSignIn from '../Login/SignIn';
+import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faHouse,
+  faEdit,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+} from '@fortawesome/free-solid-svg-icons';
 const Navbar = () => {
   const [user] = useAuthState(auth);
   const userName = user ? user.displayName : null;
@@ -23,11 +37,34 @@ const Navbar = () => {
     auth.signOut();
   };
 
+  const [open, setOpen] = useState(false);
+
+  const toggleNav = () => {
+    setOpen(!open);
+  };
+
+  const HamburgerIcon = styled(FontAwesomeIcon)`
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  `;
+
+  const CloseIcon = styled(FontAwesomeIcon)`
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  `;
+
   return (
     <NavbarWrapper>
       <Nav>
-        <Logo to="/" />
-        <NavList>
+        <Logo to="/">
+          {/* EVERYD
+          <FontAwesomeIcon icon={faHouse} />Y */}
+          <img style={{ width: '200px' }} src={logo} alt="EVERYDAY" />
+        </Logo>
+
+        <NavList open={open}>
           <NavItem>
             <NavLink to="/dashboard">Dashboard</NavLink>
           </NavItem>
@@ -57,6 +94,14 @@ const Navbar = () => {
             <NavLink to="/chat">Chat</NavLink>
           </NavItem>
         </NavList>
+        <NavMenu onClick={toggleNav}>
+          {open ? (
+            <CloseIcon icon={faTimes} />
+          ) : (
+            <HamburgerIcon icon={faBars} />
+          )}
+        </NavMenu>
+
         <UserSetting>
           <AvatarContainer onClick={handleAvatarClick}>
             <UserAvatar />
@@ -89,13 +134,13 @@ const NavbarWrapper = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  padding: 10px;
+
   position: fixed;
   z-index: 3;
 `;
 
 const Nav = styled.div`
-  background-color: #transparent;
+  background: #629dda;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -106,27 +151,59 @@ const Nav = styled.div`
 const Logo = styled(Link)`
   width: 220px;
   height: 48px;
-  background-image: url(${logo});
-  background-size: contain;
-  &:hover {
-    transform: scale(1.2);
-  }
+  color: white;
 
-  @media screen and (max-width: 1279px) {
-    width: 129px;
-    height: 24px;
+  font-weight: bold;
+  margin: 10px 10px;
+  font-family: 'Sigmar', cursive;
+  text-decoration: none;
+  text-decoration: none;
+  display: inline-block;
+  &:hover {
+    transform: scale(1.05);
   }
+  /* media query for screens narrower than 1080px */
 `;
 
 export const NavList = styled.ul`
   list-style: none;
   padding: 0;
   margin: auto;
+
   display: flex;
+  display: ${(props) => (props.open ? 'flex' : 'none')};
+
+  /* media query for screens narrower than 768px */
+  @media screen and (max-width: 1075px) {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    height: auto;
+    margin-left: auto;
+    margin-right: 20px;
+    position: absolute;
+    right: 100px;
+    top: 0px;
+    z-index: 2;
+    background: #629dda;
+  }
 `;
 
 export const NavItem = styled.li`
   margin: 0px;
+  /* media query for screens narrower than 768px */
+  @media screen and (max-width: 767px) {
+    margin: 10px 0;
+  }
+`;
+
+const NavMenu = styled.div`
+  cursor: pointer;
+  margin-left: auto;
+  /* media query for screens narrower than 768px */
+  @media screen and (max-width: 1075px) {
+    display: block;
+  }
 `;
 
 const NavButton = styled.div`
@@ -163,14 +240,46 @@ export const NavLink = styled(Link)`
   font-weight: bold;
   text-decoration: none;
   padding: 10px;
+  border-radius: 15px;
 
   &:hover {
-    background-color: #9bb9de;
+    background-color: #fff5c9;
     transform: scale(1.1);
+    color: #3467a1;
   }
 
   &.active {
     background-color: #ffffff;
+  }
+  /* media query for screens narrower than 768px */
+  @media screen and (max-width: 767px) {
+    padding: 5px;
+    font-size: 14px;
+  }
+`;
+
+const NavIcon = styled.span`
+  display: block;
+  width: 30px;
+  height: 2px;
+  margin: 0;
+  background-color: #fff;
+  transition: transform 0.2s ease-in-out;
+
+  &:nth-child(1) {
+    transform: ${({ open }) =>
+      open ? 'rotate(45deg) translate(-6px, 6px)' : 'rotate(0)'};
+  }
+
+  &:nth-child(2) {
+    opacity: ${({ open }) => (open ? '0' : '1')};
+    transform: ${({ open }) => (open ? 'translateX(20px)' : 'none')};
+    margin: 4px;
+  }
+
+  &:nth-child(3) {
+    transform: ${({ open }) =>
+      open ? 'rotate(-45deg) translate(-6px, -6px)' : 'rotate(0)'};
   }
 `;
 

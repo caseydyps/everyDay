@@ -427,6 +427,36 @@ export const Whiteboard = () => {
     }
   };
 
+  const addGif = async (color: string, isSticker: boolean) => {
+    console.log(selectedGif);
+    const gifUrl = selectedGif ? selectedGif.images.original.url : '';
+    const newSticker = {
+      id: uuidv4(),
+      x: 150,
+      y: 150,
+      content: gifUrl,
+      color: color,
+      member: 'Nina',
+      isSticker: isSticker,
+    };
+
+    try {
+      const familyDocRef = doc(
+        db,
+        'Family',
+        'Nkl0MgxpE9B1ieOsOoJ9',
+        'stickers',
+        newSticker.id
+      );
+      await setDoc(familyDocRef, newSticker);
+      console.log('Sticker has been added to Firestore!');
+      setStickers([...stickers, newSticker]);
+      setStickerText([...stickerText, '']);
+    } catch (error) {
+      console.error('Error adding sticker to Firestore: ', error);
+    }
+  };
+
   const deleteSticker = async (id: number) => {
     console.log(id);
     console.log(stickers);

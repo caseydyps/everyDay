@@ -107,54 +107,28 @@ const Suggestion = () => {
 
   const calendarData = [
     {
-      event: 'Doctor Appointment',
+      event: '看醫生',
       category: '#Calendar',
-      startTime: moment('2023-04-07 11:00').toDate(),
-      endTime: moment('2023-04-07 12:00').toDate(),
-      members: ['mom', 'baby'],
-      response: 'Appointment scheduled',
+      startTime: '2023-04-24 11:00',
+      endTime: '2023-04-24 12:00',
+      members: '女兒',
     },
     {
-      event: 'Playgroup',
+      event: '看電影',
       category: '#Calendar',
-      startTime: moment('2023-04-10 10:00').toDate(),
-      endTime: moment('2023-04-10 11:30').toDate(),
-      members: ['dad', 'baby'],
-      response: 'Playgroup scheduled',
+      startTime: '2023-04-26 10:00',
+      endTime: '2023-04-26 11:30',
+      members: '爸爸',
     },
     {
-      event: 'Baby Shower',
+      event: '聚餐',
       category: '#Calendar',
-      startTime: moment('2023-04-15 14:00').toDate(),
-      endTime: moment('2023-04-15 16:00').toDate(),
-      members: ['mom', 'dad'],
-      response: 'Shower scheduled',
+      startTime: '2023-04-27 14:00',
+      endTime: '2023-04-27 16:00',
+      members: '媽媽',
     },
   ];
 
-  const stickyNotesData = [
-    {
-      title: 'Grocery List',
-      category: '#StickyNotes',
-      content: 'Milk\nEggs\nBread',
-      response: 'Note added',
-    },
-    {
-      title: 'To-do List',
-      category: '#StickyNotes',
-      content: 'Buy baby clothes\nSchedule daycare tour\nResearch strollers',
-      response: 'Note added',
-    },
-    {
-      title: 'Important Dates',
-      category: '#StickyNotes',
-      content: 'Due date: 2023-07-01\nBaby shower: 2022-04-15',
-      response: 'Note added',
-    },
-  ];
-
-  console.log(`這是我的家庭資料庫，包含了以下資料：
-  行事曆資料庫:${JSON.stringify(todoData)}`);
   const runPrompt = async () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -163,14 +137,13 @@ const Suggestion = () => {
     const formattedDate = `${year}-${month}-${day}`;
     console.log(calendarData);
 
-    const prompt = ` 這是我家庭的資料庫，裡面有以下資料：
-      今天是 ${formattedDate}
+    const prompt = ` 
+   ,這是我家庭的資料庫，裡面有以下資料：
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    - 里程碑資料庫: ${JSON.stringify(milestoneData)}
-    ,今天到下週有什麼事(附上時間)?用50字以內說完
-   
-  
+    - 里程碑資料庫: ${JSON.stringify(
+      milestoneData
+    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(50字以內建議)
       `;
 
     const response = await openai.createChatCompletion({
@@ -185,7 +158,7 @@ const Suggestion = () => {
           content: `${prompt}`,
         },
       ],
-      temperature: 0.5,
+      temperature: 0.2,
       max_tokens: 500,
     });
     // const parsableJSONresponse = response.data.choices[0].text;
@@ -205,7 +178,9 @@ const Suggestion = () => {
           justifyContent: 'center',
           alignItems: 'center',
         }}
-      ></div>
+      >
+        本週建議:
+      </div>
       {responseValue && (
         <Response>
           <div>{responseValue}</div>
@@ -243,10 +218,11 @@ const Response = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 20px;
-  font-size: 8px;
+  justify-content: center;
+  font-size: 20px;
   font-weight: bold;
   color: #fff;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 
 export default Suggestion;

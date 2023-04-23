@@ -10,7 +10,7 @@ const CenterWrapper = styled.div`
   display: flex;
   justify-content: center; /* Center the child element horizontally */
   align-items: center; /* Center the child element vertically */
-  margin-top: 70px;
+  margin-top: 20px;
   flex-direction: column;
   height: 100vh;
 `;

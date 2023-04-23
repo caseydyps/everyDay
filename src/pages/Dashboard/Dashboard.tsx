@@ -14,6 +14,13 @@ import CalendarMini from './Calendar/CalendarMini';
 import Financial from './Financial';
 import Suggestion from '../AI/SuggestionMini';
 import FamilyMemberForm from '../Family/FamilyMini';
+import DefaultButton from '../../Components/Button/Button';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCircleChevronDown,
+  faCircleChevronUp,
+} from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
   display: flex;
@@ -35,6 +42,7 @@ const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+
   // border: 2px solid blue;
 `;
 
@@ -44,8 +52,15 @@ const Slogan = styled.div`
   font-size: 72px;
   width: 400px;
   color: white;
-  top: 40%;
+  line-height: 0.9;
+  font-family: 'Pacifico';
+  top: 35%;
   left: 5%;
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+  @media screen and (max-width: 1664px) {
+    color: transparent;
+    text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+  }
 `;
 
 const SmallSlogan = styled.div`
@@ -53,8 +68,11 @@ const SmallSlogan = styled.div`
   word-wrap: break-word;
   font-size: 36px;
   color: #666;
-  top: 80%;
+  top: 66%;
   left: 5%;
+  @media screen and (max-width: 1664px) {
+    color: transparent;
+  }
 `;
 
 const Block = styled.div`
@@ -74,7 +92,9 @@ const Dashboard = () => {
   const Aside = styled.div``;
 
   const Main = styled.div`
-    border: 2px solid blue;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
   `;
 
   const Grid = styled.div`
@@ -82,6 +102,37 @@ const Dashboard = () => {
     grid-template-columns: repeat(6, 200px);
     grid-template-rows: repeat(12, 100px);
     grid-gap: 10px;
+    width: 100%;
+
+    /* media query for screens narrower than 1200px */
+    @media screen and (max-width: 1267px) {
+      grid-template-columns: repeat(4, 200px);
+      grid-template-rows: repeat(18, 100px);
+    }
+
+    /* media query for screens narrower than 992px */
+    @media screen and (max-width: 991px) {
+      grid-template-columns: repeat(2, 200px);
+      grid-template-rows: repeat(24, 100px);
+    }
+
+    /* media query for screens narrower than 768px */
+    @media screen and (max-width: 767px) {
+      grid-template-columns: repeat(2, 200px);
+      grid-template-rows: repeat(36, 100px);
+    }
+
+    /* media query for screens narrower than 576px */
+    @media screen and (max-width: 575px) {
+      grid-template-columns: 1fr;
+      grid-template-rows: repeat(72, 100px);
+    }
+
+    /* media query for screens narrower than 500px */
+    @media screen and (max-width: 499px) {
+      /* adjust grid-template-columns for the first row */
+      grid-template-columns: repeat(2, 200px) repeat(4, 0);
+    }
   `;
 
   const GridItem = styled.div`
@@ -89,7 +140,7 @@ const Dashboard = () => {
     ${({ spanColumns, spanRows }) => `
     grid-column: span ${spanColumns};
     grid-row: span ${spanRows};
-    
+    position: relative;
   `}
 
     border-radius: 20px;
@@ -121,6 +172,25 @@ const Dashboard = () => {
     border-radius: 20px;
   `;
 
+  const BoxXL = styled.div`
+    width: 100%;
+    height: 100%;
+
+    border-radius: 20px;
+  `;
+
+  const ButtonWrap = styled.div`
+    position: absolute;
+    bottom: 0px;
+    right: 5px;
+  `;
+
+  const Button = styled(DefaultButton)`
+    background-color: transparent;
+    padding: 0px;
+    color: rgba(255, 255, 255, 0.5);
+  `;
+
   const [gridItems, setGridItems] = useState([
     {
       component: (
@@ -133,7 +203,7 @@ const Dashboard = () => {
     },
     {
       component: (
-        <BoxM>
+        <BoxM style={{ backgroundColor: 'rgba(192, 192, 192, 0.5)' }}>
           <Suggestion></Suggestion>
         </BoxM>
       ),
@@ -152,7 +222,7 @@ const Dashboard = () => {
     {
       component: (
         <BoxL>
-          MileStone<Milestone></Milestone>
+          <Milestone></Milestone>
         </BoxL>
       ),
       spanColumns: 4,
@@ -196,7 +266,11 @@ const Dashboard = () => {
     },
 
     {
-      component: <Whiteboard />,
+      component: (
+        <BoxXL>
+          <Whiteboard />
+        </BoxXL>
+      ),
       spanColumns: 6,
       spanRows: 4,
     },
@@ -207,6 +281,7 @@ const Dashboard = () => {
     const removed = newGridItems.splice(index, 1);
     newGridItems.splice(index + value, 0, removed[0]);
     setGridItems(newGridItems);
+    console.log(newGridItems);
   };
 
   const handleRowChange = (index, value) => {
@@ -214,6 +289,7 @@ const Dashboard = () => {
     const removed = newGridItems.splice(index, 1);
     newGridItems.splice(index + value, 0, removed[0]);
     setGridItems(newGridItems);
+    console.log(newGridItems);
   };
   console.log(gridItems);
 
@@ -263,20 +339,21 @@ const Dashboard = () => {
                   spanRows={item.spanRows}
                 >
                   {item.component}
-                  <div>
-                    <button onClick={() => handleColumnChange(index, 1)}>
+
+                  {/* <button onClick={() => handleColumnChange(index, 1)}>
                       Move Right
                     </button>
                     <button onClick={() => handleColumnChange(index, -1)}>
                       Move Left
-                    </button>
-                    <button onClick={() => handleRowChange(index, 1)}>
-                      Move Down
-                    </button>
-                    <button onClick={() => handleRowChange(index, -1)}>
-                      Move Up
-                    </button>
-                  </div>
+                    </button> */}
+                  <ButtonWrap>
+                    <Button onClick={() => handleRowChange(index, 1)}>
+                      <FontAwesomeIcon icon={faCircleChevronDown} />
+                    </Button>
+                    <Button onClick={() => handleRowChange(index, -1)}>
+                      <FontAwesomeIcon icon={faCircleChevronUp} />
+                    </Button>
+                  </ButtonWrap>
                 </GridItem>
               ))}
             </Grid>
