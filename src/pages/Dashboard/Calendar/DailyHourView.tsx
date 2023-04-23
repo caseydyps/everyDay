@@ -235,11 +235,18 @@ const DailyHourlyView: any = ({
 const Container = styled.div`
   max-width: 1500px;
   margin: 0 auto;
+  overflow: auto;
+  overflow-y: auto;
+  height: 800px;
 `;
 
 const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
+  background-color: rgba(64, 64, 64, 0.5);
+  color: #fff;
+  overflow: auto;
+  height: 800px; ;
 `;
 
 const TableRow = styled.tr`
@@ -248,21 +255,14 @@ const TableRow = styled.tr`
 
 const TableHeader = styled.th`
   padding: 8px;
-  text-align: left;
-  background-color: #f2f2f2;
+  text-align: center;
+  width: 100px;
   border: 1px solid #ccc;
 `;
 
 const TableData = styled.td`
   padding: 8px;
   border: 1px solid #ccc;
-`;
-
-const EventListItem = styled.li`
-  border: 1px solid #ccc;
-  padding: 8px;
-  margin-bottom: -1px;
-  background-color: #f2f2f2;
 `;
 
 const TableCell = styled.td`

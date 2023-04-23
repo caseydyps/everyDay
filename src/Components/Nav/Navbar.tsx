@@ -84,7 +84,7 @@ const Navbar = () => {
 };
 
 const NavbarWrapper = styled.div`
-  background-color: #629dda;
+  background-color: #transparent;
   height: 50px;
   top: 0;
   left: 0;
@@ -95,7 +95,7 @@ const NavbarWrapper = styled.div`
 `;
 
 const Nav = styled.div`
-  background-color: #629dda;
+  background-color: #transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;

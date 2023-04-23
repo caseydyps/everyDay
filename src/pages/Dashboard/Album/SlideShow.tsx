@@ -3,7 +3,8 @@ import styled from 'styled-components';
 
 const SlideshowContainer = styled.div`
   position: relative;
-  height: 300px;
+  height: 500px;
+  width: 500px;
   overflow: hidden;
 `;
 
@@ -11,9 +12,11 @@ const SlideshowImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 100%;
+  height: 500px;
+  width: 500px;
+  border-radius: 10px;
   object-fit: cover;
+
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
 
@@ -29,11 +32,12 @@ const ThumbnailContainer = styled.div`
 `;
 
 const ThumbnailImage = styled.img`
-  height: 50px;
-  width: 50px;
+  height: 70px;
+  width: 70px;
   object-fit: cover;
   margin: 0 5px;
   opacity: 0.5;
+  border-radius: 10px;
   transition: opacity 0.5s ease-in-out;
 
   &.active {
@@ -64,6 +68,7 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
       clearInterval(intervalId);
     };
   }, [activeIndex, interval, photos]);
+  const [showSlideshow, setShowSlideshow] = useState(false);
 
   return (
     <div>
@@ -74,10 +79,14 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
             src={photo.url}
             alt={`Slide ${index}`}
             className={index === activeIndex ? 'active' : ''}
+            style={{ width: '500px', height: '500px' }}
           />
         ))}
       </SlideshowContainer>
-      <ThumbnailContainer>
+      <ThumbnailContainer
+        onMouseEnter={() => setShowSlideshow(true)}
+        onMouseLeave={() => setShowSlideshow(false)}
+      >
         {photos.map((photo, index) => (
           <ThumbnailImage
             key={index}

@@ -8,7 +8,9 @@ export const DefaultButton = styled.button`
   border-radius: 20px;
   font-weight: bold;
   padding: 10px 20px;
-  margin-top: 60px;
+  margin-top: 30px;
+  margin-right: 10px;
+  margin-left: 10px;
   font-size: 20px;
   &:hover {
     transform: scale(1.1);

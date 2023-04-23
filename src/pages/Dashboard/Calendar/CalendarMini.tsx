@@ -766,7 +766,7 @@ function CalendarMini() {
           </Modal>
         )}
         <DayCalendar selectedDate={selectedDate} />
-        <Td>
+        {/* <Td>
           {events.map((event) => {
             const eventDate = new Date(event.date);
             const selectedDateObj = new Date(selectedDate);
@@ -803,7 +803,7 @@ function CalendarMini() {
               return null;
             }
           })}
-        </Td>
+        </Td> */}
       </DayWrap>
     </>
   );

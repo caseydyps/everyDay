@@ -23,7 +23,7 @@ const LoadingAnimation = () => {
           </BarWrapper>
         </LoadingBar>
       ) : (
-        <div>Enjoy!</div>
+        <div></div>
       )}
     </Container>
   );

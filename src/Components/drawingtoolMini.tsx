@@ -55,10 +55,6 @@ const ButtonWrap = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 800px;
-  position: absolute;
-  top: 0;
-  right: 50%;
-  transform: translate(50%, 0);
 `;
 
 const Container = styled.div`
@@ -95,27 +91,34 @@ const DrawingTool = () => {
   const [color, setColor] = useState<string>('black');
   const [width, setWidth] = useState<number>(5);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
 
-    canvas.width = window.innerWidth * 2;
-    canvas.height = 600 * 2;
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${600}px`;
+    if (!canvas) return;
+    console.log('here');
+    console.log(window.innerWidth);
+    canvas.width = ((window.innerWidth * 2) / 3) * 2;
+
+    canvas.height = 400 * 2;
+    canvas.style.width = `${canvas.width / 2}px`;
+    canvas.style.height = `${canvas.height / 2}px`;
     console.log(
       canvas.width,
       canvas.height,
       canvas.style.width,
       canvas.style.height
     );
+    const scaleX = (canvas.width / 2 / 1920) * 2;
+    const scaleY = (canvas.height / 2 / 600) * 2;
     const context = canvas.getContext('2d');
     if (!context) return;
-    context.scale(2, 2);
+
+    context.scale(scaleX, scaleY);
     context.lineCap = 'round';
     context.lineWidth = width;
     context.strokeStyle = color;
@@ -371,7 +374,7 @@ const DrawingTool = () => {
           style={{
             height: 'auto',
             maxWidth: '100%',
-            maxHeight: '600px',
+            maxHeight: '100%',
             border: '2px solid transparent',
             boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
             borderRadius: '25px',
@@ -379,56 +382,6 @@ const DrawingTool = () => {
           }}
         />
       </CanvasContainer>
-      <ButtonWrap>
-        <CanvasButton
-          color="black"
-          onClick={() => handleChangeColor('black')}
-        ></CanvasButton>
-        <CanvasButton
-          color="red"
-          onClick={() => handleChangeColor('red')}
-        ></CanvasButton>
-        <CanvasButton
-          color="green"
-          onClick={() => handleChangeColor('green')}
-        ></CanvasButton>
-        <CanvasButton
-          color="blue"
-          onClick={() => handleChangeColor('blue')}
-        ></CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeColor('white')}
-        >
-          <FontAwesomeIcon icon={faEraser} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(5)}
-        >
-          <FontAwesomeIcon icon={faPen} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(1)}
-        >
-          <FontAwesomeIcon icon={faPencil} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(30)}
-        >
-          <FontAwesomeIcon icon={faPaintRoller} />
-        </CanvasButton>
-        <CanvasButton color="transparent" onClick={undoStroke}>
-          <FontAwesomeIcon icon={faClockRotateLeft} />
-        </CanvasButton>
-        <CanvasButton color="transparent" onClick={clearCanvas}>
-          <FontAwesomeIcon icon={faBroom} />
-        </CanvasButton>
-        {/* <button onClick={addStroke}>Save</button>
-    <button onClick={loadCanvas}>load</button> */}
-      </ButtonWrap>
     </Container>
   );
 };

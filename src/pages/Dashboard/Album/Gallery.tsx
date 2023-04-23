@@ -11,6 +11,24 @@ import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
 import Layout from '../../../Components/layout';
+import UserAuthData from '../../../Components/Login/Auth';
+import DefaultButton from '../../../Components/Button/Button';
+import { MembersSelector } from '../../AI/SmartInput';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faMagnifyingGlass,
+  faX,
+  faLock,
+  faLockOpen,
+  faEyeSlash,
+  faCloudArrowUp,
+} from '@fortawesome/free-solid-svg-icons';
 import {
   collection,
   updateDoc,
@@ -24,6 +42,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+
 type Album = {
   id: string;
   title: string;
@@ -81,7 +100,17 @@ function Gallery() {
 
   const regularStar = farStar;
   const solidStar = fasStar;
-
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,
@@ -97,34 +126,31 @@ function Gallery() {
   };
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    console.log('files', files);
+    console.log(typeof files);
     if (files && files.length > 0) {
-      const selectedFile = files.item(0);
-      if (selectedFile) {
-        setFile(selectedFile);
-      }
+      setFile(files);
+      console.log('selectedFiles', files);
     }
   };
 
   const handleUpload = async () => {
-    if (!file) {
+    console.log('handleUpload start');
+    if (!file || file.length === 0) {
       console.error('No files selected!');
       return;
     }
 
     try {
       // Check if an album with the same name already exists in Firestore
-      const albumsRef = collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'photos'
-      );
+      const albumsRef = collection(db, 'Family', familyId, 'photos');
       const querySnapshot = await getDocs(
         query(albumsRef, where('title', '==', albumTitle))
       );
       let albumDoc;
       if (querySnapshot.empty) {
         // If no album exists with the same name, create a new one
+        console.log('No album exists with the same name, creating a new one');
         albumDoc = await addDoc(albumsRef, {
           title: albumTitle,
           members: members,
@@ -136,37 +162,49 @@ function Gallery() {
       } else {
         // If an album already exists with the same name, use its document reference
         albumDoc = querySnapshot.docs[0].ref;
+        console.log(
+          "An album already exists with the same name, using it's document reference"
+        );
       }
 
       // Retrieve the current photos array from Firestore
       const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
       const currentPhotos: any = albumData.photos || [];
+      console.log('currentPhotos', currentPhotos);
 
+      const updatedPhotos = [...currentPhotos];
+
+      // Loop over each selected file
       for (let i = 0; i < file.length; i++) {
         const currFile = file[i];
+
         // Generate a unique ID for the new photo
         const newId = Date.now();
+
         // Upload the file to Firebase Storage
         const storageRef = ref(
           storage,
           `${albumTitle}/${Date.now()}_${currFile.name}`
         );
         await uploadBytes(storageRef, currFile);
+
         // Get the download URL of the uploaded file
         const downloadURL = await getDownloadURL(storageRef);
         console.log('File uploaded to Firebase Storage: ', downloadURL);
+        setShowUpdateSection(false);
         // Add the new photo to the album in Firestore
         const newPhoto = {
           id: newId,
           title: currFile.name,
           url: downloadURL,
         };
-        const updatedPhotos = [...currentPhotos, newPhoto];
-        console.log('Updated photos: ', updatedPhotos);
-        await updateDoc(albumDoc, { photos: updatedPhotos });
-        console.log('Photo added to album data in Firestore!');
+        updatedPhotos.push(newPhoto);
+        console.log('Photo added to updated photos array!');
       }
-      fetchAlbums();
+
+      // Update the photos array in Firestore
+      await updateDoc(albumDoc, { photos: updatedPhotos });
+      console.log('Updated photos array in Firestore!');
 
       // Reset the file input and album form
       setFile(null);
@@ -174,6 +212,8 @@ function Gallery() {
       setAlbumId('');
       setMembers([]);
       setDescription('');
+
+      fetchAlbums();
     } catch (error) {
       console.error('Error uploading file to Firebase: ', error);
     }
@@ -185,12 +225,7 @@ function Gallery() {
   };
 
   const fetchAlbums = async () => {
-    const familyDocRef = collection(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'photos'
-    );
+    const familyDocRef = collection(db, 'Family', familyId, 'photos');
 
     const querySnapshot = await getDocs(familyDocRef);
     const albumsData: any = [];
@@ -218,12 +253,7 @@ function Gallery() {
 
   useEffect(() => {
     const fetchAlbums = async () => {
-      const familyDocRef = collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'photos'
-      );
+      const familyDocRef = collection(db, 'Family', familyId, 'photos');
 
       const querySnapshot = await getDocs(familyDocRef);
       const albumsData: any = [];
@@ -250,18 +280,13 @@ function Gallery() {
     };
 
     fetchAlbums();
-  }, []);
+  }, [familyId]);
 
   const handleDeleteAlbum = async (album: Album) => {
     console.log(album.title);
 
     try {
-      const albumsRef = collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'photos'
-      );
+      const albumsRef = collection(db, 'Family', familyId, 'photos');
 
       const querySnapshot = await getDocs(
         query(albumsRef, where('title', '==', album.title))
@@ -288,7 +313,7 @@ function Gallery() {
 
   const handleToggleFavorite = async (album: Album) => {
     console.log('Hi');
-    const albumRef = collection(db, 'Family', 'Nkl0MgxpE9B1ieOsOoJ9', 'photos');
+    const albumRef = collection(db, 'Family', familyId, 'photos');
 
     try {
       // Update the favorite property of the album document
@@ -342,178 +367,256 @@ function Gallery() {
 
     return memberMatch && dateMatch;
   });
+  const [showUpdateSection, setShowUpdateSection] = useState(false);
+  const [showFilterSection, setShowFilterSection] = useState(false);
+  const handleEditMember = (member: string) => {
+    setMembers(member);
+  };
+
+  const handleFilterMember = (member: string) => {
+    setSelectedMember(member);
+  };
 
   return (
     <Layout>
-      <div>
-        <h3>Upload a Photo</h3>
-        <input type="file" onChange={handleFileChange} multiple />
-        <br />
-        <h3>Create an Album</h3>
-        <label>
-          Select album:
-          <select value={selectedAlbumId || ''} onChange={handleAlbumSelect}>
-            <option value="">-- Select an album --</option>
-            {albums.map((album) => (
-              <option key={album.id} value={album.id}>
-                {album.title}
-              </option>
-            ))}
-          </select>
-        </label>
-        {selectedAlbumId ? (
-          <p>
-            Selected album:{' '}
-            {albums.find((album) => album.id === selectedAlbumId)?.title}
-          </p>
-        ) : (
-          <label>
-            Title:
-            <input
-              type="text"
-              value={albumTitle}
-              onChange={handleAlbumTitleChange}
-            />
-          </label>
-        )}
-        <br />
-        <label>
-          Members:
-          <select multiple value={members} onChange={handleMembersChange}>
-            <option value="Alice">Alice</option>
-            <option value="Bob">Bob</option>
-            <option value="Charlie">Charlie</option>
-            <option value="David">David</option>
-          </select>
-        </label>
-        <br />
-        <label>
-          Description:
-          <textarea value={description} onChange={handleDescriptionChange} />
-        </label>
-        <label>
-          Date:
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </label>
-        <br />
-        <button onClick={handleUpload}>Upload</button>
-      </div>
-      <div>
-        <label>
-          Filter by member:
-          <select
-            value={selectedMember}
-            onChange={(e) => setSelectedMember(e.target.value)}
-          >
-            <option value="">All</option>
-            <option value="Alice">Alice</option>
-            <option value="Bob">Bob</option>
-            <option value="Charlie">Charlie</option>
-            <option value="David">David</option>
-          </select>
-        </label>
-        <br />
-        <label>
-          Filter by date:
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
-        </label>
-        <br />
-        <ul>
-          {filteredAlbums.map((album) => (
-            <li key={album.id}>
-              <AlbumTitle>{album.title}</AlbumTitle>
-              <AlbumMembers>{album.members.join(', ')}</AlbumMembers>
-              <div>{album.date}</div>
-              {album.photos.map((photo) => (
-                <img
-                  key={photo.id}
-                  src={photo.url}
-                  alt={photo.title}
-                  style={{ width: '200px', height: 'auto' }}
-                />
-              ))}
-            </li>
-          ))}
-        </ul>
-      </div>
+      <Container>
+        <ColumnWrap>
+          <RowWrap>
+            <UploadButton
+              onClick={() => {
+                setShowUpdateSection(!showUpdateSection);
+                setShowFilterSection(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faCloudArrowUp} />
+            </UploadButton>
+            <UploadButton
+              onClick={() => {
+                setShowFilterSection(!showFilterSection);
+                setShowUpdateSection(false);
+              }}
+            >
+              <FontAwesomeIcon icon={faFilter} />
+            </UploadButton>
+          </RowWrap>
 
-      <GalleryWrapper>
-        {albums.map((album) => (
-          <AlbumWrapper key={album.id}>
-            <AlbumTitle>{album.title}</AlbumTitle>
-            <button onClick={() => handleToggleFavorite(album)}>
-              {album.favorite ? (
-                <FontAwesomeIcon icon={solidStar} />
-              ) : (
-                <FontAwesomeIcon icon={regularStar} />
-              )}
-              Add to Favorites
-            </button>
-            <Slideshow photos={album.photos} />
-            <AlbumDescription>{album.description}</AlbumDescription>
-
-            <AlbumMembers>{album.members}</AlbumMembers>
-            {album.firstPhotoURL ? (
-              <AlbumCover
-                src={album.firstPhotoURL}
-                alt={album.title}
-                onClick={() => setSelectedAlbumId(album.id)}
+          {showUpdateSection && (
+            <UpdateSection>
+              <h4>上傳照片</h4>
+              <StyledFileInput
+                type="file"
+                onChange={handleFileChange}
+                multiple
               />
-            ) : (
-              <NoPhotosText>No photos in this album</NoPhotosText>
-            )}
-            <h3>Click for more!</h3>
-            <button onClick={() => handleDeleteAlbum(album)}>
-              Delete Album
-            </button>
-            {selectedAlbumId === album.id && (
-              <div>
-                <h3>Photos in {album.title}</h3>
-                <div>
-                  {album.photos.map((photo) => (
-                    <img
-                      key={photo.id}
-                      src={photo.url}
-                      alt={photo.title}
-                      style={{ width: '200px', height: 'auto' }}
-                    />
+
+              <FileInputLabel>
+                <StyledSelect
+                  value={selectedAlbumId || ''}
+                  onChange={handleAlbumSelect}
+                >
+                  <option value="">-- Select an album --</option>
+                  {albums.map((album) => (
+                    <option key={album.id} value={album.id}>
+                      {album.title}
+                    </option>
                   ))}
-                </div>
+                </StyledSelect>
+              </FileInputLabel>
+              {selectedAlbumId ? (
+                <p>
+                  選擇相簿:{' '}
+                  {albums.find((album) => album.id === selectedAlbumId)?.title}
+                </p>
+              ) : (
+                <FileInputLabel>
+                  相簿名稱
+                  <StyledInput
+                    type="text"
+                    value={albumTitle}
+                    onChange={handleAlbumTitleChange}
+                    placeholder='e.g. "Trip to Japan"'
+                  />
+                </FileInputLabel>
+              )}
+              <br />
+              <MembersSelector onSelectMember={handleEditMember} />
+              {/* <FileInputLabel>
+                選擇成員:
+                <select multiple value={members} onChange={handleMembersChange}>
+                  <option value="Alice">Alice</option>
+                  <option value="Bob">Bob</option>
+                  <option value="Charlie">Charlie</option>
+                  <option value="David">David</option>
+                </select>
+              </FileInputLabel> */}
+              <br />
+              {/* <FileInputLabel>
+                敘述:
+                <textarea
+                  value={description}
+                  onChange={handleDescriptionChange}
+                />
+              </FileInputLabel> */}
+              <FileInputLabel>
+                Date:
+                <StyledDateInput
+                  type="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                />
+              </FileInputLabel>
+
+              <DefaultButton onClick={handleUpload}>Upload</DefaultButton>
+            </UpdateSection>
+          )}
+          {showFilterSection && (
+            <FilterSection>
+              <Text>
+                Filter by member:
+                <DefaultButton
+                  onClick={() => {
+                    setSelectedMember('');
+                    setShowFilterSection(false);
+                  }}
+                  className={selectedMember === '' ? 'active' : ''}
+                  style={{
+                    background: '#B7CCE2',
+                    color: 'white',
+                    padding: '5px 10px',
+                    margin: '5px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  All
+                </DefaultButton>
+                <MembersSelector onSelectMember={handleFilterMember} />
+              </Text>
+
+              <br />
+              <Text>
+                Filter by date:
+                <StyledDateInput
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                />
+              </Text>
+              <br />
+            </FilterSection>
+          )}
+
+          <GalleryWrapper>
+            {/* {filteredAlbums.map((album) => (
+              <div key={album.id}>
+                <AlbumTitle>{album.title}</AlbumTitle> */}
+            {/* <AlbumMembers>{album.members.join(', ')}</AlbumMembers> */}
+            {/* <div>{album.date}</div>
+                {album.photos.map((photo) => (
+                  <img
+                    key={photo.id}
+                    src={photo.url}
+                    alt={photo.title}
+                    style={{ width: '200px', height: 'auto' }}
+                  />
+                ))}
               </div>
-            )}
-          </AlbumWrapper>
-        ))}
-      </GalleryWrapper>
+            ))} */}
+
+            {filteredAlbums.map((album) => (
+              <AlbumWrapper key={album.id}>
+                <RowWrap>
+                  <DefaultButton onClick={() => handleToggleFavorite(album)}>
+                    {album.favorite ? (
+                      <FontAwesomeIcon icon={solidStar} />
+                    ) : (
+                      <FontAwesomeIcon icon={regularStar} />
+                    )}
+                  </DefaultButton>
+                  <DefaultButton onClick={() => handleDeleteAlbum(album)}>
+                    <FontAwesomeIcon icon={faTrashCan} />
+                  </DefaultButton>
+                </RowWrap>
+
+                <AlbumTitle>{album.title}</AlbumTitle>
+
+                <Slideshow photos={album.photos} />
+                <AlbumDescription>{album.description}</AlbumDescription>
+
+                <AlbumMembers>{album.members}</AlbumMembers>
+                {/* {album.firstPhotoURL ? (
+                  <AlbumCover
+                    src={album.firstPhotoURL}
+                    alt={album.title}
+                    onClick={() => setSelectedAlbumId(album.id)}
+                    style={{ width: '500px', height: '500px' }}
+                  />
+                ) : (
+                  <NoPhotosText>No photos in this album</NoPhotosText>
+                )}
+                <h3>Click for more!</h3> */}
+
+                {/* {selectedAlbumId === album.id && (
+                  <div>
+                    <h3>Photos in {album.title}</h3>
+                    <div>
+                      {album.photos.map((photo) => (
+                        <img
+                          key={photo.id}
+                          src={photo.url}
+                          alt={photo.title}
+                          style={{ width: '200px', height: '300px' }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )} */}
+              </AlbumWrapper>
+            ))}
+          </GalleryWrapper>
+        </ColumnWrap>
+      </Container>
     </Layout>
   );
 }
 
 const GalleryWrapper = styled.div`
   display: flex;
-  flex-wrap: wrap;
+  max-width: 100vw;
   gap: 20px;
+  height: 100%;
+  overflow-x: scroll;
+  scrollbar-width: narrow;
+  scrollbar-color: #3467a1 transparent;
+
+  &::-webkit-scrollbar {
+    width: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #3467a1;
+    border-radius: 1px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 `;
 
 const AlbumWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 1px solid #ccc;
-  padding: 20px;
-  min-width: 250px;
+  border-radius: 20px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  width: 600px;
+  height: auto;
 `;
 
 const AlbumTitle = styled.h4`
   font-size: 20px;
-  margin: 0;
+  margin: 20px;
   margin-bottom: 10px;
 `;
 
@@ -530,13 +633,184 @@ const AlbumMembers = styled.p`
 `;
 
 const AlbumCover = styled.img`
-  width: 100%;
   height: auto;
+  object-fit: cover;
 `;
 
 const NoPhotosText = styled.p`
   font-size: 16px;
   margin: 0;
+`;
+
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const UploadButton = styled(DefaultButton)`
+  width: 100px;
+  margin: 20px;
+`;
+
+const UpdateSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+
+  max-width: 700px;
+  padding: 20px;
+  color: black;
+  backdrop-filter: blur(8px);
+  background-color: rgba(255, 255, 255, 0.5);
+  position: absolute;
+  top: 20%;
+  right: 50%;
+  transform: translate(+50%, 0%);
+  z-index: 3;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const FilterSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.3);
+  max-width: 700px;
+  padding: 20px;
+  position: absolute;
+  color: #3467a1;
+  top: 20%;
+  right: 50%;
+  transform: translate(+50%, 0%);
+  z-index: 3;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+`;
+
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+`;
+
+const Container = styled.div`
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: row;
+
+  width: 100vw;
+  height: 100vh;
+
+  justify-content: center;
+  align-items: center;
+`;
+
+const StyledFileInput = styled.input`
+  padding: 10px;
+  background-color: #fff5c9;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  color: #555;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    background-color: white;
+  }
+
+  &::file-selector-button {
+    padding: 10px;
+    background-color: #3467a1;
+    border: none;
+    color: #fff5c9;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #3467a1;
+    }
+  }
+`;
+
+const FileInputLabel = styled.label`
+  color: black;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+  margin: 5px;
+  &:hover {
+    background-color: #3467a1;
+  }
+`;
+
+const Text = styled.div`
+  color: black;
+  padding: 12px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-block;
+  margin: 5px;
+  &:hover {
+    background-color: #3467a1;
+  }
+`;
+
+const StyledInput = styled.input`
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-left: 8px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #3467a1;
+    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
+  }
+`;
+
+const StyledSelect = styled.select`
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-left: 8px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #3467a1;
+    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
+  }
+`;
+
+const StyledDateInput = styled.input.attrs({
+  type: 'date',
+})`
+  padding: 8px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-left: 8px;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: #3467a1;
+    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
+  }
 `;
 
 export default Gallery;

@@ -75,7 +75,7 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
 
   const EventList: any = ({ events }: Props) => {
     return (
-      <ul>
+      <div>
         {events.map((event) => {
           console.log(event.id + hoveredEventId);
           return (
@@ -93,17 +93,17 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
                 {event.title} - {event.member}
               </ColumnWrap>
               {hoveredEventId === event.id && (
-                <div>
+                <ColumnWrap>
                   <p>{event.date}</p>
                   <p>
                     {event.time} - {event.endTime}
                   </p>
-                </div>
+                </ColumnWrap>
               )}
             </TableCell>
           );
         })}
-      </ul>
+      </div>
     );
   };
 
@@ -167,6 +167,8 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
               <>
                 <TableHeader key={index}>
                   {datesOfWeekNumber[index]}
+                  <br></br>
+                  {days[index]}
                 </TableHeader>
               </>
             ))}
@@ -238,23 +240,35 @@ const Container = styled.div`
 
 const Table = styled.table`
   width: 100%;
+  max-width: 1400px;
   border-collapse: collapse;
+  border: none;
+  color: #fff;
+  background-color: rgba(64, 64, 64, 0.5);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  font-weight: bold;
 `;
 
 const TableRow = styled.tr`
-  border: 1px solid #ccc;
+  //border: 1px solid #ccc;
+  border-radius: 10px;
 `;
 
 const TableHeader = styled.th`
   padding: 8px;
-  text-align: left;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
+  text-align: center;
+  border-radius: 10px;
+
+  //border: 1px solid #ccc;
 `;
 
 const TableData = styled.td`
   padding: 8px;
   border: 1px solid #ccc;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 `;
 
 const EventListItem = styled.li`
@@ -265,8 +279,13 @@ const EventListItem = styled.li`
 `;
 
 const TableCell = styled.td`
-  border: 1px solid #ccc;
-  margin: 5px;
+  //border: 1px solid #ccc;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  background-color: rgba(52, 103, 161, 0.5);
+  width: 100%;
+  text-align: center;
+  margin: 0 auto;
+  border-radius: 25px;
   padding: 20px;
   ${(props) => props.rowSpan && `row-span: ${props.rowSpan};`}
 `;
@@ -274,6 +293,8 @@ const TableCell = styled.td`
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
+  border-radius: 10px;
+  width: 100%;
 `;
 
 export default HourlyView;

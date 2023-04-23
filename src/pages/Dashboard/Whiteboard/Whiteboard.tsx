@@ -55,13 +55,15 @@ const Wrapper = styled.div`
   position: relative;
   max-width: 100%;
   flex: 1;
-  height: 100vh;
+  height: 600px;
   display: flex;
+  margin: 20px;
   background-color: 'transparent';
   border-radius: 5px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 3px solid black;
 `;
 
 const Sticker: any = styled.div<{
@@ -162,10 +164,12 @@ const RowWrap = styled.div`
 `;
 
 const StickerRowWrap = styled.div`
+  position: absolute;
   display: flex;
   flex-direction: row;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 25px;
+  bottom: 70px;
 `;
 
 const GifWrap = styled.div`
@@ -190,8 +194,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 80px;
-
-  height: auto;
+  border: 3px solid red;
+  height: 100vh;
 
   justify-content: center;
   align-items: center;
@@ -224,6 +228,8 @@ const SearchContainer = styled.div`
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
+  position: absolute;
+  bottom: 0;
 `;
 
 const SearchInput = styled.input`
@@ -407,7 +413,7 @@ export const Whiteboard = () => {
     const newSticker = {
       id: uuidv4(),
       x: 150,
-      y: 250,
+      y: 0,
       content: content,
       color: color,
       member: 'Nina',
@@ -501,98 +507,6 @@ export const Whiteboard = () => {
         <Wrapper id="Wrapper">
           {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              value={searchTerm}
-              onChange={handleInputChange}
-              placeholder="搜尋GIF"
-            />
-            <SearchButton onClick={handleSearch}>
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </SearchButton>
-          </SearchContainer>
-
-          {showResults && (
-            <Results>
-              <GifWrap>
-                <div>
-                  {searchResults.map((result) => (
-                    <img
-                      key={result.id}
-                      src={result.images.original.url}
-                      alt={result.title}
-                      style={{
-                        borderRadius: '25px',
-                        width: '120px',
-                        height: '120px',
-                        margin: '5px',
-                        border:
-                          selectedGif && selectedGif.id === result.id
-                            ? '5px solid #fff5c9'
-                            : 'none',
-                        boxShadow:
-                          selectedGif && selectedGif.id === result.id
-                            ? '0px 0px 10px #3467a1'
-                            : 'none',
-                      }}
-                      onClick={() => setSelectedGif(result)}
-                    />
-                  ))}
-                </div>
-
-                <RowWrap>
-                  <ColorButton
-                    color="#fff5c9"
-                    onClick={() => setShowResults(false)}
-                  >
-                    <FontAwesomeIcon icon={faEyeSlash} />
-                  </ColorButton>
-                  <ColorButton
-                    color="#fff5c9"
-                    disabled={!selectedGif}
-                    onClick={() => {
-                      addSticker(
-                        'transparent',
-                        false,
-                        selectedGif.images.original.url
-                      );
-                      setShowResults(false);
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faPlusCircle} />
-                  </ColorButton>
-                </RowWrap>
-              </GifWrap>
-            </Results>
-          )}
-          <StickerRowWrap>
-            <ColorButton
-              color="white"
-              onClick={() => addSticker('transparent', false, 'New note')}
-            >
-              文字
-            </ColorButton>
-            <ColorButton
-              color="#FFF9C4"
-              onClick={() => addSticker('#FFF9C4', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#EF9A9A"
-              onClick={() => addSticker('#EF9A9A', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#81D4FA"
-              onClick={() => addSticker('#81D4FA', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#A5D6A7"
-              onClick={() => addSticker('#A5D6A7', true, 'New note')}
-            ></ColorButton>
-            <ColorButton color="grey" onClick={() => setStickers([])}>
-              Clear
-            </ColorButton>
-          </StickerRowWrap>
           {stickers.map((sticker: Sticker, index: number) => (
             <>
               <Sticker
@@ -672,6 +586,98 @@ export const Whiteboard = () => {
             </>
           ))}
           <DrawingTool></DrawingTool>
+          <StickerRowWrap>
+            <ColorButton
+              color="white"
+              onClick={() => addSticker('transparent', false, 'New note')}
+            >
+              文字
+            </ColorButton>
+            <ColorButton
+              color="#FFF9C4"
+              onClick={() => addSticker('#FFF9C4', true, 'New note')}
+            ></ColorButton>
+            <ColorButton
+              color="#EF9A9A"
+              onClick={() => addSticker('#EF9A9A', true, 'New note')}
+            ></ColorButton>
+            <ColorButton
+              color="#81D4FA"
+              onClick={() => addSticker('#81D4FA', true, 'New note')}
+            ></ColorButton>
+            <ColorButton
+              color="#A5D6A7"
+              onClick={() => addSticker('#A5D6A7', true, 'New note')}
+            ></ColorButton>
+            <ColorButton color="grey" onClick={() => setStickers([])}>
+              Clear
+            </ColorButton>
+          </StickerRowWrap>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              value={searchTerm}
+              onChange={handleInputChange}
+              placeholder="搜尋GIF"
+            />
+            <SearchButton onClick={handleSearch}>
+              <FontAwesomeIcon icon={faMagnifyingGlass} />
+            </SearchButton>
+          </SearchContainer>
+
+          {showResults && (
+            <Results>
+              <GifWrap>
+                <div>
+                  {searchResults.map((result) => (
+                    <img
+                      key={result.id}
+                      src={result.images.original.url}
+                      alt={result.title}
+                      style={{
+                        borderRadius: '25px',
+                        width: '120px',
+                        height: '120px',
+                        margin: '5px',
+                        border:
+                          selectedGif && selectedGif.id === result.id
+                            ? '5px solid #fff5c9'
+                            : 'none',
+                        boxShadow:
+                          selectedGif && selectedGif.id === result.id
+                            ? '0px 0px 10px #3467a1'
+                            : 'none',
+                      }}
+                      onClick={() => setSelectedGif(result)}
+                    />
+                  ))}
+                </div>
+
+                <RowWrap>
+                  <ColorButton
+                    color="#fff5c9"
+                    onClick={() => setShowResults(false)}
+                  >
+                    <FontAwesomeIcon icon={faEyeSlash} />
+                  </ColorButton>
+                  <ColorButton
+                    color="#fff5c9"
+                    disabled={!selectedGif}
+                    onClick={() => {
+                      addSticker(
+                        'transparent',
+                        false,
+                        selectedGif.images.original.url
+                      );
+                      setShowResults(false);
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faPlusCircle} />
+                  </ColorButton>
+                </RowWrap>
+              </GifWrap>
+            </Results>
+          )}
         </Wrapper>
       </Container>
     </Layout>
