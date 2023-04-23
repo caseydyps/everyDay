@@ -369,13 +369,6 @@ function Gallery() {
   });
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
-  const handleEditMember = (member: string) => {
-    setMembers(member);
-  };
-
-  const handleFilterMember = (member: string) => {
-    setSelectedMember(member);
-  };
 
   return (
     <Container>

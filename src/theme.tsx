@@ -19,11 +19,3 @@ export const GlobalStyle = createGlobalStyle`
     font-weight: bold;
   }
 `;
-
-export const color = (colorName) => css`
-  color: ${colors[colorName]};
-`;
-
-export const backgroundColor = (colorName) => css`
-  background-color: ${colors[colorName]};
-`;

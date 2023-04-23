@@ -663,11 +663,13 @@ export const Whiteboard = () => {
                     color="#fff5c9"
                     disabled={!selectedGif}
                     onClick={() => {
-                      addSticker(
-                        'transparent',
-                        false,
-                        selectedGif.images.original.url
-                      );
+                      if (selectedGif) {
+                        addSticker(
+                          'transparent',
+                          false,
+                          selectedGif.images.original.url
+                        );
+                      }
                       setShowResults(false);
                     }}
                   >

@@ -275,7 +275,7 @@ const FamilyMemberForm = () => {
 
   const handleNumberOfMembersIncrement = () => {
     setNumberOfMembers(numberOfMembers + 1);
-    setMembers((prevMembers) => [
+    setMembers((prevMembers: any) => [
       ...prevMembers,
       {
         name: '',

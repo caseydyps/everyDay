@@ -527,58 +527,58 @@ function DragNDrop({ data }: any) {
     }
   };
 
-  const handleMemberChange: any = async (
-    member: string,
-    groupIndex: number,
-    itemIndex: number,
-    field: string
-  ) => {
-    const getMemberAvatar = (memberName) => {
-      const member = membersArray.find((m) => m.role === memberName);
-      return member ? member.avatar : null;
-    };
+  // const handleMemberChange: any = async (
+  //   member: string,
+  //   groupIndex: number,
+  //   itemIndex: number,
+  //   field: string
+  // ) => {
+  //   const getMemberAvatar = (memberName) => {
+  //     const member = membersArray.find((m) => m.role === memberName);
+  //     return member ? member.avatar : null;
+  //   };
 
-    console.log(membersArray);
-    const memberAvatar = getMemberAvatar(member);
-    console.log(memberAvatar);
+  //   console.log(membersArray);
+  //   const memberAvatar = getMemberAvatar(member);
+  //   console.log(memberAvatar);
 
-    //const value = e.target.value;
+  //   //const value = e.target.value;
 
-    // if (!value) return;
+  //   // if (!value) return;
 
-    const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
+  //   const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
-    try {
-      // Get the existing items array from the todo document
-      const todoDoc = await getDoc(todoRef);
-      const items = todoDoc.exists() ? todoDoc.data().items : [];
+  //   try {
+  //     // Get the existing items array from the todo document
+  //     const todoDoc = await getDoc(todoRef);
+  //     const items = todoDoc.exists() ? todoDoc.data().items : [];
 
-      // Update the specific item in the items array
-      const updatedItems = [...items];
-      updatedItems[itemIndex][field] = memberAvatar;
+  //     // Update the specific item in the items array
+  //     const updatedItems = [...items];
+  //     updatedItems[itemIndex][field] = memberAvatar;
 
-      // Update the items array in the todo document
-      await setDoc(todoRef, {
-        items: updatedItems,
-        title: list[groupIndex].title,
-      });
-      setList((oldList) => {
-        const newList = [...oldList];
-        const group = newList[groupIndex];
-        group.items = group.items.map((item, index) => {
-          if (index === itemIndex) {
-            return { ...item, [field]: memberAvatar };
-          } else {
-            return item;
-          }
-        });
-        return newList;
-      });
-      console.log('Item has been updated in Firestore!');
-    } catch (error) {
-      console.error('Error updating item in Firestore: ', error);
-    }
-  };
+  //     // Update the items array in the todo document
+  //     await setDoc(todoRef, {
+  //       items: updatedItems,
+  //       title: list[groupIndex].title,
+  //     });
+  //     setList((oldList) => {
+  //       const newList = [...oldList];
+  //       const group = newList[groupIndex];
+  //       group.items = group.items.map((item, index) => {
+  //         if (index === itemIndex) {
+  //           return { ...item, [field]: memberAvatar };
+  //         } else {
+  //           return item;
+  //         }
+  //       });
+  //       return newList;
+  //     });
+  //     console.log('Item has been updated in Firestore!');
+  //   } catch (error) {
+  //     console.error('Error updating item in Firestore: ', error);
+  //   }
+  // };
 
   const handleDoneChange = async (
     e: React.ChangeEvent<HTMLInputElement>,

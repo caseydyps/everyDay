@@ -7,7 +7,7 @@ import SignIn from '../Login/SignIn';
 import LogOut from '../Login/LogOut';
 import everyday from './everyday.png';
 import logo from './logo.png';
-import { color, backgroundColor } from '../../theme';
+// import { color, backgroundColor } from '../../theme';
 import UserAvatar from './Avatar';
 import googleSignIn from '../Login/SignIn';
 import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -165,7 +165,10 @@ const Logo = styled(Link)`
   /* media query for screens narrower than 1080px */
 `;
 
-export const NavList = styled.ul`
+interface NavListProps {
+  open: boolean; // 添加 open 属性
+}
+export const NavList = styled.ul<NavListProps>`
   list-style: none;
   padding: 0;
   margin: auto;
@@ -255,31 +258,6 @@ export const NavLink = styled(Link)`
   @media screen and (max-width: 767px) {
     padding: 5px;
     font-size: 14px;
-  }
-`;
-
-const NavIcon = styled.span`
-  display: block;
-  width: 30px;
-  height: 2px;
-  margin: 0;
-  background-color: #fff;
-  transition: transform 0.2s ease-in-out;
-
-  &:nth-child(1) {
-    transform: ${({ open }) =>
-      open ? 'rotate(45deg) translate(-6px, 6px)' : 'rotate(0)'};
-  }
-
-  &:nth-child(2) {
-    opacity: ${({ open }) => (open ? '0' : '1')};
-    transform: ${({ open }) => (open ? 'translateX(20px)' : 'none')};
-    margin: 4px;
-  }
-
-  &:nth-child(3) {
-    transform: ${({ open }) =>
-      open ? 'rotate(-45deg) translate(-6px, -6px)' : 'rotate(0)'};
   }
 `;
 

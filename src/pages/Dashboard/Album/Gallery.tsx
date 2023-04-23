@@ -84,7 +84,7 @@ type AlbumArray = Album[];
 function Gallery() {
   const [file, setFile] = useState<any>(null);
   const [albumTitle, setAlbumTitle] = useState<string>('');
-  const [members, setMembers] = useState<string[]>([]);
+  const [members, setMembers] = useState<string[] | string>([]);
   const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [albumId, setAlbumId] = useState<string>('');

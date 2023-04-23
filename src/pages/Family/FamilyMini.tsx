@@ -40,10 +40,6 @@ const FamilyMemberForm = () => {
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
-  const handleFamilyConnect = async () => {
-    e.preventDefault();
-  };
-
   useEffect(() => {
     const fetchMembers = async () => {
       console.log(familyId);
@@ -182,7 +178,7 @@ const FamilyMemberForm = () => {
 
   console.log('avatarUrl', avatarUrl);
 
-  function getCurrentAge(dateOfBirth) {
+  function getCurrentAge(dateOfBirth: string) {
     const now = new Date();
     const birthDate = new Date(dateOfBirth);
 

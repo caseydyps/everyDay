@@ -135,12 +135,10 @@ const UserAuthData = () => {
     fetchMembers();
   }, [familyId]);
 
- 
-
   const handleFamilyCreate = async (
-    userName: string,
-    userEmail: string,
-    familyId: string
+    userName: string | null,
+    userEmail: string | null,
+    familyId: string | null
   ) => {
     console.log(familyId);
     const familyDocRef = doc(db, 'Family', familyId);

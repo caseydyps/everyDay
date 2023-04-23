@@ -5,7 +5,7 @@ import SignIn from '../../Components/Login/SignIn';
 import LogOut from '../../Components/Login/LogOut';
 import styled, { keyframes } from 'styled-components/macro';
 import { Link } from 'react-router-dom';
-import { color, backgroundColor } from '../../theme';
+// import { color, backgroundColor } from '../../theme';
 import { NavList, NavItem } from '../../Components/Nav/Navbar';
 import { db, storage } from '../../config/firebase.config';
 import 'firebase/firestore';
@@ -146,7 +146,7 @@ export const GradientAnimation = keyframes`
 
 export const Container = styled.div`
   width: 100vw;
-  height: calc(100vh - 50px);
+  height: 100vh;
   margin-top: 70px;
   background: linear-gradient(
     45deg,
@@ -196,6 +196,7 @@ const RowWrap = styled.div`
 
 const Wrap = styled.div`
   flex-wrap: wrap;
+  height: 100%;
 `;
 
 const Slogan = styled.h2`
@@ -221,7 +222,7 @@ const Avatar = styled.img`
   border: 6px solid #629dda;
 `;
 
-const LinkButton = styled(Link)`
+const LinkButton: any = styled(Link)`
   background-color: #transparent;
   color: #fff;
   padding: 10px 20px;

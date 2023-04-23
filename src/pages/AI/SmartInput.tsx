@@ -550,7 +550,7 @@ const SmartInput = () => {
         image: string | null;
       };
 
-  const ResponseDisplay = ({ children }: ResponseDisplayProps) => {
+  const ResponseDisplay = ({ children }: any) => {
     console.log(responseValue);
     const parsedResponse = JSON.parse(responseValue);
     let sentence = '';
