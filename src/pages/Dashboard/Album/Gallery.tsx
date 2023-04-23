@@ -601,6 +601,19 @@ const GalleryWrapper = styled.div`
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+  @media screen and (max-width: 767px) {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    overflow-y: scroll;
+  }
+
+  @media screen and (min-width: 768px) and (max-width: 991px) {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    overflow-y: scroll;
+  }
 `;
 
 const AlbumWrapper = styled.div`
@@ -709,6 +722,10 @@ const Container = styled.div`
 
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 1200px) {
+    height: 100%;
+    margin-top: 40px;
+  }
 `;
 
 const StyledFileInput = styled.input`

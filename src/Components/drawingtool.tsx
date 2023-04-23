@@ -59,6 +59,14 @@ const ButtonWrap = styled.div`
   top: 0;
   right: 50%;
   transform: translate(50%, 0);
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    top: 0%;
+    right: 30px;
+    position: absolute;
+  }
 `;
 
 const Container = styled.div`

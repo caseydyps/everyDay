@@ -63,7 +63,6 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 3px solid black;
 `;
 
 const Sticker: any = styled.div<{
@@ -194,7 +193,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 80px;
-  border: 3px solid red;
+
   height: 100vh;
 
   justify-content: center;

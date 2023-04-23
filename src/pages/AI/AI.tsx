@@ -69,13 +69,13 @@ const CenterWrapper = styled.div`
 `;
 
 const Circle = styled.div`
-  width: 500px;
-  height: 500px;
+  width: 26vw;
+  height: 26vw;
   border-radius: 50%;
   margin: 50px;
   padding: 20px;
 
-  font-size: 36px;
+  font-size: 0.072vw;
   background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -92,6 +92,10 @@ const Circle = styled.div`
   }
   &:hover {
     transform: scale(1.1);
+  }
+
+  @media screen and (max-width: 1200px) {
+    background-color: transparent;
   }
 `;
 

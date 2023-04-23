@@ -1349,7 +1349,7 @@ const Wrap = styled.div`
   justify-content: center;
   text-align: center;
   border-radius: 25px;
-  height: calc(100vh - 50px);
+  height: auto;
   transition: all 0.2s ease-in-out;
 `;
 

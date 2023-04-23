@@ -426,6 +426,10 @@ const AlbumWrapper = styled.div`
 
   width: 350px;
   height: auto;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+  }
 `;
 
 const AlbumTitle = styled.h4`
