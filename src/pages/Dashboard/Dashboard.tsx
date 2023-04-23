@@ -1,18 +1,19 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-// import DragNDrop from './DragNDropDashboard';
 import TodoDashboard from './Todo/TodoDashboard';
-import CalendarDashboard from './Calendar/CalendarDashboard';
 import Whiteboard from './Whiteboard/WhiteboardMini';
-import Gallery from './Album/Gallery';
+import Gallery from './Album/GalleryMini';
 import Milestone from './MilestoneMini';
 import Sidebar from '../../Components/Nav/Navbar';
 import Navbar from '../../Components/Navbar/Navbar';
 import React from 'react';
 import Layout from '../../Components/layout';
 import GridLayout from 'react-grid-layout';
-import TodoMini from './Todo/TodoMini';
+import WeatherApp from './WeatherApp';
 import CalendarMini from './Calendar/CalendarMini';
+import Financial from './Financial';
+import Suggestion from '../AI/SuggestionMini';
+import FamilyMemberForm from '../Family/FamilyMini';
 
 const Container = styled.div`
   display: flex;
@@ -99,15 +100,16 @@ const Dashboard = () => {
   `;
 
   const BoxS = styled.div`
-    background-color: #f2f2f2;
-    border: 2px solid red;
     width: 100%;
     height: 100%;
+    background-color: #eb7a53;
+    border-radius: 20px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   `;
 
   const BoxM = styled.div`
-    background-color: red;
-    border: 2px solid red;
+    background-color: rgba(64, 64, 64, 0.5);
+    border-radius: 20px;
     width: 100%;
     height: 100%;
   `;
@@ -130,12 +132,20 @@ const Dashboard = () => {
       spanRows: 4,
     },
     {
-      component: <BoxM>Calendar</BoxM>,
+      component: (
+        <BoxM>
+          <Suggestion></Suggestion>
+        </BoxM>
+      ),
       spanColumns: 2,
       spanRows: 4,
     },
     {
-      component: <BoxM></BoxM>,
+      component: (
+        <BoxM>
+          <Gallery></Gallery>
+        </BoxM>
+      ),
       spanColumns: 2,
       spanRows: 4,
     },
@@ -149,25 +159,42 @@ const Dashboard = () => {
       spanRows: 4,
     },
     {
-      component: <BoxS></BoxS>,
+      component: (
+        <BoxS>
+          <WeatherApp></WeatherApp>
+        </BoxS>
+      ),
       spanColumns: 1,
       spanRows: 2,
     },
     {
-      component: <BoxS></BoxS>,
+      component: (
+        <BoxS style={{ backgroundColor: '#666' }}>
+          <Financial></Financial>
+        </BoxS>
+      ),
       spanColumns: 1,
       spanRows: 2,
     },
     {
-      component: <BoxS></BoxS>,
+      component: (
+        <BoxS style={{ backgroundColor: '#f5f5f5' }}>
+          <CalendarMini />
+        </BoxS>
+      ),
       spanColumns: 1,
       spanRows: 2,
     },
     {
-      component: <BoxS></BoxS>,
+      component: (
+        <BoxS>
+          <FamilyMemberForm></FamilyMemberForm>
+        </BoxS>
+      ),
       spanColumns: 1,
       spanRows: 2,
     },
+
     {
       component: <Whiteboard />,
       spanColumns: 6,

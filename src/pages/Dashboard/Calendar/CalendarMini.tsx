@@ -1,19 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
-
+import Sidebar from '../../../Components/Nav/Navbar';
+import { db } from '../../../config/firebase.config';
+import firebase from 'firebase/app';
+import { getISOWeek } from 'date-fns';
+import 'firebase/firestore';
+import {
+  collection,
+  updateDoc,
+  getDocs,
+  doc,
+  addDoc,
+  deleteDoc,
+  setDoc,
+  query,
+  where,
+} from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
-
-const Wrapper = styled.div`
-  position: relative;
-  width: 1500px;
-  height: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid black;
-  margin: 10px;
-`;
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faEdit,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+} from '@fortawesome/free-solid-svg-icons';
+import HourlyView from './HourView';
+import DailyHourlyView from './DailyHourView';
+import Layout from '../../../Components/layout';
+import DefaultButton from '../../../Components/Button/Button';
+import UserAuthData from '../../../Components/Login/Auth';
 const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -38,13 +57,10 @@ const DayWrap = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 0px;
   font-family: Arial, sans-serif;
   margin: 5px;
-  border: 2px solid black;
-  width: auto;
-  height: auto;
-  flex: 1;
+  background-color: #f5f5f5;
 `;
 
 const MonthContainer = styled.div`
@@ -85,16 +101,25 @@ const DayLabel = styled.span`
   font-weight: bold;
 `;
 
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  top: 0%;
+  left: 0%;
+`;
+
 const Button = styled.button`
+  margin-top: 10px;
   border: none;
   background-color: transparent;
   cursor: pointer;
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
-  color: #666;
+  color: #333;
   &:hover {
-    color: #333;
+    color: #666;
   }
 `;
 
@@ -109,53 +134,81 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  width: 300px;
-  height: 200px;
-  border: 1px solid #ccc;
+  max-width: 130px;
+  min-width: 130px;
+  height: 80px;
+  max-height: 80px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border-radius: 20px;
 
+  // overflow-y: auto;
+  margin: 5px;
   &.inactive {
     color: #999;
   }
 
   &.today {
-    background-color: #4fc3f7;
+    background-color: #629dda;
   }
 
   &:hover {
-    background-color: #f5f5f5;
+    background-color: #c2c2c2;
     cursor: pointer;
+    color: #333;
+  }
+  div {
+    font-size: 8px;
+    font-weight: bold;
+    color: #333;
+    border-radius: 5px;
+    padding: 0 5px;
   }
 `;
 
-const AddButton = styled.button`
-  background-color: #2196f3;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  cursor: pointer;
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  height: auto;
 `;
 
-const Modal = styled.div``;
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  max-width: 150px;
+`;
+
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+`;
 
 interface EventWrapperProps {
   category: string;
   multiDay?: boolean;
   finished?: boolean;
 }
-
 const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
   align-items: center;
-  margin: 5px 0;
+  position: relative;
+  overflow-x: auto;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  justify-content: space-between;
+
   background-color: ${({ category }) => {
     switch (category) {
       case 'Work':
-        return 'lightblue';
+        return '#7fc7af';
       case 'Personal':
-        return 'pink';
+        return '#d95b43';
       case 'School':
-        return 'lightgreen';
+        return '#fff5c9';
       default:
         return 'white';
     }
@@ -163,52 +216,77 @@ const EventWrapper = styled.div<EventWrapperProps>`
   ${({ multiDay }) =>
     multiDay
       ? `
-       
-       
-        padding: 5px 10px;
-        margin-left: -2px;
+        margin-left: 0px;
       `
       : `
-        padding: 5px;
-        border-radius: 10px;
-        border: 2px solid black;
+        border: 1px solid black;
+        margin: 5px;
+        
       `}
 `;
 
 const EventTime = styled.div`
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: bold;
+`;
+
+const DateDetailsWrapper = styled.div`
+  font-size: 16px;
   font-weight: bold;
 `;
 
 interface EventTitleProps {
-  title: string;
-  finished: boolean;
-  children?: React.ReactNode;
+  finished?: boolean;
 }
 
-const EventTitle: any = styled.div<EventTitleProps>`
-  font-size: 24px;
+const EventTitle = styled.div<EventTitleProps>`
+  font-size: 20px;
   font-weight: bold;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
 `;
 
 const EventMember = styled.div`
-  font-size: 24px;
+  font-size: 16px;
   color: blue;
 `;
 
+const CenterWrap = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
 const EventCategory = styled.div`
-  font-size: 24px;
+  font-size: 16px;
   color: gray;
 `;
 
 const EventList = styled.ul`
   list-style-type: none;
   padding: 0;
-  margin: 0;
+
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: #transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 2px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: transparent;
+  }
 `;
 
-function CalendarMini() {
+function Calendar() {
   const [date, setDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -221,11 +299,18 @@ function CalendarMini() {
   const [eventCategory, setEventCategory] = useState<string>('');
   const [eventMember, setEventMember] = useState<string>('');
   const [eventNote, setEventNote] = useState<string>('');
+  const [eventDay, setEventDay] = useState<string>('');
+  const [eventEndDay, setEventEndDay] = useState<string>('');
   const [events, setEvents] = useState<Event[]>([]);
-  const [selectedRow, setSelectedRow] = useState<number | null>(null);
-  const [view, setView] = useState<'month' | 'day' | 'week'>('day');
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth();
+  const day = selectedDate.getDate();
+  const isoWeekNumber = getISOWeek(new Date(year, month, day));
+  const [weekNumber, setWeekNumber] = useState<number>(isoWeekNumber);
+  const [selectedRow, setSelectedRow] = useState<number | null>(0);
+  const [view, setView] = useState<string>('day');
   const draggedEventIdRef = useRef<string | null>(null);
-  const days: string[] = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
     'Jan',
     'Feb',
@@ -241,13 +326,17 @@ function CalendarMini() {
     'Dec',
   ];
 
-  interface DateDetailsProps {
-    date: Date;
-    events: Event[];
-    setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
-    draggedEventIdRef: React.MutableRefObject<string | null>;
-    isCurrentMonth: boolean;
-  }
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
 
   interface Event {
     id: string;
@@ -264,6 +353,85 @@ function CalendarMini() {
     note: string;
   }
 
+  type DateDetailsProps = {
+    date: Date;
+    month: string;
+    events: Event[];
+    setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
+    draggedEventIdRef?: React.MutableRefObject<string | null>;
+    isCurrentMonth?: boolean;
+  };
+
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      const eventsData: any[] = await getCalendarData();
+      setEvents(eventsData);
+    };
+    fetchCalendarData();
+  }, [familyId]);
+
+  const getCalendarData = async () => {
+    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+    const querySnapshot = await getDocs(familyDocRef);
+    const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return todosData;
+  };
+
+  const postEventToFirestore = async (data: Event) => {
+    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+    try {
+      const docRef = await addDoc(familyDocRef, data);
+      console.log('Document written with ID: ', docRef.id);
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+  };
+
+  const deleteEventFromFirestore = async (eventId: string) => {
+    const eventRef = collection(db, 'Family', familyId, 'Calendar');
+    const querySnapshot = await getDocs(eventRef);
+    querySnapshot.forEach(async (doc) => {
+      const data = doc.data();
+      if (data.id === eventId) {
+        try {
+          await deleteDoc(doc.ref);
+          console.log('Document successfully deleted!');
+        } catch (error) {
+          console.error('Error removing document: ', error);
+        }
+      }
+    });
+  };
+
+  const editEventtoFirestore = async (eventId: string, updatedData: any) => {
+    const eventRef = collection(db, 'Family', familyId, 'Calendar');
+
+    // Query for the document with the matching ID
+    const querySnapshot = await getDocs(
+      query(eventRef, where('id', '==', eventId))
+    );
+
+    // Update the document with the new data
+    querySnapshot.forEach(async (doc) => {
+      try {
+        await updateDoc(doc.ref, updatedData);
+        console.log('Document successfully edited!');
+      } catch (error) {
+        console.error('Error editing document: ', error);
+      }
+    });
+  };
+
+  const updateEventToFirestore = async (eventId: string, finished: boolean) => {
+    const eventRef = doc(db, 'Family', familyId, 'Calendar', eventId);
+    try {
+      await updateDoc(eventRef, { finished: finished });
+      console.log('Document successfully updated!');
+    } catch (error) {
+      console.error('Error updating document: ', error);
+    }
+  };
+
   function DateDetails({
     date,
     events,
@@ -271,13 +439,14 @@ function CalendarMini() {
     draggedEventIdRef,
     isCurrentMonth,
   }: any) {
+    console.log(isCurrentMonth);
     const handleDragStart = (
       e: React.DragEvent<HTMLDivElement>,
       eventId: string
     ) => {
-      console.log(eventId);
+      // console.log(eventId);
       draggedEventIdRef.current = eventId;
-      console.log(draggedEventIdRef.current);
+      // console.log(draggedEventIdRef.current);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -319,28 +488,31 @@ function CalendarMini() {
       return <div>今天沒事~</div>;
     }
     const selectedEvents = events.filter((event: Event) => {
-      const startDate = new Date(event.date);
-      if (event.endDate === event.date) {
-        // Single day event
-        return startDate.getDate() === date.getDate();
+      const eventDate = new Date(event.date);
+      if (eventDate.getMonth() === date.getMonth()) {
+        const startDate = new Date(eventDate);
+        if (event.endDate === event.date) {
+          // Single day event
+          return startDate.getDate() === date.getDate();
+        } else {
+          // Multiday event
+          startDate.setDate(startDate.getDate() - 1);
+          const endDate = new Date(event.endDate);
+          return date >= startDate && date <= endDate;
+        }
       } else {
-        // Multiday event
-        startDate.setDate(startDate.getDate() - 1);
-        const endDate = new Date(event.endDate);
-        return date >= startDate && date <= endDate;
+        return false;
       }
     });
 
-    // console.log(selectedEvents);
-
     return (
-      <div
+      <DateDetailsWrapper
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e, date, draggedEventIdRef)}
       >
-        <div>{`${
+        {/* <div>{`${
           months[date.getMonth()]
-        } ${date.getDate()}, ${date.getFullYear()}`}</div>
+        } ${date.getDate()}, ${date.getFullYear()}`}</div> */}
         {selectedEvents.length > 0 ? (
           <EventList>
             {selectedEvents.map((event: Event, index: number) =>
@@ -353,24 +525,20 @@ function CalendarMini() {
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
                   >
-                    <EventCategory>{event.category}</EventCategory>
                     <EventMember>{event.member}</EventMember>
-
-                    <EventTime>{event.time}</EventTime>
-                    <EventTitle title={event.title} finished={event.finished}>
+                    {/* <EventTime>{event.time}</EventTime>
+                    <EventTime>{`~${event.endTime}`}</EventTime> */}
+                    <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
-                    <div>
-                      <button onClick={() => handleEditEvent(event)}>
-                        Edit
-                      </button>
-                      <button onClick={() => handleDeleteEvent(event)}>
-                        Delete
-                      </button>
-                      <button onClick={() => handleFinishEvent(event)}>
-                        Finish
-                      </button>
-                    </div>
+                    <RowWrap>
+                      <Button onClick={() => handleEditEvent(event)}>
+                        <FontAwesomeIcon icon={faEdit} />
+                      </Button>
+                      <Button onClick={() => handleDeleteEvent(event)}>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </Button>
+                    </RowWrap>
                   </EventWrapper>
                 </li>
               ) : null
@@ -379,42 +547,14 @@ function CalendarMini() {
         ) : (
           <div></div>
         )}
-      </div>
+      </DateDetailsWrapper>
     );
   }
 
-  //   function MonthDetails({ date, events }) {
-  //     console.log(date);
-  //     if (!date) {
-  //       return <div>No date selected</div>;
-  //     }
-
-  //     const selectedMonthEvents = events.filter((event) => {
-  //       const eventDate = new Date(event.date);
-  //       return (
-  //         eventDate.getMonth() === date.getMonth() &&
-  //         eventDate.getFullYear() === date.getFullYear()
-  //       );
-  //     });
-
-  //     return (
-  //       <div>
-  //         <div>{`${months[date.getMonth()]} ${date.getFullYear()}`}</div>
-  //         {selectedMonthEvents.length > 0 ? (
-  //           <ul>
-  //             {selectedMonthEvents.map((event, index) => (
-  //               <li key={index}>
-  //                 {event.member}:{event.title} on {event.date} to {event.endDate}{' '}
-  //                 at {event.time}
-  //               </li>
-  //             ))}
-  //           </ul>
-  //         ) : (
-  //           <div>這個月目前沒有活動</div>
-  //         )}
-  //       </div>
-  //     );
-  //   }
+  type MonthDetailsProps = {
+    date: Date | null;
+    events: Event[];
+  };
 
   const getDaysInMonth = (date: Date): number => {
     const year = date.getFullYear();
@@ -422,127 +562,9 @@ function CalendarMini() {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  //   const getFirstDayOfMonth = (date: Date): number => {
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth();
-  //     return new Date(year, month, 1).getDay();
-  //   };
-
-  //   const getFirstDayOfWeek = (date: Date): Date => {
-  //     const dayOfWeek = date.getDay();
-  //     const diff = date.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1); // adjust when day is Sunday
-  //     return new Date(date.setDate(diff));
-  //   };
-  function addWeeks(date: Date, weeks: number) {
-    const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + weeks * 7);
-    return newDate;
-  }
-
-  function subWeeks(date: Date, weeks: number) {
-    return addWeeks(date, -weeks);
-  }
-
-  //   const handlePrevMonth = () => {
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth() - 1;
-  //     setDate(new Date(year, month, 1));
-  //   };
-
-  //   const handleNextMonth = () => {
-  //     const year = date.getFullYear();
-  //     const month = date.getMonth() + 1;
-  //     setDate(new Date(year, month, 1));
-  //   };
-
-  //   const handlePrevWeek = () => {
-  //     const newDate = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000);
-  //     const newMonth = newDate.getMonth();
-  //     const currentMonth = date.getMonth();
-  //     const lastRowOfMonth = Math.ceil(getDaysInMonth(date) / 7) - 1;
-  //     setDate(newDate);
-  //     setSelectedRow(
-  //       newMonth === currentMonth ? Math.max(selectedRow - 1, 0) : lastRowOfMonth
-  //     );
-  //   };
-
-  //   const handleNextWeek = () => {
-  //     const newDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
-  //     const newMonth = newDate.getMonth();
-  //     const currentMonth = date.getMonth();
-  //     setDate(newDate);
-  //     setSelectedRow(newMonth === currentMonth ? selectedRow + 1 : 0);
-  //   };
-
-  const handlePrevDay = () => {
-    const newDate = new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000);
-    setSelectedDate(newDate);
-  };
-
-  const handleNextDay = () => {
-    const newDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000);
-    setSelectedDate(newDate);
-  };
-
-  const handleDateClick = (day: number, row: number) => {
-    setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
-    setSelectedRow(row);
-    console.log(selectedDate);
-  };
-
-  const handleWeekDateClick = (day: number, row: number) => {
-    setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
-  };
-
-  const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const isMultiDay = eventDate !== eventEndDate;
-    const newEvent = {
-      title: eventTitle,
-      date: eventDate,
-      endDate: eventEndDate,
-      category: eventCategory,
-      member: eventMember,
-      id: uuidv4(),
-      multiDay: isMultiDay,
-      time: '',
-      endTime: '',
-      description: '',
-      finished: false,
-      note: eventNote,
-    };
-    if (!isAllDay) {
-      newEvent.time = eventTime;
-      newEvent.endTime = eventEndTime;
-    }
-    setEvents([...events, newEvent]);
-    setShowModal(false);
-    setEventTitle('');
-    setEventDate('');
-    setEventEndDate('');
-    setEventTime('');
-    setEventEndTime('');
-    setEventCategory('');
-    setEventMember('');
-    setEventNote('');
-    setIsAllDay(false);
-  };
-
-  const handleAddEvent = () => {
-    setShowModal(true);
-  };
-
-  //   function getLastDayOfWeek(date) {
-  //     return new Date(date.setDate(date.getDate() + 6));
-  //   }
-
   useEffect(() => {
     console.log(selectedRow); // log the updated value of selectedRow
   }, [selectedRow]);
-
-  //   const handleViewClick = (view) => {
-  //     setView(view);
-  //   };
 
   function getWeekNumber(date: Date) {
     const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
@@ -550,6 +572,27 @@ function CalendarMini() {
     const daysSinceJan1 =
       Math.floor((date.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
     const weekNumber = Math.floor((daysSinceJan1 + (7 - dayOfWeek)) / 7);
+    console.log(weekNumber);
+    setWeekNumber(weekNumber);
+  }
+
+  function getISOWeek(date: Date): number {
+    const dayOfWeek = date.getDay();
+    const dayOfMonth = date.getDate();
+
+    // Calculate the Thursday of the current week
+    const thursday = new Date(
+      date.getTime() + (3 - ((dayOfWeek + 6) % 7)) * 86400000
+    );
+
+    // Calculate the difference in days between the Thursday and the first day of the year
+    const january1st = new Date(date.getFullYear(), 0, 1);
+    const daysSinceJanuary1st = Math.floor(
+      (thursday.getTime() - january1st.getTime()) / 86400000
+    );
+
+    // Calculate the ISO week number
+    const weekNumber = Math.floor((daysSinceJanuary1st + 3) / 7) + 1;
 
     return weekNumber;
   }
@@ -579,6 +622,7 @@ function CalendarMini() {
       'December',
     ];
     console.log('selectedDate ' + selectedDate);
+    console.log('week ' + weekNumber);
     if (!selectedDate) {
       selectedDate = new Date();
     }
@@ -588,19 +632,14 @@ function CalendarMini() {
     const year = selectedDate.getFullYear();
 
     return (
-      <div>
-        <h1>{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h1>
-        <button onClick={handlePrevDay}>Previous day</button>
-        <button onClick={handleNextDay}>Next day</button>
-        <table>...</table>
-      </div>
+      <h4
+        style={{ margin: '0px', fontSize: '16px', fontWeight: 'bold' }}
+      >{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h4>
     );
   }
 
-  const weekNumber = getWeekNumber(date);
-
   // handleEditEvent function
-  const handleEditEvent = (event: Event) => {
+  const handleEditEvent = async (event: Event) => {
     // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
@@ -640,31 +679,28 @@ function CalendarMini() {
     const updatedEvents: any = events.map((e) =>
       e.id === event.id ? updatedEvent : e
     );
+    await editEventtoFirestore(event.id, updatedEvent);
     setEvents(updatedEvents);
   };
 
   // handleDeleteEvent function
-  const handleDeleteEvent = (event: Event) => {
+  const handleDeleteEvent = async (event: Event) => {
     // Prompt the user to confirm deletion
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${event.title}"?`
     );
     if (confirmDelete) {
       // Remove the event from the events list
-      const updatedEvents = events.filter((e) => e.id !== event.id);
+      const updatedEvents = events.filter((e) => {
+        console.log(e.id);
+        console.log(event.id);
+        return e.id !== event.id;
+      });
       setEvents(updatedEvents);
+      console.log(events);
+      console.log(event.id);
+      await deleteEventFromFirestore(event.id);
     }
-  };
-
-  // handleFinishEvent function
-  const handleFinishEvent = (event: Event) => {
-    // Update the event's "finished" property to its opposite value
-    const updatedEvent = { ...event, finished: !event.finished };
-    // Update the events list with the new event object
-    const updatedEvents = events.map((e) =>
-      e.id === event.id ? updatedEvent : e
-    );
-    setEvents(updatedEvents);
   };
 
   useEffect(() => {
@@ -672,141 +708,101 @@ function CalendarMini() {
   }, [events]);
 
   return (
-    <>
-      <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
-        {/* <h2>{formatDate(selectedDate)}</h2> */}
-        {/* <MonthContainer>
-          <Button onClick={handlePrevDay}>Prev</Button>
-          <MonthLabel>{`${
-            months[date.getMonth()]
-          } ${date.getFullYear()}`}</MonthLabel>
-          <Button onClick={handleNextDay}>Next</Button>
-        </MonthContainer> */}
-        <DateDetails date={selectedDate} events={events} />
-        <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-        {showModal && (
-          <Modal>
-            <form onSubmit={handleEventSubmit}>
-              <label>
-                Title:
-                <input
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                />
-              </label>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={isAllDay}
-                  onChange={(e) => setIsAllDay(e.target.checked)}
-                />
-                All Day Event
-              </label>
-              <label>
-                Start:
-                <input
-                  type="date"
-                  value={eventDate}
-                  onChange={(e) => setEventDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Due:
-                <input
-                  type="date"
-                  value={eventEndDate}
-                  onChange={(e) => setEventEndDate(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventTime}
-                  onChange={(e) => setEventTime(e.target.value)}
-                />
-              </label>
-              <label>
-                Time:
-                <input
-                  type="time"
-                  value={eventEndTime}
-                  onChange={(e) => setEventEndTime(e.target.value)}
-                />
-              </label>
+    <Container>
+      <Wrap>
+        <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+            draggedEventIdRef={draggedEventIdRef}
+          />
 
-              <label>
-                Category:
-                <select
-                  value={eventCategory}
-                  onChange={(e) => setEventCategory(e.target.value)}
-                >
-                  <option value="">Select a category</option>
-                  <option value="Work">Work</option>
-                  <option value="Personal">Personal</option>
-                  <option value="School">School</option>
-                </select>
-              </label>
-              <label>
-                Member:
-                <select
-                  value={eventMember}
-                  onChange={(e) => setEventMember(e.target.value)}
-                >
-                  <option value="">Select a family member</option>
-                  <option value="Dad">Dad</option>
-                  <option value="Mom">Mom</option>
-                  <option value="Baby">Baby</option>
-                </select>
-              </label>
+          <DayCalendar selectedDate={selectedDate} />
+          <CenterWrap>
+            {' '}
+            <Td
+              style={{
+                width: '100px',
+                height: '80px',
+                maxWidth: '100px',
+                maxHeight: '80px;',
+                backgroundColor: '#666',
+              }}
+            >
+              {events.map((event) => {
+                const eventDate = new Date(event.date);
+                const selectedDateObj = new Date(selectedDate);
+                const eventDateOnly = new Date(
+                  eventDate.getFullYear(),
+                  eventDate.getMonth(),
+                  eventDate.getDate()
+                );
+                const selectedDateOnly = new Date(
+                  selectedDateObj.getFullYear(),
+                  selectedDateObj.getMonth(),
+                  selectedDateObj.getDate()
+                );
 
-              <button type="submit">Add</button>
-            </form>
-          </Modal>
-        )}
-        <DayCalendar selectedDate={selectedDate} />
-        {/* <Td>
-          {events.map((event) => {
-            const eventDate = new Date(event.date);
-            const selectedDateObj = new Date(selectedDate);
-            const eventDateOnly = new Date(
-              eventDate.getFullYear(),
-              eventDate.getMonth(),
-              eventDate.getDate()
-            );
-            const selectedDateOnly = new Date(
-              selectedDateObj.getFullYear(),
-              selectedDateObj.getMonth(),
-              selectedDateObj.getDate()
-            );
+                if (
+                  selectedDateOnly === eventDateOnly ||
+                  (selectedDateOnly >= eventDateOnly &&
+                    selectedDateOnly < new Date(event.endDate))
+                ) {
+                  return (
+                    <div
+                      style={{
+                        height: 'auto',
+                        fontSize: '24px',
+                        color: 'white',
+                        width: '80%',
+                      }}
+                    >
+                      <EventTitle
+                        style={{
+                          fontSize: '24px',
+                          color: 'white',
+                        }}
+                        finished={event.finished}
+                      >
+                        {event.title}
+                      </EventTitle>
+                      <EventCategory
+                        style={{
+                          fontSize: '14px',
+                          color: 'white',
+                        }}
+                      >
+                        {event.category}
+                      </EventCategory>
+                      <EventMember
+                        style={{
+                          fontSize: '14px',
+                          color: 'white',
+                        }}
+                      >
+                        {event.member}
+                      </EventMember>
 
-            console.log(eventDate);
-            console.log(selectedDateOnly);
-            console.log(new Date(event.endDate));
-            if (
-              selectedDateOnly === eventDateOnly ||
-              (selectedDateOnly >= eventDateOnly &&
-                selectedDateOnly < new Date(event.endDate))
-            ) {
-              return (
-                <div>
-                  <EventCategory>{event.category}</EventCategory>
-                  <EventMember>{event.member}</EventMember>
-                  <EventTime>{event.time}</EventTime>
-                  <EventTitle finished={event.finished}>
-                    {event.title}
-                  </EventTitle>
-                </div>
-              );
-            } else {
-              return null;
-            }
-          })}
-        </Td> */}
-      </DayWrap>
-    </>
+                      <EventTime
+                        style={{
+                          fontSize: '14px',
+                        }}
+                      >
+                        {event.time}
+                      </EventTime>
+                    </div>
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </Td>
+          </CenterWrap>
+        </DayWrap>
+      </Wrap>
+    </Container>
   );
 }
 
-export default CalendarMini;
+export default Calendar;

@@ -17,6 +17,7 @@ import Suggestion from './pages/AI/Suggestion';
 import WelcomePage from './pages/Login/Welcome';
 import Gallery from './pages/Dashboard/Album/Gallery';
 import ChatApp from './pages/Family/ChatApp';
+import Weather from './pages/Dashboard/WeatherApp';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
@@ -37,6 +38,7 @@ root.render(
         <Route path="ai" element={<AI />} />
         <Route path="suggestion" element={<Suggestion />} />
         <Route path="chat" element={<ChatApp />} />
+        <Route path="weather" element={<Weather />} />
       </Route>
     </Routes>
   </BrowserRouter>

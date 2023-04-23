@@ -20,6 +20,7 @@ import {
 } from 'firebase/firestore';
 import DefaultButton from '../../Components/Button/Button';
 import { InputForm } from './SmartInput';
+import UserAuthData from '../../Components/Login/Auth';
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -38,15 +39,20 @@ const Suggestion = () => {
   >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
   const moment = require('moment');
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   useEffect(() => {
-    const familyDocRef = collection(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'Milestone'
-    );
-
     async function fetchData() {
+      const familyDocRef = collection(db, 'Family', familyId, 'Milestone');
       try {
         const querySnapshot = await getDocs(familyDocRef);
         const data = querySnapshot.docs.map((doc) => ({
@@ -71,12 +77,7 @@ const Suggestion = () => {
   }, []);
 
   const getTodosData = async () => {
-    const familyDocRef = collection(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'todo'
-    );
+    const familyDocRef = collection(db, 'Family', familyId, 'todo');
     const querySnapshot = await getDocs(familyDocRef);
     const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
     return todosData;

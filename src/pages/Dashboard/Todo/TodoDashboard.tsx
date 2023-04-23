@@ -1,6 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
-import DragNDrop from './DragNDrop';
+import DragNDrop from './DragNDropMini';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -48,7 +48,7 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 70px;
+  margin-top: 10px;
   width: 33vw;
 `;
 
@@ -370,11 +370,6 @@ const Todo = () => {
   return (
     <Container>
       <Wrapper>
-        <Wrap>
-          <AddListButton onClick={() => addList(dispatch)}>
-            <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>
-          </AddListButton>
-        </Wrap>
         <DragNDrop
           data={data}
           onItemAdd={addItem}

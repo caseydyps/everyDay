@@ -3,7 +3,7 @@ import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
 import DragNDropMini from './DragNDropMini';
 
 const Wrapper = styled.div`
-  width: auto;
+  width: 100%;
   height: auto;
   border: 2px solid black;
   display: flex;
@@ -215,7 +215,7 @@ function TodoMini() {
 
   const dueDateRef = useRef<HTMLInputElement>(null);
 
-  const addItem:any = (listIndex: number, dispatch: Dispatch<ActionType>) => {
+  const addItem: any = (listIndex: number, dispatch: Dispatch<ActionType>) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current?.value; // add the "?." operator
     const due = dueDateString ? new Date(dueDateString) : null; // handle the case where `dueDateString` is null
