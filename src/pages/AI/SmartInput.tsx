@@ -217,8 +217,8 @@ const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
 };
 
 interface MembersSelectorProps {
-  onSelectMember: (selectedMembers: string[]) => void;
-  selectedMembers?: string[];
+  onSelectMember: (selectedMembers: string[] | string) => void;
+  selectedMembers?: string[] | string;
 }
 
 //console.log(formatDate(date));
@@ -240,7 +240,6 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
 
   console.log(selectedMember);
   const onMemberSelect = (member: string) => {
-    event.preventDefault();
     setSelectedMember(member);
     onSelectMember(member);
   };
@@ -269,9 +268,9 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   );
 };
 
-const SmartInput = () => {
+const SmartInput = (props: any) => {
   const [inputValue, setInputValue] = useState('');
-  const [member, setMember] = useState<string>('');
+  const [member, setMember] = useState<string | string[]>('');
   const [responseValue, setResponseValue] = useState('');
   const [category, setCategory] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -288,12 +287,12 @@ const SmartInput = () => {
   } = UserAuthData();
   const [selectedMembers, setSelectedMembers] = useState(memberRolesArray);
   const handleCategorySelect = (category: string) => {
-    event.preventDefault();
+    // event.preventDefault();
     setCategory(category);
   };
 
-  const handleSelectMember = (member: string) => {
-    event.preventDefault();
+  const handleSelectMember = (member: string | string[]) => {
+    // event.preventDefault();
 
     setMember(member);
   };

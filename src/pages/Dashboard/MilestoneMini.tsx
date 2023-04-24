@@ -203,8 +203,8 @@ function Milestone() {
   }) => {
     const [title, setTitle] = useState(event.title);
     const [date, setDate] = useState<string | Date>(event.date);
-    const [member, setMember] = useState(event.member);
-    const [image, setImage] = useState<File | null>(null);
+    const [member, setMember] = useState<string | string[]>(event.member);
+    const [image, setImage] = useState<any>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -220,7 +220,7 @@ function Milestone() {
       onEdit(editedEvent);
     };
 
-    const handleEditMember = (member: string) => {
+    const handleEditMember = (member: string | string[]) => {
       setMember(member);
     };
 
@@ -319,15 +319,15 @@ function Milestone() {
     }
   };
 
-  const handleSelectMember = (member: string) => {
-    event.preventDefault();
+  // const handleSelectMember = (member: string) => {
+  //   event.preventDefault();
 
-    setNewEventMember(member);
-  };
-  const handlefilterSelectMember = (member: string) => {
-    event.preventDefault();
-    setFilter({ ...filter, member: member });
-  };
+  //   setNewEventMember(member);
+  // };
+  // const handlefilterSelectMember = (member: string) => {
+  //   // event.preventDefault();
+  //   setFilter({ ...filter, member: member });
+  // };
 
   const [showAddEvent, setShowAddEvent] = useState<boolean>(false);
   const toggleAddEvent = (): void => {

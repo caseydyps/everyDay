@@ -65,11 +65,20 @@ const Wrapper = styled.div`
   justify-content: center;
 `;
 
+type StickerType = {
+  dragging: boolean;
+  offsetX: number;
+  offsetY: number;
+  color: string;
+  isSticker: boolean;
+};
+
 const Sticker: any = styled.div<{
   dragging: boolean;
   offsetX: number;
   offsetY: number;
   color: string;
+  isSticker: boolean;
 }>`
   position: absolute;
   top: ${(props) => props.offsetY}px;
@@ -506,7 +515,7 @@ export const Whiteboard = () => {
         <Wrapper id="Wrapper">
           {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
-          {stickers.map((sticker: Sticker, index: number) => (
+          {stickers.map((sticker: any, index: number) => (
             <>
               <Sticker
                 key={sticker.id}

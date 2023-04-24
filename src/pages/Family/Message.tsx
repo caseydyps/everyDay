@@ -83,7 +83,10 @@ interface MessageType {
   uid: string;
   name: string;
   text: string;
-  timestamp: Date;
+  timestamp: any;
+  avatarUrl: string;
+  avatar: string;
+  email: string;
 }
 
 const Message: any = ({ message }: Props) => {
@@ -100,7 +103,7 @@ const Message: any = ({ message }: Props) => {
 
   const date = message.timestamp && message.timestamp.toDate();
 
-  const [members, setMembers] = useState<string[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
   const formatDate = (date: Date) => {
     if (!date || !date.getMonth) {
       return '';
@@ -132,13 +135,20 @@ const Message: any = ({ message }: Props) => {
 
   console.log(formatDate(date));
 
+  type Member = {
+    email: string;
+    role: string;
+    avatar: string;
+  };
+
   return (
     <Wrapper>
       <MessageContainer>
         {isSent ? null : (
           <Avatar
             src={
-              members.find((member) => member.email === message.email)?.avatar
+              members.find((member: any) => member.email === message.email)
+                ?.avatar
             }
             alt=""
           />

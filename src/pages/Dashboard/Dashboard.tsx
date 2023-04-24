@@ -134,8 +134,12 @@ const Dashboard = () => {
       grid-template-columns: repeat(2, 200px) repeat(4, 0);
     }
   `;
+  type GridItemType = {
+    spanColumns: number;
+    spanRows: number;
+  };
 
-  const GridItem = styled.div`
+  const GridItem = styled.div<GridItemType>`
     /* set grid column and row spans for each item */
     ${({ spanColumns, spanRows }) => `
     grid-column: span ${spanColumns};
@@ -276,15 +280,15 @@ const Dashboard = () => {
     },
   ]);
 
-  const handleColumnChange = (index, value) => {
-    const newGridItems = [...gridItems];
-    const removed = newGridItems.splice(index, 1);
-    newGridItems.splice(index + value, 0, removed[0]);
-    setGridItems(newGridItems);
-    console.log(newGridItems);
-  };
+  // const handleColumnChange = (index, value) => {
+  //   const newGridItems = [...gridItems];
+  //   const removed = newGridItems.splice(index, 1);
+  //   newGridItems.splice(index + value, 0, removed[0]);
+  //   setGridItems(newGridItems);
+  //   console.log(newGridItems);
+  // };
 
-  const handleRowChange = (index, value) => {
+  const handleRowChange = (index: number, value: number) => {
     const newGridItems = [...gridItems];
     const removed = newGridItems.splice(index, 1);
     newGridItems.splice(index + value, 0, removed[0]);

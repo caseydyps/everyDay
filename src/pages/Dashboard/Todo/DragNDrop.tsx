@@ -216,8 +216,12 @@ const AvatarRowWrap = styled.div`
   width: 100%;
 `;
 
-const ListInfoWrap = styled.div`
-  background-color: ${(props) => colors[props.index % colors.length]};
+type ListInfo = {
+  index: number;
+};
+
+const ListInfoWrap = styled.div<ListInfo>`
+  background-color: ${(props: any) => colors[props.index % colors.length]};
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -514,8 +518,8 @@ function DragNDrop({ data }: any) {
     itemIndex: number,
     field: string
   ) => {
-    const getMemberAvatar = (memberName) => {
-      const member = membersArray.find((m) => m.role === memberName);
+    const getMemberAvatar = (memberName: string | string[]) => {
+      const member = membersArray.find((m: any) => m.role === memberName);
       return member ? member.avatar : null;
     };
 

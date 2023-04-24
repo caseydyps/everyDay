@@ -23,7 +23,7 @@ const UserAuthData = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [hasSetup, setHasSetup] = useState<boolean>(false);
   const [hasCreateFamily, setHasCreateFamily] = useState<boolean>(false);
-  const [membersArray, setMembersArray] = useState<string[]>([]);
+  const [membersArray, setMembersArray] = useState<any>([]);
   const [memberRolesArray, setMemberRolesArray] = useState<string[]>([]);
   const [familyId, setFamilyId] = useState<string>('');
   useEffect(() => {
@@ -138,7 +138,7 @@ const UserAuthData = () => {
   const handleFamilyCreate = async (
     userName: string | null,
     userEmail: string | null,
-    familyId: string | null
+    familyId: string
   ) => {
     console.log(familyId);
     const familyDocRef = doc(db, 'Family', familyId);

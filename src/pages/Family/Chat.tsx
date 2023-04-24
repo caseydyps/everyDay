@@ -54,7 +54,7 @@ const ChatTop = styled.span`
 
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [stickyMessage, setStickyMessage] = useState(null);
+  const [stickyMessage, setStickyMessage] = useState<any>(null);
   const scroll = useRef<HTMLDivElement>(null);
   const scrollTop = useRef<HTMLDivElement>(null);
   const firstMessageRef = useRef(null);
@@ -75,23 +75,25 @@ const Chat = () => {
     const chatTop = document.getElementById('chat-container');
     const chatBottom = document.getElementById('chat-bottom');
 
-    if (chatContainerTop) {
+    if (chatContainerTop && scroll.current) {
       // If the chat container is currently at the top, set it to the bottom position
       scroll.current.scrollIntoView({ behavior: 'smooth' });
       setChatContainerTop(false);
     } else {
       // If the chat container is currently at the bottom, set it to the top position
-      scrollTop.current.scrollIntoView({ behavior: 'smooth' });
-      setChatContainerTop(true);
+      if (scrollTop.current) {
+        scrollTop.current.scrollIntoView({ behavior: 'smooth' });
+        setChatContainerTop(true);
+      }
     }
   };
 
-  const handleStickButtonClick = (message) => {
-    setStickyMessage({ ...message });
-    if (stickyMessage) {
-      setStickyMessage(null);
-    }
-  };
+  // const handleStickButtonClick = (message) => {
+  //   setStickyMessage({ ...message });
+  //   if (stickyMessage) {
+  //     setStickyMessage(null);
+  //   }
+  // };
 
   const handleUnstickButtonClick = () => {
     console.log('Unstick button clicked! Sticky message:', stickyMessage);

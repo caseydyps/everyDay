@@ -234,7 +234,11 @@ const AvatarRowWrap = styled.div`
   width: 100%;
 `;
 
-const ListInfoWrap = styled.div`
+type ListInfo = {
+  index: number;
+};
+
+const ListInfoWrap = styled.div<ListInfo>`
   background-color: ${(props) => colors[props.index % colors.length]};
   display: flex;
   flex-direction: row;

@@ -69,6 +69,7 @@ const Sticker: any = styled.div<{
   offsetX: number;
   offsetY: number;
   color: string;
+  isSticker: boolean;
 }>`
   position: absolute;
   top: ${(props) => props.offsetY}px;
@@ -496,7 +497,7 @@ export const Whiteboard = () => {
       <Wrapper id="Wrapper">
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
         <StickersContainer>
-          {stickers.map((sticker: Sticker, index: number) => (
+          {stickers.map((sticker: any, index: number) => (
             <>
               <Sticker
                 key={sticker.id}

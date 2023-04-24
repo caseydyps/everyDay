@@ -60,7 +60,7 @@ function Milestone() {
   const [events, setEvents] = useState<EventType[]>([]);
   const [newEventTitle, setNewEventTitle] = useState<string>('');
   const [newEventDate, setNewEventDate] = useState<string>('');
-  const [newEventMember, setNewEventMember] = useState<string>('');
+  const [newEventMember, setNewEventMember] = useState<string | string[]>('');
   const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
     null
   );
@@ -150,7 +150,7 @@ function Milestone() {
   };
 
   type FilterType = {
-    member: string;
+    member: any;
     startDate: Date | null;
     endDate: Date | null;
     title: string;
@@ -205,8 +205,8 @@ function Milestone() {
   }) => {
     const [title, setTitle] = useState(event.title);
     const [date, setDate] = useState<string | Date>(event.date);
-    const [member, setMember] = useState(event.member);
-    const [image, setImage] = useState<File | null>(null);
+    const [member, setMember] = useState<string | string[]>(event.member);
+    const [image, setImage] = useState<any>(null);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -222,7 +222,7 @@ function Milestone() {
       onEdit(editedEvent);
     };
 
-    const handleEditMember = (member: string) => {
+    const handleEditMember = (member: string | string[]) => {
       setMember(member);
     };
 
@@ -321,13 +321,13 @@ function Milestone() {
     }
   };
 
-  const handleSelectMember = (member: string) => {
-    event.preventDefault();
+  const handleSelectMember = (member: string | string[]) => {
+    // event.preventDefault();
 
     setNewEventMember(member);
   };
-  const handlefilterSelectMember = (member: string) => {
-    event.preventDefault();
+  const handlefilterSelectMember = (member: string | string[]) => {
+    // event.preventDefault();
     setFilter({ ...filter, member: member });
   };
 

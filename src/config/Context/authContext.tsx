@@ -43,9 +43,17 @@ const SignIn = () => {
 
 export default SignIn;
 
+type User = {
+  name?: string | null;
+  image?: string;
+  role?: string;
+  email?: string | null;
+  userUID?: string;
+};
+
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLogin, setIsLogin] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   //   const handleLoginResponse = useCallback(async (response) => {

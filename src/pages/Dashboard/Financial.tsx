@@ -51,21 +51,22 @@ const CircleWrapper = styled.div`
 `;
 
 function Financial() {
-  const [currentSavings, setCurrentSavings] = useState('');
-  const [goal, setGoal] = useState('');
+  const [currentSavings, setCurrentSavings] = useState<number>(0);
+  const [goal, setGoal] = useState<number>(0);
 
-  const handleCurrentSavingsChange = (event) => {
+  const handleCurrentSavingsChange = (
+    event: any
+  ) => {
     setCurrentSavings(event.target.value);
   };
 
-  const handleGoalChange = (event) => {
+  const handleGoalChange = (event: any) => {
     setGoal(event.target.value);
   };
 
-  const currentSavingsPercentage = ((currentSavings / goal) * 100 || 0).toFixed(
-    1
-  );
-  const goalPercentage = 100 - currentSavingsPercentage;
+  const currentSavingsPercentage: any= (
+    (currentSavings / goal) * 100 || 0
+  ).toFixed(1);
 
   return (
     <Wrapper>
@@ -88,7 +89,7 @@ function Financial() {
         />
       </InputWrapper>
       <CircleWrapper style={{ width: 80, height: 80 }}>
-        <CircularProgressbar
+        <CircularProgressbar 
           value={currentSavingsPercentage}
           text={`${currentSavingsPercentage}%`}
           styles={{

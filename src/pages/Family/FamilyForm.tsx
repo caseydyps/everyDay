@@ -40,9 +40,9 @@ const FamilyMemberForm = () => {
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
 
-  const handleFamilyConnect = async () => {
-    e.preventDefault();
-  };
+  // const handleFamilyConnect = async () => {
+  //   e.preventDefault();
+  // };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -160,35 +160,35 @@ const FamilyMemberForm = () => {
     anniversaries: { date: string; description: string }[];
   }
 
-  const handleNumberOfMembersChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const numberOfMembers = parseInt(event.target.value);
-    setNumberOfMembers(numberOfMembers);
-    setMembers(
-      Array(numberOfMembers)
-        .fill(undefined)
-        .map(
-          (): FamilyMember => ({
-            name: '',
-            avatar: '',
-            birthday: '',
-            role: '',
-            anniversaries: [],
-            seed: '',
-            eyebrows: '',
-            eyes: '',
-            hair: '',
-            hairColor: '',
-            hairProbability: 0,
-            mouth: '',
-            background: '',
-            feature: '',
-            featuresProbability: 0,
-          })
-        )
-    );
-  };
+  // const handleNumberOfMembersChange = (
+  //   event: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const numberOfMembers = parseInt(event.target.value);
+  //   setNumberOfMembers(numberOfMembers);
+  //   setMembers(
+  //     Array(numberOfMembers)
+  //       .fill(undefined)
+  //       .map(
+  //         (): FamilyMember => ({
+  //           name: '',
+  //           avatar: '',
+  //           birthday: '',
+  //           role: '',
+  //           anniversaries: [],
+  //           seed: '',
+  //           eyebrows: '',
+  //           eyes: '',
+  //           hair: '',
+  //           hairColor: '',
+  //           hairProbability: 0,
+  //           mouth: '',
+  //           background: '',
+  //           feature: '',
+  //           featuresProbability: 0,
+  //         })
+  //       )
+  //   );
+  // };
   const handleMemberNameChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
@@ -370,10 +370,7 @@ const FamilyMemberForm = () => {
     setMembers(newMembers);
   };
 
-  const handleSkinColorChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleSkinColorChange = (index: number, event: any) => {
     console.log(event);
     console.log('here');
     const newMembers = [...members];
@@ -425,10 +422,7 @@ const FamilyMemberForm = () => {
     setMembers(newMembers);
   };
 
-  const handleHairColorChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleHairColorChange = (index: number, event: any) => {
     const newMembers = [...members];
     newMembers[index].hairColor = event.replace('#', '');
     setHairColor(event.replace('#', ''));
@@ -518,7 +512,7 @@ const FamilyMemberForm = () => {
   };
   const handleClick = () => {
     // Configure the confetti settings
-    type Config = {
+    type Options = {
       angle: number;
       spread: number;
       startVelocity: number;
@@ -527,11 +521,15 @@ const FamilyMemberForm = () => {
       duration: number;
       stagger: number;
       colors: string[];
-      shapes: string[];
+
       gravity: number;
     };
 
-    const config: Config = {
+    type Shape = string;
+    const shapes: Shape[] = ['square', 'circle', 'triangle'].map(
+      (shape) => shape as Shape
+    );
+    const config: Options = {
       angle: 90,
       spread: 45,
       startVelocity: 40,
@@ -540,7 +538,6 @@ const FamilyMemberForm = () => {
       duration: 3000,
       stagger: 3,
       colors: ['#F08080', '#FFD700', '#008000', '#00BFFF'],
-      shapes: ['circle', 'square'],
       gravity: 1,
     };
 
@@ -837,11 +834,10 @@ const FamilyMemberForm = () => {
                         <FlexWrap>
                           <Label htmlFor="skinColor-select">膚色:</Label>
                           <CirclePicker
-                            id="skinColor-select"
                             width="100%"
                             color={members[currentMemberIndex].skinColor}
                             colors={[
-                              '#fff1e6', // very pale
+                              '#fff1e6',
                               '#ffd9b3',
                               '#ffc299',
                               '#ffad80',
@@ -850,7 +846,7 @@ const FamilyMemberForm = () => {
                               '#cc7a00',
                               '#b36b00',
                               '#994d00',
-                              '#803300', // very dark
+                              '#803300',
                             ]}
                             circleSize={36}
                             onChangeComplete={(color) =>
@@ -859,11 +855,7 @@ const FamilyMemberForm = () => {
                                 color.hex
                               )
                             }
-                          >
-                            {/* <option value="ecad80">tanned</option>
-                        <option value="f2d3b1">pale</option>
-                        <option value="9e5622">dark</option> */}
-                          </CirclePicker>
+                          />
                         </FlexWrap>
                         <RowWrap>
                           <br />
@@ -946,8 +938,7 @@ const FamilyMemberForm = () => {
                         <FlexWrap>
                           <Label htmlFor="hair-color-select">髮色:</Label>
                           <CirclePicker
-                            width=" 100%"
-                            id="hair-color-select"
+                            width="100%"
                             color={members[currentMemberIndex].hairColor}
                             colors={[
                               '#000000', // black
@@ -968,11 +959,7 @@ const FamilyMemberForm = () => {
                                 color.hex
                               )
                             }
-                          >
-                            {/* <option value="ecad80">tanned</option>
-                        <option value="f2d3b1">pale</option>
-                        <option value="9e5622">dark</option> */}
-                          </CirclePicker>
+                          />
                           {/* 
                         <Select
                           id="hair-color-select"
@@ -1103,17 +1090,6 @@ const FamilyMemberForm = () => {
 
 export default FamilyMemberForm;
 
-const colors = {
-  primary: '#007bff',
-  secondary: '#6c757d',
-  success: '#28a745',
-  danger: '#dc3545',
-  warning: '#ffc107',
-  info: '#17a2b8',
-  light: '#f8f9fa',
-  dark: '#343a40',
-};
-
 const Form = styled.form`
   display: flex;
   flex-direction: column;
@@ -1152,7 +1128,11 @@ const FormLabel = styled.label`
   text-align: left;
 `;
 
-const FormInput = styled.input`
+type FormInputProps = {
+  colors?: string;
+};
+
+const FormInput = styled.input<FormInputProps>`
   display: block;
   width: 50%;
   padding: 0.5rem;
@@ -1165,7 +1145,7 @@ const FormInput = styled.input`
   flex-basis: 70%;
   &:focus {
     outline: none;
-    border-color: ${colors.primary};
+
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
 `;

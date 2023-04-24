@@ -2,9 +2,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
+type DataType = {
+  main?: {
+    temp: number;
+  };
+  weather?: any;
+};
 
 function WeatherApp() {
-  const [data, setData] = useState({});
+  const [data, setData] = useState<DataType>({});
   const [location, setLocation] = useState('Taipei');
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=895284fb2d2c50a520ea537456963d9c`;
@@ -33,7 +39,7 @@ function WeatherApp() {
     height: 100%;
   `;
 
-  const handleInputChange = (event) => {
+  const handleInputChange = (event: any) => {
     setLocation(event.target.value);
   };
 

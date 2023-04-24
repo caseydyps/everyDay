@@ -95,7 +95,9 @@ function Gallery() {
   const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlbumTitle(e.target.value);
   };
-  const [selectedMember, setSelectedMember] = useState<string>('');
+  const [selectedMember, setSelectedMember] = useState<string | string[] | any>(
+    ''
+  );
   const [selectedDate, setSelectedDate] = useState<string>('');
 
   const regularStar = farStar;
@@ -369,11 +371,11 @@ function Gallery() {
   });
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
-  const handleEditMember = (member: string) => {
+  const handleEditMember = (member: string | string[]) => {
     setMembers(member);
   };
 
-  const handleFilterMember = (member: string) => {
+  const handleFilterMember = (member: string | string[]) => {
     setSelectedMember(member);
   };
 

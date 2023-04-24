@@ -85,10 +85,10 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
     setDueDate(date);
   }
 
-  function handleMemberChange(member: React.ChangeEvent<HTMLInputElement>) {
+  function handleMemberChange(member: string | string[]) {
     console.log(member);
-    const getMemberAvatar = (memberName) => {
-      const member = membersArray.find((m) => m.role === memberName);
+    const getMemberAvatar = (memberName: string | string[]) => {
+      const member = membersArray.find((m: any) => m.role === memberName);
       return member ? member.avatar : null;
     };
 
