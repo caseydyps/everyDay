@@ -19,7 +19,7 @@ import {
   faCircleXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import LoadingAnimation from '../../Components/loading';
-
+import { Chrono } from 'react-chrono';
 import {
   collection,
   updateDoc,
@@ -339,11 +339,45 @@ function Milestone() {
     }
   };
 
+  const items = [
+    {
+      title: '1992/10/21',
+      cardTitle: 'Dunkirk',
+      url: 'http://www.history.com',
+      cardSubtitle:
+        'Men of the British Expeditionary Force (BEF) wade out to..',
+      cardDetailedText:
+        'Men of the British Expeditionary Force (BEF) wade out to..',
+      media: {
+        type: 'IMAGE',
+        source: {
+          url: 'http://someurl/image.jpg',
+        },
+      },
+    },
+    {
+      title: '1992/11/10',
+      cardTitle: 'Dunkirk',
+      url: 'http://www.history.com',
+      cardSubtitle:
+        'Men of the British Expeditionary Force (BEF) wade out to..',
+      cardDetailedText:
+        'Men of the British Expeditionary Force (BEF) wade out to..',
+      media: {
+        type: 'IMAGE',
+        source: {
+          url: 'http://someurl/image.jpg',
+        },
+      },
+    },
+  ];
+
   return (
     <Layout>
       <Container>
         <ColumnWrap>
           <Header>Milestone</Header>
+
           <RowWrap>
             <Button onClick={handleToggleFilter}>
               <AnimatedFontAwesomeIcon
@@ -480,8 +514,6 @@ function Milestone() {
 
           <ContentWrapper>
             <EventContainer>
-              {/* <Timeline events={events} /> */}
-
               {filterEvents(events)
                 .sort(
                   (a, b) =>
@@ -493,14 +525,21 @@ function Milestone() {
                     month: 'short',
                   });
                   return (
-                    <>
+                    <EventWrap>
+                      <Dot
+                        style={{
+                          alignSelf: index % 2 === 0 ? 'center' : 'flex-end',
+                          marginRight: index % 2 === 0 ? '0px' : '0px',
+                          marginLeft: index % 2 === 0 ? '500px' : '465px',
+                        }}
+                      ></Dot>
                       <EventBox
                         key={event.id}
                         style={{
                           alignSelf:
                             index % 2 === 0 ? 'flex-start' : 'flex-end',
-                          marginTop: index % 2 === 0 ? '0px' : '400px',
-                          marginBottom: index % 2 === 0 ? '400px' : '0px',
+                          marginRight: index % 2 === 0 ? '0px' : '600px',
+                          marginLeft: index % 2 === 0 ? '600px' : '0px',
                         }}
                       >
                         <ColumnWrap>
@@ -542,7 +581,7 @@ function Milestone() {
                         alignSelf: 'center',
                       }}
                     /> */}
-                    </>
+                    </EventWrap>
                   );
                 })}
             </EventContainer>
@@ -608,13 +647,14 @@ const EventContainer = styled.div`
   max-width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   overflow-x: scroll;
   padding: 30px;
   -webkit-overflow-scrolling: touch;
 
   /* Style the scrollbar */
   &::-webkit-scrollbar {
-    width: 58px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -625,12 +665,29 @@ const EventContainer = styled.div`
   &::-webkit-scrollbar-thumb:hover {
     background-color: #fff5c9;
   }
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 100%;
+    background-color: transparent;
+    background-image: linear-gradient(
+      to bottom,
+      #ff00ff,
+      #00ffcc,
+      #ff1493,
+      #00bfff
+    );
+    transform: translateX(-50%);
+  }
 `;
 
 const EventBox = styled.div`
   width: auto;
   max-height: 400px;
-
+  margin-right: 20px;
   border-radius: 20px;
   display: flex;
   background-color: #white;
@@ -701,7 +758,7 @@ type ImageType = {
 };
 const EventImage = styled.img<any>`
   width: 100%;
-  height: 25vh;
+  height: 300px;
   object-fit: cover;
   border-radius: 20px;
 `;
@@ -831,6 +888,27 @@ const Container = styled.div`
   margin-top: 0px;
   height: 100%;
   width: 100%;
+  background: linear-gradient(
+      to bottom,
+      #7bcfff,
+      #7bcfff 40%,
+      #fecf70 40%,
+      #fecf70 60%,
+      #001848 60%,
+      #001848
+    ),
+    linear-gradient(to bottom, #001848, #000000);
+  background-size: 100% 200%;
+  animation: bgAnimation 20s linear infinite;
+
+  @keyframes bgAnimation {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 -100%;
+    }
+  }
 `;
 
 const bounce = keyframes`
@@ -875,4 +953,46 @@ const Day = styled.div`
   font-size: 24px;
   font-weight: bold;
   color: coral;
+`;
+
+const TimelineContainer = styled.div`
+  position: relative;
+`;
+
+const Dot = styled.div`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    #00ffcc 0%,
+    black 50%,
+    #00ffcc 100%
+  );
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  box-shadow: 0 0 5px black, 0 0 10px #00ffcc, 0 0 15px #00ffcc,
+    0 0 20px #00ffcc, 0 0 30px #00ffcc, 0 0 40px #00ffcc,
+    0 0 70px rgba(0, 255, 204, 0.4), 0 0 80px rgba(0, 255, 204, 0.4),
+    0 0 100px rgba(0, 255, 204, 0.4), 0 0 150px rgba(234, 255, 204, 0.4);
+`;
+
+const DateText = styled.div`
+  margin-left: 20px;
+  font-size: 16px;
+`;
+
+const TimelineLine = styled.div`
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+
+  left: 11px;
+  right: 0;
+  border-left: 2px solid #aaa;
+`;
+
+const EventWrap = styled.div`
+  position: relative;
 `;

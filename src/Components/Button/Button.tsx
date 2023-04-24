@@ -2,8 +2,8 @@ import { keyframes } from 'styled-components';
 import styled from 'styled-components';
 
 export const DefaultButton = styled.button`
-  background-color: #fff5c9;
-  color: #3467a1;
+  background-color: #3467a1;
+  color: white;
   border: none;
   border-radius: 20px;
   font-weight: bold;
@@ -132,4 +132,12 @@ export const Card = styled.div`
     transform: scale(1.1);
   }
 `;
+
+const Banner = styled.div`
+  width: 100vw;
+  height: 300px;
+  border: 3px solid #red;
+  color: #3467a1;
+`;
+
 export default DefaultButton;

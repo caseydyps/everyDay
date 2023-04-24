@@ -5,6 +5,7 @@ import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
 import DefaultButton from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';

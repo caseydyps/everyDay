@@ -239,7 +239,7 @@ type ListInfo = {
 };
 
 const ListInfoWrap = styled.div<ListInfo>`
-  background-color: ${(props) => colors[props.index % colors.length]};
+  background-color: #3467a1;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -250,7 +250,7 @@ const ListInfoWrap = styled.div<ListInfo>`
   padding: 10px;
   font-weight: bold;
   height: 50px;
-  color: black;
+  color: #f5f5f5;
   width: 250px;
   text-shadow: 0px 0px 1px white;
 `;
@@ -721,7 +721,7 @@ function DragNDrop({ data }: any) {
         <div
           style={{
             width: `${progress}%`,
-            backgroundColor: 'blue',
+            backgroundColor: '#3467a1',
             borderRadius: '5px',
             height: '100%',
           }}

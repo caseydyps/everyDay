@@ -29,6 +29,7 @@
     "openai": "^3.2.1",
     "react": "^18.2.0",
     "react-async-hook": "^4.0.0",
+    "react-chrono": "^2.1.2",
     "react-circular-progressbar": "^2.1.0",
     "react-color": "^2.19.3",
     "react-datepicker": "^4.11.0",

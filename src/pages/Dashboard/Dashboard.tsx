@@ -20,6 +20,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleChevronDown,
   faCircleChevronUp,
+  faToggleOff,
+  faToggleOn,
 } from '@fortawesome/free-solid-svg-icons';
 
 const Container = styled.div`
@@ -37,6 +39,19 @@ const RowWrap = styled.div`
   width: 100%;
   height: auto;
   justify-content: space-between;
+`;
+
+type Wrap={
+  isCentered:boolean;
+}
+
+const Wrap = styled.div<Wrap>`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: auto;
+  justify-content: ${({ isCentered }) =>
+    isCentered ? 'center' : 'space-between'};
 `;
 const ColumnWrap = styled.div`
   display: flex;
@@ -67,7 +82,9 @@ const SmallSlogan = styled.div`
   position: absolute;
   word-wrap: break-word;
   font-size: 36px;
-  color: #666;
+  color: #f5f5f5;
+  font-family: 'Pacifico';
+  text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   top: 66%;
   left: 5%;
   @media screen and (max-width: 1664px) {
@@ -150,16 +167,18 @@ const Dashboard = () => {
     border-radius: 20px;
     margin: 10px;
     background-color: #transparent;
-    padding: 10px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    // padding: 10px;
+    // box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   `;
 
   const BoxS = styled.div`
     width: 100%;
     height: 100%;
-    background-color: #eb7a53;
+    background-color: #3467a1;
     border-radius: 20px;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 3px 3px 5px black;
+    -moz-box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black;
   `;
 
   const BoxM = styled.div`
@@ -167,19 +186,26 @@ const Dashboard = () => {
     border-radius: 20px;
     width: 100%;
     height: 100%;
+    -webkit-box-shadow: 3px 3px 5px black;
+    -moz-box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black;
   `;
   const BoxL = styled.div`
-    background-color: rgba(192, 192, 192, 0.5);
     width: 100%;
     height: 100%;
-
+    background-color: rgba(64, 64, 64, 0.5);
     border-radius: 20px;
+    -webkit-box-shadow: 3px 3px 5px black;
+    -moz-box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black;
   `;
 
   const BoxXL = styled.div`
     width: 100%;
     height: 100%;
-
+    -webkit-box-shadow: 3px 3px 5px black;
+    -moz-box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black;
     border-radius: 20px;
   `;
 
@@ -207,7 +233,7 @@ const Dashboard = () => {
     },
     {
       component: (
-        <BoxM style={{ backgroundColor: 'rgba(192, 192, 192, 0.5)' }}>
+        <BoxM>
           <Suggestion></Suggestion>
         </BoxM>
       ),
@@ -297,14 +323,25 @@ const Dashboard = () => {
   };
   console.log(gridItems);
 
+  const [showAside, setShowAside] = useState(true);
+
+  const handleToggleAside = () => {
+    setShowAside(!showAside);
+  };
+
   return (
     <Layout>
       <Container>
-        <RowWrap>
-          <Aside>
-            <Slogan>One home, one team, one victory!</Slogan>
-            <SmallSlogan>Every day counts</SmallSlogan>
-          </Aside>
+        <Button onClick={handleToggleAside}>
+          <FontAwesomeIcon icon={showAside ? faToggleOff : faToggleOn} />
+        </Button>
+        <Wrap isCentered={!showAside}>
+          {showAside && (
+            <Aside>
+              <Slogan>One home, one team, one victory!</Slogan>
+              <SmallSlogan>Every day counts</SmallSlogan>
+            </Aside>
+          )}
           <Main>
             {/* <Grid>
               <GridItem spanColumns={2} spanRows={4}>
@@ -362,7 +399,7 @@ const Dashboard = () => {
               ))}
             </Grid>
           </Main>
-        </RowWrap>
+        </Wrap>
       </Container>
     </Layout>
   );

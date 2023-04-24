@@ -140,11 +140,12 @@ const NavbarWrapper = styled.div`
 `;
 
 const Nav = styled.div`
-  background: #629dda;
+  background: #3467a1;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-between;
   align-items: center;
-
+  position: relative;
   height: 100%;
 `;
 
@@ -173,10 +174,16 @@ export const NavList = styled.ul<NavListProps>`
   padding: 0;
   margin: auto;
 
+  justify-content: flex-start;
+  align-items: flex-start;
+
   display: flex;
   display: ${(props) => (props.open ? 'flex' : 'none')};
 
-  /* media query for screens narrower than 768px */
+  height: auto;
+
+  background: #3467a1;
+
   @media screen and (max-width: 1075px) {
     flex-direction: column;
     justify-content: flex-start;
@@ -222,11 +229,11 @@ const SplitLine = styled.div`
 `;
 
 const UserName = styled.div`
-  color: #1e1f26;
+  color: #f5f5f5;
   margin: 10px;
 `;
 const UserEmail = styled.div`
-  color: grey;
+  color: #f5f5f5;
   font-size: 1.2rem;
   margin: 10px;
 `;
@@ -242,13 +249,12 @@ export const NavLink = styled(Link)`
   font-size: 16px;
   font-weight: bold;
   text-decoration: none;
+
   padding: 10px;
-  border-radius: 15px;
 
   &:hover {
-    background-color: #fff5c9;
     transform: scale(1.1);
-    color: #3467a1;
+    border-bottom: 5px solid #ffffff;
   }
 
   &.active {
@@ -265,7 +271,7 @@ const PopoutMenu = styled.div`
   position: absolute;
   top: 90px;
   right: 30px;
-  background-color: #9bb9de;
+  background-color: #3467a1;
 
   border-radius: 15px;
   padding: 10px;

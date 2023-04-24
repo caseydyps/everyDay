@@ -221,7 +221,7 @@ type ListInfo = {
 };
 
 const ListInfoWrap = styled.div<ListInfo>`
-  background-color: ${(props: any) => colors[props.index % colors.length]};
+  background-color: #3467a1;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -232,7 +232,7 @@ const ListInfoWrap = styled.div<ListInfo>`
   padding: 10px;
   font-weight: bold;
   height: 50px;
-  color: black;
+  color: #f5f5f5;
   text-shadow: 0px 0px 1px white;
 `;
 

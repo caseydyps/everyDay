@@ -423,10 +423,13 @@ const Card = styled.div`
   margin-top: 50px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+
   position: relative;
   z-index: 1;
+  -webkit-box-shadow: 3px 3px 5px black;
+  -moz-box-shadow: 3px 3px 5px black;
+  box-shadow: 3px 3px 5px black;
   p {
     margin: 0 0 10px;
   }

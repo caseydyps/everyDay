@@ -5,6 +5,7 @@ import DrawingTool from '../../../Components/drawingtool';
 import axios from 'axios';
 import TenorGif from './Giphy';
 import { GiphyFetch } from '@giphy/js-fetch-api';
+import Banner from '../../../Components/Banner/Banner';
 import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';

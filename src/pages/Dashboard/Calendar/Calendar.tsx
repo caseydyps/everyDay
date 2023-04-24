@@ -5,6 +5,8 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import { getISOWeek } from 'date-fns';
 import 'firebase/firestore';
+
+import Banner from '../../../Components/Banner/Banner';
 import {
   collection,
   updateDoc,
@@ -74,6 +76,8 @@ const MonthLabel = styled.span`
   font-size: 1.5rem;
   font-weight: bold;
 `;
+
+
 
 const WeekContainer = styled.div`
   display: flex;
@@ -177,7 +181,7 @@ const Wrap = styled.div`
   width: 100vw;
   min-height: 100vh;
   margin-top: 60px;
-  background-color: rgba(64, 64, 64, 0.5);
+  // background-color: rgba(64, 64, 64, 0.5);
 `;
 
 const RowWrap = styled.div`
@@ -203,10 +207,11 @@ const Modal = styled.div`
 const ModalForm = styled.form`
   position: absolute;
   z-index: 2;
-  background-color: #629dda;
+  background-color: #3467a1;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   padding: 20px;
+  color: #f5f5f5;
   width: 500px;
 
   label {
@@ -312,6 +317,10 @@ const CenterWrap = styled.div`
 const EventCategory = styled.div`
   font-size: 16px;
   color: gray;
+`;
+
+const BannerWrap = styled.div`
+  position: relative;
 `;
 
 const EventList = styled.ul`
@@ -1016,6 +1025,7 @@ function Calendar() {
     <Layout>
       <Container>
         <Wrap>
+          <Banner title={'#CALENDAR'}></Banner>
           <Button onClick={() => handleViewClick('day')}>Day</Button>
           <Button onClick={() => handleViewClick('week')}>Week</Button>
           <Button onClick={() => handleViewClick('month')}>Month</Button>

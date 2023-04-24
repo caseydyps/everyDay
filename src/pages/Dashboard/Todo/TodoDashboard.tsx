@@ -48,7 +48,7 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
+
   width: 33vw;
 `;
 

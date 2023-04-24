@@ -16,7 +16,7 @@ export const GradientAnimation = keyframes`
 const Background = styled.div`
   width: 100vw;
   margin-top: 0px;
-  height: auto;
+  height: 100vh;
   background: linear-gradient(
     -45deg,
     white,
@@ -27,7 +27,6 @@ const Background = styled.div`
     #142850
   );
   display: flex;
-  border-top: 4px solid white;
   flex-direction: column;
   justify-content: center;
   animation: ${GradientAnimation} 20s ease-in-out infinite;
@@ -42,9 +41,9 @@ const PageContainer = styled.div`
 
 const Layout = ({ children }: { children: ReactNode }) => {
   return (
-    <Background>
+    <>
       <PageContainer>{children}</PageContainer>
-    </Background>
+    </>
   );
 };
 

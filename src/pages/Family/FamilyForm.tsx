@@ -1230,21 +1230,21 @@ export const GradientAnimation = keyframes`
 export const Container = styled.div`
   width: 100vw;
   margin-top: 70px;
-  height: 100vh;
-  background: linear-gradient(
-    -45deg,
-    white,
-    #fff5c9,
-    #9bb9de,
-    #629dda,
-    #ff9f4d,
-    #142850
-  );
+  height: 100%;
+  // background: linear-gradient(
+  //   -45deg,
+  //   white,
+  //   #fff5c9,
+  //   #9bb9de,
+  //   #629dda,
+  //   #ff9f4d,
+  //   #142850
+  // );
   display: flex;
 
   flex-direction: column;
   justify-content: center;
-  animation: ${GradientAnimation} 20s ease-in-out infinite;
+  //animation: ${GradientAnimation} 20s ease-in-out infinite;
   background-size: 300% 300%;
 `;
 
