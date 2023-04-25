@@ -77,8 +77,6 @@ const MonthLabel = styled.span`
   font-weight: bold;
 `;
 
-
-
 const WeekContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -180,7 +178,7 @@ const Wrap = styled.div`
   flex-direction: column;
   width: 100vw;
   min-height: 100vh;
-  margin-top: 60px;
+
   // background-color: rgba(64, 64, 64, 0.5);
 `;
 
@@ -1025,7 +1023,7 @@ function Calendar() {
     <Layout>
       <Container>
         <Wrap>
-          <Banner title={'#CALENDAR'}></Banner>
+          <Banner title="#CALENDAR" subTitle="calendar"></Banner>
           <Button onClick={() => handleViewClick('day')}>Day</Button>
           <Button onClick={() => handleViewClick('week')}>Week</Button>
           <Button onClick={() => handleViewClick('month')}>Month</Button>

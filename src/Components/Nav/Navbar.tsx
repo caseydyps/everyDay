@@ -82,9 +82,6 @@ const Navbar = () => {
             <NavLink to="/milestone">Milestone</NavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/family">Family</NavLink>
-          </NavItem>
-          <NavItem>
             <NavLink to="/whiteboard">Whiteboard</NavLink>
           </NavItem>
           <NavItem>
@@ -112,11 +109,11 @@ const Navbar = () => {
               <UserName>Hi, {userName}</UserName>
               <UserEmail>{userUrl}</UserEmail>
               <SplitLine></SplitLine>
-              <MenuButton to="/family" onClick={googleSignIn}>
+              {/* <MenuButton to="/family" onClick={googleSignIn}>
                 切換帳號
-              </MenuButton>
+              </MenuButton> */}
               <MenuButton to="/family">設定家庭成員</MenuButton>
-              <MenuButton to="/family">通知</MenuButton>
+              {/* <MenuButton to="/family">通知</MenuButton> */}
               <NavButton onClick={handleLogout}>
                 {user ? <LogOut /> : <SignIn />}
               </NavButton>
@@ -217,7 +214,7 @@ const NavMenu = styled.div`
 `;
 
 const NavButton = styled.div`
-  margin: 0;
+  margin: 0 autp;
 `;
 
 const UserSetting = styled.div``;

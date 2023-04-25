@@ -36,15 +36,12 @@ const Background = styled.div`
 const PageContainer = styled.div`
   width: 100vw;
   height: 100%;
+  min-height: 100vh;
   margin: 0 auto;
 `;
 
 const Layout = ({ children }: { children: ReactNode }) => {
-  return (
-    <>
-      <PageContainer>{children}</PageContainer>
-    </>
-  );
+  return <PageContainer>{children}</PageContainer>;
 };
 
 export default Layout;

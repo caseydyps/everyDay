@@ -49,7 +49,7 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 70px;
+
   width: 100vw;
 `;
 
@@ -372,6 +372,7 @@ const Todo = () => {
     <Layout>
       <Container>
         <Wrapper>
+          <Banner title="#TODO" subTitle="subtitle"></Banner>
           <Wrap>
             <AddListButton onClick={() => addList(dispatch)}>
               <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>

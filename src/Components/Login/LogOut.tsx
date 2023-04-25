@@ -17,7 +17,7 @@ const LogoutButton = styled.button`
   border-radius: 20px;
   font-weight: bold;
   padding: 10px 20px;
-  font-size: 32px;
+  font-size: 24px;
   &:hover {
     transform: scale(1.1);
   }

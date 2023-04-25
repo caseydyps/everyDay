@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components/macro';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useRef } from 'react';
 // import Timeline from './Timeline';
 import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
@@ -20,6 +20,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import LoadingAnimation from '../../Components/loading';
 import { Chrono } from 'react-chrono';
+import Banner from '../../Components/Banner/Banner';
 import {
   collection,
   updateDoc,
@@ -372,11 +373,129 @@ function Milestone() {
     },
   ];
 
+  const rotate = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
+
+  const Gradient = styled.div`
+    --size: 50px;
+    --speed: 20s;
+    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
+
+    width: 600px;
+    height: 300px;
+    filter: blur(calc(var(--size) / 5));
+    background-image: linear-gradient(
+      hsl(158, 82%, 57%, 85%),
+      hsl(252, 82%, 57%)
+    );
+
+    animation: ${rotate} var(--speed) var(--easing) alternate infinite;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+
+    @media (min-width: 720px) {
+      --size: 500px;
+    }
+  `;
+
+  const Body = styled.body`
+    background-color: #222;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    place-content: center;
+    align-items: center;
+    overflow: hidden;
+  `;
+
+  const BannerContainer = styled.div`
+    width: 100vw;
+    height: 500px;
+    position: relative; /* Added to set stacking context */
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.8),
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.3),
+        rgba(0, 0, 0, 0.2),
+        rgba(0, 0, 0, 0)
+      ),
+      linear-gradient(
+        -45deg,
+
+        #3467a1,
+        #555555,
+        #1034a6,
+        #1b4d3e,
+        #1034a6,
+        #ff69b4
+      );
+    display: flex;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+  `;
+
+  const BannerTitle = styled.h1`
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    border: 3px solid white;
+    padding: 20px;
+
+    z-index: 2; /* Increased z-index value */
+  `;
+
+  const BannerSubTitle = styled.h2`
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 2rem;
+    text-align: center;
+    z-index: 1;
+  `;
+
+  const eventBoxRef = useRef(null);
+  useEffect(() => {
+    const handleScroll = () => {
+      const element = eventBoxRef.current;
+      const { top, bottom } = element.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      if (top > 0 && bottom < windowHeight) {
+        element.classList.add('glow');
+      } else {
+        element.classList.remove('glow');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  const [bgColor, setBgColor] = useState('#00ffcc');
+
   return (
     <Layout>
       <Container>
         <ColumnWrap>
-          <Header>Milestone</Header>
+          <BannerContainer>
+            <Gradient />
+            <BannerTitle>#TIME MACHINE</BannerTitle>
+            <BannerSubTitle>Time less memories</BannerSubTitle>
+          </BannerContainer>
 
           <RowWrap>
             <Button onClick={handleToggleFilter}>
@@ -393,7 +512,7 @@ function Milestone() {
 
           {showFilter && (
             <Wrap>
-              <CancelButton onClick={() => setShowAddEvent(false)}>
+              <CancelButton onClick={() => setShowFilter(false)}>
                 <AnimatedFontAwesomeIcon
                   icon={faCircleXmark}
                 ></AnimatedFontAwesomeIcon>
@@ -512,6 +631,7 @@ function Milestone() {
             </Wrap>
           )}
 
+          <Header>STORY BEGINS!</Header>
           <ContentWrapper>
             <EventContainer>
               {filterEvents(events)
@@ -527,6 +647,7 @@ function Milestone() {
                   return (
                     <EventWrap>
                       <Dot
+                        bgColor={bgColor}
                         style={{
                           alignSelf: index % 2 === 0 ? 'center' : 'flex-end',
                           marginRight: index % 2 === 0 ? '0px' : '0px',
@@ -534,6 +655,7 @@ function Milestone() {
                         }}
                       ></Dot>
                       <EventBox
+                        ref={eventBoxRef}
                         key={event.id}
                         style={{
                           alignSelf:
@@ -594,6 +716,7 @@ function Milestone() {
               <form onSubmit={handleNewEventSubmit} />
             )}
           </ContentWrapper>
+          <Header>CONTINUED ON</Header>
           <LoadingAnimation />
         </ColumnWrap>
       </Container>
@@ -621,20 +744,26 @@ const Wrap = styled(Card)`
   justify-content: space-around;
   z-index: 2;
   position: absolute;
-  top: 30%;
+  top: 20%;
   color: #fff;
 `;
 
 const Header = styled.h1`
   margin-top: 50px;
-  font-size: 48px;
+  margin-bottom: 0px;
+  font-size: 24px;
   font-weight: bold;
   text-align: center;
-  color: #fff;
+  color: #00ffcc;
+  border: 3px solid #00ffcc;
+  border-radius: 25px;
+  padding: 10px;
+  margin-bottom: 20px;
 `;
 
 const ContentWrapper = styled.div`
-  margin-top: 70px;
+  margin-top: 5px;
+  margin-bottom: 5px;
   width: 100vw;
   display: flex;
   flex-direction: column;
@@ -650,6 +779,8 @@ const EventContainer = styled.div`
   flex-direction: column;
   overflow-x: scroll;
   padding: 30px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
   -webkit-overflow-scrolling: touch;
 
   /* Style the scrollbar */
@@ -663,7 +794,7 @@ const EventContainer = styled.div`
   }
 
   &::-webkit-scrollbar-thumb:hover {
-    background-color: #fff5c9;
+    background-color: #3467a1;
   }
   &::before {
     content: '';
@@ -675,10 +806,9 @@ const EventContainer = styled.div`
     background-color: transparent;
     background-image: linear-gradient(
       to bottom,
-      #ff00ff,
-      #00ffcc,
-      #ff1493,
-      #00bfff
+
+      #2e9f42,
+      #b98bfb
     );
     transform: translateX(-50%);
   }
@@ -689,13 +819,18 @@ const EventBox = styled.div`
   max-height: 400px;
   margin-right: 20px;
   border-radius: 20px;
+  transition: box-shadow 0.5s ease-in-out;
   display: flex;
-  background-color: #white;
+  background-color: white;
   justify-content: space-between;
   margin: 10px;
 
   position: relative;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* added box shadow */
+  box-shadow: 3px 3px 5px black; /* added box shadow */
+  &:hover {
+    box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #00ffcc; /* added glow effect */
+    transform: scale(1.05);
+  }
 `;
 const EventTitle = styled.div`
   font-size: 20px;
@@ -704,8 +839,7 @@ const EventTitle = styled.div`
   margin-top: 10px;
   margin-right: 5px;
   margin-left: 5px;
-  color: white;
-  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
+  color: #3467a1;
 `;
 
 const EventDate: any = styled.div`
@@ -744,6 +878,7 @@ const DateBox = styled.div`
 
 const Button = styled(DefaultButton)`
   margin: 10px;
+  border: 3px solid #f5f5f5;
 `;
 const CancelButton = styled(DefaultButton)`
   margin: 10px;
@@ -879,6 +1014,19 @@ const SearchInputField = styled.input`
   color: #333;
 `;
 
+export const GradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -886,29 +1034,20 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 0px;
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
   background: linear-gradient(
-      to bottom,
-      #7bcfff,
-      #7bcfff 40%,
-      #fecf70 40%,
-      #fecf70 60%,
-      #001848 60%,
-      #001848
-    ),
-    linear-gradient(to bottom, #001848, #000000);
-  background-size: 100% 200%;
-  animation: bgAnimation 20s linear infinite;
+    -45deg,
+    #3467a1,
+    #555555,
+    #1034a6,
+    #1b4d3e,
+    #1034a6,
+    #ff69b4
+  );
+  background-size: 300% 300%;
 
-  @keyframes bgAnimation {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 0 -100%;
-    }
-  }
+  animation: ${GradientAnimation} 20s ease-in-out infinite;
 `;
 
 const bounce = keyframes`
@@ -958,24 +1097,33 @@ const Day = styled.div`
 const TimelineContainer = styled.div`
   position: relative;
 `;
+const pulse = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 #00ffcc;
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(0, 255, 204, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
+  }
+`;
 
 const Dot = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: radial-gradient(
-    ellipse at center,
-    #00ffcc 0%,
-    black 50%,
-    #00ffcc 100%
-  );
+  background-color: ${(props) => props.bgColor};
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  transition: opacity 0.5s ease-in-out;
   box-shadow: 0 0 5px black, 0 0 10px #00ffcc, 0 0 15px #00ffcc,
     0 0 20px #00ffcc, 0 0 30px #00ffcc, 0 0 40px #00ffcc,
     0 0 70px rgba(0, 255, 204, 0.4), 0 0 80px rgba(0, 255, 204, 0.4),
     0 0 100px rgba(0, 255, 204, 0.4), 0 0 150px rgba(234, 255, 204, 0.4);
+
+  animation: ${pulse} 2s ease-in-out infinite;
 `;
 
 const DateText = styled.div`
