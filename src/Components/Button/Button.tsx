@@ -12,6 +12,7 @@ export const DefaultButton = styled.button`
   margin-right: 10px;
   margin-left: 10px;
   font-size: 20px;
+  box-shadow: 3px 3px 5px black;
   &:hover {
     transform: scale(1.1);
   }
@@ -94,6 +95,7 @@ export const Button = styled.button`
   font-weight: bold;
   padding: 10px 20px;
   margin-top: 60px;
+  box-shadow: 3px 3px 5px black;
   font-size: 20px;
   &:hover {
     transform: scale(1.1);
@@ -106,6 +108,7 @@ export const LoadButton = styled(Button)`
   max-width: 100px;
   margin: 0 auto;
   border: 1px solid grey;
+  box-shadow: 3px 3px 5px black;
 `;
 
 export const Card = styled.div`
@@ -115,7 +118,8 @@ export const Card = styled.div`
   border-radius: 10px;
   font-size: 36px;
   background-color: #transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 5px black;
+  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
   p {

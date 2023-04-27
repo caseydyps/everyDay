@@ -134,10 +134,10 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  max-width: 130px;
-  min-width: 130px;
-  height: 80px;
-  max-height: 80px;
+  max-width: 60px;
+  min-width: 60px;
+  height: 60px;
+  max-height: 60px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 20px;
 
@@ -176,7 +176,7 @@ const Container = styled.div`
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 150px;
+  max-width: 100px;
 `;
 
 const RowWrap = styled.div`
@@ -231,7 +231,7 @@ const EventTime = styled.div`
 `;
 
 const DateDetailsWrapper = styled.div`
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
 `;
 
@@ -240,7 +240,7 @@ interface EventTitleProps {
 }
 
 const EventTitle = styled.div<EventTitleProps>`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -633,8 +633,8 @@ function Calendar() {
 
     return (
       <h4
-        style={{ margin: '0px', fontSize: '16px', fontWeight: 'bold' }}
-      >{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h4>
+        style={{ margin: '0px', fontSize: '12px', fontWeight: 'bold' }}
+      >{`${dayOfWeek},`}</h4>
     );
   }
 
@@ -753,7 +753,7 @@ function Calendar() {
                     <div
                       style={{
                         height: 'auto',
-                        fontSize: '24px',
+                        fontSize: '20px',
                         color: 'white',
                         width: '80%',
                       }}

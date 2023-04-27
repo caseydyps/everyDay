@@ -3,7 +3,7 @@ import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
 import DragNDropMini from './DragNDropMini';
 
 const Wrapper = styled.div`
-  width: 100%;
+  max-width: 200px;
   height: auto;
   border: 2px solid black;
   display: flex;

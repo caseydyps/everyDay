@@ -1,16 +1,17 @@
 import { keyframes } from 'styled-components';
 import styled from 'styled-components';
-import Milestone from './7.png';
-import BannerImage from './banner.png';
-import Dashboard from './6.png';
-const Wrap = styled.div`
-  width: 100vw;
-  height: 300px;
-  margin-top: 30px;
-  margin-bottom: 100px;
-  border: 3px solid #red;
-  display: flex;
-  align-items: center;
+import Milestone from './time.png';
+import Calendar from './calendar.png';
+import Todo from './todo.png';
+import Gallery from './gallery.png';
+import Ai from './ai.png';
+import Chat from './chat.png';
+import Sticker from './sticker.png';
+
+const StyledAll = styled.div`
+  * {
+    border: 2px solid black;
+  }
 `;
 
 const Text = styled.div`
@@ -37,53 +38,42 @@ const Title = styled.div`
 `;
 
 const BannerContainer = styled.div`
-  width: 100vw;
-  height: 500px;
+  width: 100vw-200px;
+  height: 25vh;
+  padding-left: 200px;
+  border: 3px solid white;
   position: relative; /* Added to set stacking context */
-  background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.9),
-      rgba(255, 255, 255, 0.7),
-      rgba(255, 255, 255, 0.5),
-      rgba(255, 255, 255, 0.3),
-      rgba(255, 255, 255, 0)
-    ),
-    linear-gradient(
-      -45deg,
-      #e5f2f2,
-      #e6f2ff,
-      #f2e5e6,
-      #e5f2f2,
-      #f2e5e6,
-      #f4f4f4
-    );
+  background: #629dda;
   display: flex;
   box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
   align-items: center;
   justify-content: center;
-  margin-bottom: 50px;
+  text-align: start;
+  margin-top: 60px;
 `;
 
 const BannerTitle = styled.h1`
   position: absolute;
-  top: 40%;
-  left: 50%;
+  top: 20%;
+  left: 20%;
   transform: translate(-50%, -50%);
   color: white;
-  border: 3px solid white;
+  //border: 3px solid white;
   padding: 20px;
-
+  font-size: 48px;
+  text-align: start;
   z-index: 2; /* Increased z-index value */
 `;
 
 const BannerSubTitle = styled.h2`
   position: absolute;
-  top: 70%;
-  left: 50%;
+  top: 60%;
+  left: 20%;
   transform: translate(-50%, -50%);
   color: white;
-  font-size: 2rem;
-  text-align: center;
+  font-size: 20px;
+
+  text-align: start;
   z-index: 1;
 `;
 
@@ -122,12 +112,42 @@ interface BannerProps {
   subTitle: string;
 }
 
+const BannerPic = ({ picUrl, maxWidth, maxHeight }) => {
+  const BannerImg = styled.img`
+    position: absolute;
+    width: auto;
+    height: 250px;
+    object-fit: cover;
+    right: 0;
+  `;
+  return <BannerImg src={picUrl} alt="Banner" />;
+};
+
 const Banner = ({ title, subTitle }: BannerProps) => {
+  let picUrl;
+  if (title === 'Todo') {
+    picUrl = Todo;
+  } else if (title === 'Calendar') {
+    picUrl = Calendar;
+  } else if (title === 'Gallery') {
+    picUrl = Gallery;
+  } else if (title === 'AI') {
+    picUrl = Ai;
+  } else if (title === 'Time machine') {
+    picUrl = Milestone;
+  } else if (title === `Stick n' Draw`) {
+    picUrl = Sticker;
+  } else if (title === 'Chat') {
+    picUrl = Chat;
+  } else {
+    picUrl = './default.png';
+  }
   return (
     <BannerContainer>
-      <Gradient />
+      {/* <Gradient /> */}
       <BannerTitle>{title}</BannerTitle>
       <BannerSubTitle>{subTitle}</BannerSubTitle>
+      <BannerPic picUrl={picUrl}></BannerPic>
     </BannerContainer>
   );
 };

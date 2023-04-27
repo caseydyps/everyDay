@@ -8,11 +8,12 @@ import { LoadButton } from '../../Components/Button/Button';
 import UserAuthData from '../../Components/Login/Auth';
 const ChatContainer = styled.div`
   display: flex;
+  padding: 20px;
   flex-direction: column;
   height: 70vh;
   width: 85vw;
   overflow: auto;
-  margin-top: 70px;
+  margin-top: 0px;
 `;
 const CenterWrap = styled.div`
   display: flex;
@@ -172,9 +173,10 @@ const Chat = () => {
 };
 
 const TopButton = styled.button`
-  position: fixed;
+  position: sticky;
   z-index: 2;
-  top: 140px;
+  width: 100px;
+  top: 0%;
   left: 50%;
   margin-bottom: 10px;
   transform: translateX(-50%);

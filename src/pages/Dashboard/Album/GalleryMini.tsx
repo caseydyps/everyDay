@@ -389,7 +389,7 @@ function Gallery() {
 
 const GalleryWrapper = styled.div`
   display: flex;
-  max-width: 350px;
+  max-width: 200px;
   gap: 20px;
   height: 100%;
   overflow-x: scroll;
@@ -461,8 +461,8 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
 
-  width: 350px;
-  height: 350px;
+  width: 200px;
+  height: 200px;
 
   justify-content: center;
   align-items: center;

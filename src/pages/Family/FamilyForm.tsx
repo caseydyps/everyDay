@@ -1228,9 +1228,14 @@ export const GradientAnimation = keyframes`
 `;
 
 export const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 0px;
+  background-color: transparent;
   width: 100vw;
-  margin-top: 70px;
   height: 100%;
+  border: gold solid 3px;
+
   // background: linear-gradient(
   //   -45deg,
   //   white,
@@ -1240,12 +1245,12 @@ export const Container = styled.div`
   //   #ff9f4d,
   //   #142850
   // );
-  display: flex;
+  /* display: flex;
 
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   //animation: ${GradientAnimation} 20s ease-in-out infinite;
-  background-size: 300% 300%;
+  background-size: 300% 300%; */
 `;
 
 const RowWrap = styled.div`

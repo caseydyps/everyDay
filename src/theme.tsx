@@ -30,15 +30,17 @@ export const GlobalStyle = createGlobalStyle`
     font-size: 24px;
     font-weight: 400;
     font-weight: bold;
-    background: linear-gradient(
+    /* background: linear-gradient(
       -45deg,
       white,
       #fff5c9,
       #9bb9de,
       #629dda,
-      #ff9f4d,
+      #9bb9de,
       #142850
-    );
+    ); */
+
+    background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
     animation: ${GradientAnimation} 20s ease-in-out infinite;
     background-size: 300% 300%;
   }

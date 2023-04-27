@@ -21,6 +21,18 @@ import {
 import DefaultButton from '../../Components/Button/Button';
 import { InputForm } from './SmartInput';
 import UserAuthData from '../../Components/Login/Auth';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faPaperPlane,
+  faRotateLeft,
+} from '@fortawesome/free-solid-svg-icons';
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -261,7 +273,7 @@ const Suggestion = () => {
   return (
     <Container>
       <Card>
-        <p
+        {/* <p
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -269,7 +281,7 @@ const Suggestion = () => {
           }}
         >
           智慧建議
-        </p>
+        </p> */}
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>
             <Input
@@ -279,22 +291,34 @@ const Suggestion = () => {
               placeholder="請輸入智慧建議或隨意問問題, Ex:今天有什麼事?"
             />
           </InputLabel>
-          <DefaultButton type="submit">Submit</DefaultButton>
+
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            <DefaultButton type="submit" style={{ margin: '10px' }}>
+              <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
+            </DefaultButton>
+          </div>
         </InputForm>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
-            重新
-          </DefaultButton>
-        </div>
+
         {responseValue && (
           <Response>
             <Text>{responseValue}</Text>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+                <FontAwesomeIcon icon={faRotateLeft}></FontAwesomeIcon>
+              </DefaultButton>
+            </div>
           </Response>
         )}
       </Card>
@@ -318,18 +342,16 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   background-color: transparent;
 `;
 
 const Card = styled.div`
-  width: 700px;
-
+  width: 600px;
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 5px black;
+  background-color: rgb(255, 255, 255, 0.5);
   position: relative;
   z-index: 1;
   p {
@@ -343,17 +365,18 @@ const Card = styled.div`
     border-radius: 50%;
   }
   &:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
   }
 `;
 
 const InputLabel = styled.label`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+
   font-size: 18px;
   font-weight: bold;
   color: #fff;
+  width: 100%;
 `;
 
 const Input = styled.input`
@@ -362,7 +385,7 @@ const Input = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
-  width: 600px;
+  width: 100%;
   background-color: #fff;
 `;
 

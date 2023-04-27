@@ -22,6 +22,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import UserAuthData from './Login/Auth';
 import {
   faFilter,
   faPlus,
@@ -42,7 +43,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 const CanvasWrap = styled.div`
   canvas {
-    border: 1px solid #;
+    border: 1px solid;
     width: 100%;
     height: 100%;
   }
@@ -59,7 +60,6 @@ const ButtonWrap = styled.div`
   top: 0;
   right: 50%;
   transform: translate(50%, 0);
-
   @media screen and (max-width: 768px) {
     flex-direction: column;
     align-items: center;
@@ -87,6 +87,7 @@ const CanvasButton = styled(DefaultButton)`
 const CanvasContainer = styled.div`
   max-width: 100%;
   height: auto;
+  border: 2px;
 `;
 
 type StrokeData = {
@@ -106,15 +107,24 @@ const DrawingTool = () => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    canvas.width = window.innerWidth * 2;
-    canvas.height = 600 * 2;
-    canvas.style.width = `${window.innerWidth}px`;
-    canvas.style.height = `${600}px`;
+    canvas.width = canvas.clientWidth;
+    canvas.height = canvas.clientHeight;
+
     console.log(
       canvas.width,
       canvas.height,
@@ -123,7 +133,7 @@ const DrawingTool = () => {
     );
     const context = canvas.getContext('2d');
     if (!context) return;
-    context.scale(2, 2);
+    context.scale(1, 1);
     context.lineCap = 'round';
     context.lineWidth = width;
     context.strokeStyle = color;
@@ -170,28 +180,34 @@ const DrawingTool = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
-      collection(
-        db,
-        'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
-        'canva',
-        'xoQi8suQkRBSHmELkazx',
-        'strokes'
-      ),
-      (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === 'added') {
-            handleStrokeUpdate(change.doc.data() as StrokeData);
-          }
-        });
-      }
+    // Retrieve the strokes from Firestore when the component mounts
+    const canvasRef = collection(
+      db,
+      'Family',
+      familyId,
+      'canva',
+      familyId,
+      'strokes'
     );
+    getDocs(canvasRef).then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        handleStrokeUpdate(doc.data() as StrokeData);
+      });
+    });
+
+    // Subscribe to Firestore data changes
+    const unsubscribe = onSnapshot(canvasRef, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          handleStrokeUpdate(change.doc.data() as StrokeData);
+        }
+      });
+    });
 
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [familyId]);
 
   const stackLimit = 500; // maximum stack size
 
@@ -235,9 +251,9 @@ const DrawingTool = () => {
     const strokesCollectionRef = collection(
       db,
       'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
+      familyId,
       'canva',
-      'xoQi8suQkRBSHmELkazx',
+      familyId,
       'strokes'
     );
     await addDoc(strokesCollectionRef, strokeData);
@@ -270,9 +286,9 @@ const DrawingTool = () => {
     const strokesCollectionRef: CollectionReference = collection(
       db,
       'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
+      familyId,
       'canva',
-      'xoQi8suQkRBSHmELkazx',
+      familyId,
       'strokes'
     );
 
@@ -332,9 +348,9 @@ const DrawingTool = () => {
     const familyDocRef = doc(
       db,
       'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
+      familyId,
       'canva',
-      'xoQi8suQkRBSHmELkazx',
+      familyId,
       'strokes'
     );
     try {
@@ -380,6 +396,8 @@ const DrawingTool = () => {
             height: 'auto',
             maxWidth: '100%',
             maxHeight: '600px',
+            minHeight: '600px',
+            width: '100%',
             border: '2px solid transparent',
             boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
             borderRadius: '25px',
@@ -391,22 +409,27 @@ const DrawingTool = () => {
         <CanvasButton
           color="black"
           onClick={() => handleChangeColor('black')}
+          type="button"
         ></CanvasButton>
         <CanvasButton
           color="red"
           onClick={() => handleChangeColor('red')}
+          type="button"
         ></CanvasButton>
         <CanvasButton
           color="green"
           onClick={() => handleChangeColor('green')}
+          type="button"
         ></CanvasButton>
         <CanvasButton
           color="blue"
           onClick={() => handleChangeColor('blue')}
+          type="button"
         ></CanvasButton>
         <CanvasButton
           color="transparent"
           onClick={() => handleChangeColor('white')}
+          type="button"
         >
           <FontAwesomeIcon icon={faEraser} />
         </CanvasButton>

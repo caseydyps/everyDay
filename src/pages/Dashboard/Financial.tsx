@@ -21,11 +21,10 @@ const InputWrapper = styled.div`
   text-align: center;
   align-items: center;
   justify-content: center;
-  flex: 1;
 `;
 
 const InputLabel = styled.label`
-  font-size: 1rem;
+  font-size: 12px;
   color: #fff;
 `;
 
@@ -34,8 +33,8 @@ const InputField = styled.input`
   outline: none;
   background-color: transparent;
   width: 50%;
-  padding: 0.5rem;
-  font-size: 1rem;
+
+  font-size: 8px;
   font-family: Arial;
   font-weight: normal;
   line-height: 1.5;
@@ -46,17 +45,13 @@ const CircleWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
-  flex: 2;
 `;
 
 function Financial() {
   const [currentSavings, setCurrentSavings] = useState<number>(0);
   const [goal, setGoal] = useState<number>(0);
 
-  const handleCurrentSavingsChange = (
-    event: any
-  ) => {
+  const handleCurrentSavingsChange = (event: any) => {
     setCurrentSavings(event.target.value);
   };
 
@@ -64,7 +59,7 @@ function Financial() {
     setGoal(event.target.value);
   };
 
-  const currentSavingsPercentage: any= (
+  const currentSavingsPercentage: any = (
     (currentSavings / goal) * 100 || 0
   ).toFixed(1);
 
@@ -88,8 +83,8 @@ function Financial() {
           placeholder="輸入目標"
         />
       </InputWrapper>
-      <CircleWrapper style={{ width: 80, height: 80 }}>
-        <CircularProgressbar 
+      <CircleWrapper style={{ width: 50, height: 50 }}>
+        <CircularProgressbar
           value={currentSavingsPercentage}
           text={`${currentSavingsPercentage}%`}
           styles={{

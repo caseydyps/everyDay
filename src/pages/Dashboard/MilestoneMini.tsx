@@ -416,7 +416,7 @@ const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 5%;
-  width: 600px;
+  max-width: 400px;
   align-items: center;
   position: relative;
 `;
@@ -424,7 +424,7 @@ const ColumnWrap = styled.div`
 const Wrap = styled(Card)`
   background-color: rgba(52, 103, 161, 0.8);
   display: flex;
-  min-width: 800px;
+  max-width: 300px;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
@@ -461,29 +461,24 @@ const EventContainer = styled.div`
 
   /* Style the scrollbar */
   &::-webkit-scrollbar {
-    width: 58px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #3467a1;
-    border-radius: 58px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #fff5c9;
+    border-radius: 20px;
   }
 `;
 
 const EventBox = styled.div`
   width: 95%;
-  max-height: 400px;
+  max-height: 200px;
 
   border-radius: 20px;
   display: flex;
-  background-color: #white;
+  background-color: transparent;
   justify-content: space-between;
   margin: 10px;
-
   position: relative;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* added box shadow */
 `;
@@ -547,8 +542,8 @@ type ImageType = {
   alt: string;
 };
 const EventImage = styled.img<any>`
-  width: 100%;
   height: 25vh;
+  width: 200px;
   object-fit: cover;
   border-radius: 20px;
 `;

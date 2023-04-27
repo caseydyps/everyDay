@@ -191,11 +191,11 @@ const Suggestion = () => {
 };
 
 const Card = styled.div`
-  width: auto;
+  max-width: 240px;
   padding: 20px;
   border-radius: 10px;
-  font-size: 36px;
-  background-color: #transparent;
+  font-size: 24px;
+  background-color: transparent;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   z-index: 1;
@@ -219,9 +219,13 @@ const Response = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 14px;
   font-weight: bold;
+  margin-top: 10px;
   color: #fff;
+  background: #3467a1;
+  padding: 5px;
+  border-radius: 10px;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 `;
 

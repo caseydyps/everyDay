@@ -25,9 +25,21 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faFilter,
+  faPlus,
+  faCirclePlus,
+  faPlusCircle,
+  faPenToSquare,
+  faTrashCan,
+  faCircleXmark,
+  faPaperPlane,
+  faRotateLeft,
+} from '@fortawesome/free-solid-svg-icons';
 
 const Wrapper = styled.div`
-  max-width: 800px;
+  width: auto;
   margin: 0 auto;
 `;
 const Container = styled.div`
@@ -60,10 +72,11 @@ const Button = styled.button`
 
 export const InputForm = styled.form`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
+  justify-content: baseline;
+  margin-bottom: 10px;
+  margin-top: 0px;
 `;
 
 const Wrap = styled.div`
@@ -146,14 +159,24 @@ const Text = styled.div`
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
-const Card = styled.div`
-  width: 700px;
+const Instruction = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+`;
 
+const Card = styled.div`
+  max-width: 700px;
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 3px 5px black;
+  background-color: rgb(255, 255, 255, 0.5);
   position: relative;
   z-index: 1;
   p {
@@ -167,8 +190,22 @@ const Card = styled.div`
     border-radius: 50%;
   }
   &:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
   }
+`;
+
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: space-between;
+`;
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
 `;
 
 const configJs = require('../../config/config.js');
@@ -217,7 +254,7 @@ const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
 };
 
 interface MembersSelectorProps {
-  onSelectMember: (selectedMembers: string[] | string) => void;
+  onSelectMember: (selectedMembers: string) => void;
   selectedMembers?: string[] | string;
 }
 
@@ -589,7 +626,7 @@ const SmartInput = (props: any) => {
   return (
     <Wrapper>
       <Card>
-        <p
+        {/* <p
           style={{
             display: 'flex',
             justifyContent: 'center',
@@ -597,32 +634,42 @@ const SmartInput = (props: any) => {
           }}
         >
           智慧輸入
-        </p>
-        <CategorySelector onSelect={handleCategorySelect} />
-        <MembersSelector onSelectMember={handleSelectMember} />
+        </p> */}
+        <RowWrap>
+          <ColumnWrap>
+            <Instruction>First, choose your category</Instruction>
+            <CategorySelector onSelect={handleCategorySelect} />
+          </ColumnWrap>
+          <ColumnWrap>
+            <Instruction>Choose your family member</Instruction>
+            <MembersSelector onSelectMember={handleSelectMember} />
+          </ColumnWrap>
+        </RowWrap>
+
         <InputForm onSubmit={handleSubmit}>
+          <></>
           <InputField
             type="text"
             value={inputValue}
             onChange={handleInputChange}
             placeholder="輸入事件, 例如: 今天晚上九點要去看電影"
           />
-
-          <DefaultButton type="submit">Submit</DefaultButton>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <DefaultButton type="submit" style={{ margin: '10px' }}>
+              <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
+            </DefaultButton>
+          </div>
         </InputForm>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
-            重新
-          </DefaultButton>
-        </div>
-        {responseValue && <ResponseDisplay></ResponseDisplay>}
 
-        {/* <iframe
-          allow="microphone;"
-          width="1000"
-          height="1000"
-          src="https://console.dialogflow.com/api-client/demo/embedded/ffb168b2-33cb-451d-9a1b-fe91dc74bd4e"
-        ></iframe> */}
+        {responseValue && (
+          <ResponseDisplay>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+                <FontAwesomeIcon icon={faRotateLeft}></FontAwesomeIcon>
+              </DefaultButton>
+            </div>
+          </ResponseDisplay>
+        )}
       </Card>
     </Wrapper>
   );

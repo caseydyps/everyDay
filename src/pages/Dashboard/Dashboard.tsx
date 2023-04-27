@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import TodoDashboard from './Todo/TodoDashboard';
 import Whiteboard from './Whiteboard/WhiteboardMini';
 import Gallery from './Album/GalleryMini';
@@ -15,6 +15,7 @@ import Financial from './Financial';
 import Suggestion from '../AI/SuggestionMini';
 import FamilyMemberForm from '../Family/FamilyMini';
 import DefaultButton from '../../Components/Button/Button';
+import SideNav from '../../Components/Nav/SideNav';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -27,10 +28,12 @@ import {
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  margin-top: 70px;
-  background-color: #transparent;
+  margin-top: 0px;
+  background-color: transparent;
   width: 100vw;
   height: 100%;
+
+  border: 2px solid black;
 `;
 
 const RowWrap = styled.div`
@@ -41,9 +44,9 @@ const RowWrap = styled.div`
   justify-content: space-between;
 `;
 
-type Wrap={
-  isCentered:boolean;
-}
+type Wrap = {
+  isCentered: boolean;
+};
 
 const Wrap = styled.div<Wrap>`
   display: flex;
@@ -62,34 +65,26 @@ const ColumnWrap = styled.div`
 `;
 
 const Slogan = styled.div`
-  position: absolute;
   word-wrap: break-word;
-  font-size: 72px;
-  width: 400px;
+  font-size: 48px;
+  width: 200px;
   color: white;
   line-height: 0.9;
   font-family: 'Pacifico';
-  top: 35%;
-  left: 5%;
+
   text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-  @media screen and (max-width: 1664px) {
-    color: transparent;
-    text-shadow: 0px 0px 0px rgba(0, 0, 0, 0);
+  @media screen and (max-width: 1180px) {
+    display: none;
   }
 `;
 
 const SmallSlogan = styled.div`
-  position: absolute;
   word-wrap: break-word;
-  font-size: 36px;
+  font-size: 20px;
   color: #f5f5f5;
   font-family: 'Pacifico';
+  margin-top: 20px;
   text-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
-  top: 66%;
-  left: 5%;
-  @media screen and (max-width: 1664px) {
-    color: transparent;
-  }
 `;
 
 const Block = styled.div`
@@ -98,6 +93,7 @@ const Block = styled.div`
 `;
 
 const Dashboard = () => {
+  const [showAside, setShowAside] = useState(true);
   const Card = styled.div`
     background-color: #fff;
     border-radius: 5px;
@@ -106,26 +102,36 @@ const Dashboard = () => {
     text-align: center;
   `;
 
-  const Aside = styled.div``;
+  const Aside = styled.div`
+    padding: 20px;
+    max-width: 200px;
+    border: 2px solid purple;
+    flex: 3;
+  `;
 
   const Main = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    border: 2px solid purple;
+    min-width: 800px;
+    align-items: center;
+    padding: 20px;
+    margin: 0 auto;
   `;
 
   const Grid = styled.div`
     display: grid;
-    grid-template-columns: repeat(6, 200px);
-    grid-template-rows: repeat(12, 100px);
-    grid-gap: 10px;
+    grid-template-columns: repeat(6, 120px);
+    grid-template-rows: repeat(12, 60px);
+    grid-gap: 5px;
     width: 100%;
 
     /* media query for screens narrower than 1200px */
-    @media screen and (max-width: 1267px) {
+    /* @media screen and (max-width: 1267px) {
       grid-template-columns: repeat(4, 200px);
       grid-template-rows: repeat(18, 100px);
-    }
+    } */
 
     /* media query for screens narrower than 992px */
     @media screen and (max-width: 991px) {
@@ -165,47 +171,47 @@ const Dashboard = () => {
   `}
 
     border-radius: 20px;
-    margin: 10px;
-    background-color: #transparent;
+    margin: 5px;
+    background-color: transparent;
     // padding: 10px;
     // box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
   `;
 
   const BoxS = styled.div`
-    width: 100%;
-    height: 100%;
+    width: 120px;
+    height: 120px;
     background-color: #3467a1;
     border-radius: 20px;
-    -webkit-box-shadow: 3px 3px 5px black;
+    /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
-    box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black; */
   `;
 
   const BoxM = styled.div`
-    background-color: rgba(64, 64, 64, 0.5);
     border-radius: 20px;
-    width: 100%;
-    height: 100%;
-    -webkit-box-shadow: 3px 3px 5px black;
+    width: 240px;
+    height: 240px;
+    /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
-    box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black; */
+    background-color: rgb(255, 255, 255, 0.5);
   `;
   const BoxL = styled.div`
-    width: 100%;
-    height: 100%;
-    background-color: rgba(64, 64, 64, 0.5);
+    width: 480px;
+    height: 240px;
+    background-color: rgb(255, 255, 255, 0.5);
     border-radius: 20px;
-    -webkit-box-shadow: 3px 3px 5px black;
+    /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
-    box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black; */
   `;
 
   const BoxXL = styled.div`
-    width: 100%;
-    height: 100%;
-    -webkit-box-shadow: 3px 3px 5px black;
+    width: 720px;
+    height: 240px;
+    /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
-    box-shadow: 3px 3px 5px black;
+    box-shadow: 3px 3px 5px black; */
     border-radius: 20px;
   `;
 
@@ -219,6 +225,22 @@ const Dashboard = () => {
     background-color: transparent;
     padding: 0px;
     color: rgba(255, 255, 255, 0.5);
+  `;
+
+  const ToggleButton = styled(DefaultButton)`
+    background-color: transparent;
+    padding: 0px;
+    border: none;
+    box-shadow: none;
+    color: rgba(255, 255, 255, 0.5);
+  `;
+
+  const Wrap = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    margin-top: 60px;
+    padding: 20px;
   `;
 
   const [gridItems, setGridItems] = useState([
@@ -296,23 +318,11 @@ const Dashboard = () => {
     },
 
     {
-      component: (
-        <BoxXL>
-          <Whiteboard />
-        </BoxXL>
-      ),
+      component: <BoxXL>{/* <Whiteboard /> */}</BoxXL>,
       spanColumns: 6,
       spanRows: 4,
     },
   ]);
-
-  // const handleColumnChange = (index, value) => {
-  //   const newGridItems = [...gridItems];
-  //   const removed = newGridItems.splice(index, 1);
-  //   newGridItems.splice(index + value, 0, removed[0]);
-  //   setGridItems(newGridItems);
-  //   console.log(newGridItems);
-  // };
 
   const handleRowChange = (index: number, value: number) => {
     const newGridItems = [...gridItems];
@@ -323,85 +333,56 @@ const Dashboard = () => {
   };
   console.log(gridItems);
 
-  const [showAside, setShowAside] = useState(true);
+  const [sideNavWidth, setSideNavWidth] = useState(200);
 
-  const handleToggleAside = () => {
-    setShowAside(!showAside);
+  const AsideWrap = ({ show }: boolean) => {
+    return <div style={{ display: show ? 'block' : 'none' }}></div>;
   };
 
-  return (
-    <Layout>
-      <Container>
-        <Button onClick={handleToggleAside}>
-          <FontAwesomeIcon icon={showAside ? faToggleOff : faToggleOn} />
-        </Button>
-        <Wrap isCentered={!showAside}>
-          {showAside && (
-            <Aside>
-              <Slogan>One home, one team, one victory!</Slogan>
-              <SmallSlogan>Every day counts</SmallSlogan>
-            </Aside>
-          )}
-          <Main>
-            {/* <Grid>
-              <GridItem spanColumns={2} spanRows={4}>
-                Todo
-              </GridItem>
-              <GridItem spanColumns={2} spanRows={4}>
-                Calendar
-              </GridItem>
-              <GridItem spanColumns={2} spanRows={4}>
-                Ai
-              </GridItem>
-              <GridItem spanColumns={4} spanRows={4}>
-                Milestone
-              </GridItem>
-              <GridItem spanColumns={1} spanRows={2}>
-                Family
-              </GridItem>
-              <GridItem spanColumns={1} spanRows={2}>
-                Family
-              </GridItem>
-              <GridItem spanColumns={1} spanRows={2}>
-                Family
-              </GridItem>
-              <GridItem spanColumns={1} spanRows={2}>
-                Album
-              </GridItem>
-              <GridItem spanColumns={6} spanRows={4}>
-                <Whiteboard />
-              </GridItem>
-            </Grid> */}
-            <Grid>
-              {gridItems.map((item, index) => (
-                <GridItem
-                  key={index}
-                  spanColumns={item.spanColumns}
-                  spanRows={item.spanRows}
-                >
-                  {item.component}
+  const handleResize = () => {
+    setSideNavWidth(window.innerWidth);
+  };
 
-                  {/* <button onClick={() => handleColumnChange(index, 1)}>
-                      Move Right
-                    </button>
-                    <button onClick={() => handleColumnChange(index, -1)}>
-                      Move Left
-                    </button> */}
-                  <ButtonWrap>
-                    <Button onClick={() => handleRowChange(index, 1)}>
-                      <FontAwesomeIcon icon={faCircleChevronDown} />
-                    </Button>
-                    <Button onClick={() => handleRowChange(index, -1)}>
-                      <FontAwesomeIcon icon={faCircleChevronUp} />
-                    </Button>
-                  </ButtonWrap>
-                </GridItem>
-              ))}
-            </Grid>
-          </Main>
-        </Wrap>
-      </Container>
-    </Layout>
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <Container>
+      <SideNav />
+
+      <Wrap>
+        {/* <AsideWrap show={sideNavWidth >= 150}>
+          <Aside>
+            <Slogan>One home, one team, one victory!</Slogan>
+            <SmallSlogan>We're Better Together</SmallSlogan>
+          </Aside>
+        </AsideWrap> */}
+
+        <Main>
+          <Grid>
+            {gridItems.map((item, index) => (
+              <GridItem
+                key={index}
+                spanColumns={item.spanColumns}
+                spanRows={item.spanRows}
+              >
+                {item.component}
+                <ButtonWrap>
+                  <Button onClick={() => handleRowChange(index, 1)}>
+                    <FontAwesomeIcon icon={faCircleChevronDown} />
+                  </Button>
+                  <Button onClick={() => handleRowChange(index, -1)}>
+                    <FontAwesomeIcon icon={faCircleChevronUp} />
+                  </Button>
+                </ButtonWrap>
+              </GridItem>
+            ))}
+          </Grid>
+        </Main>
+      </Wrap>
+    </Container>
   );
 };
 

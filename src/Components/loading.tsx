@@ -36,8 +36,8 @@ const Container = styled.div`
 `;
 
 const LoadingBar = styled.div`
-  width: 300px;
-  height: 50px;
+  width: 100px;
+  height: 10px;
   background-color: #ddd;
   border-radius: 10px;
 `;

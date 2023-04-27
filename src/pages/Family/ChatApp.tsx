@@ -6,26 +6,42 @@ import { auth } from '../../config/firebase.config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import Layout from '../../Components/layout';
 import styled from 'styled-components/macro';
+import Banner from '../../Components/Banner/Banner';
+import SideNav from '../../Components/Nav/SideNav';
 const CenterWrapper = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
-  justify-content: center; /* Center the child element horizontally */
-  align-items: center; /* Center the child element vertically */
-  margin-top: 20px;
   flex-direction: column;
-  height: 100vh;
+  flex-wrap: wrap;
+  border: 3px solid red;
+  margin-top: 30px;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 0px;
+  background-color: transparent;
+  width: 100vw;
+  height: 100%;
+
+  border: 3px solid gold;
 `;
 
 function ChatApp() {
   const [user] = useAuthState(auth);
   //  console.log(user)
   return (
-    <Layout>
+    <Container>
+      <SideNav></SideNav>
       <CenterWrapper>
         {/* Navbar */}
-        <Navbar />
+        <Banner title="Chat" subTitle="Family Time, Anytime"></Banner>
+        {/* <Navbar /> */}
         {user ? <Chat /> : null}
       </CenterWrapper>
-    </Layout>
+    </Container>
   );
 }
 

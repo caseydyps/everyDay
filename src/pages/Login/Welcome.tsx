@@ -51,34 +51,32 @@ function WelcomePage() {
         <>
           {hasSetup ? (
             <Wrap>
-              <WelcomeMessage>歡迎回家, {userName}</WelcomeMessage>
-              <ColumnWrap>
-                <RowWrap>
-                  <Wording>
-                    您可以: <br />
-                  </Wording>
-                  <LinkButton to="/dashboard">Straight to Dashboard</LinkButton>
-                </RowWrap>
+              <CurveSection>
+                <h1>Welcome home,</h1>
                 <ColumnWrap>
                   <RowWrap>
-                    <Wording>
-                      或者, <br />
-                    </Wording>
-                    <LinkButton to="/ai">
-                      Ask anything about your family!
+                    <LinkButton to="/dashboard">
+                      Straight to Dashboard
                     </LinkButton>
                   </RowWrap>
-                  <AiInput
-                    type="text"
-                    placeholder="今天有什麼事嗎?"
-                    style={{ paddingLeft: '30px' }}
-                  ></AiInput>
+                  <ColumnWrap>
+                    <RowWrap>
+                      <Wording>or,</Wording>
+                      <LinkButton to="/ai">
+                        Ask anything about your family!
+                      </LinkButton>
+                    </RowWrap>
+                  </ColumnWrap>
                 </ColumnWrap>
-              </ColumnWrap>
+
+                <Curve></Curve>
+              </CurveSection>
+
+              <Section></Section>
             </Wrap>
           ) : (
             <>
-              <LoadingAnimation />
+              {/* <LoadingAnimation /> */}
               <WelcomeMessage style={{ marginTop: '300px' }}>
                 您似乎還未完成家庭成員設定, 請點選下方進行設定
               </WelcomeMessage>
@@ -100,34 +98,54 @@ function WelcomePage() {
           )}
         </>
       ) : (
-        <>
-          <WelcomeMessage>Welcome, how's your day?</WelcomeMessage>
-        </>
+        <Section style={{ backgroundColor: 'transparent' }}>
+          <h1 style={{ color: 'white' }}>Welcome to EVERYDAY!</h1>
+          <p style={{ color: 'white' }}>Your everyday family assistant</p>
+        </Section>
       )}
 
       {!user && (
-        <CircleButton>
-          <ColumnWrap>
-            <NavLink to="/family">
-              {googleAvatarUrl && <Avatar src={googleAvatarUrl} alt="" />}
-            </NavLink>
-            <Slogan>Login in seconds!</Slogan>
+        <>
+          <CurveSection>
+            <h1>Arrange your family with ease</h1>
+
+            <p>
+              Love in a family is like a flame. The more it is fueled by
+              kindness and care, the warmer and stronger it grows.
+            </p>
+            <ColumnWrap></ColumnWrap>
+            <Curve></Curve>
+          </CurveSection>
+          <Section>
+            <h1 style={{ color: 'white' }}>Can't wait? Login in seconds!</h1>
+            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
             <SignIn />
-          </ColumnWrap>
-        </CircleButton>
+          </Section>
+          {/* <CircleButton></CircleButton> */}
+        </>
       )}
-      <LoadingAnimation />
+      {/* <LoadingAnimation /> */}
     </Container>
   );
 }
 
-const WelcomeMessage = styled.div`
+const WelcomeMessage = styled.h1`
   text-align: center;
   margin: auto;
-  font-size: 5vw;
+
   font-weight: bold;
   color: white;
-  padding: 20vh;
+
+  flex: 1;
+`;
+
+const WelcomeSubMessage = styled.h1`
+  text-align: center;
+  margin: auto;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+
   flex: 1;
 `;
 
@@ -144,11 +162,98 @@ export const GradientAnimation = keyframes`
   
 `;
 
+const Section = styled.section`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+  padding-top: 100px;
+  background: #1e3d6b;
+  max-width: 100vw;
+`;
+
+const BubbleSection = styled.section`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+  padding-top: 100px;
+  background: #1e3d6b;
+  max-width: 100vw;
+
+  &::after {
+    content: '';
+    border-top-left-radius: 50% 100%;
+    border-top-right-radius: 50% 100%;
+    position: absolute;
+    bottom: 0;
+    z-index: -1;
+    width: 100%;
+    background-color: #0f0f10;
+    height: 85%;
+  }
+`;
+
+const CurveSection = styled.section`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 400px;
+  padding-top: 100px;
+  background: #5995dd;
+  margin-top: 0px;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 25%;
+    height: 100%;
+    transform: translate(65%, 60%);
+    background-color: #5995dd;
+  }
+`;
+
+const Curve = styled.div`
+  position: absolute;
+  height: 250px;
+  width: 100%;
+  bottom: 0;
+  text-align: center;
+
+  &::before {
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 55%;
+    height: 100%;
+    transform: translate(85%, 60%);
+    background-color: #1e3d6b;
+  }
+
+  &::after {
+    content: '';
+    display: block;
+    position: absolute;
+    border-radius: 100% 50%;
+    width: 55%;
+    height: 100%;
+    background-color: #5995dd;
+    transform: translate(-4%, 40%);
+    z-index: 1;
+  }
+`;
+
 export const Container = styled.div`
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: auto;
   margin-top: 70px;
-  background: linear-gradient(
+  /* background: linear-gradient(
     45deg,
     white,
     #fff5c9,
@@ -156,11 +261,11 @@ export const Container = styled.div`
     #629dda,
     #ff9f4d,
     #142850
-  );
+  ); */
 
   flex-direction: column;
   justify-content: center;
-  animation: ${GradientAnimation} 20s ease-in-out infinite;
+  //animation: ${GradientAnimation} 20s ease-in-out infinite;
   background-size: 200% 500%;
 `;
 
@@ -168,7 +273,7 @@ const CircleButton = styled.div`
   width: 500px;
   height: 500px;
   border-radius: 50%; /* half of width or height */
-  background-color: white;
+  background-color: #3467a1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,6 +302,8 @@ const RowWrap = styled.div`
 const Wrap = styled.div`
   flex-wrap: wrap;
   height: 100%;
+  width: 100vw;
+  margin: 0 auto;
 `;
 
 const Slogan = styled.h2`
@@ -223,24 +330,24 @@ const Avatar = styled.img`
 `;
 
 const LinkButton: any = styled(Link)`
-  background-color: #transparent;
+  background-color: transparent;
   color: #fff;
-  padding: 10px 20px;
+  padding: 10px 10px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 32px;
+  font-size: 28px;
   font-weight: bold;
   margin: auto;
+  z-index: 3;
   &:hover {
     transform: scale(1.05);
   }
 `;
 
 const Wording = styled.div`
-  background-color: #transparent;
+  background-color: transparent;
   color: #fff;
-  padding: 10px 20px;
   border: none;
   border-radius: 5px;
   cursor: pointer;

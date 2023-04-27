@@ -14,6 +14,7 @@ import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { MembersSelector } from '../../AI/SmartInput';
 import { Card } from '../../../Components/Button/Button';
+import { format } from 'date-fns';
 import {
   collection,
   updateDoc,
@@ -39,22 +40,24 @@ import {
   faPlusCircle,
   faPenToSquare,
   faTrashCan,
+  faUserPen,
   faCircleXmark,
   faArrowDownWideShort,
   faArrowDownShortWide,
   faPerson,
   faCalendarDays,
   faUsers,
-  faP,
+  faEllipsis,
   faPencil,
   faCalendar,
   faCheck,
 } from '@fortawesome/free-solid-svg-icons';
 const DragNDropWrapper = styled.div`
   display: flex;
+
   // justify-content: space-between;
-  margin: 20px;
-  flex:direction: column;
+  margin: 10px;
+  flex-direction: row;
   overflow-x: scroll;
   height: 100%;
 `;
@@ -72,10 +75,11 @@ const RowButton = styled(DefaultButton)`
   display: flex;
   justify-content: space-between;
   margin: 0px;
-  flex:direction: column;
-  width:20px;
-  height:20px;
+  flex-direction: column;
+  width: 20px;
+  height: 20px;
   background-color: transparent;
+  box-shadow: none;
 `;
 
 const DragNDropGroup: any = styled.div`
@@ -84,9 +88,8 @@ const DragNDropGroup: any = styled.div`
   width: 80%;
   height: auto;
   padding: 10px;
-  margin: 20px;
+  margin: 10px;
   background-color: transparent;
-
   border-radius: 5px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
@@ -97,12 +100,11 @@ type DragNDropItemProps = {
 };
 const DragNDropItem: any = styled.div<DragNDropItemProps>`
   height: 80px;
-  padding: 5px;
   margin: 25px;
   background-color: grey;
-position: relative;
+  position: relative;
   border-radius: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3)
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   cursor: move;
   display: flex;
   align-items: center;
@@ -189,6 +191,17 @@ const ColumnWrap = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+
+  height: auto;
+  width: 100%;
+  border: 3px solid #f6ecc9;
+`;
+const ItemTextWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
   height: auto;
   width: 100%;
 `;
@@ -696,13 +709,13 @@ function DragNDrop({ data }: any) {
           width: '95%',
           backgroundColor: '#ddd',
           borderRadius: '5px',
-          height: '10px',
+          height: '7px',
         }}
       >
         <div
           style={{
             width: `${progress}%`,
-            backgroundColor: 'blue',
+            backgroundColor: 'rgba(52, 103, 161, 0.6)',
             borderRadius: '5px',
             height: '100%',
           }}
@@ -711,9 +724,28 @@ function DragNDrop({ data }: any) {
     );
   }
   const [showAdd, setShowAdd] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const showAddSection = () => {
     setShowAdd(!showAdd);
   };
+
+  function formatDate(dueDate: string) {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const formattedDate = format(new Date(dueDate), 'MMM d, yyyy');
+
+    if (new Date(dueDate).toDateString() === today.toDateString()) {
+      return 'Today';
+    } else if (new Date(dueDate).toDateString() === tomorrow.toDateString()) {
+      return 'Tomorrow';
+    } else if (new Date(dueDate) < today) {
+      return 'Overdue';
+    } else {
+      return formattedDate;
+    }
+  }
 
   if (list) {
     return (
@@ -725,7 +757,7 @@ function DragNDrop({ data }: any) {
           {list.map((group, groupIndex) => (
             <List>
               <ListInfoWrap index={groupIndex}>
-                <h3>{group.title}</h3>
+                <h4>{group.title}</h4>
                 {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
               <h4>Total tasks: {getTotalTaskCount(group)}</h4> */}
                 <h4>
@@ -802,6 +834,7 @@ function DragNDrop({ data }: any) {
                     console.log(formattedCurrentDate);
                     console.log('Is overdue:', isOverdue);
                     console.log('Is today:', isToday);
+
                     return (
                       <>
                         <DragNDropItem
@@ -822,9 +855,15 @@ function DragNDrop({ data }: any) {
                             backgroundColor: item.done
                               ? 'rgba(128, 128, 128, 0.5)'
                               : isOverdue
-                              ? 'rgba(235, 122, 83, 0.8)'
-                              : 'rgba(0, 0, 255, 0.2)',
+                              ? '#c2c2c2'
+                              : '#c2c2c2',
+                            // backgroundColor: 'white',
+
                             color: item.done ? '#737373' : 'black',
+                            boxShadow:
+                              isOverdue && !item.done
+                                ? '0 0 8px 5px rgba(232, 55, 55, 0.522)' // create a red glow when overdue
+                                : 'none', // no shadow when not overdue
                           }}
                         >
                           <ColumnWrap>
@@ -846,7 +885,19 @@ function DragNDrop({ data }: any) {
                               </CheckboxContainer>
                             </AvatarRowWrap>
 
-                            <ColumnWrap>
+                            <ItemTextWrap>
+                              {item.due ? (
+                                <DueText>{formatDate(item.due)}</DueText>
+                              ) : (
+                                <DueText>No due</DueText>
+                              )}
+
+                              <MoreButton
+                                onClick={() => setShowMore(!showMore)}
+                              >
+                                <FontAwesomeIcon icon={faEllipsis} />
+                              </MoreButton>
+
                               <Text
                                 style={{
                                   textDecoration: item.done
@@ -856,64 +907,56 @@ function DragNDrop({ data }: any) {
                               >
                                 {item.text}
                               </Text>
+                            </ItemTextWrap>
 
-                              <Text>{item.due && `${item.due}`}</Text>
-                            </ColumnWrap>
-                            <RowWrap>
-                              <RowButton
-                                onClick={() =>
-                                  deleteItem(groupIndex, itemIndex)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrashCan}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                              <RowButton
-                                onClick={() => {
-                                  const newText = prompt('更改事件');
-                                  if (newText) {
-                                    handleChange(
-                                      { target: { value: newText } },
-                                      groupIndex,
-                                      itemIndex,
-                                      'text'
-                                    );
+                            {showMore && (
+                              <RowWrap>
+                                <RowButton
+                                  onClick={() =>
+                                    deleteItem(groupIndex, itemIndex)
                                   }
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faPencil}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-
-                              <RowButton
-                                onClick={() =>
-                                  setShowMembersSelector(!showMembersSelector)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faUsers}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                              <RowButton
-                                onClick={() => {
-                                  const newDue = prompt('更改到期日期');
-                                  if (newDue) {
-                                    handleChange(
-                                      { target: { value: newDue } },
-                                      groupIndex,
-                                      itemIndex,
-                                      'due'
-                                    );
+                                >
+                                  <FontAwesomeIcon icon={faTrashCan} />
+                                </RowButton>
+                                <RowButton
+                                  onClick={() => {
+                                    const newText = prompt('更改事件');
+                                    if (newText) {
+                                      handleChange(
+                                        { target: { value: newText } },
+                                        groupIndex,
+                                        itemIndex,
+                                        'text'
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <FontAwesomeIcon icon={faPencil} />
+                                </RowButton>
+                                <RowButton
+                                  onClick={() =>
+                                    setShowMembersSelector(!showMembersSelector)
                                   }
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faCalendarDays}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                            </RowWrap>
+                                >
+                                  <FontAwesomeIcon icon={faUsers} />
+                                </RowButton>
+                                <RowButton
+                                  onClick={() => {
+                                    const newDue = prompt('更改到期日期');
+                                    if (newDue) {
+                                      handleChange(
+                                        { target: { value: newDue } },
+                                        groupIndex,
+                                        itemIndex,
+                                        'due'
+                                      );
+                                    }
+                                  }}
+                                >
+                                  <FontAwesomeIcon icon={faCalendarDays} />
+                                </RowButton>
+                              </RowWrap>
+                            )}
                           </ColumnWrap>
                         </DragNDropItem>
                         {showMembersSelector && (
@@ -955,20 +998,40 @@ const HideButton = styled(DefaultButton)`
 const List = styled.div`
   width: 300px;
   background-color: transparent;
-
+  border: 3px solid blue;
   height: 100%;
 `;
 
 const Text = styled.div`
-  font-size: 16px;
+  font-size: 32px;
   margin-top: -10px;
   margin-bottom: 5px;
+  margin-right: 0px;
+`;
+
+const DueText = styled.div`
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+  border: 1px solid black;
+  border-radius: 5px;
 `;
 
 const CheckboxContainer = styled.div`
   width: 20px;
   height: 20px;
   margin-left: auto;
+`;
+
+const MoreButton = styled(DefaultButton)`
+  width: 20px;
+  height: 20px;
+  box-shadow: none;
+  background-color: transparent;
+  color: white;
+  position: absolute;
+  top: -40px;
+  right: 10px;
 `;
 
 const CheckboxInput = styled.input`
@@ -996,7 +1059,7 @@ const CheckboxInput = styled.input`
     border: 0;
     background-color: transparent;
     background-size: contain;
-    box-shadow: inset 0 0 0 1px #ccd3d8;
+    box-shadow: inset 0 0 0 3px #3467a1;
   }
 
   &:checked {

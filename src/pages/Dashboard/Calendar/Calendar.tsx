@@ -5,8 +5,10 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import { getISOWeek } from 'date-fns';
 import 'firebase/firestore';
-
+import { MembersSelector } from '../../AI/SmartInput';
+import { format } from 'date-fns-tz';
 import Banner from '../../../Components/Banner/Banner';
+
 import {
   collection,
   updateDoc,
@@ -29,18 +31,20 @@ import {
   faPenToSquare,
   faTrashCan,
   faCircleXmark,
+  faEllipsis,
 } from '@fortawesome/free-solid-svg-icons';
 import HourlyView from './HourView';
 import DailyHourlyView from './DailyHourView';
 import Layout from '../../../Components/layout';
 import DefaultButton from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
+import SideNav from '../../../Components/Nav/SideNav';
 const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 20px;
   font-family: Arial, sans-serif;
 `;
 
@@ -75,6 +79,11 @@ const MonthContainer = styled.div`
 const MonthLabel = styled.span`
   font-size: 1.5rem;
   font-weight: bold;
+  color: #3467a1;
+  border: 3px solid white;
+  border-radius: 25px;
+  background-color: transparent;
+  padding: 10px;
 `;
 
 const WeekContainer = styled.div`
@@ -105,9 +114,6 @@ const DayLabel = styled.span`
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
-
-  top: 0%;
-  left: 0%;
 `;
 
 const Button = styled.button`
@@ -126,7 +132,12 @@ const Button = styled.button`
 
 const Table = styled.table`
   border-collapse: collapse;
-  margin: 0 auto;
+  margin-right: 0px;
+  box-shadow: 3px 3px 5px black;
+  border-radius: 20px;
+  flex: 3;
+  background-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.2);
 `;
 
 const Th = styled.thead`
@@ -135,17 +146,18 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  max-width: 150px;
-  min-width: 150px;
-  height: 150px;
-  max-height: 200px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  border-radius: 20px;
-
+  max-width: 100px;
+  min-width: 100px;
+  height: 100px;
+  max-height: 100px;
+  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0px;
+  border: 3px solid rgba(211, 211, 211, 0.5);
+  border-collapse: collapse;
   // overflow-y: auto;
-  margin: 5px;
+
   &.inactive {
-    color: #999;
+    color: #f5f5f5;
   }
 
   &.today {
@@ -153,9 +165,10 @@ const Td = styled.td`
   }
 
   &:hover {
-    background-color: #c2c2c2;
+    background-color: #3467a1;
     cursor: pointer;
-    color: #333;
+    color: white;
+    border: transparent;
   }
   div {
     font-size: 8px;
@@ -169,15 +182,21 @@ const Td = styled.td`
 const Container = styled.div`
   display: flex;
   flex-direction: row;
+  margin-top: 0px;
+  background-color: transparent;
   width: 100vw;
-  height: auto;
+  height: 100%;
+  border: gold solid 3px;
 `;
 
 const Wrap = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  width: 100vw;
-  min-height: 100vh;
+  flex-wrap: wrap;
+  border: 3px solid red;
+  margin-top: 30px;
 
   // background-color: rgba(64, 64, 64, 0.5);
 `;
@@ -187,6 +206,18 @@ const RowWrap = styled.div`
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  max-width: 100%;
+`;
+
+const MenuWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: -20px;
+  right: 0;
+  z-index: 2;
 `;
 
 const AddButton = styled(DefaultButton)`
@@ -204,10 +235,10 @@ const Modal = styled.div`
 
 const ModalForm = styled.form`
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   background-color: #3467a1;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  box-shadow: 3px 3px 5px black;
   padding: 20px;
   color: #f5f5f5;
   width: 500px;
@@ -251,6 +282,7 @@ const EventWrapper = styled.div<EventWrapperProps>`
   align-items: center;
   position: relative;
   overflow-x: auto;
+  box-shadow: 3px 3px 5px black;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -272,10 +304,13 @@ const EventWrapper = styled.div<EventWrapperProps>`
     multiDay
       ? `
         margin-left: 0px;
+        box-shadow: 0px 0px 0px black;
       `
       : `
         border: 1px solid black;
         margin: 5px;
+        
+
         
       `}
 `;
@@ -288,6 +323,8 @@ const EventTime = styled.div`
 const DateDetailsWrapper = styled.div`
   font-size: 16px;
   font-weight: bold;
+  width: 100px;
+  height: 100px;
 `;
 
 interface EventTitleProps {
@@ -323,8 +360,9 @@ const BannerWrap = styled.div`
 
 const EventList = styled.ul`
   list-style-type: none;
-  padding: 0;
-
+  padding: 0px;
+  height: 100px;
+  width: 100px;
   overflow-y: auto;
 
   &::-webkit-scrollbar {
@@ -332,7 +370,7 @@ const EventList = styled.ul`
   }
 
   &::-webkit-scrollbar-track {
-    background-color: #transparent;
+    background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -396,7 +434,7 @@ function Calendar() {
     membersArray,
     memberRolesArray,
   } = UserAuthData();
-
+  const [showButtons, setShowButtons] = useState(false);
   interface Event {
     id: string;
     title: string;
@@ -464,12 +502,13 @@ function Calendar() {
 
   const editEventtoFirestore = async (eventId: string, updatedData: any) => {
     const eventRef = collection(db, 'Family', familyId, 'Calendar');
-
+    console.log(eventId, updatedData);
+    console.log(typeof eventId);
     // Query for the document with the matching ID
     const querySnapshot = await getDocs(
-      query(eventRef, where('id', '==', eventId))
+      query(eventRef, where('id', '==', eventId.current))
     );
-
+    console.log('querySnapshot', querySnapshot);
     // Update the document with the new data
     querySnapshot.forEach(async (doc) => {
       try {
@@ -498,7 +537,7 @@ function Calendar() {
     draggedEventIdRef,
     isCurrentMonth,
   }: any) {
-    console.log(isCurrentMonth);
+    //console.log(isCurrentMonth);
     const handleDragStart = (
       e: React.DragEvent<HTMLDivElement>,
       eventId: string
@@ -512,14 +551,14 @@ function Calendar() {
       e.preventDefault();
     };
 
-    const handleDrop = (
+    const handleDrop = async (
       e: React.DragEvent<HTMLDivElement>,
       date: Date,
       draggedEventIdRef: React.MutableRefObject<string | null>
     ) => {
       e.preventDefault();
-      console.log('drop', date);
-      console.log(draggedEventIdRef.current);
+      //console.log('drop', date);
+      //console.log(draggedEventIdRef.current);
       const updatedEvents = events.map((event: Event) => {
         console.log(draggedEventIdRef.current);
         console.log(event.id + ' ' + draggedEventIdRef.current);
@@ -527,18 +566,23 @@ function Calendar() {
           console.log('same');
           console.log(event.date);
           console.log('targetDate' + date);
-          const options: any = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-          };
-          const dateString = date.toLocaleDateString('en-US', options);
-          console.log(dateString);
+          const dateString = format(date, 'yyyy-MM-dd', {
+            timeZone: 'Asia/Taipei',
+          });
           return { ...event, date: dateString, endDate: dateString };
         }
         return event;
       });
+      const dateString = format(date, 'yyyy-MM-dd', {
+        timeZone: 'Asia/Taipei',
+      });
 
+      const updatedData = {
+        date: dateString,
+        endDate: dateString,
+        // Add any other fields to update here
+      };
+      await editEventtoFirestore(draggedEventIdRef, updatedData);
       setEvents(updatedEvents);
       console.log('updatedEvents', updatedEvents);
     };
@@ -567,6 +611,26 @@ function Calendar() {
     // console.log(selectedEvents);
     // console.log(isCurrentMonth);
     // console.log(date.getMonth());
+    console.log(membersArray);
+    interface EventMemberProps {
+      members: Array<{ avatar: string; role: string }>;
+      memberRole: string;
+    }
+    const MemberAvatar = styled.img`
+      border-radius: 50%;
+      height: 30px;
+      width: 30px;
+    `;
+
+    const EventMember: React.FC<EventMemberProps> = ({
+      members,
+      memberRole,
+    }) => {
+      const member = members.find((m) => m.role === memberRole);
+      return member ? (
+        <MemberAvatar src={member.avatar} alt={member.role} />
+      ) : null;
+    };
 
     return (
       <DateDetailsWrapper
@@ -588,23 +652,33 @@ function Calendar() {
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
                   >
-                    <EventMember>{event.member}</EventMember>
+                    <EventMember
+                      members={membersArray}
+                      memberRole={event.member}
+                    ></EventMember>
                     {/* <EventTime>{event.time}</EventTime>
-                    <EventTime>{`~${event.endTime}`}</EventTime> */}
+                 <EventTime>{`~${event.endTime}`}</EventTime> */}
                     <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
-                    <RowWrap>
-                      <Button onClick={() => handleEditEvent(event)}>
-                        <FontAwesomeIcon icon={faEdit} />
-                      </Button>
-                      <Button onClick={() => handleDeleteEvent(event)}>
-                        <FontAwesomeIcon icon={faTrashCan} />
-                      </Button>
-                      {/* <button onClick={() => handleFinishEvent(event)}>
-                        Finish
-                      </button> */}
-                    </RowWrap>
+                    <Button onClick={() => setShowButtons(!showButtons)}>
+                      <FontAwesomeIcon icon={faEllipsis} />
+                    </Button>
+                    <MenuWrap>
+                      {showButtons && (
+                        <>
+                          <Button onClick={() => handleEditEvent(event)}>
+                            <FontAwesomeIcon icon={faEdit} />
+                          </Button>
+                          <Button onClick={() => handleDeleteEvent(event)}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </Button>
+                          {/* <button onClick={() => handleFinishEvent(event)}>
+                         Finish
+                       </button> */}
+                        </>
+                      )}
+                    </MenuWrap>
                   </EventWrapper>
                 </li>
               ) : null
@@ -623,7 +697,7 @@ function Calendar() {
   };
 
   function MonthDetails({ date, events }: MonthDetailsProps) {
-    console.log(date);
+    //console.log(date);
     if (!date) {
       return <div>No date selected</div>;
     }
@@ -637,14 +711,18 @@ function Calendar() {
     });
 
     const MonthWrap = styled.div`
-      background-color: #transparent;
+      background-color: rgba(64, 64, 64, 0.5);
+      box-shadow: 3px 3px 5px black;
       padding: 10px;
-      border: 3px solid #ccc;
+      margin-left: 10px;
       border-radius: 25px;
       margin-top: 20px;
       text-align: left;
       align-items: center;
       font-size: 16px;
+      min-height: 250px;
+      width: 200px;
+      flex: 1;
     `;
 
     const Title = styled.div`
@@ -665,8 +743,10 @@ function Calendar() {
     const EventListItem = styled.li`
       margin-bottom: 10px;
       box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-      background-color: #fff5c9;
+      background-color: #3467a1;
+      color: #f5f5f5;
       border-radius: 15px;
+      border: 3px solid #f5f5f5;
       padding: 10px;
     `;
 
@@ -680,26 +760,133 @@ function Calendar() {
 
     const NoEvents = styled.div`
       font-style: italic;
+      font-size: 16px;
     `;
 
+    // console.log(selectedMonthEvents);
+
+    interface EventMemberProps {
+      members: Array<{ avatar: string; role: string }>;
+      memberRole: string;
+    }
+    const MemberAvatar = styled.img`
+      border-radius: 50%;
+      height: 40px;
+      width: 40px;
+    `;
+
+    const EventMember: React.FC<EventMemberProps> = ({
+      members,
+      memberRole,
+    }) => {
+      const member = members.find((m) => m.role === memberRole);
+      return member ? (
+        <MemberAvatar src={member.avatar} alt={member.role} />
+      ) : null;
+    };
+
     return (
-      <MonthWrap>
-        <Title>{`${months[date.getMonth()]} ${date.getFullYear()}`}</Title>
-        {selectedMonthEvents.length > 0 ? (
-          <EventList>
-            {selectedMonthEvents.map((event, index: number) => (
-              <EventListItem key={index}>
-                <Member>{event.member} |</Member>
-                <EventDetails>
-                  {event.title} - {event.date} ~ {event.endDate} at {event.time}
-                </EventDetails>
-              </EventListItem>
-            ))}
-          </EventList>
-        ) : (
-          <NoEvents>這個月目前沒有活動</NoEvents>
-        )}
-      </MonthWrap>
+      <ColumnWrap>
+        <MonthWrap>
+          <Title>
+            {selectedDate
+              .toLocaleDateString('en-US', {
+                timeZone: 'Asia/Taipei',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              })
+              .replace(/\//g, '-')}
+          </Title>
+
+          {selectedMonthEvents.filter((event) => {
+            const eventDate = new Date(`${event.date}T${event.time}:00`);
+            const eventEndDate = new Date(
+              `${event.endDate}T${event.endTime}:00`
+            );
+            const eventDateInTaipei = eventDate.toLocaleString('en-US', {
+              timeZone: 'Asia/Taipei',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
+            const eventEndDateInTaipei = eventEndDate.toLocaleString('en-US', {
+              timeZone: 'Asia/Taipei',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
+
+            return (
+              eventDateInTaipei ===
+              selectedDate.toLocaleDateString('en-US', {
+                timeZone: 'Asia/Taipei',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              })
+            );
+          }).length > 0 ? (
+            <EventList>
+              {selectedMonthEvents
+                .filter((event) => {
+                  const eventDate = new Date(`${event.date}T${event.time}:00`);
+                  const eventDateInTaipei = eventDate.toLocaleString('en-US', {
+                    timeZone: 'Asia/Taipei',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                  });
+                  return (
+                    eventDateInTaipei ===
+                    selectedDate.toLocaleDateString('en-US', {
+                      timeZone: 'Asia/Taipei',
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                    })
+                  );
+                })
+                .map((event, index) => (
+                  <EventListItem key={index}>
+                    <EventMember
+                      members={membersArray}
+                      memberRole={event.member}
+                    ></EventMember>
+                    <EventDetails>
+                      {event.title} - {event.date} ~ {event.endDate} at{' '}
+                      {event.time}
+                    </EventDetails>
+                  </EventListItem>
+                ))}
+            </EventList>
+          ) : (
+            <NoEvents>There are no events for the selected date.</NoEvents>
+          )}
+        </MonthWrap>
+
+        <MonthWrap>
+          <Title>{`${months[date.getMonth()]} ${date.getFullYear()}`}</Title>
+          {selectedMonthEvents.length > 0 ? (
+            <EventList>
+              {selectedMonthEvents.map((event, index: number) => (
+                <EventListItem key={index}>
+                  <EventMember
+                    members={membersArray}
+                    memberRole={event.member}
+                  ></EventMember>
+                  <EventDetails>
+                    {event.title} - {event.date} ~ {event.endDate} at{' '}
+                    {event.time}
+                  </EventDetails>
+                </EventListItem>
+              ))}
+            </EventList>
+          ) : (
+            <NoEvents>這個月目前沒有活動</NoEvents>
+          )}
+        </MonthWrap>
+      </ColumnWrap>
     );
   }
 
@@ -751,7 +938,7 @@ function Calendar() {
     setSelectedRow(
       newMonth === currentMonth ? (selectedRow ? selectedRow + 1 : 0) : 0
     );
-    console.log(newDate);
+    //console.log(newDate);
     getWeekNumber(newDate);
   };
 
@@ -770,9 +957,9 @@ function Calendar() {
   const handleDateClick = (day: number, row: number | null) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
-    console.log(selectedDate);
+    //console.log(selectedDate);
     getWeekNumber(new Date(date.getFullYear(), date.getMonth(), day));
-    console.log(weekNumber);
+    //console.log(weekNumber);
   };
 
   const handleWeekDateClick = (day: number, row: number) => {
@@ -827,7 +1014,7 @@ function Calendar() {
   }
 
   useEffect(() => {
-    console.log(selectedRow); // log the updated value of selectedRow
+    //console.log(selectedRow); // log the updated value of selectedRow
   }, [selectedRow]);
 
   const handleViewClick = (view: string) => {
@@ -840,7 +1027,7 @@ function Calendar() {
     const daysSinceJan1 =
       Math.floor((date.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
     const weekNumber = Math.floor((daysSinceJan1 + (7 - dayOfWeek)) / 7);
-    console.log(weekNumber);
+    //console.log(weekNumber);
     setWeekNumber(weekNumber);
   }
 
@@ -889,8 +1076,8 @@ function Calendar() {
       'November',
       'December',
     ];
-    console.log('selectedDate ' + selectedDate);
-    console.log('week ' + weekNumber);
+    //console.log('selectedDate ' + selectedDate);
+    //console.log('week ' + weekNumber);
     if (!selectedDate) {
       selectedDate = new Date();
     }
@@ -931,7 +1118,6 @@ function Calendar() {
       'Enter the updated event member:',
       event.member
     );
-    const updatedNote = prompt('Enter the updated event note:', event.note);
 
     // Create a new event object with the updated details
     const updatedEvent = {
@@ -943,7 +1129,6 @@ function Calendar() {
       endTime: updatedEndTime,
       category: updatedCategory,
       member: updatedMember,
-      note: updatedNote,
     };
 
     // Update the events list with the new event object
@@ -989,7 +1174,7 @@ function Calendar() {
   // };
 
   useEffect(() => {
-    console.log(events);
+    //console.log(events);
   }, [events]);
 
   const handleDateChange = (date: string) => {
@@ -1019,87 +1204,94 @@ function Calendar() {
     setEventEndDay(selectedDayOfWeek);
   };
 
+  const handleSelectMember = (member: string) => {
+    // event.preventDefault();
+    setEventMember(member);
+  };
+
   return (
-    <Layout>
-      <Container>
-        <Wrap>
-          <Banner title="#CALENDAR" subTitle="calendar"></Banner>
+    <Container>
+      <SideNav />
+      <Wrap>
+        <Banner title="Calendar" subTitle="Every Day Counts"></Banner>
+        <RowWrap>
           <Button onClick={() => handleViewClick('day')}>Day</Button>
           <Button onClick={() => handleViewClick('week')}>Week</Button>
           <Button onClick={() => handleViewClick('month')}>Month</Button>
+        </RowWrap>
 
-          <CalendarContainer
-            style={{ display: view === 'month' ? 'block' : 'none' }}
-          >
-            <MonthContainer>
-              <Button onClick={handlePrevMonth}>Prev</Button>
-              <MonthLabel>{`${
-                months[date.getMonth()]
-              } ${date.getFullYear()}`}</MonthLabel>
-              <Button onClick={handleNextMonth}>Next</Button>
-            </MonthContainer>
-            <DateDetails
-              date={selectedDate}
-              events={events}
-              setEvents={setEvents}
-            />
+        <CalendarContainer
+          style={{ display: view === 'month' ? 'block' : 'none' }}
+        >
+          <MonthContainer>
+            <Button onClick={handlePrevMonth}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextMonth}>Next</Button>
+          </MonthContainer>
+          {/* <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+          /> */}
 
-            <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-            {showModal && (
-              <Modal>
-                <ModalForm onSubmit={handleEventSubmit}>
-                  <label>
-                    Title:
-                    <input
-                      type="text"
-                      value={eventTitle}
-                      onChange={(e) => setEventTitle(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={isAllDay}
-                      onChange={(e) => setIsAllDay(e.target.checked)}
-                    />
-                    All Day Event
-                  </label>
-                  <label>
-                    Start:
-                    <input
-                      type="date"
-                      value={eventDate}
-                      onChange={(e) => handleDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Due:
-                    <input
-                      type="date"
-                      value={eventEndDate}
-                      onChange={(e) => handleEndDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      value={eventTime}
-                      step="1800"
-                      onChange={(e) => setEventTime(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      value={eventEndTime}
-                      step="1800"
-                      onChange={(e) => setEventEndTime(e.target.value)}
-                    />
-                  </label>
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <ModalForm onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventTime}
+                    step="1800"
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    value={eventEndTime}
+                    step="1800"
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
 
-                  <label>
+                {/* <label>
                     Category:
                     <select
                       value={eventCategory}
@@ -1110,24 +1302,17 @@ function Calendar() {
                       <option value="Personal">Personal</option>
                       <option value="School">School</option>
                     </select>
-                  </label>
-                  <label>
-                    Member:
-                    <select
-                      value={eventMember}
-                      onChange={(e) => setEventMember(e.target.value)}
-                    >
-                      <option value="">Select a family member</option>
-                      <option value="Dad">Dad</option>
-                      <option value="Mom">Mom</option>
-                      <option value="Baby">Baby</option>
-                    </select>
-                  </label>
+                  </label> */}
+                <label>
+                  Member:
+                  <MembersSelector onSelectMember={handleSelectMember} />
+                </label>
 
-                  <button type="submit">Add</button>
-                </ModalForm>
-              </Modal>
-            )}
+                <DefaultButton type="submit">Add</DefaultButton>
+              </ModalForm>
+            </Modal>
+          )}
+          <RowWrap>
             <Table>
               <tbody>
                 {[
@@ -1144,7 +1329,7 @@ function Calendar() {
                       const isFirstWeek = dayOfMonth <= 0;
                       const isLastWeek = dayOfMonth > getDaysInMonth(date);
                       const isCurrentMonth = !isFirstWeek && !isLastWeek;
-                      console.log(isCurrentMonth);
+                      //console.log(isCurrentMonth);
                       const isToday =
                         isCurrentMonth &&
                         dayOfMonth === new Date().getDate() &&
@@ -1165,7 +1350,11 @@ function Calendar() {
                           }`}
                           onClick={() => handleDateClick(dayOfMonth, row)}
                           style={{
-                            color: isCurrentMonth ? 'white' : 'inherit',
+                            color: isCurrentMonth
+                              ? isToday
+                                ? 'white'
+                                : '#f5f5f5'
+                              : 'gray',
                             verticalAlign: 'top',
                             textAlign: 'left',
                           }}
@@ -1196,113 +1385,113 @@ function Calendar() {
                 ))}
               </tbody>
             </Table>
-
             <MonthDetails date={selectedDate} events={events} />
-          </CalendarContainer>
-          <WeekWrap style={{ display: view === 'week' ? 'block' : 'none' }}>
-            <h1>
-              Week {weekNumber} of {date.getFullYear()}
-            </h1>
-            <MonthContainer>
-              <Button onClick={handlePrevWeek}>Prev</Button>
-              <MonthLabel>{`${
-                months[date.getMonth()]
-              } ${date.getFullYear()}`}</MonthLabel>
-              <Button onClick={handleNextWeek}>Next</Button>
-            </MonthContainer>
+          </RowWrap>
+        </CalendarContainer>
+        <WeekWrap style={{ display: view === 'week' ? 'block' : 'none' }}>
+          <h1>
+            Week {weekNumber} of {date.getFullYear()}
+          </h1>
+          <MonthContainer>
+            <Button onClick={handlePrevWeek}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextWeek}>Next</Button>
+          </MonthContainer>
 
-            <DateDetails
-              date={selectedDate}
-              events={events}
-              setEvents={setEvents}
-            />
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+          />
 
-            <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-            {showModal && (
-              <Modal>
-                <ModalForm onSubmit={handleEventSubmit}>
-                  <label>
-                    Title:
-                    <input
-                      type="text"
-                      value={eventTitle}
-                      onChange={(e) => setEventTitle(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={isAllDay}
-                      onChange={(e) => setIsAllDay(e.target.checked)}
-                    />
-                    All Day Event
-                  </label>
-                  <label>
-                    Start:
-                    <input
-                      type="date"
-                      value={eventDate}
-                      onChange={(e) => handleDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Due:
-                    <input
-                      type="date"
-                      value={eventEndDate}
-                      onChange={(e) => handleEndDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      step="1800"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      step="1800"
-                      value={eventEndTime}
-                      onChange={(e) => setEventEndTime(e.target.value)}
-                    />
-                  </label>
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <ModalForm onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    step="1800"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    step="1800"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
 
-                  <label>
-                    Category:
-                    <select
-                      value={eventCategory}
-                      onChange={(e) => setEventCategory(e.target.value)}
-                    >
-                      <option value="">Select a category</option>
-                      <option value="Work">Work</option>
-                      <option value="Personal">Personal</option>
-                      <option value="School">School</option>
-                    </select>
-                  </label>
-                  <label>
-                    Member:
-                    <select
-                      value={eventMember}
-                      onChange={(e) => setEventMember(e.target.value)}
-                    >
-                      <option value="">Select a family member</option>
-                      <option value="Dad">Dad</option>
-                      <option value="Mom">Mom</option>
-                      <option value="Baby">Baby</option>
-                    </select>
-                  </label>
+                <label>
+                  Category:
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="School">School</option>
+                  </select>
+                </label>
+                <label>
+                  Member:
+                  <select
+                    value={eventMember}
+                    onChange={(e) => setEventMember(e.target.value)}
+                  >
+                    <option value="">Select a family member</option>
+                    <option value="Dad">Dad</option>
+                    <option value="Mom">Mom</option>
+                    <option value="Baby">Baby</option>
+                  </select>
+                </label>
 
-                  <button type="submit">Add</button>
-                </ModalForm>
-              </Modal>
-            )}
+                <button type="submit">Add</button>
+              </ModalForm>
+            </Modal>
+          )}
 
-            {/* <tbody>
+          {/* <tbody>
             <tr key={selectedRow}>
               {' '}
               {Array.from(Array(7).keys()).map((weekday) => {
@@ -1357,200 +1546,199 @@ function Calendar() {
               })}
             </tr>
           </tbody> */}
-            <HourlyView events={events} weekNumber={weekNumber} date={date} />
-          </WeekWrap>
-          <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
-            {/* <h2>{formatDate(selectedDate)}</h2> */}
-            <MonthContainer>
-              <Button onClick={handlePrevDay}>Prev</Button>
-              <MonthLabel>{`${
-                months[date.getMonth()]
-              } ${date.getFullYear()}`}</MonthLabel>
-              <Button onClick={handleNextDay}>Next</Button>
-            </MonthContainer>
-            <DateDetails
-              date={selectedDate}
-              events={events}
-              setEvents={setEvents}
-              draggedEventIdRef={draggedEventIdRef}
-            />
-            <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-            {showModal && (
-              <Modal>
-                <ModalForm onSubmit={handleEventSubmit}>
-                  <label>
-                    Title:
-                    <input
-                      type="text"
-                      value={eventTitle}
-                      onChange={(e) => setEventTitle(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={isAllDay}
-                      onChange={(e) => setIsAllDay(e.target.checked)}
-                    />
-                    All Day Event
-                  </label>
-                  <label>
-                    Start:
-                    <input
-                      type="date"
-                      value={eventDate}
-                      onChange={(e) => handleDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Due:
-                    <input
-                      type="date"
-                      value={eventEndDate}
-                      onChange={(e) => handleEndDateChange(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      step="1800"
-                      value={eventTime}
-                      onChange={(e) => setEventTime(e.target.value)}
-                    />
-                  </label>
-                  <label>
-                    Time:
-                    <input
-                      type="time"
-                      step="1800"
-                      value={eventEndTime}
-                      onChange={(e) => setEventEndTime(e.target.value)}
-                    />
-                  </label>
+          <HourlyView events={events} weekNumber={weekNumber} date={date} />
+        </WeekWrap>
+        <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
+          {/* <h2>{formatDate(selectedDate)}</h2> */}
+          <MonthContainer>
+            <Button onClick={handlePrevDay}>Prev</Button>
+            <MonthLabel>{`${
+              months[date.getMonth()]
+            } ${date.getFullYear()}`}</MonthLabel>
+            <Button onClick={handleNextDay}>Next</Button>
+          </MonthContainer>
+          <DateDetails
+            date={selectedDate}
+            events={events}
+            setEvents={setEvents}
+            draggedEventIdRef={draggedEventIdRef}
+          />
+          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          {showModal && (
+            <Modal>
+              <ModalForm onSubmit={handleEventSubmit}>
+                <label>
+                  Title:
+                  <input
+                    type="text"
+                    value={eventTitle}
+                    onChange={(e) => setEventTitle(e.target.value)}
+                  />
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={isAllDay}
+                    onChange={(e) => setIsAllDay(e.target.checked)}
+                  />
+                  All Day Event
+                </label>
+                <label>
+                  Start:
+                  <input
+                    type="date"
+                    value={eventDate}
+                    onChange={(e) => handleDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Due:
+                  <input
+                    type="date"
+                    value={eventEndDate}
+                    onChange={(e) => handleEndDateChange(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    step="1800"
+                    value={eventTime}
+                    onChange={(e) => setEventTime(e.target.value)}
+                  />
+                </label>
+                <label>
+                  Time:
+                  <input
+                    type="time"
+                    step="1800"
+                    value={eventEndTime}
+                    onChange={(e) => setEventEndTime(e.target.value)}
+                  />
+                </label>
 
-                  <label>
-                    Category:
-                    <select
-                      value={eventCategory}
-                      onChange={(e) => setEventCategory(e.target.value)}
+                <label>
+                  Category:
+                  <select
+                    value={eventCategory}
+                    onChange={(e) => setEventCategory(e.target.value)}
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Work">Work</option>
+                    <option value="Personal">Personal</option>
+                    <option value="School">School</option>
+                  </select>
+                </label>
+                <label>
+                  Member:
+                  <select
+                    value={eventMember}
+                    onChange={(e) => setEventMember(e.target.value)}
+                  >
+                    <option value="">Select a family member</option>
+                    <option value="Dad">Dad</option>
+                    <option value="Mom">Mom</option>
+                    <option value="Baby">Baby</option>
+                  </select>
+                </label>
+
+                <button type="submit">Add</button>
+              </ModalForm>
+            </Modal>
+          )}
+          <DayCalendar selectedDate={selectedDate} />
+          <CenterWrap>
+            {' '}
+            <Td
+              style={{
+                width: '500px',
+                height: '500px',
+                maxWidth: '500px',
+                maxHeight: '500px;',
+              }}
+            >
+              {events.map((event) => {
+                const eventDate = new Date(event.date);
+                const selectedDateObj = new Date(selectedDate);
+                const eventDateOnly = new Date(
+                  eventDate.getFullYear(),
+                  eventDate.getMonth(),
+                  eventDate.getDate()
+                );
+                const selectedDateOnly = new Date(
+                  selectedDateObj.getFullYear(),
+                  selectedDateObj.getMonth(),
+                  selectedDateObj.getDate()
+                );
+
+                // console.log(eventDate);
+                // console.log(selectedDateOnly);
+                // console.log(new Date(event.endDate));
+                if (
+                  selectedDateOnly === eventDateOnly ||
+                  (selectedDateOnly >= eventDateOnly &&
+                    selectedDateOnly < new Date(event.endDate))
+                ) {
+                  return (
+                    <div
+                      style={{
+                        height: '500px',
+                        fontSize: '72px',
+                        color: 'white',
+                      }}
                     >
-                      <option value="">Select a category</option>
-                      <option value="Work">Work</option>
-                      <option value="Personal">Personal</option>
-                      <option value="School">School</option>
-                    </select>
-                  </label>
-                  <label>
-                    Member:
-                    <select
-                      value={eventMember}
-                      onChange={(e) => setEventMember(e.target.value)}
-                    >
-                      <option value="">Select a family member</option>
-                      <option value="Dad">Dad</option>
-                      <option value="Mom">Mom</option>
-                      <option value="Baby">Baby</option>
-                    </select>
-                  </label>
-
-                  <button type="submit">Add</button>
-                </ModalForm>
-              </Modal>
-            )}
-            <DayCalendar selectedDate={selectedDate} />
-            <CenterWrap>
-              {' '}
-              <Td
-                style={{
-                  width: '500px',
-                  height: '500px',
-                  maxWidth: '500px',
-                  maxHeight: '500px;',
-                }}
-              >
-                {events.map((event) => {
-                  const eventDate = new Date(event.date);
-                  const selectedDateObj = new Date(selectedDate);
-                  const eventDateOnly = new Date(
-                    eventDate.getFullYear(),
-                    eventDate.getMonth(),
-                    eventDate.getDate()
-                  );
-                  const selectedDateOnly = new Date(
-                    selectedDateObj.getFullYear(),
-                    selectedDateObj.getMonth(),
-                    selectedDateObj.getDate()
-                  );
-
-                  // console.log(eventDate);
-                  // console.log(selectedDateOnly);
-                  // console.log(new Date(event.endDate));
-                  if (
-                    selectedDateOnly === eventDateOnly ||
-                    (selectedDateOnly >= eventDateOnly &&
-                      selectedDateOnly < new Date(event.endDate))
-                  ) {
-                    return (
-                      <div
+                      <EventTitle
                         style={{
-                          height: '500px',
                           fontSize: '72px',
                           color: 'white',
                         }}
+                        finished={event.finished}
                       >
-                        <EventTitle
-                          style={{
-                            fontSize: '72px',
-                            color: 'white',
-                          }}
-                          finished={event.finished}
-                        >
-                          {event.title}
-                        </EventTitle>
-                        <EventCategory
-                          style={{
-                            fontSize: '36px',
-                            color: 'white',
-                          }}
-                        >
-                          {event.category}
-                        </EventCategory>
-                        <EventMember
-                          style={{
-                            fontSize: '36px',
-                            color: 'white',
-                          }}
-                        >
-                          {event.member}
-                        </EventMember>
+                        {event.title}
+                      </EventTitle>
+                      <EventCategory
+                        style={{
+                          fontSize: '36px',
+                          color: 'white',
+                        }}
+                      >
+                        {event.category}
+                      </EventCategory>
+                      <EventMember
+                        style={{
+                          fontSize: '36px',
+                          color: 'white',
+                        }}
+                      >
+                        {event.member}
+                      </EventMember>
 
-                        <EventTime
-                          style={{
-                            fontSize: '36px',
-                          }}
-                        >
-                          {event.time}
-                        </EventTime>
-                      </div>
-                    );
-                  } else {
-                    return null;
-                  }
-                })}
-              </Td>
-            </CenterWrap>
+                      <EventTime
+                        style={{
+                          fontSize: '36px',
+                        }}
+                      >
+                        {event.time}
+                      </EventTime>
+                    </div>
+                  );
+                } else {
+                  return null;
+                }
+              })}
+            </Td>
+          </CenterWrap>
 
-            {/* <DailyHourlyView
+          {/* <DailyHourlyView
               events={events}
               weekNumber={weekNumber}
               date={date}
               selectedDate={selectedDate}
             /> */}
-          </DayWrap>
-        </Wrap>
-      </Container>
-    </Layout>
+        </DayWrap>
+      </Wrap>
+    </Container>
   );
 }
 

@@ -108,7 +108,7 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
   };
 
   function getWeekNumber(date: any) {
-    console.log(typeof date);
+    // console.log(typeof date);
     const dateObj = new Date(date);
     const dayOfWeek = (dateObj.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
     const jan1 = new Date(dateObj.getFullYear(), 0, 1);
@@ -181,14 +181,14 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
                 <EventList
                   events={events.filter((event) => {
                     const eventWeekNumber = getWeekNumber(event.date);
-                    console.log(event);
-                    console.log(event.multiDay);
+                    //console.log(event);
+                    //console.log(event.multiDay);
 
                     const weekArray = getDatesForWeekNumber(
                       weekNumber,
                       date.getFullYear()
                     );
-                    console.log(weekArray[index]);
+                    //console.log(weekArray[index]);
 
                     return (
                       event.date <= weekArray[index] &&

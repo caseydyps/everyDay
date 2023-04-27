@@ -420,7 +420,7 @@ const Title = styled.div`
 
 const Card = styled.div`
   width: 50px;
-  margin-top: 50px;
+  margin-top: 20px;
   border-radius: 10px;
   font-size: 36px;
   background-color: transparent;

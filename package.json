@@ -24,6 +24,7 @@
     "@types/styled-components": "^5.1.26",
     "brew": "^0.0.8",
     "canvas-confetti": "^1.6.0",
+    "date-fns-tz": "^2.0.0",
     "firebase": "^9.19.1",
     "moment": "^2.29.4",
     "openai": "^3.2.1",

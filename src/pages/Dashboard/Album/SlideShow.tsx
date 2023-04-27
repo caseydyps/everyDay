@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 const SlideshowContainer = styled.div`
   position: relative;
-  height: 500px;
-  width: 500px;
+  height: 320px;
+  width: 320px;
   overflow: hidden;
 `;
 
@@ -79,7 +79,7 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
             src={photo.url}
             alt={`Slide ${index}`}
             className={index === activeIndex ? 'active' : ''}
-            style={{ width: '500px', height: '500px' }}
+            style={{ width: '300px', height: '300px' }}
           />
         ))}
       </SlideshowContainer>

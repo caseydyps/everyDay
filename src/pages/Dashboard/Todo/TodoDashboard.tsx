@@ -49,7 +49,7 @@ const Container = styled.div`
   justify-content: center;
   align-items: center;
 
-  width: 33vw;
+  max-width: 200px;
 `;
 
 const AddListButton: any = styled(DefaultButton)`

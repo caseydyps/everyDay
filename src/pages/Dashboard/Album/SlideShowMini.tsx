@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 const SlideshowContainer = styled.div`
   position: relative;
-  height: 300px;
-  width: 300px;
+  height: 150px;
+  width: 150px;
   overflow: hidden;
   margin: 5px 5px;
 `;
@@ -13,8 +13,8 @@ const SlideshowImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
-  height: 250px;
-  width: 250px;
+  height: 150px;
+  width: 150px;
   border-radius: 10px;
   object-fit: cover;
 

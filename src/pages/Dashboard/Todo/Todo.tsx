@@ -5,6 +5,7 @@ import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import SideNav from '../../../Components/Nav/SideNav';
 import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
 import DefaultButton from '../../../Components/Button/Button';
@@ -30,10 +31,12 @@ import {
 
 const Wrapper = styled.div`
   width: 100%;
-
+  height: 100%;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
+  border: 3px solid red;
+  margin-top: 30px;
 `;
 
 const Wrap = styled.div`
@@ -46,19 +49,21 @@ const Wrap = styled.div`
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-
+  margin-top: 0px;
+  background-color: transparent;
   width: 100vw;
+  height: 100%;
+  border: gold solid 3px;
 `;
 
 const AddListButton: any = styled(DefaultButton)`
   padding: 10px;
-  margin-right: 20px;
+  margin-left: 300px;
   width: 70px;
   height: 70px;
+  position: sticky;
   border-radius: 50%;
+  color: #3467a1;
   background-color: rgba(255, 245, 201, 0.8);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
 `;
@@ -369,24 +374,23 @@ const Todo = () => {
   }, [data, familyId]);
 
   return (
-    <Layout>
-      <Container>
-        <Wrapper>
-          <Banner title="#TODO" subTitle="subtitle"></Banner>
-          <Wrap>
-            <AddListButton onClick={() => addList(dispatch)}>
-              <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>
-            </AddListButton>
-          </Wrap>
-          <DragNDrop
-            data={data}
-            onItemAdd={addItem}
-            selectedItemIndex={selectedItemIndex}
-            setSelectedItemIndex={setSelectedItemIndex}
-          />
-        </Wrapper>
-      </Container>
-    </Layout>
+    <Container>
+      <SideNav></SideNav>
+      <Wrapper>
+        <Banner title="Todo" subTitle="Get Things Done"></Banner>
+
+        <AddListButton onClick={() => addList(dispatch)}>
+          <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>
+        </AddListButton>
+
+        <DragNDrop
+          data={data}
+          onItemAdd={addItem}
+          selectedItemIndex={selectedItemIndex}
+          setSelectedItemIndex={setSelectedItemIndex}
+        />
+      </Wrapper>
+    </Container>
   );
 };
 

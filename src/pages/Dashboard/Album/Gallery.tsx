@@ -14,6 +14,7 @@ import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
 import DefaultButton from '../../../Components/Button/Button';
 import { MembersSelector } from '../../AI/SmartInput';
+import Banner from '../../../Components/Banner/Banner';
 import {
   faFilter,
   faPlus,
@@ -42,6 +43,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+import SideNav from '../../../Components/Nav/SideNav';
 
 type Album = {
   id: string;
@@ -380,8 +382,10 @@ function Gallery() {
   };
 
   return (
-    <Layout>
-      <Container>
+    <Container>
+      <SideNav />
+      <Wrap>
+        <Banner title="Gallery" subTitle="Say Cheese!"></Banner>
         <ColumnWrap>
           <RowWrap>
             <UploadButton
@@ -577,19 +581,22 @@ function Gallery() {
             ))}
           </GalleryWrapper>
         </ColumnWrap>
-      </Container>
-    </Layout>
+      </Wrap>
+    </Container>
   );
 }
 
 const GalleryWrapper = styled.div`
   display: flex;
-  max-width: 100vw;
+  max-width: auto;
   gap: 20px;
-  height: 100%;
-  overflow-x: scroll;
-  scrollbar-width: narrow;
-  scrollbar-color: #3467a1 transparent;
+  height: auto;
+  flex-wrap: wrap;
+  //overflow-x: scroll;
+  //scrollbar-width: narrow;
+  border: 1px solid black;
+
+  //scrollbar-color: #3467a1 transparent;
 
   &::-webkit-scrollbar {
     width: 2px;
@@ -714,20 +721,13 @@ const RowWrap = styled.div`
 `;
 
 const Container = styled.div`
-  text-align: center;
-  color: white;
   display: flex;
   flex-direction: row;
-
+  margin-top: 0px;
+  background-color: transparent;
   width: 100vw;
-  height: 100vh;
-
-  justify-content: center;
-  align-items: center;
-  @media screen and (max-width: 1200px) {
-    height: 100%;
-    margin-top: 40px;
-  }
+  height: 100%;
+  border: gold solid 3px;
 `;
 
 const StyledFileInput = styled.input`
@@ -830,6 +830,16 @@ const StyledDateInput = styled.input.attrs({
     border-color: #3467a1;
     box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
   }
+`;
+
+const Wrap = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  border: 3px solid red;
+  margin-top: 30px;
 `;
 
 export default Gallery;

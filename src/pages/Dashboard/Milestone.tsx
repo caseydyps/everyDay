@@ -6,7 +6,9 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import Layout from '../../Components/layout';
+import SideNav from '../../Components/Nav/SideNav';
 import { v4 as uuidv4 } from 'uuid';
+import Time from '../../Components/Banner/time.png';
 import DefaultButton, { Card } from '../../Components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -17,6 +19,7 @@ import {
   faPenToSquare,
   faTrashCan,
   faCircleXmark,
+  faEllipsisH,
 } from '@fortawesome/free-solid-svg-icons';
 import LoadingAnimation from '../../Components/loading';
 import { Chrono } from 'react-chrono';
@@ -340,39 +343,6 @@ function Milestone() {
     }
   };
 
-  const items = [
-    {
-      title: '1992/10/21',
-      cardTitle: 'Dunkirk',
-      url: 'http://www.history.com',
-      cardSubtitle:
-        'Men of the British Expeditionary Force (BEF) wade out to..',
-      cardDetailedText:
-        'Men of the British Expeditionary Force (BEF) wade out to..',
-      media: {
-        type: 'IMAGE',
-        source: {
-          url: 'http://someurl/image.jpg',
-        },
-      },
-    },
-    {
-      title: '1992/11/10',
-      cardTitle: 'Dunkirk',
-      url: 'http://www.history.com',
-      cardSubtitle:
-        'Men of the British Expeditionary Force (BEF) wade out to..',
-      cardDetailedText:
-        'Men of the British Expeditionary Force (BEF) wade out to..',
-      media: {
-        type: 'IMAGE',
-        source: {
-          url: 'http://someurl/image.jpg',
-        },
-      },
-    },
-  ];
-
   const rotate = keyframes`
   0% {
     transform: rotate(0deg);
@@ -414,9 +384,12 @@ function Milestone() {
   `;
 
   const BannerContainer = styled.div`
-    width: 100vw;
-    height: 500px;
+    width: 100vw-200px;
+    height: 25vh;
+
+    border: 3px solid white;
     position: relative; /* Added to set stacking context */
+
     background: linear-gradient(
         to bottom,
         rgba(0, 0, 0, 0.8),
@@ -444,283 +417,286 @@ function Milestone() {
 
   const BannerTitle = styled.h1`
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
     border: 3px solid white;
     padding: 20px;
-
+    font-size: 36px;
     z-index: 2; /* Increased z-index value */
   `;
 
   const BannerSubTitle = styled.h2`
     position: absolute;
-    top: 80%;
+    top: 75%;
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
-    font-size: 2rem;
+    font-size: 20px;
     text-align: center;
     z-index: 1;
   `;
 
-  const eventBoxRef = useRef(null);
-  useEffect(() => {
-    const handleScroll = () => {
-      const element = eventBoxRef.current;
-      const { top, bottom } = element.getBoundingClientRect();
-      const windowHeight = window.innerHeight;
-
-      if (top > 0 && bottom < windowHeight) {
-        element.classList.add('glow');
-      } else {
-        element.classList.remove('glow');
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
-  const [bgColor, setBgColor] = useState('#00ffcc');
+  const BannerImg = styled.img`
+    width: auto;
+    height: 250px;
+    position: absolute;
+    right: 10%;
+  `;
+  const [eventWrapWidth, setEventWrapWidth] = useState(null);
+  const [showButtons, setShowButtons] = useState(false);
+  const handleToggleButtons = () => {
+    setShowButtons(!showButtons);
+  };
 
   return (
-    <Layout>
-      <Container>
-        <ColumnWrap>
-          <BannerContainer>
-            <Gradient />
-            <BannerTitle>#TIME MACHINE</BannerTitle>
-            <BannerSubTitle>Time less memories</BannerSubTitle>
-          </BannerContainer>
+    <Container>
+      <SideNav></SideNav>
+      <Wrapper>
+        <BannerContainer>
+          <Gradient />
+          <BannerTitle>TIME MACHINE</BannerTitle>
+          <BannerSubTitle>Time less memories</BannerSubTitle>
+          <BannerImg src={Time} alt="Banner" />
+        </BannerContainer>
 
-          <RowWrap>
-            <Button onClick={handleToggleFilter}>
+        <RowWrap>
+          <Button onClick={handleToggleFilter}>
+            <AnimatedFontAwesomeIcon icon={faFilter}></AnimatedFontAwesomeIcon>
+            篩選器
+          </Button>
+          <Button onClick={toggleAddEvent}>
+            <AnimatedFontAwesomeIcon icon={faPlus}></AnimatedFontAwesomeIcon>
+            新增里程碑
+          </Button>
+        </RowWrap>
+
+        {showFilter && (
+          <Wrap>
+            <CancelButton onClick={() => setShowFilter(false)}>
               <AnimatedFontAwesomeIcon
-                icon={faFilter}
+                icon={faCircleXmark}
               ></AnimatedFontAwesomeIcon>
-              篩選器
-            </Button>
-            <Button onClick={toggleAddEvent}>
-              <AnimatedFontAwesomeIcon icon={faPlus}></AnimatedFontAwesomeIcon>
-              新增里程碑
-            </Button>
-          </RowWrap>
+            </CancelButton>
+            <FormField>
+              <FormLabel>事件:</FormLabel>
+              <FormInput
+                type="text"
+                value={filter.title}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFilter({ ...filter, title: e.target.value })
+                }
+              />
+            </FormField>
 
-          {showFilter && (
-            <Wrap>
-              <CancelButton onClick={() => setShowFilter(false)}>
+            <FormField>
+              <FormLabel>Member:</FormLabel>
+              <MembersSelector onSelectMember={handlefilterSelectMember} />
+              <FormInput
+                type="text"
+                value={filter.member}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFilter({ ...filter, member: e.target.value })
+                }
+              />
+            </FormField>
+
+            <FormField>
+              <FormLabel>開始日期:</FormLabel>
+              <FormInput
+                type="date"
+                value={filter.startDate}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFilter({
+                    ...filter,
+                    startDate: new Date(e.target.value),
+                  })
+                }
+              />
+            </FormField>
+
+            <FormField>
+              <FormLabel>結束日期:</FormLabel>
+              <FormInput
+                type="date"
+                value={filter.endDate}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  setFilter({ ...filter, endDate: new Date(e.target.value) })
+                }
+              />
+            </FormField>
+          </Wrap>
+        )}
+
+        {showAddEvent && (
+          <Wrap>
+            <Form onSubmit={handleNewEventSubmit}>
+              <CancelButton onClick={() => setShowAddEvent(false)}>
                 <AnimatedFontAwesomeIcon
                   icon={faCircleXmark}
                 ></AnimatedFontAwesomeIcon>
               </CancelButton>
               <FormField>
-                <FormLabel>事件:</FormLabel>
+                <FormLabel>Title:</FormLabel>
                 <FormInput
                   type="text"
-                  value={filter.title}
+                  value={newEventTitle}
                   onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setFilter({ ...filter, title: e.target.value })
+                    setNewEventTitle(e.target.value)
                   }
                 />
               </FormField>
-
+              <FormField>
+                <FormLabel>Date:</FormLabel>
+                <FormInput
+                  type="date"
+                  value={newEventDate}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setNewEventDate(e.target.value)
+                  }
+                />
+              </FormField>
               <FormField>
                 <FormLabel>Member:</FormLabel>
-                <MembersSelector onSelectMember={handlefilterSelectMember} />
-                <FormInput
-                  type="text"
-                  value={filter.member}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setFilter({ ...filter, member: e.target.value })
-                  }
-                />
+                <MembersSelector onSelectMember={handleSelectMember} />
               </FormField>
-
               <FormField>
-                <FormLabel>開始日期:</FormLabel>
-                <FormInput
-                  type="date"
-                  value={filter.startDate}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setFilter({
-                      ...filter,
-                      startDate: new Date(e.target.value),
-                    })
-                  }
-                />
-              </FormField>
+                <FormLabel>Image:</FormLabel>
 
-              <FormField>
-                <FormLabel>結束日期:</FormLabel>
-                <FormInput
-                  type="date"
-                  value={filter.endDate}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setFilter({ ...filter, endDate: new Date(e.target.value) })
-                  }
-                />
-              </FormField>
-            </Wrap>
-          )}
-
-          {showAddEvent && (
-            <Wrap>
-              <Form onSubmit={handleNewEventSubmit}>
-                <CancelButton onClick={() => setShowAddEvent(false)}>
-                  <AnimatedFontAwesomeIcon
-                    icon={faCircleXmark}
-                  ></AnimatedFontAwesomeIcon>
-                </CancelButton>
-                <FormField>
-                  <FormLabel>Title:</FormLabel>
-                  <FormInput
-                    type="text"
-                    value={newEventTitle}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNewEventTitle(e.target.value)
-                    }
+                {imagePreview ? (
+                  <AvatarPreview src={imagePreview} alt="Preview" />
+                ) : (
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files && files.length > 0) {
+                        const reader = new FileReader();
+                        reader.onload = () => {
+                          const fileUrl = reader.result as string;
+                          setFile(fileUrl);
+                        };
+                        reader.readAsDataURL(files[0]);
+                      }
+                    }}
                   />
-                </FormField>
-                <FormField>
-                  <FormLabel>Date:</FormLabel>
-                  <FormInput
-                    type="date"
-                    value={newEventDate}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNewEventDate(e.target.value)
-                    }
-                  />
-                </FormField>
-                <FormField>
-                  <FormLabel>Member:</FormLabel>
-                  <MembersSelector onSelectMember={handleSelectMember} />
-                </FormField>
-                <FormField>
-                  <FormLabel>Image:</FormLabel>
+                )}
+              </FormField>
+              <Button type="submit">
+                {'新增事件'}
+                <AnimatedFontAwesomeIcon
+                  icon={faPlusCircle}
+                ></AnimatedFontAwesomeIcon>
+              </Button>
+            </Form>
+          </Wrap>
+        )}
 
-                  {imagePreview ? (
-                    <AvatarPreview src={imagePreview} alt="Preview" />
-                  ) : (
-                    <input
-                      type="file"
-                      onChange={(e) => {
-                        const files = e.target.files;
-                        if (files && files.length > 0) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            const fileUrl = reader.result as string;
-                            setFile(fileUrl);
-                          };
-                          reader.readAsDataURL(files[0]);
-                        }
+        <Header>STORY BEGINS!</Header>
+        <ContentWrapper>
+          <EventContainer>
+            {filterEvents(events)
+              .sort(
+                (a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+              )
+              .map((event, index) => {
+                const dateObj = new Date(event.date);
+                const monthName = dateObj.toLocaleString('default', {
+                  month: 'short',
+                });
+
+                return (
+                  <EventWrap
+                    onLayout={(event) =>
+                      setEventWrapWidth(event.nativeEvent.layout.width)
+                    }
+                  >
+                    <Dot
+                      eventWrapWidth={eventWrapWidth}
+                      style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left:
+                          index % 2 === 0
+                            ? `${435}px`
+                            : `calc(100% - ${435}px)`,
+                        transform: 'translate(-50%, -50%)',
                       }}
-                    />
-                  )}
-                </FormField>
-                <Button type="submit">
-                  {'新增事件'}
-                  <AnimatedFontAwesomeIcon
-                    icon={faPlusCircle}
-                  ></AnimatedFontAwesomeIcon>
-                </Button>
-              </Form>
-            </Wrap>
-          )}
-
-          <Header>STORY BEGINS!</Header>
-          <ContentWrapper>
-            <EventContainer>
-              {filterEvents(events)
-                .sort(
-                  (a, b) =>
-                    new Date(a.date).getTime() - new Date(b.date).getTime()
-                )
-                .map((event, index) => {
-                  const dateObj = new Date(event.date);
-                  const monthName = dateObj.toLocaleString('default', {
-                    month: 'short',
-                  });
-                  return (
-                    <EventWrap>
-                      <Dot
-                        bgColor={bgColor}
-                        style={{
-                          alignSelf: index % 2 === 0 ? 'center' : 'flex-end',
-                          marginRight: index % 2 === 0 ? '0px' : '0px',
-                          marginLeft: index % 2 === 0 ? '500px' : '465px',
-                        }}
-                      ></Dot>
-                      <EventBox
-                        ref={eventBoxRef}
-                        key={event.id}
-                        style={{
-                          alignSelf:
-                            index % 2 === 0 ? 'flex-start' : 'flex-end',
-                          marginRight: index % 2 === 0 ? '0px' : '600px',
-                          marginLeft: index % 2 === 0 ? '600px' : '0px',
-                        }}
-                      >
-                        <ColumnWrap>
-                          <EventImage
-                            src={
-                              event.image ||
-                              'https://source.unsplash.com/random/?city,night'
-                            }
-                            alt=""
-                          />
-                          <DateBox>
-                            <DateInfo>
-                              <Month>{monthName}</Month>
-                              <Day>{dateObj.getDate()}</Day>
-                              <Year>{dateObj.getFullYear()}</Year>
-                            </DateInfo>
-                          </DateBox>
-                          <InfoWrap>
-                            <EventTitle>{event.title}</EventTitle>
-                            <EventTitle>|</EventTitle>
-                            <EventTitle>{event.member}</EventTitle>
-                          </InfoWrap>
-                          <RowWrap>
-                            <Button onClick={() => handleEditEvent(event)}>
-                              <AnimatedFontAwesomeIcon
-                                icon={faPenToSquare}
-                              ></AnimatedFontAwesomeIcon>
-                            </Button>
-                            <Button onClick={() => handleDeleteEvent(event.id)}>
-                              <AnimatedFontAwesomeIcon
-                                icon={faTrashCan}
-                              ></AnimatedFontAwesomeIcon>
-                            </Button>
-                          </RowWrap>
-                        </ColumnWrap>
-                      </EventBox>
-                      {/* <EventDot
+                    ></Dot>
+                    <EventBox
+                      key={event.id}
+                      style={{
+                        alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
+                        marginRight: index % 2 === 0 ? '0px' : '600px',
+                        marginLeft: index % 2 === 0 ? '600px' : '0px',
+                      }}
+                    >
+                      <ColumnWrap>
+                        <EventImage
+                          src={
+                            event.image ||
+                            'https://source.unsplash.com/random/?city,night'
+                          }
+                          alt=""
+                        />
+                        <DateBox>
+                          <DateInfo>
+                            <Month>{monthName}</Month>
+                            <Day>{dateObj.getDate()}</Day>
+                            <Year>{dateObj.getFullYear()}</Year>
+                          </DateInfo>
+                        </DateBox>
+                        <InfoWrap>
+                          <EventTitle>{event.title}</EventTitle>
+                          <EventTitle>|</EventTitle>
+                          <EventTitle>{event.member}</EventTitle>
+                        </InfoWrap>
+                        <ButtonRowWrap>
+                          {showButtons && (
+                            <>
+                              <Button onClick={() => handleEditEvent(event)}>
+                                <AnimatedFontAwesomeIcon
+                                  icon={faPenToSquare}
+                                ></AnimatedFontAwesomeIcon>
+                              </Button>
+                              <Button
+                                onClick={() => handleDeleteEvent(event.id)}
+                              >
+                                <AnimatedFontAwesomeIcon
+                                  icon={faTrashCan}
+                                ></AnimatedFontAwesomeIcon>
+                              </Button>
+                            </>
+                          )}
+                          <MoreButton onClick={handleToggleButtons}>
+                            <AnimatedFontAwesomeIcon
+                              icon={faEllipsisH}
+                            ></AnimatedFontAwesomeIcon>
+                          </MoreButton>
+                        </ButtonRowWrap>
+                      </ColumnWrap>
+                    </EventBox>
+                    {/* <EventDot
                       style={{
                         alignSelf: 'center',
                       }}
                     /> */}
-                    </EventWrap>
-                  );
-                })}
-            </EventContainer>
-            {isEditing ? (
-              <EditEventForm
-                event={editedEvent}
-                onEdit={handleEditFormSubmit}
-              />
-            ) : (
-              <form onSubmit={handleNewEventSubmit} />
-            )}
-          </ContentWrapper>
-          <Header>CONTINUED ON</Header>
-          <LoadingAnimation />
-        </ColumnWrap>
-      </Container>
-    </Layout>
+                  </EventWrap>
+                );
+              })}
+          </EventContainer>
+          {isEditing ? (
+            <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
+          ) : (
+            <form onSubmit={handleNewEventSubmit} />
+          )}
+        </ContentWrapper>
+        <Header>CONTINUED ON</Header>
+        <LoadingAnimation />
+      </Wrapper>
+    </Container>
   );
 }
 
@@ -730,9 +706,17 @@ const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
   border-radius: 5%;
-  width: 400px;
+  width: 100%;
   align-items: center;
   position: relative;
+`;
+
+const Wrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 60px;
+  padding: 20px;
 `;
 
 const Wrap = styled(Card)`
@@ -764,7 +748,7 @@ const Header = styled.h1`
 const ContentWrapper = styled.div`
   margin-top: 5px;
   margin-bottom: 5px;
-  width: 100vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -817,6 +801,7 @@ const EventContainer = styled.div`
 const EventBox = styled.div`
   width: auto;
   max-height: 400px;
+
   margin-right: 20px;
   border-radius: 20px;
   transition: box-shadow 0.5s ease-in-out;
@@ -855,13 +840,25 @@ const EventMember = styled.div`
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
+  align-items: space-between;
+
+  right: 0;
+`;
+
+const ButtonRowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: space-between;
+  position: absolute;
+  right: 0;
 `;
 
 const InfoWrap = styled.div`
   display: flex;
   flex-direction: row;
+  padding: 10px;
 `;
 
 const DateBox = styled.div`
@@ -871,7 +868,7 @@ const DateBox = styled.div`
   background-color: #fff;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 80px; /* changed top property to bottom */
+  bottom: 45px; /* changed top property to bottom */
   left: 10px;
   padding: 5px;
 `;
@@ -879,6 +876,15 @@ const DateBox = styled.div`
 const Button = styled(DefaultButton)`
   margin: 10px;
   border: 3px solid #f5f5f5;
+`;
+
+const MoreButton = styled(DefaultButton)`
+  margin: 10px;
+  color: #fff;
+  padding: 5px;
+  height: 20px;
+  box-shadow: none;
+  background-color: transparent;
 `;
 const CancelButton = styled(DefaultButton)`
   margin: 10px;
@@ -893,9 +899,9 @@ type ImageType = {
 };
 const EventImage = styled.img<any>`
   width: 100%;
-  height: 300px;
+  height: 200px;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 20px 20px 0 0;
 `;
 
 const FormWrapper = styled.div`
@@ -1030,12 +1036,11 @@ export const GradientAnimation = keyframes`
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
   margin-top: 0px;
-  min-height: 100vh;
-  width: 100%;
+  background-color: transparent;
+  width: 100vw;
+  height: 100%;
+  border: 3px solid gold;
   background: linear-gradient(
     -45deg,
     #3467a1,
@@ -1113,7 +1118,7 @@ const Dot = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: ${(props) => props.bgColor};
+  background-color: #00ffcc;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);

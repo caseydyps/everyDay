@@ -54,8 +54,8 @@ const DragNDropWrapper = styled.div`
   display: flex;
   overflow-x: scroll;
   overflow-y: scroll;
-  height: 350px;
-  width: 350px;
+  height: 200px;
+  width: 200px;
 
   border-radius: 5px;
   padding: 10px;
@@ -208,7 +208,7 @@ const ColumnWrap = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 100%;
-  max-width: 350px;
+  max-width: 200px;
 `;
 
 const RowWrap = styled.div`

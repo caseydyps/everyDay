@@ -14,7 +14,10 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import DefaultButton from '../../../Components/Button/Button';
 import Layout from '../../../Components/layout';
+import SideNav from '../../../Components/Nav/SideNav';
+import UserAuthData from '../../../Components/Login/Auth';
 import 'firebase/firestore';
+// import Canvas from '../../../Components/canvas';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFilter,
@@ -197,17 +200,13 @@ const ColumnWrap = styled.div`
 `;
 
 const Container = styled.div`
-  position: relative;
-  text-align: center;
-  color: white;
   display: flex;
   flex-direction: row;
-  margin-top: 80px;
-
-  height: 100vh;
-
-  justify-content: center;
-  align-items: center;
+  margin-top: 0px;
+  background-color: transparent;
+  width: 100vw;
+  height: 100%;
+  border: gold solid 3px;
 `;
 
 const Title = styled.h2`
@@ -325,7 +324,7 @@ export const Whiteboard = () => {
         const familyDocRef = doc(
           db,
           'Family',
-          'Nkl0MgxpE9B1ieOsOoJ9',
+          familyId,
           'stickers',
           id.toString()
         );
@@ -401,12 +400,7 @@ export const Whiteboard = () => {
   }, []);
 
   const getStickers = async () => {
-    const familyDocRef = collection(
-      db,
-      'Family',
-      'Nkl0MgxpE9B1ieOsOoJ9',
-      'stickers'
-    );
+    const familyDocRef = collection(db, 'Family', familyId, 'stickers');
     const querySnapshot = await getDocs(familyDocRef);
 
     const stickersData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
@@ -425,7 +419,6 @@ export const Whiteboard = () => {
       y: 0,
       content: content,
       color: color,
-      member: 'Nina',
       isSticker: isSticker,
     };
 
@@ -433,7 +426,7 @@ export const Whiteboard = () => {
       const familyDocRef = doc(
         db,
         'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
+        familyId,
         'stickers',
         newSticker.id
       );
@@ -484,7 +477,7 @@ export const Whiteboard = () => {
       const familyDocRef = doc(
         db,
         'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
+        familyId,
         'stickers',
         stickers[id].id
       );
@@ -508,11 +501,39 @@ export const Whiteboard = () => {
   console.log(stickers);
   console.log(newStickerColor);
 
+  const Wrap = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    border: 3px solid red;
+    margin-top: 30px;
+  `;
+
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
+
   //gifUrl = selectedGif ? selectedGif.images.original.url : '';
 
   return (
-    <Layout>
-      <Container>
+    <Container>
+      <SideNav></SideNav>
+      <Wrap>
+        <Banner
+          title="Stick n' Draw"
+          subTitle="Where Art and Fun Meet"
+        ></Banner>
+
         <Wrapper id="Wrapper">
           {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
@@ -690,8 +711,8 @@ export const Whiteboard = () => {
             </Results>
           )}
         </Wrapper>
-      </Container>
-    </Layout>
+      </Wrap>
+    </Container>
   );
 };
 export default Whiteboard;
