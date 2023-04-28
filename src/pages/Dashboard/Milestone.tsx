@@ -454,12 +454,7 @@ function Milestone() {
     <Container>
       <SideNav></SideNav>
       <Wrapper>
-        <BannerContainer>
-          <Gradient />
-          <BannerTitle>TIME MACHINE</BannerTitle>
-          <BannerSubTitle>Time less memories</BannerSubTitle>
-          <BannerImg src={Time} alt="Banner" />
-        </BannerContainer>
+        <Banner title="Time Machine" subTitle="Time less memories"></Banner>
 
         <RowWrap>
           <Button onClick={handleToggleFilter}>
@@ -713,10 +708,12 @@ const ColumnWrap = styled.div`
 
 const Wrapper = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  margin-top: 60px;
-  padding: 20px;
+  flex-wrap: wrap;
+  border: 3px solid red;
+  margin-top: 30px;
 `;
 
 const Wrap = styled(Card)`
@@ -738,8 +735,8 @@ const Header = styled.h1`
   font-size: 24px;
   font-weight: bold;
   text-align: center;
-  color: #00ffcc;
-  border: 3px solid #00ffcc;
+  color: #3467a1;
+  border: 3px solid #3467a1;
   border-radius: 25px;
   padding: 10px;
   margin-bottom: 20px;
@@ -791,8 +788,8 @@ const EventContainer = styled.div`
     background-image: linear-gradient(
       to bottom,
 
-      #2e9f42,
-      #b98bfb
+      rgba(52, 103, 161, 0.5),
+      #1e3d6b
     );
     transform: translateX(-50%);
   }
@@ -811,9 +808,9 @@ const EventBox = styled.div`
   margin: 10px;
 
   position: relative;
-  box-shadow: 3px 3px 5px black; /* added box shadow */
+  //box-shadow: 3px 3px 5px black; /* added box shadow */
   &:hover {
-    box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc, 0 0 40px #00ffcc; /* added glow effect */
+    box-shadow: 0 0 10px #5995dd, 0 0 20px #5995dd, 0 0 40px #5995dd; /* added glow effect */
     transform: scale(1.05);
   }
 `;
@@ -874,8 +871,8 @@ const DateBox = styled.div`
 `;
 
 const Button = styled(DefaultButton)`
-  margin: 10px;
-  border: 3px solid #f5f5f5;
+  margin: 5px;
+  border: 3px solid #1e3d6b;
 `;
 
 const MoreButton = styled(DefaultButton)`
@@ -884,6 +881,7 @@ const MoreButton = styled(DefaultButton)`
   padding: 5px;
   height: 20px;
   box-shadow: none;
+  border: none;
   background-color: transparent;
 `;
 const CancelButton = styled(DefaultButton)`
@@ -1041,7 +1039,7 @@ const Container = styled.div`
   width: 100vw;
   height: 100%;
   border: 3px solid gold;
-  background: linear-gradient(
+  /* background: linear-gradient(
     -45deg,
     #3467a1,
     #555555,
@@ -1052,7 +1050,7 @@ const Container = styled.div`
   );
   background-size: 300% 300%;
 
-  animation: ${GradientAnimation} 20s ease-in-out infinite;
+  animation: ${GradientAnimation} 20s ease-in-out infinite; */
 `;
 
 const bounce = keyframes`
@@ -1104,7 +1102,7 @@ const TimelineContainer = styled.div`
 `;
 const pulse = keyframes`
   0% {
-    box-shadow: 0 0 0 0 #00ffcc;
+    box-shadow: 0 0 0 0 #3467a1;
   }
   70% {
     box-shadow: 0 0 0 15px rgba(0, 255, 204, 0);
@@ -1118,15 +1116,14 @@ const Dot = styled.div`
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: #00ffcc;
+  background-color: #3467a1;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 5px black, 0 0 10px #00ffcc, 0 0 15px #00ffcc,
-    0 0 20px #00ffcc, 0 0 30px #00ffcc, 0 0 40px #00ffcc,
-    0 0 70px rgba(0, 255, 204, 0.4), 0 0 80px rgba(0, 255, 204, 0.4),
-    0 0 100px rgba(0, 255, 204, 0.4), 0 0 150px rgba(234, 255, 204, 0.4);
+  box-shadow: 0 0 5px black, 0 0 10px #3467a1, 0 0 15px #3467a1,
+    0 0 20px #3467a1, 0 0 30px #3467a1, 0 0 40px #3467a1, 0 0 70px #3467a1,
+    0 0 80px #3467a13a, 0 0 100px #3467a110, 0 0 150px #3467a15f;
 
   animation: ${pulse} 2s ease-in-out infinite;
 `;

@@ -514,7 +514,7 @@ function Calendar() {
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div> */}
         {selectedEvents.length > 0 ? (
-          <EventList>
+          <Event  List>
             {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
@@ -543,7 +543,7 @@ function Calendar() {
                 </li>
               ) : null
             )}
-          </EventList>
+          </Event>
         ) : (
           <div></div>
         )}

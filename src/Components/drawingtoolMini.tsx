@@ -382,6 +382,56 @@ const DrawingTool = () => {
           }}
         />
       </CanvasContainer>
+      <ButtonWrap>
+        <CanvasButton
+          color="black"
+          onClick={() => handleChangeColor('black')}
+        ></CanvasButton>
+        <CanvasButton
+          color="red"
+          onClick={() => handleChangeColor('red')}
+        ></CanvasButton>
+        <CanvasButton
+          color="green"
+          onClick={() => handleChangeColor('green')}
+        ></CanvasButton>
+        <CanvasButton
+          color="blue"
+          onClick={() => handleChangeColor('blue')}
+        ></CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeColor('white')}
+        >
+          <FontAwesomeIcon icon={faEraser} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(5)}
+        >
+          <FontAwesomeIcon icon={faPen} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(1)}
+        >
+          <FontAwesomeIcon icon={faPencil} />
+        </CanvasButton>
+        <CanvasButton
+          color="transparent"
+          onClick={() => handleChangeLineWidth(30)}
+        >
+          <FontAwesomeIcon icon={faPaintRoller} />
+        </CanvasButton>
+        <CanvasButton color="transparent" onClick={undoStroke}>
+          <FontAwesomeIcon icon={faClockRotateLeft} />
+        </CanvasButton>
+        <CanvasButton color="transparent" onClick={clearCanvas}>
+          <FontAwesomeIcon icon={faBroom} />
+        </CanvasButton>
+        {/* <button onClick={addStroke}>Save</button>
+    <button onClick={loadCanvas}>load</button> */}
+      </ButtonWrap>
     </Container>
   );
 };

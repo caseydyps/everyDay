@@ -14,10 +14,8 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import DefaultButton from '../../../Components/Button/Button';
 import Layout from '../../../Components/layout';
-import SideNav from '../../../Components/Nav/SideNav';
-import UserAuthData from '../../../Components/Login/Auth';
 import 'firebase/firestore';
-// import Canvas from '../../../Components/canvas';
+import UserAuthData from '../../../Components/Login/Auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFilter,
@@ -200,13 +198,15 @@ const ColumnWrap = styled.div`
 `;
 
 const Container = styled.div`
+  position: relative;
+  text-align: center;
+  color: white;
   display: flex;
   flex-direction: row;
-  margin-top: 0px;
-  background-color: transparent;
-  width: 100vw;
-  height: 100%;
-  border: gold solid 3px;
+  margin-top: 80px;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Title = styled.h2`
@@ -256,7 +256,6 @@ const SearchButton = styled.button`
   border-radius: 25px;
   font-size: 16px;
   cursor: pointer;
-
   &:hover {
     background-color: #005a9e;
     color: #fff5c9;
@@ -296,6 +295,17 @@ export const Whiteboard = () => {
   // <button onClick={() => voteSticker(name)}>Vote</button>;
   const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
 
   const handleSearch = async () => {
     const { data } = await giphyFetch.search(searchTerm, { limit: 10 });
@@ -397,7 +407,7 @@ export const Whiteboard = () => {
       setStickers(stickers);
     };
     fetchStickers();
-  }, []);
+  }, [familyId]);
 
   const getStickers = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'stickers');
@@ -419,35 +429,6 @@ export const Whiteboard = () => {
       y: 0,
       content: content,
       color: color,
-      isSticker: isSticker,
-    };
-
-    try {
-      const familyDocRef = doc(
-        db,
-        'Family',
-        familyId,
-        'stickers',
-        newSticker.id
-      );
-      await setDoc(familyDocRef, newSticker);
-      console.log('Sticker has been added to Firestore!');
-      setStickers([...stickers, newSticker]);
-      setStickerText([...stickerText, '']);
-    } catch (error) {
-      console.error('Error adding sticker to Firestore: ', error);
-    }
-  };
-
-  const addGif = async (color: string, isSticker: boolean) => {
-    console.log(selectedGif);
-    const gifUrl = selectedGif ? selectedGif.images.original.url : '';
-    const newSticker = {
-      id: uuidv4(),
-      x: 150,
-      y: 150,
-      content: gifUrl,
-      color: color,
       member: 'Nina',
       isSticker: isSticker,
     };
@@ -456,7 +437,7 @@ export const Whiteboard = () => {
       const familyDocRef = doc(
         db,
         'Family',
-        'Nkl0MgxpE9B1ieOsOoJ9',
+        familyId,
         'stickers',
         newSticker.id
       );
@@ -501,39 +482,11 @@ export const Whiteboard = () => {
   console.log(stickers);
   console.log(newStickerColor);
 
-  const Wrap = styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    border: 3px solid red;
-    margin-top: 30px;
-  `;
-
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
-
   //gifUrl = selectedGif ? selectedGif.images.original.url : '';
 
   return (
-    <Container>
-      <SideNav></SideNav>
-      <Wrap>
-        <Banner
-          title="Stick n' Draw"
-          subTitle="Where Art and Fun Meet"
-        ></Banner>
-
+    <Layout>
+      <Container>
         <Wrapper id="Wrapper">
           {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
@@ -711,8 +664,8 @@ export const Whiteboard = () => {
             </Results>
           )}
         </Wrapper>
-      </Wrap>
-    </Container>
+      </Container>
+    </Layout>
   );
 };
 export default Whiteboard;

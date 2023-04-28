@@ -350,8 +350,9 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  box-shadow: 3px 3px 5px black;
-  background-color: rgb(255, 255, 255, 0.5);
+  //box-shadow: 3px 3px 5px black;
+  background-color: #f6f8f8;
+  backdrop-filter: blur(5px);
   position: relative;
   z-index: 1;
   p {

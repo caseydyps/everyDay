@@ -122,11 +122,10 @@ const ResponseDisplay = styled.div`
 `;
 
 const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
-  font-size: 18px;
-  padding: 10px;
-  margin: 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  font-size: 16px;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 25px;
   cursor: pointer;
 
   &:hover {
@@ -156,7 +155,7 @@ const Text = styled.div`
   background-color: #fff;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  //box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
 const Instruction = styled.div`
@@ -167,7 +166,7 @@ const Instruction = styled.div`
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  // box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
 const Card = styled.div`
@@ -175,8 +174,8 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  box-shadow: 3px 3px 5px black;
-  background-color: rgb(255, 255, 255, 0.5);
+  //box-shadow: 3px 3px 5px black;
+  background-color: #f6f8f8;
   position: relative;
   z-index: 1;
   p {
@@ -289,11 +288,11 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
         <DefaultButton
           key={member}
           style={{
-            background: selectedMember === member ? '#3467a1' : '#B7CCE2',
-            color: 'white',
+            background: selectedMember === member ? '#1E3D6B' : '#F6F8F8',
+            color: selectedMember === member ? '#F6F8F8' : '#1E3D6B',
             padding: '5px 10px',
             margin: '5px',
-            borderRadius: '5px',
+            borderRadius: '25px',
             cursor: 'pointer',
           }}
           onClick={() => onMemberSelect(member)}
@@ -652,7 +651,7 @@ const SmartInput = (props: any) => {
             type="text"
             value={inputValue}
             onChange={handleInputChange}
-            placeholder="輸入事件, 例如: 今天晚上九點要去看電影"
+            placeholder="Input event, e.g: 今天晚上九點要去看電影"
           />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
             <DefaultButton type="submit" style={{ margin: '10px' }}>

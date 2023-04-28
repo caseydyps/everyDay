@@ -19,6 +19,15 @@ const firebaseConfig = {
   measurementId: 'G-DM8J3FTHWC',
 };
 
+// const firebaseConfig = {
+//   apiKey: 'AIzaSyB2v1Z-yAfHJUv7CoYwkThPr9upuoEeRIY',
+//   authDomain: 'everyday-a1f4b.firebaseapp.com',
+//   projectId: 'everyday-a1f4b',
+//   storageBucket: 'everyday-a1f4b.appspot.com',
+//   messagingSenderId: '396884029748',
+//   appId: '1:396884029748:web:3930453e1e01c78479f561',
+// };
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);

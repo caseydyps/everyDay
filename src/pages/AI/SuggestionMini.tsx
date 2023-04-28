@@ -172,15 +172,15 @@ const Suggestion = () => {
 
   return (
     <Card>
-      <div
+      <h3
         style={{
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        本週建議:
-      </div>
+        Suggestions
+      </h3>
       {responseValue && (
         <Response>
           <div>{responseValue}</div>
@@ -198,6 +198,7 @@ const Card = styled.div`
   background-color: transparent;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
+  color: #414141;
   z-index: 1;
   p {
     margin: 0 0 10px;
@@ -209,9 +210,6 @@ const Card = styled.div`
     margin-top: 10px;
     border-radius: 50%;
   }
-  &:hover {
-    transform: scale(1.1);
-  }
 `;
 
 const Response = styled.div`
@@ -222,8 +220,8 @@ const Response = styled.div`
   font-size: 14px;
   font-weight: bold;
   margin-top: 10px;
-  color: #fff;
-  background: #3467a1;
+  color: #414141;
+  background: transparent;
   padding: 5px;
   border-radius: 10px;
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { NavLink, Link } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -49,29 +49,45 @@ const SideNav = () => {
       <Nav>
         <NavList showNav={open}>
           <NavItem>
-            <NavLink to="/dashboard">DASHBOARD</NavLink>
+            <StyledNavLink activeClassName="active" to="/dashboard">
+              DASHBOARD
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/calendar">CALENDAR</NavLink>
+            <StyledNavLink activeClassName="active" to="/calendar">
+              CALENDAR
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/todo">TODO</NavLink>
+            <StyledNavLink activeClassName="active" to="/todo">
+              TODO
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/ai">AI</NavLink>
+            <StyledNavLink activeClassName="active" to="/ai">
+              AI
+            </StyledNavLink>
           </NavItem>
 
           <NavItem>
-            <NavLink to="/whiteboard">Stick n' Draw</NavLink>
+            <StyledNavLink activeClassName="active" to="/whiteboard">
+              Stick n' Draw
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/gallery">GALLERY</NavLink>
+            <StyledNavLink activeClassName="active" to="/gallery">
+              GALLERY
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/chat">CHAT</NavLink>
+            <StyledNavLink activeClassName="active" to="/chat">
+              CHAT
+            </StyledNavLink>
           </NavItem>
           <NavItem>
-            <NavLink to="/milestone">TIME MACHINE</NavLink>
+            <StyledNavLink activeClassName="active" to="/milestone">
+              TIME MACHINE
+            </StyledNavLink>
           </NavItem>
         </NavList>
         <NavToggle showNav={open} onClick={toggleNav}>
@@ -86,39 +102,41 @@ const SideNav = () => {
 
 const NavbarWrapper = styled.div`
   z-index: 2;
+
   height: auto;
-  margin-left: 0;
-  border: 4px solid green;
-  max-width: 200px;
+  margin-top: 50px;
+
   width: ${(props) => (props.showNav ? '200px' : '20px')};
   padding: ${(props) => (props.showNav ? '0px' : '0')};
   transition: width 0.3s ease-out, padding 0.3s ease-out;
 `;
 
 const Nav = styled.div`
-  background: #3467a1;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
+  text-align: center;
   position: fixed;
   height: 100%;
-  width: auto;
+  width: 180px;
 `;
 
 const Logo = styled(Link)`
-  width: 220px;
-  height: 48px;
-  color: white;
+  width: 150px;
+  height: 28px;
+  color: #5981b0;
   text-align: center;
   font-weight: bold;
   margin: auto 0;
-  margin-top: 10px;
+  margin-top: 0px;
   font-family: 'Braah One';
   text-decoration: none;
   align-items: center;
+  position: absolute;
+  top: 40px;
+  left: 010px;
   justify-content: center;
-  font-size: 30px;
+  font-size: 24px;
   &:hover {
     transform: scale(1.05);
   }
@@ -130,16 +148,24 @@ interface NavListProps {
 }
 export const NavList = styled.ul<NavListProps>`
   list-style: none;
-  padding: 0;
+  padding: 10px;
   margin: auto;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   display: ${(props) => (props.showNav ? 'flex' : 'none')};
+  top: 50px;
+  height: 100%;
 
-  height: auto;
-
-  background: transparent;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
 
   @media screen and (max-width: 1075px) {
     flex-direction: column;
@@ -152,7 +178,7 @@ export const NavList = styled.ul<NavListProps>`
     right: 100px;
     top: 0px;
     z-index: 2;
-    background: #253c54;
+    background: #5981b0;
   }
 `;
 
@@ -167,12 +193,13 @@ export const NavItem = styled.li`
 const NavToggle = styled.div`
   cursor: pointer;
   margin-left: auto;
-  position: absolute;
+  position: fixed;
   bottom: 150px;
+
   font-size: 36px;
   color: #ffffff;
   transition: width 0.3s ease-out, padding 0.3s ease-out;
-  left: ${(props) => (props.showNav ? '135px' : '0px')};
+  left: ${(props) => (props.showNav ? '150px' : '0px')};
 `;
 
 const UserSetting = styled.div``;
@@ -182,23 +209,27 @@ const AvatarContainer = styled.div`
   margin-top: 30px;
 `;
 
-export const NavLink = styled(Link)`
+export const StyledNavLink = styled(NavLink)`
   display: block;
-  color: #fff;
+  color: #6a6a6a;
   font-size: 16px;
   font-weight: 900px;
   text-decoration: none;
-  width: 100px;
 
+  width: 100px;
+  &.${(props) => props.activeClassName} {
+    color: #5981b0;
+  }
   padding: 10px;
 
   &:hover {
-    transform: scale(1.1);
-    border-bottom: 5px solid #ffffff;
+    transform: scale(1.05);
+    border-bottom: 4px solid #f6f8f8;
   }
 
   &.active {
-    background-color: #ffffff;
+    border-bottom: 4px solid #5981b0;
+    transition: all 0.3s ease;
   }
   /* media query for screens narrower than 768px */
   @media screen and (max-width: 767px) {

@@ -196,7 +196,6 @@ const Wrap = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   border: 3px solid red;
-  margin-top: 30px;
 
   // background-color: rgba(64, 64, 64, 0.5);
 `;

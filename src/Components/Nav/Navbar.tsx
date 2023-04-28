@@ -44,7 +44,7 @@ const Navbar = () => {
   };
 
   const HamburgerIcon = styled(FontAwesomeIcon)`
-    color: white;
+    color: #f6f8f8;
     font-size: 24px;
     cursor: pointer;
   `;
@@ -62,7 +62,6 @@ const Navbar = () => {
           EVERYDAY
           {/* <img style={{ width: '200px' }} src={logo} alt="EVERYDAY" /> */}
         </Logo>
-
         <NavList open={open}>
           <NavItem>
             <NavLink to="/dashboard">DASHBOARD</NavLink>
@@ -125,19 +124,27 @@ const Navbar = () => {
 };
 
 const NavbarWrapper = styled.div`
-  background-color: transparent;
   height: 50px;
   top: 0;
   left: 0;
   width: 100vw;
-
+  border-bottom: 1px solid #e0e0e0;
   position: fixed;
-  z-index: 3;
+  z-index: 2;
+  background-color: transparent;
+  /* backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  //box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75); */
 `;
 
 const Nav = styled.div`
-  background: #3467a1;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  background: #5981b0;
+  // box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -148,7 +155,7 @@ const Nav = styled.div`
 const Logo = styled(Link)`
   width: 220px;
   height: 48px;
-  color: white;
+  color: #f6f8f8;
   text-align: center;
   font-weight: bold;
   margin: auto 0;

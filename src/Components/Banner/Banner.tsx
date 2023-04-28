@@ -41,15 +41,15 @@ const BannerContainer = styled.div`
   width: 100vw-200px;
   height: 25vh;
   padding-left: 200px;
-  border: 3px solid white;
+  /* border: 3px solid white; */
   position: relative; /* Added to set stacking context */
-  background: #629dda;
+  background: #3467a1;
   display: flex;
-  box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
+  //box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
   align-items: center;
   justify-content: center;
   text-align: start;
-  margin-top: 60px;
+  /* margin-top: 60px; */
 `;
 
 const BannerTitle = styled.h1`
@@ -118,7 +118,7 @@ const BannerPic = ({ picUrl, maxWidth, maxHeight }) => {
     width: auto;
     height: 250px;
     object-fit: cover;
-    right: 0;
+    right: 50px;
   `;
   return <BannerImg src={picUrl} alt="Banner" />;
 };
@@ -133,7 +133,7 @@ const Banner = ({ title, subTitle }: BannerProps) => {
     picUrl = Gallery;
   } else if (title === 'AI') {
     picUrl = Ai;
-  } else if (title === 'Time machine') {
+  } else if (title === 'Time Machine') {
     picUrl = Milestone;
   } else if (title === `Stick n' Draw`) {
     picUrl = Sticker;

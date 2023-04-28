@@ -51,47 +51,41 @@ function WelcomePage() {
         <>
           {hasSetup ? (
             <Wrap>
-              <CurveSection>
-                <h1>Welcome home,</h1>
+              <ColumnWrap>
+                <h1 style={{ color: '#1E3D6B' }}>Welcome home,</h1>
+                <RowWrap>
+                  <LinkButton to="/dashboard">Straight to Dashboard</LinkButton>
+                </RowWrap>
                 <ColumnWrap>
                   <RowWrap>
-                    <LinkButton to="/dashboard">
-                      Straight to Dashboard
+                    <Wording>or,</Wording>
+                    <LinkButton to="/ai">
+                      Ask anything about your family!
                     </LinkButton>
                   </RowWrap>
-                  <ColumnWrap>
-                    <RowWrap>
-                      <Wording>or,</Wording>
-                      <LinkButton to="/ai">
-                        Ask anything about your family!
-                      </LinkButton>
-                    </RowWrap>
-                  </ColumnWrap>
                 </ColumnWrap>
-
-                <Curve></Curve>
-              </CurveSection>
+              </ColumnWrap>
 
               <Section></Section>
             </Wrap>
           ) : (
             <>
               {/* <LoadingAnimation /> */}
-              <WelcomeMessage style={{ marginTop: '300px' }}>
-                您似乎還未完成家庭成員設定, 請點選下方進行設定
-              </WelcomeMessage>
+              <h2 style={{ marginTop: '300px' }}>
+                Please click below to proceed with the setup.
+              </h2>
               {hasCreateFamily ? (
-                <LinkButton to="/family" style={{ fontSize: '64px' }}>
-                  進行家庭成員設定
+                <LinkButton to="/family" style={{ fontSize: '28px' }}>
+                  Family members setup
                 </LinkButton>
               ) : (
                 <LinkButton
                   onClick={() =>
                     handleFamilyCreate(userName, userEmail, familyId)
                   }
-                  style={{ fontSize: '64px' }}
+                  style={{ fontSize: '28px' }}
                 >
-                  建立家庭
+                  Create your family
                 </LinkButton>
               )}
             </>
@@ -99,8 +93,8 @@ function WelcomePage() {
         </>
       ) : (
         <Section style={{ backgroundColor: 'transparent' }}>
-          <h1 style={{ color: 'white' }}>Welcome to EVERYDAY!</h1>
-          <p style={{ color: 'white' }}>Your everyday family assistant</p>
+          <h1 style={{ color: '#F6F8F8' }}>Welcome to EVERYDAY!</h1>
+          <p style={{ color: '#F6F8F8' }}>Your everyday family assistant</p>
         </Section>
       )}
 
@@ -114,13 +108,12 @@ function WelcomePage() {
               kindness and care, the warmer and stronger it grows.
             </p>
             <ColumnWrap></ColumnWrap>
-            <Curve></Curve>
           </CurveSection>
-          <Section>
-            <h1 style={{ color: 'white' }}>Can't wait? Login in seconds!</h1>
-            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
-            <SignIn />
-          </Section>
+
+          <h1 style={{ color: '#F6F8F8' }}>Can't wait? Login in seconds!</h1>
+          {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
+          <SignIn />
+
           {/* <CircleButton></CircleButton> */}
         </>
       )}
@@ -169,7 +162,7 @@ const Section = styled.section`
   align-items: center;
   min-height: 400px;
   padding-top: 100px;
-  background: #1e3d6b;
+  background: transparent;
   max-width: 100vw;
 `;
 
@@ -182,18 +175,6 @@ const BubbleSection = styled.section`
   padding-top: 100px;
   background: #1e3d6b;
   max-width: 100vw;
-
-  &::after {
-    content: '';
-    border-top-left-radius: 50% 100%;
-    border-top-right-radius: 50% 100%;
-    position: absolute;
-    bottom: 0;
-    z-index: -1;
-    width: 100%;
-    background-color: #0f0f10;
-    height: 85%;
-  }
 `;
 
 const CurveSection = styled.section`
@@ -203,50 +184,17 @@ const CurveSection = styled.section`
   align-items: center;
   min-height: 400px;
   padding-top: 100px;
-  background: #5995dd;
+  background: transparent;
   margin-top: 0px;
-
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-    width: 25%;
-    height: 100%;
-    transform: translate(65%, 60%);
-    background-color: #5995dd;
-  }
 `;
 
 const Curve = styled.div`
   position: absolute;
-  height: 250px;
+  height: 200px;
   width: 100%;
   bottom: 0;
   text-align: center;
-
-  &::before {
-    content: '';
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-    width: 55%;
-    height: 100%;
-    transform: translate(85%, 60%);
-    background-color: #1e3d6b;
-  }
-
-  &::after {
-    content: '';
-    display: block;
-    position: absolute;
-    border-radius: 100% 50%;
-    width: 55%;
-    height: 100%;
-    background-color: #5995dd;
-    transform: translate(-4%, 40%);
-    z-index: 1;
-  }
+s
 `;
 
 export const Container = styled.div`
@@ -290,6 +238,10 @@ const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 30px;
 `;
 
 const RowWrap = styled.div`
@@ -301,7 +253,7 @@ const RowWrap = styled.div`
 
 const Wrap = styled.div`
   flex-wrap: wrap;
-  height: 100%;
+  height: 100vh;
   width: 100vw;
   margin: 0 auto;
 `;
@@ -331,7 +283,7 @@ const Avatar = styled.img`
 
 const LinkButton: any = styled(Link)`
   background-color: transparent;
-  color: #fff;
+  color: #414141;
   padding: 10px 10px;
   border: none;
   border-radius: 5px;
@@ -347,7 +299,7 @@ const LinkButton: any = styled(Link)`
 
 const Wording = styled.div`
   background-color: transparent;
-  color: #fff;
+  color: #f6f8f8;
   border: none;
   border-radius: 5px;
   cursor: pointer;

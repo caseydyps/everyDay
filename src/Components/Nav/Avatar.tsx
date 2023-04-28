@@ -10,8 +10,8 @@ const UserAvatar = () => {
 };
 
 const Avatar = styled.img`
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   object-fit: cover;
 
@@ -19,7 +19,7 @@ const Avatar = styled.img`
   &:hover {
     transform: scale(1.1);
   }
-  border: 3px solid white;
+  border: 3px solid #f6f8f8;
 `;
 
 export default UserAvatar;

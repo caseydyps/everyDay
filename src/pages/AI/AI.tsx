@@ -1,5 +1,5 @@
 import Layout from '../../Components/layout';
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/Nav/Navbar';
@@ -23,7 +23,6 @@ import {
 import SmartInput from './SmartInput';
 import Banner from '../../Components/Banner/Banner';
 import Suggestion from './Suggestion';
-import { Container } from '../Family/FamilyForm';
 
 const AI = () => {
   const [showSmartInput, setShowSmartInput] = useState(false);
@@ -76,6 +75,34 @@ const AI = () => {
   );
 };
 
+export const GradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+  
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: row;
+  margin-top: 0px;
+  background-color: #d7dde2;
+  width: 100vw;
+  height: 100%;
+  border: gold solid 3px;
+  padding: 20px;
+
+  background-size: 300% 300%;
+
+  animation: ${GradientAnimation} 20s ease-in-out infinite;
+`;
+
 const CenterWrapper = styled.div`
   display: flex;
   justify-content: center; /* Center the child element horizontally */
@@ -103,8 +130,8 @@ const Circle = styled.div`
   margin: 50px;
   padding: 20px;
   font-size: 0.072vw;
-  box-shadow: 3px 3px 5px black;
-  background-color: rgb(255, 255, 255, 0.5);
+
+  background-color: #1e3d6b;
   position: relative;
   z-index: 1;
   p {
@@ -121,9 +148,9 @@ const Circle = styled.div`
     transform: scale(1.1);
   }
 
-  @media screen and (max-width: 1200px) {
+  /* @media screen and (max-width: 1200px) {
     background-color: transparent;
-  }
+  } */
 `;
 
 const AiWrapper = styled.div`

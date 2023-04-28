@@ -36,7 +36,6 @@ function App() {
       <AuthContextProvider>
         <Navbar />
         <Wrap>
-          
           <Outlet />
         </Wrap>
       </AuthContextProvider>

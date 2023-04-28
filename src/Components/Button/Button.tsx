@@ -2,17 +2,15 @@ import { keyframes } from 'styled-components';
 import styled from 'styled-components';
 
 export const DefaultButton = styled.button`
-  background-color: #3467a1;
-  color: white;
-  border: none;
+  background-color: #f6f8f8;
+  color: #1e3d6b;
+  // border: 2px solid #1e3d6b;
   border-radius: 20px;
   font-weight: bold;
-  padding: 10px 20px;
-  margin-top: 30px;
-  margin-right: 10px;
-  margin-left: 10px;
-  font-size: 20px;
-  box-shadow: 3px 3px 5px black;
+  padding: 5px 10px;
+  margin: 5px;
+  font-size: 16px;
+  //box-shadow: 3px 3px 5px black;
   &:hover {
     transform: scale(1.1);
   }

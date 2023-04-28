@@ -81,7 +81,8 @@ const CanvasButton = styled(DefaultButton)`
   color: white;
   margin-right: 5px;
   margin-left: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  border: none;
+  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 `;
 
 const CanvasContainer = styled.div`
@@ -138,7 +139,7 @@ const DrawingTool = () => {
     context.lineWidth = width;
     context.strokeStyle = color;
     contextRef.current = context;
-  }, []);
+  }, [color, width]);
 
   const startPaint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX, offsetY } = nativeEvent;
@@ -164,20 +165,20 @@ const DrawingTool = () => {
     // const context = canvas.getContext('2d');
   };
 
-  const throttle = <T extends any[]>(
-    callback: (...args: T) => void,
-    delay: number
-  ) => {
-    let previousCall = new Date().getTime();
-    return (...args: T) => {
-      const time = new Date().getTime();
+  // const throttle = <T extends any[]>(
+  //   callback: (...args: T) => void,
+  //   delay: number
+  // ) => {
+  //   let previousCall = new Date().getTime();
+  //   return (...args: T) => {
+  //     const time = new Date().getTime();
 
-      if (time - previousCall >= delay) {
-        previousCall = time;
-        callback.apply(null, args);
-      }
-    };
-  };
+  //     if (time - previousCall >= delay) {
+  //       previousCall = time;
+  //       callback.apply(null, args);
+  //     }
+  //   };
+  // };
 
   useEffect(() => {
     // Retrieve the strokes from Firestore when the component mounts
@@ -207,45 +208,42 @@ const DrawingTool = () => {
     return () => {
       unsubscribe();
     };
-  }, [familyId]);
+  }, []);
 
   const stackLimit = 500; // maximum stack size
 
-  const paint = throttle(
-    ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!isPainting) {
-        return;
+  const paint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!isPainting) {
+      return;
+    }
+    const { offsetX, offsetY } = nativeEvent;
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext('2d');
+      if (context) {
+        const startX = prevOffset.current.x;
+        const startY = prevOffset.current.y;
+        context.lineTo(offsetX, offsetY);
+        context.stroke();
+
+        // Save the stroke to Firestore
+        addStroke({
+          startX,
+          startY,
+          endX: offsetX,
+          endY: offsetY,
+          color,
+          width,
+        });
+
+        // Update the undo stack
+        const state = context.getImageData(0, 0, canvas.width, canvas.height);
+        setUndoStack((prevStack) => [...prevStack, state]);
+
+        prevOffset.current = { x: offsetX, y: offsetY };
       }
-      const { offsetX, offsetY } = nativeEvent;
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const context = canvas.getContext('2d');
-        if (context) {
-          const startX = prevOffset.current.x;
-          const startY = prevOffset.current.y;
-          context.lineTo(offsetX, offsetY);
-          context.stroke();
-
-          // Save the stroke to Firestore
-          addStroke({
-            startX,
-            startY,
-            endX: offsetX,
-            endY: offsetY,
-            color,
-            width,
-          });
-
-          // Update the undo stack
-          const state = context.getImageData(0, 0, canvas.width, canvas.height);
-          setUndoStack((prevStack) => [...prevStack, state]);
-
-          prevOffset.current = { x: offsetX, y: offsetY };
-        }
-      }
-    },
-    20
-  );
+    }
+  };
 
   const addStroke = async (strokeData: StrokeData) => {
     const strokesCollectionRef = collection(

@@ -167,7 +167,22 @@ const Dashboard = () => {
     ${({ spanColumns, spanRows }) => `
     grid-column: span ${spanColumns};
     grid-row: span ${spanRows};
+    width: auto;
+    height: auto;
     position: relative;
+     
+   // box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+    transition: transform 0.2s ease-in-out;
+  }
+   &:hover {
+    transform: scale(0.95);
+    background-color: rgba(255, 255, 255, 0.25);
+    transition: transform 0.2s ease-in-out;
+  }
   `}
 
     border-radius: 20px;
@@ -178,41 +193,67 @@ const Dashboard = () => {
   `;
 
   const BoxS = styled.div`
-    width: 120px;
     height: 120px;
     background-color: #3467a1;
     border-radius: 20px;
+
     /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
     box-shadow: 3px 3px 5px black; */
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    color: rgba(255, 255, 255, 0.75);
   `;
 
   const BoxM = styled.div`
-    border-radius: 20px;
-    width: 240px;
     height: 240px;
-    /* -webkit-box-shadow: 3px 3px 5px black;
-    -moz-box-shadow: 3px 3px 5px black;
-    box-shadow: 3px 3px 5px black; */
-    background-color: rgb(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    color: rgba(255, 255, 255, 0.75);
   `;
   const BoxL = styled.div`
-    width: 480px;
     height: 240px;
-    background-color: rgb(255, 255, 255, 0.5);
-    border-radius: 20px;
+
     /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
     box-shadow: 3px 3px 5px black; */
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    color: rgba(255, 255, 255, 0.75);
   `;
 
   const BoxXL = styled.div`
-    width: 720px;
     height: 240px;
     /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
     box-shadow: 3px 3px 5px black; */
-    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    color: rgba(255, 255, 255, 0.75);
   `;
 
   const ButtonWrap = styled.div`
@@ -225,14 +266,12 @@ const Dashboard = () => {
     background-color: transparent;
     padding: 0px;
     color: rgba(255, 255, 255, 0.5);
-  `;
-
-  const ToggleButton = styled(DefaultButton)`
-    background-color: transparent;
-    padding: 0px;
     border: none;
     box-shadow: none;
-    color: rgba(255, 255, 255, 0.5);
+    :hover {
+      background-color: transparent;
+      color: rgba(255, 255, 255, 0.75);
+    }
   `;
 
   const Wrap = styled.div`
@@ -291,7 +330,7 @@ const Dashboard = () => {
     },
     {
       component: (
-        <BoxS style={{ backgroundColor: '#666' }}>
+        <BoxS style={{ backgroundColor: ' rgba(89, 89, 89, 0.25)' }}>
           <Financial></Financial>
         </BoxS>
       ),
@@ -300,7 +339,7 @@ const Dashboard = () => {
     },
     {
       component: (
-        <BoxS style={{ backgroundColor: '#f5f5f5' }}>
+        <BoxS style={{ backgroundColor: 'rgba(89, 89, 89, 0.25)' }}>
           <CalendarMini />
         </BoxS>
       ),
@@ -318,7 +357,11 @@ const Dashboard = () => {
     },
 
     {
-      component: <BoxXL>{/* <Whiteboard /> */}</BoxXL>,
+      component: (
+        <BoxXL>
+          <Whiteboard />
+        </BoxXL>
+      ),
       spanColumns: 6,
       spanRows: 4,
     },
@@ -333,33 +376,26 @@ const Dashboard = () => {
   };
   console.log(gridItems);
 
-  const [sideNavWidth, setSideNavWidth] = useState(200);
-
-  const AsideWrap = ({ show }: boolean) => {
-    return <div style={{ display: show ? 'block' : 'none' }}></div>;
+  const handleDragStart = (e, index) => {
+    e.dataTransfer.setData('text/plain', index);
   };
 
-  const handleResize = () => {
-    setSideNavWidth(window.innerWidth);
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    const dragIndex = e.dataTransfer.getData('text/plain');
+    if (dragIndex !== index) {
+      const newGridItems = [...gridItems];
+      const draggedItem = newGridItems[dragIndex];
+      newGridItems.splice(dragIndex, 1);
+      newGridItems.splice(index, 0, draggedItem);
+      setGridItems(newGridItems);
+    }
   };
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   return (
     <Container>
       <SideNav />
-
       <Wrap>
-        {/* <AsideWrap show={sideNavWidth >= 150}>
-          <Aside>
-            <Slogan>One home, one team, one victory!</Slogan>
-            <SmallSlogan>We're Better Together</SmallSlogan>
-          </Aside>
-        </AsideWrap> */}
-
         <Main>
           <Grid>
             {gridItems.map((item, index) => (
@@ -367,6 +403,10 @@ const Dashboard = () => {
                 key={index}
                 spanColumns={item.spanColumns}
                 spanRows={item.spanRows}
+                draggable="true"
+                onDragStart={(e) => handleDragStart(e, index)}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => handleDrop(e, index)}
               >
                 {item.component}
                 <ButtonWrap>

@@ -599,136 +599,135 @@ const FamilyMemberForm = () => {
 
   console.log('avatarUrl', avatarUrl);
   return (
-    <Layout>
-      <Container>
-        {hasSetup ? (
-          <Wrap>
-            <Title>家庭成員</Title>
-            <ColumnWrap>
-              <RowWrap>
-                {members.map((member, index) => (
-                  <Card
-                    key={index}
-                    onMouseOver={() => handleCardClick(index)}
-                    onMouseOut={handleCardLeave}
-                  >
-                    <RowWrap>
-                      <Text> {member.name}</Text>
-                      <> | </>
-                      <Text> {member.role}</Text>
-                    </RowWrap>
-                    <AvatarImage src={member.avatar} alt="avatar"></AvatarImage>
-                    {selectedCardIndex === index && (
-                      <CardDiv>
-                        <HiddenText>{member.email}</HiddenText>
-                        <HiddenText>{member.role}</HiddenText>
-                        <HiddenText>{member.birthday}</HiddenText>
-                      </CardDiv>
-                    )}
-                  </Card>
-                ))}
-              </RowWrap>
-            </ColumnWrap>
+    <Container>
+      {hasSetup ? (
+        <Wrap>
+          <Title>Family Members</Title>
+          <ColumnWrap>
+            <RowWrap>
+              {members.map((member, index) => (
+                <Card
+                  key={index}
+                  // onMouseOver={() => handleCardClick(index)}
+                  // onMouseOut={handleCardLeave}
+                >
+                  <RowWrap>
+                    <Text> {member.name}</Text>
+                    <Split> | </Split>
+                    <Text> {member.role}</Text>
+                  </RowWrap>
+                  <AvatarImage src={member.avatar} alt="avatar"></AvatarImage>
+                  {selectedCardIndex === index && (
+                    <CardDiv>
+                      <HiddenText>{member.email}</HiddenText>
+                      <HiddenText>{member.role}</HiddenText>
+                      <HiddenText>{member.birthday}</HiddenText>
+                    </CardDiv>
+                  )}
+                </Card>
+              ))}
+            </RowWrap>
+          </ColumnWrap>
 
-            <Button
-              onClick={() => {
-                setHasSetup(false);
-                setFormSubmitted(false);
-                setNumberOfMembers(members.length);
-              }}
-            >
-              Edit
-            </Button>
-          </Wrap>
-        ) : (
-          <>
-            <FormContainer>
-              <FormCard style={{ zIndex: '2', width: 'auto' }}>
-                <Form onSubmit={handleFormSubmit}>
-                  <AddMinusInput
-                    value={numberOfMembers}
-                    onIncrement={handleNumberOfMembersIncrement}
-                    onDecrement={handleNumberOfMembersDecrement}
-                  >
-                    您有幾位家庭成員?
-                  </AddMinusInput>
+          <Button
+            onClick={() => {
+              setHasSetup(false);
+              setFormSubmitted(false);
+              setNumberOfMembers(members.length);
+            }}
+          >
+            Edit
+          </Button>
+        </Wrap>
+      ) : (
+        <>
+          <FormContainer>
+            <FormCard style={{ zIndex: '2', width: 'auto' }}>
+              <Form onSubmit={handleFormSubmit}>
+                <AddMinusInput
+                  value={numberOfMembers}
+                  onIncrement={handleNumberOfMembersIncrement}
+                  onDecrement={handleNumberOfMembersDecrement}
+                >
+                  您有幾位家庭成員?
+                </AddMinusInput>
 
-                  {numberOfMembers > 0 && (
+                {numberOfMembers > 0 && (
+                  <div>
                     <div>
-                      <div>
-                        <Text>請依序設定家庭成員</Text>
-                        <FormDropdown
-                          value={currentMemberIndex}
-                          onChange={(event) =>
-                            setCurrentMemberIndex(parseInt(event.target.value))
-                          }
-                        >
-                          {members.map((member, index) => (
-                            <option key={index} value={index}>
-                              {`家庭成員 ${index + 1}`}
-                            </option>
-                          ))}
-                        </FormDropdown>
-                        {members[currentMemberIndex] && (
-                          <div>
-                            <FormField>
-                              <FormLabel>名稱 | 暱稱 </FormLabel>
-                              <FormInput
-                                type="text"
-                                value={members[currentMemberIndex].name}
-                                onChange={(event) =>
-                                  handleMemberNameChange(
-                                    currentMemberIndex,
-                                    event
-                                  )
-                                }
-                              />
-                            </FormField>
+                      <Text>請依序設定家庭成員</Text>
+                      <FormDropdown
+                        value={currentMemberIndex}
+                        onChange={(event) =>
+                          setCurrentMemberIndex(parseInt(event.target.value))
+                        }
+                      >
+                        {members.map((member, index) => (
+                          <option key={index} value={index}>
+                            {`家庭成員 ${index + 1}`}
+                          </option>
+                        ))}
+                      </FormDropdown>
+                      {members[currentMemberIndex] && (
+                        <div>
+                          <FormField>
+                            <FormLabel>名稱 | 暱稱 </FormLabel>
+                            <FormInput
+                              type="text"
+                              value={members[currentMemberIndex].name}
+                              onChange={(event) =>
+                                handleMemberNameChange(
+                                  currentMemberIndex,
+                                  event
+                                )
+                              }
+                            />
+                          </FormField>
 
-                            <FormField>
-                              <FormLabel>Email</FormLabel>
-                              <FormInput
-                                type="text"
-                                value={members[currentMemberIndex].email}
-                                onChange={(event) =>
-                                  handleMemberEmailChange(
-                                    currentMemberIndex,
-                                    event
-                                  )
-                                }
-                              />
-                            </FormField>
+                          <FormField>
+                            <FormLabel>Email</FormLabel>
+                            <FormInput
+                              type="text"
+                              value={members[currentMemberIndex].email}
+                              onChange={(event) =>
+                                handleMemberEmailChange(
+                                  currentMemberIndex,
+                                  event
+                                )
+                              }
+                            />
+                          </FormField>
 
-                            <FormField>
-                              <FormLabel>生日</FormLabel>
-                              <FormInput
-                                type="date"
-                                value={members[currentMemberIndex].birthday}
-                                onChange={(event) =>
-                                  handleMemberBirthdayChange(
-                                    currentMemberIndex,
-                                    event
-                                  )
-                                }
-                              />
-                            </FormField>
+                          <FormField>
+                            <FormLabel>生日</FormLabel>
+                            <FormInput
+                              type="date"
+                              value={members[currentMemberIndex].birthday}
+                              onChange={(event) =>
+                                handleMemberBirthdayChange(
+                                  currentMemberIndex,
+                                  event
+                                )
+                              }
+                            />
+                          </FormField>
 
-                            <FormField>
-                              <FormLabel>Role </FormLabel>
-                              <FormInput
-                                type="text"
-                                value={members[currentMemberIndex].role}
-                                placeholder="爸爸/媽媽/女兒/兒子..."
-                                onChange={(event) =>
-                                  handleMemberRoleChange(
-                                    currentMemberIndex,
-                                    event
-                                  )
-                                }
-                              />
-                            </FormField>
+                          <FormField>
+                            <FormLabel>Role </FormLabel>
+                            <FormInput
+                              type="text"
+                              value={members[currentMemberIndex].role}
+                              placeholder="爸爸/媽媽/女兒/兒子..."
+                              onChange={(event) =>
+                                handleMemberRoleChange(
+                                  currentMemberIndex,
+                                  event
+                                )
+                              }
+                            />
+                          </FormField>
 
-                            {/* <FormField>
+                          {/* <FormField>
                           <FormLabel>紀念日</FormLabel>
                           {members[currentMemberIndex].anniversaries.map(
                             (anniversary, anniversaryIndex) => (
@@ -766,60 +765,60 @@ const FamilyMemberForm = () => {
                             Add Anniversary
                           </Button>
                         </FormField> */}
-                          </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <></>
+                  </div>
+                )}
+                <></>
 
-                  <ConfettiButton onClick={handleClick} type="submit">
-                    完成設定🎉
-                  </ConfettiButton>
-                </Form>
-              </FormCard>
-              <FormCard>
-                {numberOfMembers > 0 && (
-                  <AvatarContainer>
-                    <FormLabel style={{ color: 'white', fontSize: '36px' }}>
-                      頭像設定
-                    </FormLabel>
-                    <FormField>
-                      <ColumnWrap
-                        key={currentMemberIndex}
-                        data-index={currentMemberIndex}
-                        data-on-Save={(
-                          avatarUrl: string,
-                          seed: string,
-                          skinColor: string,
-                          eyebrows: string,
-                          eyes: string,
-                          hair: string,
-                          hairColor: string,
-                          hairProbability: number,
-                          mouth: string,
-                          background: string,
-                          feature: string,
-                          featuresProbability: number
-                        ) =>
-                          handleAvatarSave(
-                            avatarUrl,
-                            currentMemberIndex,
-                            seed,
-                            skinColor,
-                            eyebrows,
-                            eyes,
-                            hair,
-                            hairProbability,
-                            hairColor,
-                            mouth,
-                            background,
-                            feature,
-                            featuresProbability
-                          )
-                        }
-                      >
-                        {/* <Label htmlFor="seed-select">Select a seed:</Label>
+                <ConfettiButton onClick={handleClick} type="submit">
+                  完成設定🎉
+                </ConfettiButton>
+              </Form>
+            </FormCard>
+            <FormCard>
+              {numberOfMembers > 0 && (
+                <AvatarContainer>
+                  <FormLabel style={{ color: 'white', fontSize: '36px' }}>
+                    頭像設定
+                  </FormLabel>
+                  <FormField>
+                    <ColumnWrap
+                      key={currentMemberIndex}
+                      data-index={currentMemberIndex}
+                      data-on-Save={(
+                        avatarUrl: string,
+                        seed: string,
+                        skinColor: string,
+                        eyebrows: string,
+                        eyes: string,
+                        hair: string,
+                        hairColor: string,
+                        hairProbability: number,
+                        mouth: string,
+                        background: string,
+                        feature: string,
+                        featuresProbability: number
+                      ) =>
+                        handleAvatarSave(
+                          avatarUrl,
+                          currentMemberIndex,
+                          seed,
+                          skinColor,
+                          eyebrows,
+                          eyes,
+                          hair,
+                          hairProbability,
+                          hairColor,
+                          mouth,
+                          background,
+                          feature,
+                          featuresProbability
+                        )
+                      }
+                    >
+                      {/* <Label htmlFor="seed-select">Select a seed:</Label>
                       <Select
                         id="seed-select"
                         value={members[currentMemberIndex].seed}
@@ -831,136 +830,130 @@ const FamilyMemberForm = () => {
                         <option value="Cookie">Cookie</option>
                         <option value="Sassy">Sassy</option>
                       </Select> */}
+                      <FlexWrap>
+                        <Label htmlFor="skinColor-select">膚色:</Label>
+                        <CirclePicker
+                          width="100%"
+                          color={members[currentMemberIndex].skinColor}
+                          colors={[
+                            '#fff1e6',
+                            '#ffd9b3',
+                            '#ffc299',
+                            '#ffad80',
+                            '#ff9966',
+                            '#e68a00',
+                            '#cc7a00',
+                            '#b36b00',
+                            '#994d00',
+                            '#803300',
+                          ]}
+                          circleSize={36}
+                          onChangeComplete={(color) =>
+                            handleSkinColorChange(currentMemberIndex, color.hex)
+                          }
+                        />
+                      </FlexWrap>
+                      <RowWrap>
+                        <br />
                         <FlexWrap>
-                          <Label htmlFor="skinColor-select">膚色:</Label>
-                          <CirclePicker
-                            width="100%"
-                            color={members[currentMemberIndex].skinColor}
-                            colors={[
-                              '#fff1e6',
-                              '#ffd9b3',
-                              '#ffc299',
-                              '#ffad80',
-                              '#ff9966',
-                              '#e68a00',
-                              '#cc7a00',
-                              '#b36b00',
-                              '#994d00',
-                              '#803300',
-                            ]}
-                            circleSize={36}
-                            onChangeComplete={(color) =>
-                              handleSkinColorChange(
-                                currentMemberIndex,
-                                color.hex
-                              )
+                          <Label htmlFor="eyebrows-select">眉毛:</Label>
+                          <Select
+                            id="eyebrows-select"
+                            value={members[currentMemberIndex].eyebrows}
+                            onChange={(event) =>
+                              handleEyebrowsChange(currentMemberIndex, event)
                             }
-                          />
+                          >
+                            <option value="variant01">濃眉</option>
+                            <option value="variant02">兇眉</option>
+                            <option value="variant03">細眉</option>
+                            <option value="variant04">一字眉</option>
+                            <option value="variant05">短眉</option>
+                            <option value="variant07">八字眉</option>
+                            <option value="variant08">挑眉</option>
+                          </Select>
                         </FlexWrap>
-                        <RowWrap>
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="eyebrows-select">眉毛:</Label>
-                            <Select
-                              id="eyebrows-select"
-                              value={members[currentMemberIndex].eyebrows}
-                              onChange={(event) =>
-                                handleEyebrowsChange(currentMemberIndex, event)
-                              }
-                            >
-                              <option value="variant01">濃眉</option>
-                              <option value="variant02">兇眉</option>
-                              <option value="variant03">細眉</option>
-                              <option value="variant04">一字眉</option>
-                              <option value="variant05">短眉</option>
-                              <option value="variant07">八字眉</option>
-                              <option value="variant08">挑眉</option>
-                            </Select>
-                          </FlexWrap>
 
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="eyes-select">眼睛:</Label>
-                            <Select
-                              id="eyes-select"
-                              value={members[currentMemberIndex].eyes}
-                              onChange={(event) =>
-                                handleEyesChange(currentMemberIndex, event)
-                              }
-                            >
-                              <option value="variant01">看右邊</option>
-                              <option value="variant02">看左邊</option>
-                              <option value="variant03">中間</option>
-                              <option value="variant04">睡眼</option>
-                              <option value="variant05">鬥雞眼</option>
-                              <option value="variant18">白眼</option>
-                              <option value="variant19">笑眼</option>
-                              <option value="variant22">眨眼</option>
-                              <option value="variant23">水汪汪</option>
-                            </Select>
-                          </FlexWrap>
-
-                          <br />
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="hair-select">髮型:</Label>
-
-                            <Select
-                              id="hair-select"
-                              value={members[currentMemberIndex].hair}
-                              onChange={(event) =>
-                                handleHairChange(currentMemberIndex, event)
-                              }
-                            >
-                              <option value="long03">中短髮</option>
-                              <option value="long06">大波浪</option>
-                              <option value="long08">花圈</option>
-                              <option value="long07">中長髮</option>
-                              <option value="long10">包頭</option>
-                              <option value="long13">雙包頭</option>
-                              <option value="long15">雙馬尾</option>
-                              <option value="long16">辮子</option>
-                              <option value="long19">馬尾</option>
-                              <option value="short01">瀏海</option>
-                              <option value="short04">平頭</option>
-                              <option value="short08">陽光</option>
-                              <option value="short07">韓系</option>
-                              <option value="short09">韓系2</option>
-                              <option value="short12">呆頭</option>
-                              <option value="short15">8+9</option>
-                              <option value="short16">刺蝟</option>
-                              <option value="short19">當兵</option>
-                              {/* <option value="none">光頭</option> */}
-                            </Select>
-                          </FlexWrap>
-                        </RowWrap>
-
+                        <br />
                         <FlexWrap>
-                          <Label htmlFor="hair-color-select">髮色:</Label>
-                          <CirclePicker
-                            width="100%"
-                            color={members[currentMemberIndex].hairColor}
-                            colors={[
-                              '#000000', // black
-                              '#331a00', // dark brown
-                              '#4d2600', // medium brown
-                              '#663300', // chestnut brown
-                              '#804d00', // auburn
-                              '#b37300', // blonde
-                              '#cc9900', // golden blonde
-                              '#e6b800', // honey blonde
-                              '#ffd966', // light blonde
-                              '#ffffff', // white/gray
-                            ]}
-                            circleSize={36}
-                            onChangeComplete={(color) =>
-                              handleHairColorChange(
-                                currentMemberIndex,
-                                color.hex
-                              )
+                          <Label htmlFor="eyes-select">眼睛:</Label>
+                          <Select
+                            id="eyes-select"
+                            value={members[currentMemberIndex].eyes}
+                            onChange={(event) =>
+                              handleEyesChange(currentMemberIndex, event)
                             }
-                          />
-                          {/* 
+                          >
+                            <option value="variant01">看右邊</option>
+                            <option value="variant02">看左邊</option>
+                            <option value="variant03">中間</option>
+                            <option value="variant04">睡眼</option>
+                            <option value="variant05">鬥雞眼</option>
+                            <option value="variant18">白眼</option>
+                            <option value="variant19">笑眼</option>
+                            <option value="variant22">眨眼</option>
+                            <option value="variant23">水汪汪</option>
+                          </Select>
+                        </FlexWrap>
+
+                        <br />
+                        <br />
+                        <FlexWrap>
+                          <Label htmlFor="hair-select">髮型:</Label>
+
+                          <Select
+                            id="hair-select"
+                            value={members[currentMemberIndex].hair}
+                            onChange={(event) =>
+                              handleHairChange(currentMemberIndex, event)
+                            }
+                          >
+                            <option value="long03">中短髮</option>
+                            <option value="long06">大波浪</option>
+                            <option value="long08">花圈</option>
+                            <option value="long07">中長髮</option>
+                            <option value="long10">包頭</option>
+                            <option value="long13">雙包頭</option>
+                            <option value="long15">雙馬尾</option>
+                            <option value="long16">辮子</option>
+                            <option value="long19">馬尾</option>
+                            <option value="short01">瀏海</option>
+                            <option value="short04">平頭</option>
+                            <option value="short08">陽光</option>
+                            <option value="short07">韓系</option>
+                            <option value="short09">韓系2</option>
+                            <option value="short12">呆頭</option>
+                            <option value="short15">8+9</option>
+                            <option value="short16">刺蝟</option>
+                            <option value="short19">當兵</option>
+                            {/* <option value="none">光頭</option> */}
+                          </Select>
+                        </FlexWrap>
+                      </RowWrap>
+
+                      <FlexWrap>
+                        <Label htmlFor="hair-color-select">髮色:</Label>
+                        <CirclePicker
+                          width="100%"
+                          color={members[currentMemberIndex].hairColor}
+                          colors={[
+                            '#000000', // black
+                            '#331a00', // dark brown
+                            '#4d2600', // medium brown
+                            '#663300', // chestnut brown
+                            '#804d00', // auburn
+                            '#b37300', // blonde
+                            '#cc9900', // golden blonde
+                            '#e6b800', // honey blonde
+                            '#ffd966', // light blonde
+                            '#ffffff', // white/gray
+                          ]}
+                          circleSize={36}
+                          onChangeComplete={(color) =>
+                            handleHairColorChange(currentMemberIndex, color.hex)
+                          }
+                        />
+                        {/* 
                         <Select
                           id="hair-color-select"
                           value={members[currentMemberIndex].hairColor}
@@ -979,112 +972,108 @@ const FamilyMemberForm = () => {
                           <option value="221b15">Dark Brown</option>
                           <option value="b38a58">Light Brown</option>
                         </Select> */}
+                      </FlexWrap>
+                      <RowWrap>
+                        <br />
+                        <FlexWrap>
+                          <Label htmlFor="feature-select">特徵:</Label>
+                          <Select
+                            id="feature-select"
+                            value={members[currentMemberIndex].feature}
+                            onChange={(event) =>
+                              handleFeatureChange(currentMemberIndex, event)
+                            }
+                          >
+                            <option value="blush">臉紅😳</option>
+                            <option value="freckles">雀斑</option>
+
+                            <option value="none">無</option>
+                          </Select>
                         </FlexWrap>
-                        <RowWrap>
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="feature-select">特徵:</Label>
-                            <Select
-                              id="feature-select"
-                              value={members[currentMemberIndex].feature}
-                              onChange={(event) =>
-                                handleFeatureChange(currentMemberIndex, event)
-                              }
-                            >
-                              <option value="blush">臉紅😳</option>
-                              <option value="freckles">雀斑</option>
+                        <br />
+                        <FlexWrap>
+                          <Label htmlFor="mouth-select">嘴巴:</Label>
+                          <Select
+                            id="mouth-select"
+                            value={members[currentMemberIndex].mouth}
+                            onChange={(event) =>
+                              handleMouthChange(currentMemberIndex, event)
+                            }
+                          >
+                            <option value="variant01">笑</option>
+                            <option value="variant02">微笑</option>
+                            <option value="variant03">喔</option>
+                            <option value="variant10">閉嘴</option>
+                            <option value="variant16">吐舌</option>
+                            <option value="variant17">嘟嘴</option>
+                            <option value="variant22">顆顆</option>
+                            <option value="variant24">愛心</option>
+                            <option value="variant26">大笑</option>
+                            <option value="variant28">露齒笑</option>
+                          </Select>
+                        </FlexWrap>
+                        <br />
+                        <FlexWrap>
+                          <Label htmlFor="background-color-select">
+                            背景顏色:
+                          </Label>
 
-                              <option value="none">無</option>
-                            </Select>
-                          </FlexWrap>
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="mouth-select">嘴巴:</Label>
-                            <Select
-                              id="mouth-select"
-                              value={members[currentMemberIndex].mouth}
-                              onChange={(event) =>
-                                handleMouthChange(currentMemberIndex, event)
-                              }
-                            >
-                              <option value="variant01">笑</option>
-                              <option value="variant02">微笑</option>
-                              <option value="variant03">喔</option>
-                              <option value="variant10">閉嘴</option>
-                              <option value="variant16">吐舌</option>
-                              <option value="variant17">嘟嘴</option>
-                              <option value="variant22">顆顆</option>
-                              <option value="variant24">愛心</option>
-                              <option value="variant26">大笑</option>
-                              <option value="variant28">露齒笑</option>
-                            </Select>
-                          </FlexWrap>
-                          <br />
-                          <FlexWrap>
-                            <Label htmlFor="background-color-select">
-                              背景顏色:
-                            </Label>
+                          <Select
+                            id="background-color-select"
+                            value={members[currentMemberIndex].background}
+                            onChange={(event) =>
+                              handleBackgroundChange(currentMemberIndex, event)
+                            }
+                          >
+                            <option value="transparent">Transparent</option>
+                            <option value="f5f5f5">Light Gray</option>
+                            <option value="b6e3f4">Blue</option>
+                            <option value="d1d4f9">Purple</option>
+                            <option value="ffd5dc">Pink</option>
+                            <option value="ffffff">White</option>
+                            <option value="607D8B">Grayish-blue</option>
+                          </Select>
+                        </FlexWrap>
+                      </RowWrap>
+                    </ColumnWrap>
+                  </FormField>
+                  <AvatarImage
+                    src={
+                      members[currentMemberIndex]?.avatar
+                        ? getAvatarUrl(members[currentMemberIndex])
+                        : avatarUrl
+                    }
+                    alt="avatar"
+                  />
 
-                            <Select
-                              id="background-color-select"
-                              value={members[currentMemberIndex].background}
-                              onChange={(event) =>
-                                handleBackgroundChange(
-                                  currentMemberIndex,
-                                  event
-                                )
-                              }
-                            >
-                              <option value="transparent">Transparent</option>
-                              <option value="f5f5f5">Light Gray</option>
-                              <option value="b6e3f4">Blue</option>
-                              <option value="d1d4f9">Purple</option>
-                              <option value="ffd5dc">Pink</option>
-                              <option value="ffffff">White</option>
-                              <option value="607D8B">Grayish-blue</option>
-                            </Select>
-                          </FlexWrap>
-                        </RowWrap>
-                      </ColumnWrap>
-                    </FormField>
-                    <AvatarImage
-                      src={
-                        members[currentMemberIndex]?.avatar
-                          ? getAvatarUrl(members[currentMemberIndex])
-                          : avatarUrl
-                      }
-                      alt="avatar"
-                    />
-
-                    <Button
-                      onClick={() =>
-                        handleAvatarSave(
-                          avatarUrl,
-                          currentMemberIndex,
-                          seed,
-                          skinColor,
-                          eyebrows,
-                          eyes,
-                          hair,
-                          hairProbability,
-                          hairColor,
-                          mouth,
-                          background,
-                          feature,
-                          featuresProbability
-                        )
-                      }
-                    >
-                      Save Avatar
-                    </Button>
-                  </AvatarContainer>
-                )}
-              </FormCard>
-            </FormContainer>
-          </>
-        )}
-      </Container>
-    </Layout>
+                  <Button
+                    onClick={() =>
+                      handleAvatarSave(
+                        avatarUrl,
+                        currentMemberIndex,
+                        seed,
+                        skinColor,
+                        eyebrows,
+                        eyes,
+                        hair,
+                        hairProbability,
+                        hairColor,
+                        mouth,
+                        background,
+                        feature,
+                        featuresProbability
+                      )
+                    }
+                  >
+                    Save Avatar
+                  </Button>
+                </AvatarContainer>
+              )}
+            </FormCard>
+          </FormContainer>
+        </>
+      )}
+    </Container>
   );
 };
 
@@ -1231,10 +1220,11 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 0px;
-  background-color: transparent;
+  background-color: #1e3d6b;
   width: 100vw;
   height: 100%;
   border: gold solid 3px;
+  padding: 20px;
 
   // background: linear-gradient(
   //   -45deg,
@@ -1258,6 +1248,7 @@ const RowWrap = styled.div`
   flex-direction: space-between;
   flex-wrap: wrap;
   min-width: 100%;
+  text-align: center;
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
 `;
@@ -1275,17 +1266,19 @@ const FormContainer = styled.div`
   align-items: center;
   display: flex;
   height: auto;
+  margin-top: 50px;
   z-index: 1;
 `;
 
 const SettingDoneBtn = styled.button``;
 
 const Title = styled.div`
-  font-size: 5vw;
+  font-size: 48px;
   font-weight: bold;
   margin-top: 50px;
   text-align: center;
-  color: white;
+  color: #f6f8f8;
+  font-family: 'Braah One';
 `;
 
 const Card = styled.div`
@@ -1294,8 +1287,8 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #d7dde2;
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
   position: relative;
   z-index: 1;
   p {
@@ -1381,8 +1374,13 @@ const Input = styled.input`
 `;
 
 const Text = styled.p`
-  padding: 5px;
   font-size: 20px;
+  padding: 5px;
+`;
+
+const Split = styled.p`
+  font-size: 16px;
+  padding: 5px;
 `;
 
 const Popup = styled.div`
