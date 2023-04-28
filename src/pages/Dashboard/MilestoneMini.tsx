@@ -341,41 +341,43 @@ function Milestone() {
     <Container>
       <ColumnWrap>
         <ContentWrapper>
-          <EventContainer>
-            {filterEvents(events)
-              .sort(
-                (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime()
-              )
-              .map((event, index) => {
-                const dateObj = new Date(event.date);
-                const monthName = dateObj.toLocaleString('default', {
-                  month: 'short',
-                });
-                return (
-                  <>
-                    <EventBox key={event.id}>
-                      <ColumnWrap>
-                        <EventImage
-                          src={
-                            event.image ||
-                            'https://source.unsplash.com/random/?city,night'
-                          }
-                          alt=""
-                        />
-                        <DateBox>
-                          <DateInfo>
-                            <Month>{monthName}</Month>
-                            <Day>{dateObj.getDate()}</Day>
-                            <Year>{dateObj.getFullYear()}</Year>
-                          </DateInfo>
-                        </DateBox>
-                        <InfoWrap>
-                          <EventTitle>{event.title}</EventTitle>
-                          <EventTitle>|</EventTitle>
-                          <EventTitle>{event.member}</EventTitle>
-                        </InfoWrap>
-                        <RowWrap>
+          <RowWrap>
+            <RowWrap>
+              <BoxTitle>Congradulations</BoxTitle>
+              <EventContainer>
+                {filterEvents(events)
+                  .sort(
+                    (a, b) =>
+                      new Date(a.date).getTime() - new Date(b.date).getTime()
+                  )
+                  .map((event, index) => {
+                    const dateObj = new Date(event.date);
+                    const monthName = dateObj.toLocaleString('default', {
+                      month: 'short',
+                    });
+                    return (
+                      <>
+                        <EventBox key={event.id}>
+                          <ColumnWrap>
+                            <EventImage
+                              src={
+                                event.image ||
+                                'https://source.unsplash.com/random/?city,night'
+                              }
+                              alt=""
+                            />
+                            <DateBox>
+                              <DateInfo>
+                                <Month>{monthName}</Month>
+                                <Day>{dateObj.getDate()}</Day>
+                              </DateInfo>
+                            </DateBox>
+                            <InfoWrap>
+                              <EventTitle>{event.title}</EventTitle>
+                              <EventTitle>|</EventTitle>
+                              <EventTitle>{event.member}</EventTitle>
+                            </InfoWrap>
+                            {/* <RowWrap>
                           <Button onClick={() => handleEditEvent(event)}>
                             <AnimatedFontAwesomeIcon
                               icon={faPenToSquare}
@@ -386,25 +388,29 @@ function Milestone() {
                               icon={faTrashCan}
                             ></AnimatedFontAwesomeIcon>
                           </Button>
-                        </RowWrap>
-                      </ColumnWrap>
-                    </EventBox>
-                    {/* <EventDot
+                        </RowWrap> */}
+                          </ColumnWrap>
+                        </EventBox>
+                        {/* <EventDot
                       style={{
                         alignSelf: 'center',
                       }}
                     /> */}
-                  </>
-                );
-              })}
-          </EventContainer>
-          {isEditing ? (
+                      </>
+                    );
+                  })}
+              </EventContainer>
+            </RowWrap>
+            {/* <BoxTitle>Upcoming</BoxTitle> */}
+          </RowWrap>
+
+          {/* {isEditing ? (
             <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
           ) : (
             <form onSubmit={handleNewEventSubmit} />
-          )}
+          )} */}
         </ContentWrapper>
-        <LoadingAnimation />
+        {/* <LoadingAnimation /> */}
       </ColumnWrap>
     </Container>
   );
@@ -412,10 +418,15 @@ function Milestone() {
 
 export default Milestone;
 
+const BoxTitle = styled.h3`
+  color: #414141;
+  font-size: 20px;
+`;
+
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
-  border-radius: 5%;
+  // border-radius: 5%;
   max-width: 400px;
   align-items: center;
   position: relative;
@@ -452,45 +463,42 @@ const ContentWrapper = styled.div`
 `;
 
 const EventContainer = styled.div`
-  max-width: 100%;
+  max-width: 200px;
   height: 100%;
   display: flex;
   overflow-x: scroll;
-  padding: 0px;
+  padding: 10px;
+  margin-left: 10px;
   -webkit-overflow-scrolling: touch;
 
-  /* Style the scrollbar */
+  /* Hide the scrollbar */
   &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #3467a1;
-    border-radius: 20px;
+    width: 0;
   }
 `;
 
 const EventBox = styled.div`
-  width: 95%;
+  width: 100%;
   max-height: 200px;
-
+  margin-right: 10px;
   border-radius: 20px;
   display: flex;
-  background-color: transparent;
-  justify-content: space-between;
-  margin: 10px;
+
+  background-color: #a8c6ec;
+  margin-top: 0px;
   position: relative;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* added box shadow */
+  // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* added box shadow */
 `;
 const EventTitle = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 15px;
   margin-right: 5px;
   margin-left: 5px;
-  color: white;
-  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
+  color: #f6f8f8;
+
+  //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
 `;
 
 const EventDate: any = styled.div`
@@ -506,8 +514,6 @@ const EventMember = styled.div`
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: space-between;
 `;
 
 const InfoWrap = styled.div`
@@ -517,13 +523,13 @@ const InfoWrap = styled.div`
 
 const DateBox = styled.div`
   position: absolute;
-  width: 70px;
-  height: 70px;
-  background-color: #fff;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  width: 50px;
+  height: 50px;
+  background-color: #5981b0;
+  // box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 80px; /* changed top property to bottom */
-  left: 10px;
+  bottom: 35px; /* changed top property to bottom */
+  left: 5px;
   padding: 5px;
 `;
 
@@ -545,7 +551,8 @@ const EventImage = styled.img<any>`
   height: 25vh;
   width: 200px;
   object-fit: cover;
-  border-radius: 20px;
+  border-radius: 20px 20px 0 0;
+  gap: 10px;
 `;
 
 const FormWrapper = styled.div`
@@ -670,8 +677,8 @@ const Container = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  margin-top: 2s0px;
-  height: auto;
+  margin-top: 0px;
+  height: 100%;
 `;
 
 const bounce = keyframes`
@@ -692,7 +699,7 @@ const AnimatedFontAwesomeIcon = styled(FontAwesomeIcon)`
 `;
 
 const DateInfo = styled.div`
-  color: white;
+  color: #5981b0;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -715,5 +722,5 @@ const Month = styled.div`
 const Day = styled.div`
   font-size: 24px;
   font-weight: bold;
-  color: coral;
+  color: #f6f8f8;
 `;

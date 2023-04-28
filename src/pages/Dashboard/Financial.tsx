@@ -1,6 +1,7 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect } from 'react';
-import { CircularProgressbar } from 'react-circular-progressbar';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+
 import 'react-circular-progressbar/dist/styles.css';
 
 const Wrapper = styled.div`
@@ -16,7 +17,7 @@ const Wrapper = styled.div`
 
 const InputWrapper = styled.div`
   display: flex;
-
+  margin: 0 auto;
   width: 100%;
   text-align: center;
   align-items: center;
@@ -24,7 +25,7 @@ const InputWrapper = styled.div`
 `;
 
 const InputLabel = styled.label`
-  font-size: 12px;
+  font-size: 16px;
   color: #fff;
 `;
 
@@ -33,8 +34,8 @@ const InputField = styled.input`
   outline: none;
   background-color: transparent;
   width: 50%;
-
-  font-size: 8px;
+  margin-top: 2px;
+  font-size: 16px;
   font-family: Arial;
   font-weight: normal;
   line-height: 1.5;
@@ -87,16 +88,11 @@ function Financial() {
         <CircularProgressbar
           value={currentSavingsPercentage}
           text={`${currentSavingsPercentage}%`}
-          styles={{
-            text: { fill: '#EB7A53' },
-            background: {
-              fill: '#EB7A53',
-            },
-            path: {
-              // Path color
-              stroke: `#EB7A53, ${currentSavingsPercentage / 100})`,
-            },
-          }}
+          styles={buildStyles({
+            valueColor: { color: 'red !important' },
+          })}
+
+          // Set the color of the progress bar value to red
         />
       </CircleWrapper>
     </Wrapper>

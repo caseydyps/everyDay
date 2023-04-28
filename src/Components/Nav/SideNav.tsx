@@ -23,6 +23,14 @@ import {
   faPenToSquare,
   faTrashCan,
   faCircleXmark,
+  faTable,
+  faCalendarDays,
+  faListCheck,
+  faRobot,
+  faPalette,
+  faImage,
+  faComments,
+  faTimeline,
 } from '@fortawesome/free-solid-svg-icons';
 const SideNav = () => {
   const [user] = useAuthState(auth);
@@ -50,43 +58,52 @@ const SideNav = () => {
         <NavList showNav={open}>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/dashboard">
-              DASHBOARD
+              <FontAwesomeIcon icon={faTable} />
+
+              <Text> DASHBOARD</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/calendar">
-              CALENDAR
+              <FontAwesomeIcon icon={faCalendarDays} />
+              <Text> CALENDAR</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/todo">
-              TODO
+              <FontAwesomeIcon icon={faListCheck} />
+              <Text> TODO</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/ai">
-              AI
+              <FontAwesomeIcon icon={faRobot} />
+              <Text> AI</Text>
             </StyledNavLink>
           </NavItem>
 
           <NavItem>
             <StyledNavLink activeClassName="active" to="/whiteboard">
-              Stick n' Draw
+              <FontAwesomeIcon icon={faPalette} />
+              <Text>Stick'n Draw</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/gallery">
-              GALLERY
+              <FontAwesomeIcon icon={faImage} />
+
+              <Text> GALLERY</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/chat">
-              CHAT
+              <FontAwesomeIcon icon={faComments} />
+              <Text> CHAT</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/milestone">
-              TIME MACHINE
+              <FontAwesomeIcon icon={faTimeline} /> TIME MACHINE
             </StyledNavLink>
           </NavItem>
         </NavList>
@@ -119,6 +136,10 @@ const Nav = styled.div`
   position: fixed;
   height: 100%;
   width: 180px;
+`;
+
+const Text = styled.span`
+  margin-left: 5px;
 `;
 
 const Logo = styled(Link)`
@@ -213,12 +234,13 @@ export const StyledNavLink = styled(NavLink)`
   display: block;
   color: #6a6a6a;
   font-size: 16px;
-  font-weight: 900px;
+  text-align: left;
   text-decoration: none;
-
-  width: 100px;
+  margin: 10px;
+  width: 150px;
   &.${(props) => props.activeClassName} {
-    color: #5981b0;
+    color: #f6f8f8;
+    background-color: #5981b0;
   }
   padding: 10px;
 

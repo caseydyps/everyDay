@@ -31,6 +31,7 @@ function WeatherApp() {
     flex-direction: column;
     justify-content: space-between;
     color: #fff;
+    padding: 10px;
   `;
 
   const Top = styled.div`
@@ -56,19 +57,21 @@ function WeatherApp() {
             outline: 'none',
             backgroundColor: 'transparent',
             fontSize: '20px',
-            fontFamily: 'Arial',
-            fontWeight: 'normal',
+            color: '#414141',
+            fontWeight: 'bold',
             lineHeight: '1.5',
           }}
         />
 
         {data.main ? (
-          <h2 style={{ margin: '0' }}>
+          <h2 style={{ margin: '0', color: '#414141' }}>
             {(((data.main.temp - 32) * 5) / 9).toFixed()}°C
           </h2>
         ) : null}
 
-        {data.weather ? <p>{data.weather[0].main}</p> : null}
+        {data.weather ? (
+          <p style={{ color: '#939393' }}>{data.weather[0].main}</p>
+        ) : null}
       </Top>
     </Container>
   );

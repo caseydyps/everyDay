@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -28,6 +28,8 @@ import {
   faLockOpen,
   faEyeSlash,
   faCloudArrowUp,
+  faPause,
+  faPlay,
 } from '@fortawesome/free-solid-svg-icons';
 import {
   collection,
@@ -369,40 +371,88 @@ function Gallery() {
   });
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
+  const galleryRef = useRef(null);
+  const [isScrolling, setIsScrolling] = useState(true);
+
+  useEffect(() => {
+    const galleryElement = galleryRef.current;
+    let scrollInterval = null;
+    if (isScrolling) {
+      scrollInterval = setInterval(() => {
+        if (galleryElement) {
+          galleryElement.scrollLeft += 1;
+          if (
+            galleryElement.scrollLeft >=
+            galleryElement.scrollWidth - galleryElement.clientWidth
+          ) {
+            galleryElement.scrollLeft = 0;
+          }
+        }
+      }, 30);
+    }
+
+    return () => clearInterval(scrollInterval);
+  }, [isScrolling]);
+
+  const handleStopScrolling = () => {
+    setIsScrolling(!isScrolling);
+  };
 
   return (
     <Container>
       <ColumnWrap>
-        <GalleryWrapper>
+        <GalleryWrapper ref={galleryRef}>
           {filteredAlbums.map((album) => (
             <AlbumWrapper key={album.id}>
-              <AlbumTitle>{album.title}</AlbumTitle>
+              {/* <AlbumTitle>{album.title}</AlbumTitle> */}
+
               <Slideshow photos={album.photos} />
-              <AlbumDescription>{album.description}</AlbumDescription>
+              {/* <AlbumDescription>{album.description}</AlbumDescription> */}
             </AlbumWrapper>
           ))}
         </GalleryWrapper>
+        <Button onClick={handleStopScrolling}>
+          <FontAwesomeIcon icon={isScrolling ? faPause : faPlay} />
+        </Button>
       </ColumnWrap>
     </Container>
   );
 }
 
+const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+
+  &.active {
+    opacity: 1;
+  }
+`;
+
 const GalleryWrapper = styled.div`
   display: flex;
-  max-width: 200px;
+  width: 240px;
   gap: 20px;
   height: 100%;
+  object-fit: cover;
   overflow-x: scroll;
-  scrollbar-width: narrow;
-  scrollbar-color: #3467a1 transparent;
+  scrollbar-width: 0;
+  scrollbar-color: transparent;
 
   &::-webkit-scrollbar {
-    width: 2px;
+    width: 0px;
+    background-color: transparent;
   }
-
   &::-webkit-scrollbar-thumb {
-    background-color: #3467a1;
-    border-radius: 1px;
+    background-color: transparent;
+    border-radius: 0px;
   }
 
   &::-webkit-scrollbar-track {
@@ -417,7 +467,7 @@ const AlbumWrapper = styled.div`
   border-radius: 20px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 
-  width: 350px;
+  width: auto;
   height: auto;
 
   @media screen and (max-width: 767px) {
@@ -461,11 +511,25 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
 
-  width: 200px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
 
   justify-content: center;
   align-items: center;
+`;
+
+const Button = styled(DefaultButton)`
+  background-color: transparent;
+  padding: 0px;
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: none;
+  :hover {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  position: absolute;
+  bottom: 0px;
 `;
 
 export default Gallery;

@@ -60,7 +60,7 @@ const DayWrap = styled.div`
   padding: 0px;
   font-family: Arial, sans-serif;
   margin: 5px;
-  background-color: #f5f5f5;
+  background-color: 'transparent';
 `;
 
 const MonthContainer = styled.div`
@@ -138,11 +138,13 @@ const Td = styled.td`
   min-width: 60px;
   height: 60px;
   max-height: 60px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 20px;
-
+  display: flex;
   // overflow-y: auto;
   margin: 5px;
+  justify-content: center;
+  align-items: center;
   &.inactive {
     color: #999;
   }
@@ -514,7 +516,7 @@ function Calendar() {
           months[date.getMonth()]
         } ${date.getDate()}, ${date.getFullYear()}`}</div> */}
         {selectedEvents.length > 0 ? (
-          <Event  List>
+          <EventList>
             {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
@@ -543,7 +545,7 @@ function Calendar() {
                 </li>
               ) : null
             )}
-          </Event>
+          </EventList>
         ) : (
           <div></div>
         )}
@@ -633,7 +635,12 @@ function Calendar() {
 
     return (
       <h4
-        style={{ margin: '0px', fontSize: '12px', fontWeight: 'bold' }}
+        style={{
+          top: '10px',
+          position: 'absolute',
+          margin: '0px',
+          fontWeight: 'bold',
+        }}
       >{`${dayOfWeek},`}</h4>
     );
   }
@@ -707,6 +714,20 @@ function Calendar() {
     console.log(events);
   }, [events]);
 
+  const eventsOnSelectedDate = events.filter((event) => {
+    const eventDateOnly = new Date(event.date).setHours(0, 0, 0, 0);
+    const selectedDateOnly = selectedDate.setHours(0, 0, 0, 0);
+
+    return (
+      selectedDateOnly === eventDateOnly ||
+      (selectedDateOnly >= eventDateOnly &&
+        selectedDateOnly < new Date(event.endDate))
+    );
+  });
+
+  const eventsCount = eventsOnSelectedDate.length;
+  // eventsCount will be the count of events that match the condition
+
   return (
     <Container>
       <Wrap>
@@ -720,17 +741,23 @@ function Calendar() {
 
           <DayCalendar selectedDate={selectedDate} />
           <CenterWrap>
-            {' '}
             <Td
               style={{
                 width: '100px',
                 height: '80px',
                 maxWidth: '100px',
                 maxHeight: '80px;',
-                backgroundColor: '#666',
+                padding: '10px',
+                backgroundColor: 'transparent',
+                color: '#414141',
               }}
             >
-              {events.map((event) => {
+              {' '}
+              <h1 style={{ marginTop: '60px' }}>
+                {eventsCount > 0 ? eventsCount : 0}
+              </h1>
+              <h5 style={{ marginTop: '80px' }}>events</h5>
+              {/* {events.map((event) => {
                 const eventDate = new Date(event.date);
                 const selectedDateObj = new Date(selectedDate);
                 const eventDateOnly = new Date(
@@ -754,14 +781,14 @@ function Calendar() {
                       style={{
                         height: 'auto',
                         fontSize: '20px',
-                        color: 'white',
+                        color: '#414141',
                         width: '80%',
                       }}
                     >
                       <EventTitle
                         style={{
-                          fontSize: '24px',
-                          color: 'white',
+                          fontSize: '20px',
+                          color: '#414141',
                         }}
                         finished={event.finished}
                       >
@@ -770,7 +797,7 @@ function Calendar() {
                       <EventCategory
                         style={{
                           fontSize: '14px',
-                          color: 'white',
+                          color: '#414141',
                         }}
                       >
                         {event.category}
@@ -796,7 +823,7 @@ function Calendar() {
                 } else {
                   return null;
                 }
-              })}
+              })} */}
             </Td>
           </CenterWrap>
         </DayWrap>

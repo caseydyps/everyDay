@@ -33,7 +33,7 @@ const Container = styled.div`
   width: 100vw;
   height: 100%;
 
-  border: 2px solid black;
+  // border: 2px solid black;
 `;
 
 const RowWrap = styled.div`
@@ -113,7 +113,7 @@ const Dashboard = () => {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    border: 2px solid purple;
+    //border: 2px solid purple;
     min-width: 800px;
     align-items: center;
     padding: 20px;
@@ -196,7 +196,7 @@ const Dashboard = () => {
     height: 120px;
     background-color: #3467a1;
     border-radius: 20px;
-
+    position: relative;
     /* -webkit-box-shadow: 3px 3px 5px black;
     -moz-box-shadow: 3px 3px 5px black;
     box-shadow: 3px 3px 5px black; */
@@ -349,10 +349,12 @@ const Dashboard = () => {
     {
       component: (
         <BoxS>
+          <BoxTitle>Family</BoxTitle>
           <FamilyMemberForm></FamilyMemberForm>
+          <BoxTitle>Family</BoxTitle>
         </BoxS>
       ),
-      spanColumns: 1,
+      spanColumns: 2,
       spanRows: 2,
     },
 
@@ -427,3 +429,11 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+const BoxTitle = styled.h4`
+  color: #414141;
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  padding: 0;
+`;

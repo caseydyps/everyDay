@@ -8,6 +8,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import LoadingAnimation from '../../Components/loading';
 import confetti from 'canvas-confetti';
+import Popper from '@mui/material/Popper';
 
 import {
   collection,
@@ -199,36 +200,66 @@ const FamilyMemberForm = () => {
     return (
       <div>
         {yearString && <span>{yearString}</span>}
-        {yearString && monthString && <br />}
+
         {monthString && <span>{monthString}</span>}
       </div>
     );
   }
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popper' : undefined;
+
   return (
     <Container>
+      <BoxTitle>{members.length}</BoxTitle>
       {members.map((member, index) => (
-        <Card
-          key={index}
-          onMouseOver={() => handleCardClick(index)}
-          onMouseOut={handleCardLeave}
-        >
-          <AvatarImage src={member.avatar} alt="avatar"></AvatarImage>
-          {selectedCardIndex === index && (
-            <HiddenText>{getCurrentAge(member.birthday)}</HiddenText>
-
-            // <CardDiv>
-            //   <HiddenText>{member.role}</HiddenText>
-            //   <HiddenText>{member.birthday}</HiddenText>
-            //   <HiddenText>{getCurrentAge(member.birthday)}</HiddenText>
-            // </CardDiv>
-          )}
-        </Card>
+        <>
+          <Card
+            key={index}
+            //onMouseOver={() => handleCardClick(index)}
+            //onMouseOut={handleCardLeave}
+          >
+            <AvatarImage
+              onClick={handleClick}
+              src={member.avatar}
+              alt="avatar"
+            ></AvatarImage>
+            <StyledPopper id={id} open={open} anchorEl={anchorEl}>
+              <h5>{getCurrentAge(member.birthday)}</h5>
+            </StyledPopper>
+          </Card>
+        </>
       ))}
     </Container>
   );
 };
 
 export default FamilyMemberForm;
+
+const BoxTitle = styled.h3`
+  position: absolute;
+  right: 10px;
+  top: -10px;
+  color: #1e3d6b;
+`;
+
+const StyledPopper = styled(Popper)`
+  padding: 10px;
+  height: auto;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  width: 100px;
+  height: 50px;
+  color: #f6f8f8;
+  text-align: center;
+  background-color: #3467a1;
+  backdrop-filter: blur(6px);
+`;
 
 const colors = {
   primary: '#007bff',
@@ -378,6 +409,10 @@ export const Container = styled.div`
   display: flex;
   align-items: center;
   flex-direction: row;
+  flex-wrap: wrap;
+  height: 100%;
+  width: 100%;
+  position: relative;
   justify-content: center;
   animation: ${GradientAnimation} 20s ease-in-out infinite;
   background-size: 300% 300%;
@@ -421,15 +456,14 @@ const Title = styled.div`
 const Card = styled.div`
   width: 50px;
   margin-top: 20px;
-  border-radius: 10px;
+  border-radius: 50%;
   font-size: 36px;
   background-color: transparent;
+  height: 50px;
 
   position: relative;
   z-index: 1;
-  -webkit-box-shadow: 3px 3px 5px black;
-  -moz-box-shadow: 3px 3px 5px black;
-  box-shadow: 3px 3px 5px black;
+
   p {
     margin: 0 0 10px;
   }
@@ -441,7 +475,7 @@ const Card = styled.div`
     border-radius: 50%;
   }
   &:hover {
-    transform: scale(1.9);
+    transform: scale(1.05);
   }
 `;
 
@@ -475,7 +509,7 @@ const FormDropdown = styled.select`
   padding: 8px;
   border-radius: 25px;
   border: 1px solid #3467a1;
-  background-color: #transparent;
+  background-color: transparent;
   margin: 20px;
   &:focus {
     outline: none;

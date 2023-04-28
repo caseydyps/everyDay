@@ -109,22 +109,22 @@ const Suggestion = () => {
     {
       event: '看醫生',
       category: '#Calendar',
-      startTime: '2023-04-24 11:00',
-      endTime: '2023-04-24 12:00',
+      startTime: '2023-04-28 11:00',
+      endTime: '2023-04-28 12:00',
       members: '女兒',
     },
     {
       event: '看電影',
       category: '#Calendar',
-      startTime: '2023-04-26 10:00',
-      endTime: '2023-04-26 11:30',
+      startTime: '2023-04-30 10:00',
+      endTime: '2023-04-30 11:30',
       members: '爸爸',
     },
     {
       event: '聚餐',
       category: '#Calendar',
-      startTime: '2023-04-27 14:00',
-      endTime: '2023-04-27 16:00',
+      startTime: '2023-05-01 14:00',
+      endTime: '2023-05-02 16:00',
       members: '媽媽',
     },
   ];
@@ -143,7 +143,7 @@ const Suggestion = () => {
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
     - 里程碑資料庫: ${JSON.stringify(
       milestoneData
-    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(50字以內建議)
+    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內)
       `;
 
     const response = await openai.createChatCompletion({
@@ -172,15 +172,14 @@ const Suggestion = () => {
 
   return (
     <Card>
-      <h3
+      <h4
         style={{
           display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          fontSize: '20px;',
         }}
       >
         Suggestions
-      </h3>
+      </h4>
       {responseValue && (
         <Response>
           <div>{responseValue}</div>
@@ -196,7 +195,7 @@ const Card = styled.div`
   border-radius: 10px;
   font-size: 24px;
   background-color: transparent;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   color: #414141;
   z-index: 1;
@@ -221,10 +220,15 @@ const Response = styled.div`
   font-weight: bold;
   margin-top: 10px;
   color: #414141;
-  background: transparent;
-  padding: 5px;
-  border-radius: 10px;
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
 `;
 
 export default Suggestion;

@@ -49,6 +49,7 @@ const BannerContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-align: start;
+  margin-top: 90px;
   /* margin-top: 60px; */
 `;
 
@@ -135,7 +136,7 @@ const Banner = ({ title, subTitle }: BannerProps) => {
     picUrl = Ai;
   } else if (title === 'Time Machine') {
     picUrl = Milestone;
-  } else if (title === `Stick n' Draw`) {
+  } else if (title === `Stick'n Draw`) {
     picUrl = Sticker;
   } else if (title === 'Chat') {
     picUrl = Chat;

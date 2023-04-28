@@ -9,13 +9,14 @@ import Banner from '../../../Components/Banner/Banner';
 import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
-import Sidebar from '../../../Components/Nav/Navbar';
+
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import DefaultButton from '../../../Components/Button/Button';
 import Layout from '../../../Components/layout';
 import 'firebase/firestore';
 import UserAuthData from '../../../Components/Login/Auth';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFilter,
@@ -43,6 +44,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import SideNav from '../../../Components/Nav/SideNav';
 
 type Sticker = {
   x: number;
@@ -54,17 +56,12 @@ type Sticker = {
 };
 
 const Wrapper = styled.div`
-  position: relative;
-  max-width: 100%;
-  flex: 1;
-  height: 600px;
+  width: 100%;
+  height: 100%;
   display: flex;
-  margin: 20px;
-  background-color: 'transparent';
-  border-radius: 5px;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
+  border: 3px solid red;
 `;
 
 type StickerType = {
@@ -198,15 +195,13 @@ const ColumnWrap = styled.div`
 `;
 
 const Container = styled.div`
-  position: relative;
-  text-align: center;
-  color: white;
   display: flex;
   flex-direction: row;
-  margin-top: 80px;
-  height: 100vh;
-  justify-content: center;
-  align-items: center;
+  margin-top: 0px;
+  background-color: transparent;
+  width: 100vw;
+  height: 100%;
+  border: gold solid 3px;
 `;
 
 const Title = styled.h2`
@@ -485,187 +480,184 @@ export const Whiteboard = () => {
   //gifUrl = selectedGif ? selectedGif.images.original.url : '';
 
   return (
-    <Layout>
-      <Container>
-        <Wrapper id="Wrapper">
-          {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
-
-          {stickers.map((sticker: any, index: number) => (
-            <>
-              <Sticker
-                key={sticker.id}
-                color={sticker.color}
-                isSticker={sticker.isSticker}
-                onMouseDown={
-                  lockedStickers[index]
-                    ? null
-                    : (e: React.MouseEvent<HTMLDivElement>) =>
-                        onStickerMouseDown(index, e)
-                }
-                ref={(el: any) => (stickerRefs.current[index] = el)}
-                style={{
-                  left: sticker.x - (dragging === index ? offset.x : 0),
-                  top: sticker.y - (dragging === index ? offset.y : 0),
-                }}
-                locked={lockedStickers[index]}
-              >
-                <StickerInput
-                  as="textarea"
-                  rows={3}
-                  value={stickerText[index]}
-                  onChange={(e) => {
-                    const newStickerText = [...stickerText];
-                    newStickerText[index] = e.target.value;
-                    setStickerText(newStickerText);
-
-                    const stickerId = stickers[index].id;
-                    const familyDocRef = doc(
-                      db,
-                      'Family',
-                      'Nkl0MgxpE9B1ieOsOoJ9',
-                      'stickers',
-                      stickerId
-                    );
-                    updateDoc(familyDocRef, { content: e.target.value })
-                      .then(() =>
-                        console.log(
-                          'Sticker text has been updated in Firestore!'
-                        )
-                      )
-                      .catch((error) =>
-                        console.error(
-                          'Error updating sticker text in Firestore: ',
-                          error
-                        )
-                      );
-                  }}
-                  disabled={lockedStickers[index]}
-                />
-                {sticker.content !== 'New note' && (
-                  <>
-                    <img
-                      src={sticker.content}
-                      alt=""
-                      style={{
-                        borderRadius: '20px',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      draggable="false"
-                    />
-                  </>
-                )}
-                <DeleteButton onClick={() => deleteSticker(index)}>
-                  <FontAwesomeIcon icon={faX} />
-                </DeleteButton>
-                <LockButton onClick={() => handleLockClick(index)}>
-                  {lockedStickers[index] ? (
-                    <FontAwesomeIcon icon={faLock} />
-                  ) : (
-                    <FontAwesomeIcon icon={faLockOpen} />
-                  )}
-                </LockButton>
-              </Sticker>
-            </>
-          ))}
-          <DrawingTool></DrawingTool>
-          <StickerRowWrap>
-            <ColorButton
-              color="white"
-              onClick={() => addSticker('transparent', false, 'New note')}
+    <Container>
+      <SideNav></SideNav>
+      <Wrapper id="Wrapper">
+        {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
+        <Banner title="Stick'n Draw" subTitle="Where Art and Fun Meet"></Banner>
+        {stickers.map((sticker: any, index: number) => (
+          <>
+            <Sticker
+              key={sticker.id}
+              color={sticker.color}
+              isSticker={sticker.isSticker}
+              onMouseDown={
+                lockedStickers[index]
+                  ? null
+                  : (e: React.MouseEvent<HTMLDivElement>) =>
+                      onStickerMouseDown(index, e)
+              }
+              ref={(el: any) => (stickerRefs.current[index] = el)}
+              style={{
+                left: sticker.x - (dragging === index ? offset.x : 0),
+                top: sticker.y - (dragging === index ? offset.y : 0),
+              }}
+              locked={lockedStickers[index]}
             >
-              文字
-            </ColorButton>
-            <ColorButton
-              color="#FFF9C4"
-              onClick={() => addSticker('#FFF9C4', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#EF9A9A"
-              onClick={() => addSticker('#EF9A9A', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#81D4FA"
-              onClick={() => addSticker('#81D4FA', true, 'New note')}
-            ></ColorButton>
-            <ColorButton
-              color="#A5D6A7"
-              onClick={() => addSticker('#A5D6A7', true, 'New note')}
-            ></ColorButton>
-            <ColorButton color="grey" onClick={() => setStickers([])}>
-              Clear
-            </ColorButton>
-          </StickerRowWrap>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              value={searchTerm}
-              onChange={handleInputChange}
-              placeholder="搜尋GIF"
-            />
-            <SearchButton onClick={handleSearch}>
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </SearchButton>
-          </SearchContainer>
+              <StickerInput
+                as="textarea"
+                rows={3}
+                value={stickerText[index]}
+                onChange={(e) => {
+                  const newStickerText = [...stickerText];
+                  newStickerText[index] = e.target.value;
+                  setStickerText(newStickerText);
 
-          {showResults && (
-            <Results>
-              <GifWrap>
-                <div>
-                  {searchResults.map((result) => (
-                    <img
-                      key={result.id}
-                      src={result.images.original.url}
-                      alt={result.title}
-                      style={{
-                        borderRadius: '25px',
-                        width: '120px',
-                        height: '120px',
-                        margin: '5px',
-                        border:
-                          selectedGif && selectedGif.id === result.id
-                            ? '5px solid #fff5c9'
-                            : 'none',
-                        boxShadow:
-                          selectedGif && selectedGif.id === result.id
-                            ? '0px 0px 10px #3467a1'
-                            : 'none',
-                      }}
-                      onClick={() => setSelectedGif(result)}
-                    />
-                  ))}
-                </div>
-
-                <RowWrap>
-                  <ColorButton
-                    color="#fff5c9"
-                    onClick={() => setShowResults(false)}
-                  >
-                    <FontAwesomeIcon icon={faEyeSlash} />
-                  </ColorButton>
-                  <ColorButton
-                    color="#fff5c9"
-                    disabled={!selectedGif}
-                    onClick={() => {
-                      if (selectedGif) {
-                        addSticker(
-                          'transparent',
-                          false,
-                          selectedGif.images.original.url
-                        );
-                      }
-                      setShowResults(false);
+                  const stickerId = stickers[index].id;
+                  const familyDocRef = doc(
+                    db,
+                    'Family',
+                    'Nkl0MgxpE9B1ieOsOoJ9',
+                    'stickers',
+                    stickerId
+                  );
+                  updateDoc(familyDocRef, { content: e.target.value })
+                    .then(() =>
+                      console.log('Sticker text has been updated in Firestore!')
+                    )
+                    .catch((error) =>
+                      console.error(
+                        'Error updating sticker text in Firestore: ',
+                        error
+                      )
+                    );
+                }}
+                disabled={lockedStickers[index]}
+              />
+              {sticker.content !== 'New note' && (
+                <>
+                  <img
+                    src={sticker.content}
+                    alt=""
+                    style={{
+                      borderRadius: '20px',
+                      width: '100%',
+                      height: '100%',
                     }}
-                  >
-                    <FontAwesomeIcon icon={faPlusCircle} />
-                  </ColorButton>
-                </RowWrap>
-              </GifWrap>
-            </Results>
-          )}
-        </Wrapper>
-      </Container>
-    </Layout>
+                    draggable="false"
+                  />
+                </>
+              )}
+              <DeleteButton onClick={() => deleteSticker(index)}>
+                <FontAwesomeIcon icon={faX} />
+              </DeleteButton>
+              <LockButton onClick={() => handleLockClick(index)}>
+                {lockedStickers[index] ? (
+                  <FontAwesomeIcon icon={faLock} />
+                ) : (
+                  <FontAwesomeIcon icon={faLockOpen} />
+                )}
+              </LockButton>
+            </Sticker>
+          </>
+        ))}
+        <DrawingTool></DrawingTool>
+        <StickerRowWrap>
+          <ColorButton
+            color="white"
+            onClick={() => addSticker('transparent', false, 'New note')}
+          >
+            文字
+          </ColorButton>
+          <ColorButton
+            color="#FFF9C4"
+            onClick={() => addSticker('#FFF9C4', true, 'New note')}
+          ></ColorButton>
+          <ColorButton
+            color="#EF9A9A"
+            onClick={() => addSticker('#EF9A9A', true, 'New note')}
+          ></ColorButton>
+          <ColorButton
+            color="#81D4FA"
+            onClick={() => addSticker('#81D4FA', true, 'New note')}
+          ></ColorButton>
+          <ColorButton
+            color="#A5D6A7"
+            onClick={() => addSticker('#A5D6A7', true, 'New note')}
+          ></ColorButton>
+          <ColorButton color="grey" onClick={() => setStickers([])}>
+            Clear
+          </ColorButton>
+        </StickerRowWrap>
+        <SearchContainer>
+          <SearchInput
+            type="text"
+            value={searchTerm}
+            onChange={handleInputChange}
+            placeholder="搜尋GIF"
+          />
+          <SearchButton onClick={handleSearch}>
+            <FontAwesomeIcon icon={faMagnifyingGlass} />
+          </SearchButton>
+        </SearchContainer>
+
+        {showResults && (
+          <Results>
+            <GifWrap>
+              <div>
+                {searchResults.map((result) => (
+                  <img
+                    key={result.id}
+                    src={result.images.original.url}
+                    alt={result.title}
+                    style={{
+                      borderRadius: '25px',
+                      width: '120px',
+                      height: '120px',
+                      margin: '5px',
+                      border:
+                        selectedGif && selectedGif.id === result.id
+                          ? '5px solid #fff5c9'
+                          : 'none',
+                      boxShadow:
+                        selectedGif && selectedGif.id === result.id
+                          ? '0px 0px 10px #3467a1'
+                          : 'none',
+                    }}
+                    onClick={() => setSelectedGif(result)}
+                  />
+                ))}
+              </div>
+
+              <RowWrap>
+                <ColorButton
+                  color="#fff5c9"
+                  onClick={() => setShowResults(false)}
+                >
+                  <FontAwesomeIcon icon={faEyeSlash} />
+                </ColorButton>
+                <ColorButton
+                  color="#fff5c9"
+                  disabled={!selectedGif}
+                  onClick={() => {
+                    if (selectedGif) {
+                      addSticker(
+                        'transparent',
+                        false,
+                        selectedGif.images.original.url
+                      );
+                    }
+                    setShowResults(false);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faPlusCircle} />
+                </ColorButton>
+              </RowWrap>
+            </GifWrap>
+          </Results>
+        )}
+      </Wrapper>
+    </Container>
   );
 };
 export default Whiteboard;

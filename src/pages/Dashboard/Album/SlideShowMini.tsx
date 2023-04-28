@@ -3,23 +3,22 @@ import styled from 'styled-components';
 
 const SlideshowContainer = styled.div`
   position: relative;
-  height: 150px;
-  width: 150px;
+  height: 200px;
+  width: 200px;
   overflow: hidden;
-  margin: 5px 5px;
 `;
 
 const SlideshowImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
-  height: 150px;
-  width: 150px;
+  height: 100%;
+  width: 100%;
   border-radius: 10px;
   object-fit: cover;
 
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
 
   &.active {
     opacity: 1;
@@ -80,7 +79,7 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
             src={photo.url}
             alt={`Slide ${index}`}
             className={index === activeIndex ? 'active' : ''}
-            style={{ width: '300px', height: '300px' }}
+            style={{ width: '100%', height: '100%' }}
           />
         ))}
       </SlideshowContainer>

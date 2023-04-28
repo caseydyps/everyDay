@@ -18,7 +18,7 @@ const SlideshowImage = styled.img`
   object-fit: cover;
 
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
 
   &.active {
     opacity: 1;
