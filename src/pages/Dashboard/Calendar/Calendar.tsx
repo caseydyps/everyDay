@@ -8,7 +8,8 @@ import 'firebase/firestore';
 import { MembersSelector } from '../../AI/SmartInput';
 import { format } from 'date-fns-tz';
 import Banner from '../../../Components/Banner/Banner';
-
+import Swal from 'sweetalert2';
+import { renderToString } from 'react-dom/server';
 import {
   collection,
   updateDoc,
@@ -32,6 +33,8 @@ import {
   faTrashCan,
   faCircleXmark,
   faEllipsis,
+  faChevronRight,
+  faChevronLeft,
 } from '@fortawesome/free-solid-svg-icons';
 import HourlyView from './HourView';
 import DailyHourlyView from './DailyHourView';
@@ -77,11 +80,11 @@ const MonthContainer = styled.div`
 `;
 
 const MonthLabel = styled.span`
-  font-size: 1.5rem;
+  font-size: 24px;
   font-weight: bold;
-  color: #3467a1;
-  border: 3px solid white;
-  border-radius: 25px;
+  color: #5981b0;
+  //border: 3px solid white;
+  border-radius: 20px;
   background-color: transparent;
   padding: 10px;
 `;
@@ -124,10 +127,69 @@ const Button = styled.button`
   font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
+  color: #5981b0;
+  &:hover {
+    color: #3467a1;
+  }
+`;
+
+const ExitButton = styled.button`
+  margin-top: 10px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #5981b0;
+  &:hover {
+    color: #3467a1;
+  }
+  position: absolute;
+  top: 0;
+  right: 0;
+`;
+
+const EditButton = styled.button`
+  margin-top: 10px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #d7dde2;
+  &:hover {
+    color: #414141;
+  }
+`;
+
+const TabButton = styled.button`
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: bold;
+  text-transform: uppercase;
   color: #333;
   &:hover {
     color: #666;
   }
+`;
+
+const InfoButton = styled(DefaultButton)`
+  background-color: transparent;
+  padding: 0px;
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: none;
+  :hover {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  position: absolute;
+  right: 0px;
+  top: 0px;
 `;
 
 const Table = styled.table`
@@ -146,10 +208,11 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
-  max-width: 100px;
-  min-width: 100px;
+  width: 100px;
   height: 100px;
-  max-height: 100px;
+  justify-content: center;
+  align-items: center;
+  position: relative;
   //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 0px;
   border: 3px solid rgba(211, 211, 211, 0.5);
@@ -208,6 +271,19 @@ const RowWrap = styled.div`
   max-width: 100%;
 `;
 
+const TabWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin: 0 auto;
+  width: 200px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 2px solid #3467a1;
+`;
+
 const MenuWrap = styled.div`
   display: flex;
   flex-direction: row;
@@ -219,12 +295,30 @@ const MenuWrap = styled.div`
   z-index: 2;
 `;
 
+const Menu = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  width: 300px;
+  background-color: #f6f8f8;
+  border-radius: 25px;
+  height: 200px;
+  transform: translate(-50%, -50%);
+`;
+
 const AddButton = styled(DefaultButton)`
   border: none;
-  border-radius: 4px;
+  border-radius: 20px;
   padding: 10px 20px;
   cursor: pointer;
   margin: 10px;
+  color: #5981b0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
 const Modal = styled.div`
@@ -280,8 +374,11 @@ const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
   align-items: center;
   position: relative;
-  overflow-x: auto;
-  box-shadow: 3px 3px 5px black;
+  width: auto;
+  height: 20px;
+  //padding: 2px;
+
+  //box-shadow: 3px 3px 5px black;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -302,12 +399,15 @@ const EventWrapper = styled.div<EventWrapperProps>`
   ${({ multiDay }) =>
     multiDay
       ? `
-        margin-left: 0px;
+       
         box-shadow: 0px 0px 0px black;
+        
       `
       : `
-        border: 1px solid black;
-        margin: 5px;
+        border: 1px solid #1E3D6B;
+        margin: 0px;
+        background-color: #6189c5;
+        
         
 
         
@@ -319,11 +419,47 @@ const EventTime = styled.div`
   font-weight: bold;
 `;
 
+const ViewSelect = styled.select`
+  width: 150px;
+  height: 40px;
+  margin: 0 auto;
+  border-radius: 5px;
+  border: 1px solid #d7dde2;
+  background-color: #f6f8f8;
+  font-size: 16px;
+  color: #414141;
+  padding: 8px 16px;
+  appearance: none;
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3E%3Cpath fill="%237e7e7e" d="M0 0l6 8 6-8H0z" /%3E%3C/svg%3E');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+
+  /* Add a hover effect */
+  &:hover {
+    border-color: #999;
+  }
+
+  /* Add a focus effect */
+  &:focus {
+    outline: none;
+    border-color: #1e3d6b;
+    box-shadow: 0 0 0 2px rgba(30, 61, 107, 0.2);
+  }
+`;
+
 const DateDetailsWrapper = styled.div`
   font-size: 16px;
   font-weight: bold;
   width: 100px;
   height: 100px;
+  margin-top: 20px;
+  border: 2px solid #3467a1;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  overflow-y: auto; /* add this line */
+  overflow-x: hidden; /* add this line */
 `;
 
 interface EventTitleProps {
@@ -359,26 +495,17 @@ const BannerWrap = styled.div`
 
 const EventList = styled.ul`
   list-style-type: none;
-  padding: 0px;
+  /* padding: 5px; */
   height: 100px;
   width: 100px;
+  padding-left: 0px;
+  margin: 5px 0px;
+  font-size: 20px;
+
   overflow-y: auto;
 
   &::-webkit-scrollbar {
-    width: 3px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #ccc;
-    border-radius: 2px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: transparent;
+    display: none; /* Hide the scrollbar */
   }
 `;
 
@@ -617,8 +744,8 @@ function Calendar() {
     }
     const MemberAvatar = styled.img`
       border-radius: 50%;
-      height: 30px;
-      width: 30px;
+      height: 20px;
+      width: 20px;
     `;
 
     const EventMember: React.FC<EventMemberProps> = ({
@@ -631,6 +758,32 @@ function Calendar() {
       ) : null;
     };
 
+    // const handleInfoClick = (e, eventObj) => {
+    //   e.stopPropagation();
+
+    //   const eventDetail = renderToString(
+    //     <EventDetails
+    //       eventObj={eventObj}
+    //       handleEditEvent={handleEditEvent}
+    //       handleDeleteEvent={handleDeleteEvent}
+    //     />
+    //   );
+
+    //   Swal.fire({
+    //     html: eventDetail,
+    //     confirmButtonText: 'OK',
+    //     confirmButtonColor: '#1E3D6B',
+    //     focusConfirm: false,
+    //     allowOutsideClick: false,
+    //     background: '#F6F8F8',
+    //     padding: '1rem',
+    //     width: '300px',
+    //     height: '200px',
+    //     heightAuto: false,
+    //     position: 'center',
+    //     reverseButtons: true,
+    //   });
+    // };
     return (
       <DateDetailsWrapper
         onDragOver={handleDragOver}
@@ -644,12 +797,39 @@ function Calendar() {
             {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
+                  <MenuWrap>
+                    {showButtons && (
+                      <Menu>
+                        <EventTitle finished={event.finished}>
+                          {event.title}
+                        </EventTitle>
+                        <EventMember
+                          members={membersArray}
+                          memberRole={event.member}
+                        ></EventMember>
+                        <EventTime>{event.time}</EventTime>
+                        <EventTime>{`~${event.endTime}`}</EventTime>
+                        <Button onClick={() => handleEditEvent(event)}>
+                          <FontAwesomeIcon icon={faEdit} />
+                        </Button>
+                        <Button onClick={() => handleDeleteEvent(event)}>
+                          <FontAwesomeIcon icon={faTrashCan} />
+                        </Button>
+                        <ExitButton
+                          onClick={() => setShowButtons(!showButtons)}
+                        >
+                          <FontAwesomeIcon icon={faCircleXmark} />
+                        </ExitButton>
+                      </Menu>
+                    )}
+                  </MenuWrap>
                   <EventWrapper
                     draggable={!event.multiDay}
                     onDragStart={(e) => handleDragStart(e, event.id)}
                     category={event.category}
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
+                    onClick={() => setShowButtons(!showButtons)}
                   >
                     <EventMember
                       members={membersArray}
@@ -660,24 +840,9 @@ function Calendar() {
                     <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
-                    <Button onClick={() => setShowButtons(!showButtons)}>
+                    {/* <EditButton onClick={() => setShowButtons(!showButtons)}>
                       <FontAwesomeIcon icon={faEllipsis} />
-                    </Button>
-                    <MenuWrap>
-                      {showButtons && (
-                        <>
-                          <Button onClick={() => handleEditEvent(event)}>
-                            <FontAwesomeIcon icon={faEdit} />
-                          </Button>
-                          <Button onClick={() => handleDeleteEvent(event)}>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </Button>
-                          {/* <button onClick={() => handleFinishEvent(event)}>
-                         Finish
-                       </button> */}
-                        </>
-                      )}
-                    </MenuWrap>
+                    </EditButton> */}
                   </EventWrapper>
                 </li>
               ) : null
@@ -710,8 +875,6 @@ function Calendar() {
     });
 
     const MonthWrap = styled.div`
-      background-color: rgba(64, 64, 64, 0.5);
-      box-shadow: 3px 3px 5px black;
       padding: 10px;
       margin-left: 10px;
       border-radius: 25px;
@@ -719,17 +882,24 @@ function Calendar() {
       text-align: left;
       align-items: center;
       font-size: 16px;
-      min-height: 250px;
-      width: 200px;
-      flex: 1;
+      height: 250px;
+      width: 150px;
+      background-color: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+      -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+      border-radius: 12px;
+      -webkit-border-radius: 12px;
+      color: rgba(255, 255, 255, 0.75);
     `;
 
     const Title = styled.div`
-      font-size: 24px;
+      font-size: 20px;
       font-weight: bold;
       margin-bottom: 10px;
-      color: white;
-      text-shadow: 2px 2px 4px #000000;
+      color: #414141;
     `;
 
     const EventList = styled.ul`
@@ -1158,20 +1328,6 @@ function Calendar() {
     }
   };
 
-  // // handleFinishEvent function
-  // const handleFinishEvent = (event: Event) => {
-  //   // Update the event's "finished" property to its opposite value
-  //   const updatedEvent = { ...event, finished: !event.finished };
-  //   // Update the events list with the new event object
-  //   const updatedEvents = events.map((e) =>
-  //     e.id === event.id ? updatedEvent : e
-  //   );
-  //   // Update the event in Firestore
-  //   updateEventToFirestore(event.id, updatedEvent.finished);
-  //   // Update the state with the new events list
-  //   setEvents(updatedEvents);
-  // };
-
   useEffect(() => {
     //console.log(events);
   }, [events]);
@@ -1208,26 +1364,52 @@ function Calendar() {
     setEventMember(member);
   };
 
+  const handleInfoClick = () => {
+    Swal.fire({
+      html: 'You can drag the box to change its position.',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#5981b0',
+      focusConfirm: false,
+      allowOutsideClick: false,
+      icon: 'info',
+      iconColor: '#5981b0',
+      background: '#F6F8F8',
+      padding: '1rem',
+      width: '300px',
+      height: '200px',
+      heightAuto: false,
+      position: 'center',
+      reverseButtons: true,
+    });
+  };
+
   return (
     <Container>
       <SideNav />
       <Wrap>
-        <Banner title="Calendar" subTitle="Every Day Counts"></Banner>
-        <RowWrap>
-          <Button onClick={() => handleViewClick('day')}>Day</Button>
-          <Button onClick={() => handleViewClick('week')}>Week</Button>
-          <Button onClick={() => handleViewClick('month')}>Month</Button>
-        </RowWrap>
+        <Banner title="Calendar" subTitle="EVERY DAY COUNTS"></Banner>
 
+        <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>
+          <option value="month">Month</option>
+          <option value="week">Week</option>
+          <option value="day">Day</option>
+        </ViewSelect>
+        <InfoButton onClick={handleInfoClick}>
+          <FontAwesomeIcon icon={faCircleInfo} />
+        </InfoButton>
         <CalendarContainer
           style={{ display: view === 'month' ? 'block' : 'none' }}
         >
           <MonthContainer>
-            <Button onClick={handlePrevMonth}>Prev</Button>
+            <Button onClick={handlePrevMonth}>
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </Button>
             <MonthLabel>{`${
               months[date.getMonth()]
             } ${date.getFullYear()}`}</MonthLabel>
-            <Button onClick={handleNextMonth}>Next</Button>
+            <Button onClick={handleNextMonth}>
+              <FontAwesomeIcon icon={faChevronRight} />
+            </Button>
           </MonthContainer>
           {/* <DateDetails
             date={selectedDate}
@@ -1352,13 +1534,21 @@ function Calendar() {
                             color: isCurrentMonth
                               ? isToday
                                 ? 'white'
-                                : '#f5f5f5'
+                                : '#F6F8F8'
                               : 'gray',
                             verticalAlign: 'top',
                             textAlign: 'left',
                           }}
                         >
-                          {isCurrentMonth ? dayOfMonth : ''}
+                          <span
+                            style={{
+                              position: 'absolute', // add this line
+                              top: '10px', // add this line
+                              left: '10px', // add this line
+                            }}
+                          >
+                            {isCurrentMonth ? dayOfMonth : ''}
+                          </span>
                           {eventsOnDay.map((event) => (
                             <div key={event.title}>{event.title}</div>
                           ))}

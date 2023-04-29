@@ -46,30 +46,27 @@ const AI = () => {
       <SideNav></SideNav>
       <Wrapper>
         <Banner title={'AI'} subTitle="Smart input, smart advice"></Banner>
-        <CenterWrapper>
-          <AiRowWrap>
-            <Circle onClick={handleClick1}>
-              <AiWrapper>
-                <CenteredText>Smart Input</CenteredText>
-                <CenteredSubText>
-                  Add event via natural language
-                </CenteredSubText>
-              </AiWrapper>
-            </Circle>
-            <SmartInput />
-          </AiRowWrap>
-          <AiRowWrap>
-            <Suggestion />
-            <Circle onClick={handleClick2}>
-              <AiWrapper>
-                <CenteredText>Smart Advice</CenteredText>
-                <CenteredSubText>
-                  Suggestions from digital assistant
-                </CenteredSubText>
-              </AiWrapper>
-            </Circle>
-          </AiRowWrap>
-        </CenterWrapper>
+
+        <AiRowWrap>
+          <Circle onClick={handleClick1}>
+            <AiWrapper>
+              <CenteredText>Smart Input</CenteredText>
+              <CenteredSubText>Add event via natural language</CenteredSubText>
+            </AiWrapper>
+          </Circle>
+          <SmartInput />
+        </AiRowWrap>
+        <AiRowWrap>
+          <Suggestion />
+          <Circle onClick={handleClick2}>
+            <AiWrapper>
+              <CenteredText>Smart Advice</CenteredText>
+              <CenteredSubText>
+                Suggestions from digital assistant
+              </CenteredSubText>
+            </AiWrapper>
+          </Circle>
+        </AiRowWrap>
       </Wrapper>
     </Container>
   );
@@ -92,15 +89,10 @@ const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 0px;
-  background-color: #d7dde2;
+  background-color: transparent;
   width: 100vw;
   height: 100%;
   border: gold solid 3px;
-  padding: 20px;
-
-  background-size: 300% 300%;
-
-  animation: ${GradientAnimation} 20s ease-in-out infinite;
 `;
 
 const CenterWrapper = styled.div`
@@ -108,7 +100,7 @@ const CenterWrapper = styled.div`
   justify-content: center; /* Center the child element horizontally */
   align-items: center; /* Center the child element vertically */
   flex-direction: column;
-  height: 100%;
+  height: 100vh;
   padding: 10px;
   border: 3px solid blue;
 `;
@@ -124,14 +116,14 @@ const Wrapper = styled.div`
 `;
 
 const Circle = styled.div`
-  width: 15vw;
-  height: 15vw;
+  width: 200px;
+  height: 200px;
   border-radius: 20%;
   margin: 50px;
   padding: 20px;
-  font-size: 0.072vw;
+  font-size: 20px;
 
-  background-color: #1e3d6b;
+  background-color: #5981b0;
   position: relative;
   z-index: 1;
   p {
@@ -197,6 +189,7 @@ const AiRowWrap = styled.div`
   justify-content: baseline;
   align-items: center;
   border: 3px solid green;
-  width: 950px;
+  width: 100%;
+  height: 400px;
 `;
 export default AI;

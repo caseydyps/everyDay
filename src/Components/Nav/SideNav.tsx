@@ -121,9 +121,10 @@ const NavbarWrapper = styled.div`
   z-index: 2;
 
   height: auto;
-  margin-top: 50px;
+  margin-top: 60px;
+  margin-left: 5px;
 
-  width: ${(props) => (props.showNav ? '200px' : '20px')};
+  width: ${(props) => (props.showNav ? '180px' : '20px')};
   padding: ${(props) => (props.showNav ? '0px' : '0')};
   transition: width 0.3s ease-out, padding 0.3s ease-out;
 `;
@@ -135,7 +136,7 @@ const Nav = styled.div`
   text-align: center;
   position: fixed;
   height: 100%;
-  width: 180px;
+  width: 160px;
 `;
 
 const Text = styled.span`
@@ -169,7 +170,7 @@ interface NavListProps {
 }
 export const NavList = styled.ul<NavListProps>`
   list-style: none;
-  padding: 10px;
+  padding: 5px;
   margin: auto;
   flex-direction: column;
   justify-content: flex-start;
@@ -233,11 +234,12 @@ const AvatarContainer = styled.div`
 export const StyledNavLink = styled(NavLink)`
   display: block;
   color: #6a6a6a;
-  font-size: 16px;
+  font-size: 14px;
   text-align: left;
+  border-radius: 15px;
   text-decoration: none;
   margin: 10px;
-  width: 150px;
+  width: 120px;
   &.${(props) => props.activeClassName} {
     color: #f6f8f8;
     background-color: #5981b0;

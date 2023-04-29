@@ -57,7 +57,7 @@ const ButtonWrap = styled.div`
   width: 100%;
   max-width: 800px;
   position: absolute;
-  top: 0;
+  top: 160px;
   right: 50%;
   transform: translate(50%, 0);
   @media screen and (max-width: 768px) {
@@ -70,8 +70,9 @@ const ButtonWrap = styled.div`
 `;
 
 const Container = styled.div`
-  max-width: 100%;
-  height: 100%;
+  width: 800px;
+  height: 400px;
+  margin-top: 50px;
 `;
 
 const CanvasButton = styled(DefaultButton)`
@@ -86,8 +87,8 @@ const CanvasButton = styled(DefaultButton)`
 `;
 
 const CanvasContainer = styled.div`
-  max-width: 100%;
-  height: auto;
+  max-width: 800px;
+  height: 400px;
   border: 2px;
 `;
 
@@ -392,10 +393,10 @@ const DrawingTool = () => {
           onMouseMove={paint}
           style={{
             height: 'auto',
-            maxWidth: '100%',
-            maxHeight: '600px',
-            minHeight: '600px',
-            width: '100%',
+            maxWidth: '800px',
+            maxHeight: '300px',
+            minHeight: '300px',
+            width: '800px',
             border: '2px solid transparent',
             boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
             borderRadius: '25px',

@@ -11,13 +11,12 @@ const LogOut = () => {
 };
 
 const LogoutButton = styled.button`
-  background-color: #fff5c9;
   color: #3467a1;
   border: none;
   border-radius: 20px;
   font-weight: bold;
-  padding: 10px 20px;
-  font-size: 24px;
+  margin: 10px 10px;
+  font-size: 16px;
   &:hover {
     transform: scale(1.1);
   }

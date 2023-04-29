@@ -438,7 +438,7 @@ const Image = styled.img`
 
 const GalleryWrapper = styled.div`
   display: flex;
-  width: 240px;
+  width: 233px;
   gap: 20px;
   height: 100%;
   object-fit: cover;

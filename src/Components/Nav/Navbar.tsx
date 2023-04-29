@@ -103,19 +103,21 @@ const Navbar = () => {
           </AvatarContainer>
 
           {isMenuOpen && (
-            <PopoutMenu>
-              <UserName>Hi, {userName}</UserName>
-              <UserEmail>{userUrl}</UserEmail>
-              <SplitLine></SplitLine>
-              {/* <MenuButton to="/family" onClick={googleSignIn}>
+            <PopoutMenuContainer>
+              <PopoutMenu>
+                <UserName>Hi, {userName}</UserName>
+                <UserEmail>{userUrl}</UserEmail>
+                <SplitLine></SplitLine>
+                {/* <MenuButton to="/family" onClick={googleSignIn}>
                 切換帳號
               </MenuButton> */}
-              <MenuButton to="/family">設定家庭成員</MenuButton>
-              {/* <MenuButton to="/family">通知</MenuButton> */}
-              <NavButton onClick={handleLogout}>
-                {user ? <LogOut /> : <SignIn />}
-              </NavButton>
-            </PopoutMenu>
+                <MenuButton to="/family">設定家庭成員</MenuButton>
+                {/* <MenuButton to="/family">通知</MenuButton> */}
+                <NavButton onClick={handleLogout}>
+                  {user ? <LogOut /> : <SignIn />}
+                </NavButton>
+              </PopoutMenu>
+            </PopoutMenuContainer>
           )}
         </UserSetting>
       </Nav>
@@ -212,6 +214,17 @@ export const NavItem = styled.li`
   }
 `;
 
+const Triangle = styled.div`
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 10px solid #5981b0;
+`;
 const NavMenu = styled.div`
   cursor: pointer;
   margin-left: auto;
@@ -223,6 +236,11 @@ const NavMenu = styled.div`
 
 const NavButton = styled.div`
   margin: 0 autp;
+`;
+
+const PopoutMenuContainer = styled.div`
+  position: relative;
+  display: flex;
 `;
 
 const UserSetting = styled.div``;
@@ -239,7 +257,7 @@ const UserName = styled.div`
 `;
 const UserEmail = styled.div`
   color: #f5f5f5;
-  font-size: 1.2rem;
+  font-size: 16px;
   margin: 10px;
 `;
 
@@ -274,16 +292,29 @@ export const NavLink = styled(Link)`
 
 const PopoutMenu = styled.div`
   position: absolute;
-  top: 90px;
-  right: 30px;
-  background-color: #3467a1;
-
+  top: -2px;
+  right: 15px;
+  background-color: #5981b0;
   border-radius: 15px;
   padding: 10px;
   z-index: 1;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   transition: box-shadow 0.3s;
 
+  /* Add a triangle-shaped border to the top */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 10px;
+    border-color: transparent transparent #5981b0 transparent;
+  }
+
+  /* Show a shadow when the menu is hovered */
   &:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
@@ -291,15 +322,16 @@ const PopoutMenu = styled.div`
 
 const MenuButton = styled(Link)`
   display: block;
-  width: 100%;
-  padding: 16px 20px;
+  width: auto;
+
   border: none;
   background-color: transparent;
   color: white;
   text-align: left;
   cursor: pointer;
   transition: background-color 0.3s;
-  font-size: 1.5rem;
+  font-size: 16px;
+  margin: 20px 10px;
   font-weight: bold;
   &:hover {
     background-color: #3467a1;

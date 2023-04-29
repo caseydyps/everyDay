@@ -234,7 +234,7 @@ type ListInfo = {
 };
 
 const ListInfoWrap = styled.div<ListInfo>`
-  background-color: #3467a1;
+  background-color: #5981b0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

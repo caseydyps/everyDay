@@ -1,5 +1,5 @@
 import { keyframes } from 'styled-components';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 import Milestone from './time.png';
 import Calendar from './calendar.png';
 import Todo from './todo.png';
@@ -38,43 +38,43 @@ const Title = styled.div`
 `;
 
 const BannerContainer = styled.div`
-  width: 100vw-200px;
-  height: 25vh;
-  padding-left: 200px;
-  /* border: 3px solid white; */
+  width: 100%;
+  height: 150px;
+
+  //border: 3px solid white;
   position: relative; /* Added to set stacking context */
-  background: #3467a1;
+  background: transparent;
   display: flex;
   //box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
   align-items: center;
   justify-content: center;
-  text-align: start;
-  margin-top: 90px;
+  text-align: center;
+  margin: 0% auto;
+
   /* margin-top: 60px; */
 `;
 
 const BannerTitle = styled.h1`
   position: absolute;
-  top: 20%;
-  left: 20%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
   color: white;
   //border: 3px solid white;
   padding: 20px;
   font-size: 48px;
-  text-align: start;
+  text-align: center;
   z-index: 2; /* Increased z-index value */
 `;
 
-const BannerSubTitle = styled.h2`
-  position: absolute;
-  top: 60%;
-  left: 20%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 20px;
-
-  text-align: start;
+const BannerSubTitle = styled.h1`
+  color: #5981b0;
+  font-family: 'Braah One';
+  font-weight: bold;
+  font-size: 48px;
+  width: 800px;
+  text-align: center;
+  margin-top: 90px;
   z-index: 1;
 `;
 
@@ -146,9 +146,8 @@ const Banner = ({ title, subTitle }: BannerProps) => {
   return (
     <BannerContainer>
       {/* <Gradient /> */}
-      <BannerTitle>{title}</BannerTitle>
+      {/* <BannerTitle>{title}</BannerTitle> */}
       <BannerSubTitle>{subTitle}</BannerSubTitle>
-      <BannerPic picUrl={picUrl}></BannerPic>
     </BannerContainer>
   );
 };

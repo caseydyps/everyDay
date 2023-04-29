@@ -39,7 +39,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const Wrapper = styled.div`
-  width: auto;
+  width: 100%;
   margin: 0 auto;
 `;
 const Container = styled.div`
@@ -170,7 +170,7 @@ const Instruction = styled.div`
 `;
 
 const Card = styled.div`
-  max-width: 700px;
+  max-width: 600px;
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;

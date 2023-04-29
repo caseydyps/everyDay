@@ -6,6 +6,7 @@ import 'firebase/firestore';
 import Layout from '../../Components/layout';
 import { v4 as uuidv4 } from 'uuid';
 import DefaultButton, { Card } from '../../Components/Button/Button';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFilter,
@@ -337,15 +338,41 @@ function Milestone() {
     }
   };
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const HintBox = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f6f8f8;
+    border-radius: 4px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    color: #414141;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 12px;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    z-index: 1;
+  `;
+
+  const HintIcon = styled(AiOutlineArrowLeft)`
+    color: #444;
+    font-size: 16px;
+    margin-right: 4px;
+  `;
+  console.log(events);
+
   return (
     <Container>
+      <BoxTitle>Celebrates</BoxTitle>
       <ColumnWrap>
         <ContentWrapper>
           <RowWrap>
             <RowWrap>
-              <BoxTitle>Congradulations</BoxTitle>
               <EventContainer>
-                {filterEvents(events)
+                {events
                   .sort(
                     (a, b) =>
                       new Date(a.date).getTime() - new Date(b.date).getTime()
@@ -355,6 +382,32 @@ function Milestone() {
                     const monthName = dateObj.toLocaleString('default', {
                       month: 'short',
                     });
+                    const daysDifference = Math.floor(
+                      (Date.UTC(
+                        dateObj.getFullYear(),
+                        dateObj.getMonth(),
+                        dateObj.getDate()
+                      ) -
+                        Date.UTC(
+                          new Date().getFullYear(),
+                          new Date().getMonth(),
+                          new Date().getDate()
+                        )) /
+                        (1000 * 60 * 60 * 24)
+                    );
+
+                    let daysText = '';
+                    if (daysDifference === 0) {
+                      daysText = 'Today';
+                    } else if (daysDifference === 1) {
+                      daysText = 'Tomorrow';
+                    } else if (daysDifference === -1) {
+                      daysText = 'Yesterday';
+                    } else if (daysDifference > 1) {
+                      daysText = 'days to go';
+                    } else if (daysDifference < -1) {
+                      daysText = 'days ago';
+                    }
                     return (
                       <>
                         <EventBox key={event.id}>
@@ -368,13 +421,16 @@ function Milestone() {
                             />
                             <DateBox>
                               <DateInfo>
-                                <Month>{monthName}</Month>
-                                <Day>{dateObj.getDate()}</Day>
+                                <Day>{Math.abs(daysDifference)}</Day>
+                                <DayText>{daysText}</DayText>
                               </DateInfo>
                             </DateBox>
                             <InfoWrap>
+                              <EventTitle>
+                                {monthName}
+                                {dateObj.getDate()}
+                              </EventTitle>
                               <EventTitle>{event.title}</EventTitle>
-                              <EventTitle>|</EventTitle>
                               <EventTitle>{event.member}</EventTitle>
                             </InfoWrap>
                             {/* <RowWrap>
@@ -410,8 +466,12 @@ function Milestone() {
             <form onSubmit={handleNewEventSubmit} />
           )} */}
         </ContentWrapper>
+
         {/* <LoadingAnimation /> */}
       </ColumnWrap>
+      <HintBox>
+        <HintIcon /> Scroll to see more
+      </HintBox>
     </Container>
   );
 }
@@ -421,6 +481,9 @@ export default Milestone;
 const BoxTitle = styled.h3`
   color: #414141;
   font-size: 20px;
+  position: absolute;
+  left: 10px;
+  top: 0%;
 `;
 
 const ColumnWrap = styled.div`
@@ -442,7 +505,6 @@ const Wrap = styled(Card)`
   z-index: 2;
   position: absolute;
   top: 30%;
-  color: #fff;
 `;
 
 const Header = styled.h1`
@@ -465,11 +527,14 @@ const ContentWrapper = styled.div`
 const EventContainer = styled.div`
   max-width: 200px;
   height: 100%;
-  display: flex;
+
   overflow-x: scroll;
   padding: 10px;
   margin-left: 10px;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+
+  gap: 20px;
 
   /* Hide the scrollbar */
   &::-webkit-scrollbar {
@@ -483,8 +548,8 @@ const EventBox = styled.div`
   margin-right: 10px;
   border-radius: 20px;
   display: flex;
-
-  background-color: #a8c6ec;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #d7dde2;
   margin-top: 0px;
   position: relative;
   // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* added box shadow */
@@ -496,7 +561,19 @@ const EventTitle = styled.div`
   margin-top: 15px;
   margin-right: 5px;
   margin-left: 5px;
-  color: #f6f8f8;
+  color: #414141;
+
+  //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
+`;
+
+const DayText = styled.div`
+  font-size: 6px;
+  font-weight: bold;
+  text-align: center;
+
+  margin-right: 5px;
+  margin-left: 5px;
+  color: #414141;
 
   //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
 `;
@@ -519,6 +596,8 @@ const RowWrap = styled.div`
 const InfoWrap = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: baseline;
+  align-items: center;
 `;
 
 const DateBox = styled.div`
@@ -720,7 +799,7 @@ const Month = styled.div`
 `;
 
 const Day = styled.div`
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
   color: #f6f8f8;
 `;

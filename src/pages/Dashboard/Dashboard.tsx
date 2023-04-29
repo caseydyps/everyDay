@@ -16,14 +16,17 @@ import Suggestion from '../AI/SuggestionMini';
 import FamilyMemberForm from '../Family/FamilyMini';
 import DefaultButton from '../../Components/Button/Button';
 import SideNav from '../../Components/Nav/SideNav';
+import Swal from 'sweetalert2';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCircleChevronDown,
   faCircleChevronUp,
   faToggleOff,
+  faCircleInfo,
   faToggleOn,
 } from '@fortawesome/free-solid-svg-icons';
+import { icon } from '@fortawesome/fontawesome-svg-core';
 
 const Container = styled.div`
   display: flex;
@@ -126,7 +129,7 @@ const Dashboard = () => {
     grid-template-rows: repeat(12, 60px);
     grid-gap: 5px;
     width: 100%;
-
+    position: relative;
     /* media query for screens narrower than 1200px */
     /* @media screen and (max-width: 1267px) {
       grid-template-columns: repeat(4, 200px);
@@ -222,6 +225,9 @@ const Dashboard = () => {
     border-radius: 12px;
     -webkit-border-radius: 12px;
     color: rgba(255, 255, 255, 0.75);
+    justify-content: center;
+    align-items: center;
+    display: flex;
   `;
   const BoxL = styled.div`
     height: 240px;
@@ -274,6 +280,21 @@ const Dashboard = () => {
     }
   `;
 
+  const InfoButton = styled(DefaultButton)`
+    background-color: transparent;
+    padding: 0px;
+    color: rgba(255, 255, 255, 0.5);
+    border: none;
+    box-shadow: none;
+    :hover {
+      background-color: transparent;
+      color: rgba(255, 255, 255, 0.75);
+    }
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  `;
+
   const Wrap = styled.div`
     width: 100%;
     display: flex;
@@ -286,6 +307,7 @@ const Dashboard = () => {
     {
       component: (
         <BoxM>
+          <BoxTitle>Todo</BoxTitle>
           <TodoDashboard />
         </BoxM>
       ),
@@ -328,18 +350,18 @@ const Dashboard = () => {
       spanColumns: 1,
       spanRows: 2,
     },
+    // {
+    //   component: (
+    //     <BoxS style={{ backgroundColor: ' rgba(89, 89, 89, 0.25)' }}>
+    //       <Financial></Financial>
+    //     </BoxS>
+    //   ),
+    //   spanColumns: 1,
+    //   spanRows: 2,
+    // },
     {
       component: (
-        <BoxS style={{ backgroundColor: ' rgba(89, 89, 89, 0.25)' }}>
-          <Financial></Financial>
-        </BoxS>
-      ),
-      spanColumns: 1,
-      spanRows: 2,
-    },
-    {
-      component: (
-        <BoxS style={{ backgroundColor: 'rgba(89, 89, 89, 0.25)' }}>
+        <BoxS style={{ backgroundColor: '#5981b0' }}>
           <CalendarMini />
         </BoxS>
       ),
@@ -351,7 +373,6 @@ const Dashboard = () => {
         <BoxS>
           <BoxTitle>Family</BoxTitle>
           <FamilyMemberForm></FamilyMemberForm>
-          <BoxTitle>Family</BoxTitle>
         </BoxS>
       ),
       spanColumns: 2,
@@ -393,6 +414,24 @@ const Dashboard = () => {
       setGridItems(newGridItems);
     }
   };
+  const handleInfoClick = () => {
+    Swal.fire({
+      html: 'You can drag the box to change its position.',
+      confirmButtonText: 'OK',
+      confirmButtonColor: '#1E3D6B',
+      focusConfirm: false,
+      allowOutsideClick: false,
+      icon: 'info',
+      iconColor: '#1E3D6B',
+      background: '#F6F8F8',
+      padding: '1rem',
+      width: '300px',
+      height: '200px',
+      heightAuto: false,
+      position: 'center',
+      reverseButtons: true,
+    });
+  };
 
   return (
     <Container>
@@ -400,6 +439,9 @@ const Dashboard = () => {
       <Wrap>
         <Main>
           <Grid>
+            <InfoButton onClick={handleInfoClick}>
+              <FontAwesomeIcon icon={faCircleInfo} />
+            </InfoButton>
             {gridItems.map((item, index) => (
               <GridItem
                 key={index}

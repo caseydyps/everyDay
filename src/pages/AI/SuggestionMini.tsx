@@ -143,7 +143,7 @@ const Suggestion = () => {
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
     - 里程碑資料庫: ${JSON.stringify(
       milestoneData
-    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內)
+    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內, 時間不需要年份)
       `;
 
     const response = await openai.createChatCompletion({
@@ -172,28 +172,34 @@ const Suggestion = () => {
 
   return (
     <Card>
-      <h4
+      <BoxText
         style={{
-          display: 'flex',
           fontSize: '20px;',
         }}
       >
         Suggestions
-      </h4>
-      {responseValue && (
-        <Response>
-          <div>{responseValue}</div>
-        </Response>
-      )}
+      </BoxText>
+
+      <Response>
+        <div>{responseValue}</div>
+      </Response>
     </Card>
   );
 };
+
+const BoxText = styled.h4`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+`;
 
 const Card = styled.div`
   max-width: 240px;
   padding: 20px;
   border-radius: 10px;
+  height: 100%;
   font-size: 24px;
+
   background-color: transparent;
   //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -218,7 +224,7 @@ const Response = styled.div`
   justify-content: center;
   font-size: 14px;
   font-weight: bold;
-  margin-top: 10px;
+  margin-top: 70px;
   color: #414141;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.25);

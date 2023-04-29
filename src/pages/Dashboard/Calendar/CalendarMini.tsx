@@ -640,6 +640,7 @@ function Calendar() {
           position: 'absolute',
           margin: '0px',
           fontWeight: 'bold',
+          color: '#F6F8F8',
         }}
       >{`${dayOfWeek},`}</h4>
     );

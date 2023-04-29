@@ -52,13 +52,13 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 const DragNDropWrapper = styled.div`
   display: flex;
-  overflow-x: scroll;
   overflow-y: scroll;
-  height: 200px;
-  width: 200px;
-
+  height: 160px;
+  width: 160px;
+  flex-direction: column;
   border-radius: 5px;
-  padding: 10px;
+  padding: 5px;
+  gap: 0px;
 
   /* Add custom styles for scrollbar */
   ::-webkit-scrollbar {
@@ -98,7 +98,7 @@ const RowButton = styled(DefaultButton)`
 const DragNDropGroup: any = styled.div`
   display: flex;
   flex-direction: column;
-  width: 80%;
+  width: 150px;
   height: auto;
   padding: 5px;
   margin: 10px;
@@ -113,16 +113,16 @@ type DragNDropItemProps = {
   item: DataItem;
 };
 const DragNDropItem: any = styled.div<DragNDropItemProps>`
-  height: 80px;
+  height: 60px;
   padding: 5px;
   margin: 20px;
   background-color: grey;
-position: relative;
+  position: relative;
   border-radius: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3)
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   cursor: move;
   display: flex;
-  width: 200px;
+  width: 150px;
   align-items: center;
   justify-content: space-between;
   font-size: 32px;
@@ -202,13 +202,26 @@ const Avatar = styled.img`
   flex-shrink: 0;
 `;
 
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  width: 160px;
+  padding: 5px;
+  margin: 0 auto;
+`;
+
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  height: 100%;
-  max-width: 200px;
+  height: auto;
+  width: 130px;
+  padding: 10px;
+  margin: 0 auto;
 `;
 
 const RowWrap = styled.div`
@@ -239,19 +252,19 @@ type ListInfo = {
 };
 
 const ListInfoWrap = styled.div<ListInfo>`
-  background-color: #3467a1;
+  background-color: #5981b0;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   border-radius: 25px;
-  margin: 10px;
-  padding: 10px;
+  margin: 5px;
+  padding: 5px;
   font-weight: bold;
-  height: 50px;
+  height: 35px;
   color: #f5f5f5;
-  width: 250px;
+  width: 160px;
   text-shadow: 0px 0px 1px white;
 `;
 
@@ -736,7 +749,7 @@ function DragNDrop({ data }: any) {
 
   if (list) {
     return (
-      <ColumnWrap>
+      <Wrap>
         <DragNDropWrapper>
           {list.map((group, groupIndex) => (
             <List>
@@ -748,20 +761,9 @@ function DragNDrop({ data }: any) {
                   {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
                 </h4>
               </ListInfoWrap>
-              {getListProgress(group)}
-              {showAdd ? (
-                <AddItemForm groupIndex={groupIndex} onAddItem={addItem} />
-              ) : null}
-
-              <DragNDropGroup
-                key={group.title}
-                onDragEnter={
-                  dragging && !group.items.length
-                    ? (e: React.DragEvent) =>
-                        handleDragEnter(e, { groupIndex, itemIndex: 0 })
-                    : null
-                }
-              >
+              {/* {getListProgress(group)} */}
+              {/* 
+              <DragNDropGroup key={group.title}>
                 {group.items
                   .sort((a, b) => {
                     const aDueDate = a.due ? new Date(a.due) : null;
@@ -803,17 +805,7 @@ function DragNDrop({ data }: any) {
                     return (
                       <>
                         <DragNDropItem
-                          draggable
                           key={item}
-                          onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
-                            handleDragStart(e, { groupIndex, itemIndex })
-                          }
-                          onDragEnter={
-                            dragging
-                              ? (e: React.DragEvent<HTMLDivElement>) =>
-                                  handleDragEnter(e, { groupIndex, itemIndex })
-                              : null
-                          }
                           style={{
                             display:
                               hideChecked && item.done ? 'none' : 'block',
@@ -855,87 +847,16 @@ function DragNDrop({ data }: any) {
                             </Text>
 
                             <Text>{item.due && `${item.due}`}</Text>
-
-                            {/* <RowWrap>
-                              <RowButton
-                                onClick={() =>
-                                  deleteItem(groupIndex, itemIndex)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faTrashCan}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                              <RowButton
-                                onClick={() => {
-                                  const newText = prompt('更改事件');
-                                  if (newText) {
-                                    handleChange(
-                                      { target: { value: newText } },
-                                      groupIndex,
-                                      itemIndex,
-                                      'text'
-                                    );
-                                  }
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faPencil}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-
-                              <RowButton
-                                onClick={() =>
-                                  setShowMembersSelector(!showMembersSelector)
-                                }
-                              >
-                                <FontAwesomeIcon
-                                  icon={faUsers}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                              <RowButton
-                                onClick={() => {
-                                  const newDue = prompt('更改到期日期');
-                                  if (newDue) {
-                                    handleChange(
-                                      { target: { value: newDue } },
-                                      groupIndex,
-                                      itemIndex,
-                                      'due'
-                                    );
-                                  }
-                                }}
-                              >
-                                <FontAwesomeIcon
-                                  icon={faCalendarDays}
-                                ></FontAwesomeIcon>
-                              </RowButton>
-                            </RowWrap> */}
                           </ColumnWrap>
                         </DragNDropItem>
-                        {/* {showMembersSelector && (
-                          <MembersSelector
-                            onSelectMember={(selectedMember) => {
-                              setShowMembersSelector(false);
-                              handleMemberChange(
-                                selectedMember,
-                                groupIndex,
-                                itemIndex,
-                                'member'
-                              );
-                            }}
-                          />
-                        )} */}
                       </>
                     );
                   })}
-
-                {/* <button>My task only</button> */}
-              </DragNDropGroup>
+              </DragNDropGroup> */}
             </List>
           ))}
         </DragNDropWrapper>
-      </ColumnWrap>
+      </Wrap>
     );
   } else {
     return null;
@@ -950,9 +871,12 @@ const HideButton = styled(DefaultButton)`
 `;
 
 const List = styled.div`
-  width: 300px;
+  width: 100%;
   background-color: transparent;
   height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Text = styled.div`
