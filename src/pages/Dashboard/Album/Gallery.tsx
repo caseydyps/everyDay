@@ -6,13 +6,17 @@ import 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import styled from 'styled-components/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
+import { faStar, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
 import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
-import DefaultButton from '../../../Components/Button/Button';
+import DefaultButton, {
+  ThreeDButton,
+  AddButton,
+  CloseButton,
+} from '../../../Components/Button/Button';
 import { MembersSelector } from '../../AI/SmartInput';
 import Banner from '../../../Components/Banner/Banner';
 import {
@@ -28,6 +32,7 @@ import {
   faLock,
   faLockOpen,
   faEyeSlash,
+  faCircleInfo,
   faCloudArrowUp,
 } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -380,6 +385,18 @@ function Gallery() {
   const handleFilterMember = (member: string | string[]) => {
     setSelectedMember(member);
   };
+  const [showSlideshow, setShowSlideshow] = useState(false);
+  const InfoButton = styled(ThreeDButton)`
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 400px;
+    top: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `;
+  const [showTooltip, setShowTooltip] = useState(false);
 
   return (
     <Container>
@@ -409,6 +426,12 @@ function Gallery() {
           {showUpdateSection && (
             <UpdateSection>
               <h4>上傳照片</h4>
+              <CloseButton
+                onClick={() => {
+                  setShowUpdateSection(false);
+                }}
+                style={{ position: 'absolute', right: '10px', top: '10px' }}
+              />
               <StyledFileInput
                 type="file"
                 onChange={handleFileChange}
@@ -472,17 +495,28 @@ function Gallery() {
                 />
               </FileInputLabel>
 
-              <DefaultButton onClick={handleUpload}>Upload</DefaultButton>
+              <AddButton onClick={handleUpload}>Upload</AddButton>
             </UpdateSection>
           )}
           {showFilterSection && (
             <FilterSection>
+              <DefaultButton
+                style={{
+                  position: 'absolute',
+                  top: '0px',
+                  right: '0px',
+                  fontSize: '20px',
+                  background: 'transparent',
+                }}
+                onClick={() => setShowFilterSection(false)}
+              >
+                <FontAwesomeIcon icon={faXmarkCircle} />
+              </DefaultButton>
               <Text>
                 Filter by member:
                 <DefaultButton
                   onClick={() => {
                     setSelectedMember('');
-                    setShowFilterSection(false);
                   }}
                   className={selectedMember === '' ? 'active' : ''}
                   style={{
@@ -513,6 +547,34 @@ function Gallery() {
           )}
 
           <GalleryWrapper>
+            <div
+              style={{ position: 'absolute', top: '220px', left: '600px' }}
+              onMouseEnter={() => setShowTooltip(true)}
+              onMouseLeave={() => setShowTooltip(false)}
+            >
+              {
+                <InfoButton>
+                  <FontAwesomeIcon icon={faCircleInfo} />
+                </InfoButton>
+              }
+              {showTooltip && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '50px',
+                    left: '220px',
+                    backgroundColor: '#414141',
+                    color: '#fff',
+                    padding: '20px',
+                    borderRadius: '15px',
+                    zIndex: 2,
+                    width: '200px',
+                  }}
+                >
+                  {'[Tips] Click album to view details'}
+                </div>
+              )}
+            </div>
             {/* {filteredAlbums.map((album) => (
               <div key={album.id}>
                 <AlbumTitle>{album.title}</AlbumTitle> */}
@@ -546,21 +608,40 @@ function Gallery() {
 
                 <AlbumTitle>{album.title}</AlbumTitle>
 
-                <Slideshow photos={album.photos} />
                 <AlbumDescription>{album.description}</AlbumDescription>
 
                 <AlbumMembers>{album.members}</AlbumMembers>
-                {/* {album.firstPhotoURL ? (
+
+                {!showSlideshow && (
                   <AlbumCover
                     src={album.firstPhotoURL}
                     alt={album.title}
-                    onClick={() => setSelectedAlbumId(album.id)}
-                    style={{ width: '500px', height: '500px' }}
+                    onClick={() => {
+                      setSelectedAlbumId(album.id);
+                      setShowSlideshow(!showSlideshow);
+                    }}
+                    style={{ width: '320px', height: '320px' }}
                   />
-                ) : (
-                  <NoPhotosText>No photos in this album</NoPhotosText>
                 )}
-                <h3>Click for more!</h3> */}
+
+                {showSlideshow && (
+                  <>
+                    <DefaultButton
+                      onClick={() => {
+                        setShowSlideshow(!showSlideshow);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '10px',
+                      }}
+                    >
+                      Close
+                    </DefaultButton>
+
+                    <Slideshow photos={album.photos} />
+                  </>
+                )}
 
                 {/* {selectedAlbumId === album.id && (
                   <div>
@@ -594,7 +675,9 @@ const GalleryWrapper = styled.div`
   flex-wrap: wrap;
   //overflow-x: scroll;
   //scrollbar-width: narrow;
-  border: 1px solid black;
+  //border: 1px solid black;
+  justify-content: center;
+  align-items: center;
 
   //scrollbar-color: #3467a1 transparent;
 
@@ -629,11 +712,22 @@ const AlbumWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   border-radius: 20px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   padding: 10px;
-  width: 600px;
+  border: 1px solid #3467a1;
+  width: 320px;
   height: auto;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
 `;
 
 const AlbumTitle = styled.h4`
@@ -672,8 +766,9 @@ const ColumnWrap = styled.div`
 `;
 
 const UploadButton = styled(DefaultButton)`
-  width: 100px;
+  width: 70px;
   margin: 20px;
+  border: 2px solid #5981b0;
 `;
 
 const UpdateSection = styled.div`
@@ -689,7 +784,7 @@ const UpdateSection = styled.div`
   backdrop-filter: blur(8px);
   background-color: rgba(255, 255, 255, 0.5);
   position: absolute;
-  top: 20%;
+  top: 10%;
   right: 50%;
   transform: translate(+50%, 0%);
   z-index: 3;
@@ -701,6 +796,7 @@ const FilterSection = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   border-radius: 25px;
   backdrop-filter: blur(5px);
   background-color: rgba(255, 255, 255, 0.3);
@@ -727,34 +823,31 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //sborder: gold solid 3px;
 `;
 
 const StyledFileInput = styled.input`
   padding: 10px;
-  background-color: #fff5c9;
-  border: 1px solid #ccc;
+  background-color: #f6f8f8;
+  border: 1px solid #d7dde2;
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  color: #555;
+  color: #414141;
   font-size: 14px;
   font-weight: bold;
   cursor: pointer;
 
-  &:hover {
-    background-color: white;
-  }
-
   &::file-selector-button {
     padding: 10px;
-    background-color: #3467a1;
+    background-color: #5981b0;
     border: none;
-    color: #fff5c9;
+    color: #f6f8f8;
     border-radius: 5px;
     cursor: pointer;
 
     &:hover {
       background-color: #3467a1;
+      color: #f6f8f8;
     }
   }
 `;
@@ -768,7 +861,7 @@ const FileInputLabel = styled.label`
   display: inline-block;
   margin: 5px;
   &:hover {
-    background-color: #3467a1;
+    background-color: #5981b0;
   }
 `;
 
@@ -781,7 +874,6 @@ const Text = styled.div`
   display: inline-block;
   margin: 5px;
   &:hover {
-    background-color: #3467a1;
   }
 `;
 
@@ -803,14 +895,14 @@ const StyledInput = styled.input`
 const StyledSelect = styled.select`
   padding: 8px 12px;
   font-size: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #d7dde2;
   border-radius: 4px;
   margin-left: 8px;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: #3467a1;
+    border-color: #5981b0;
     box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
   }
 `;
@@ -827,7 +919,7 @@ const StyledDateInput = styled.input.attrs({
 
   &:focus {
     outline: none;
-    border-color: #3467a1;
+    border-color: #5981b0;
     box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
   }
 `;
@@ -838,8 +930,9 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  // border: 3px solid red;
   margin-top: 30px;
+  padding: 20px;
 `;
 
 export default Gallery;

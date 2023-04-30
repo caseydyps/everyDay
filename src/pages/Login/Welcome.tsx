@@ -52,7 +52,9 @@ function WelcomePage() {
           {hasSetup ? (
             <Wrap>
               <ColumnWrap>
-                <h1 style={{ color: '#1E3D6B' }}>Welcome home,</h1>
+                <h1 style={{ color: '#5981b0', fontFamily: 'Braah One' }}>
+                  Welcome home,
+                </h1>
                 <RowWrap>
                   <LinkButton to="/dashboard">Straight to Dashboard</LinkButton>
                 </RowWrap>

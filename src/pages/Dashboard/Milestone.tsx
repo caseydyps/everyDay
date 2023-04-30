@@ -488,13 +488,13 @@ function Milestone() {
             <FormField>
               <FormLabel>Member:</FormLabel>
               <MembersSelector onSelectMember={handlefilterSelectMember} />
-              <FormInput
+              {/* <FormInput
                 type="text"
                 value={filter.member}
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setFilter({ ...filter, member: e.target.value })
                 }
-              />
+              /> */}
             </FormField>
 
             <FormField>
@@ -532,53 +532,59 @@ function Milestone() {
                   icon={faCircleXmark}
                 ></AnimatedFontAwesomeIcon>
               </CancelButton>
-              <FormField>
-                <FormLabel>Title:</FormLabel>
-                <FormInput
-                  type="text"
-                  value={newEventTitle}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setNewEventTitle(e.target.value)
-                  }
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Date:</FormLabel>
-                <FormInput
-                  type="date"
-                  value={newEventDate}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setNewEventDate(e.target.value)
-                  }
-                />
-              </FormField>
-              <FormField>
-                <FormLabel>Member:</FormLabel>
-                <MembersSelector onSelectMember={handleSelectMember} />
-              </FormField>
-              <FormField>
-                <FormLabel>Image:</FormLabel>
-
-                {imagePreview ? (
-                  <AvatarPreview src={imagePreview} alt="Preview" />
-                ) : (
-                  <input
-                    type="file"
-                    onChange={(e) => {
-                      const files = e.target.files;
-                      if (files && files.length > 0) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          const fileUrl = reader.result as string;
-                          setFile(fileUrl);
-                        };
-                        reader.readAsDataURL(files[0]);
-                      }
-                    }}
+              <>
+                <FormField>
+                  <FormLabel>Title:</FormLabel>
+                  <FormInput
+                    type="text"
+                    value={newEventTitle}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setNewEventTitle(e.target.value)
+                    }
                   />
-                )}
-              </FormField>
-              <Button type="submit">
+                </FormField>
+                <FormField>
+                  <FormLabel>Date:</FormLabel>
+                  <FormInput
+                    type="date"
+                    value={newEventDate}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setNewEventDate(e.target.value)
+                    }
+                  />
+                </FormField>
+                <FormField>
+                  <FormLabel>Member:</FormLabel>
+                  <MembersSelector onSelectMember={handleSelectMember} />
+                </FormField>
+                <FormField>
+                  <FormLabel>Image:</FormLabel>
+
+                  {imagePreview ? (
+                    <AvatarPreview src={imagePreview} alt="Preview" />
+                  ) : (
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                          const reader = new FileReader();
+                          reader.onload = () => {
+                            const fileUrl = reader.result as string;
+                            setFile(fileUrl);
+                          };
+                          reader.readAsDataURL(files[0]);
+                        }
+                      }}
+                    />
+                  )}
+                </FormField>
+              </>
+
+              <Button
+                style={{ position: 'absolute', bottom: '25px', right: '150px' }}
+                type="submit"
+              >
                 {'新增事件'}
                 <AnimatedFontAwesomeIcon
                   icon={faPlusCircle}
@@ -613,10 +619,7 @@ function Milestone() {
                       style={{
                         position: 'absolute',
                         top: '50%',
-                        left:
-                          index % 2 === 0
-                            ? `${435}px`
-                            : `calc(100% - ${435}px)`,
+                        left: index % 2 === 0 ? `50%` : `50%`,
                         transform: 'translate(-50%, -50%)',
                       }}
                     ></Dot>
@@ -712,21 +715,35 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  // border: 3px solid red;
   margin-top: 30px;
+  position: relative;
+  justify-content: center;
+  align-items: center;
 `;
 
-const Wrap = styled(Card)`
-  background-color: rgba(52, 103, 161, 0.8);
+const Wrap = styled.div`
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
   display: flex;
-  min-width: 800px;
+  width: 700px;
+  padding: 20px;
   flex-direction: row;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-around;
   z-index: 2;
-  position: absolute;
-  top: 20%;
-  color: #fff;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #414141;
 `;
 
 const Header = styled.h1`
@@ -735,6 +752,7 @@ const Header = styled.h1`
   font-size: 24px;
   font-weight: bold;
   text-align: center;
+  width: 200px;
   color: #3467a1;
   border: 3px solid #3467a1;
   border-radius: 25px;
@@ -810,7 +828,7 @@ const EventBox = styled.div`
   position: relative;
   //box-shadow: 3px 3px 5px black; /* added box shadow */
   &:hover {
-    box-shadow: 0 0 10px #5995dd, 0 0 20px #5995dd, 0 0 40px #5995dd; /* added glow effect */
+    box-shadow: 0 0 10px #f6f8f8, 0 0 20px #f6f8f8, 0 0 40px #f6f8f8; /* added glow effect */
     transform: scale(1.05);
   }
 `;
@@ -872,7 +890,10 @@ const DateBox = styled.div`
 
 const Button = styled(DefaultButton)`
   margin: 5px;
-  border: 3px solid #1e3d6b;
+  border: 2px solid #5981b0;
+  :hover {
+    border: 2px solid #1e3d6b;
+  }
 `;
 
 const MoreButton = styled(DefaultButton)`
@@ -889,6 +910,8 @@ const CancelButton = styled(DefaultButton)`
   position: absolute;
   right: 0;
   top: 0;
+  background-color: transparent;
+  font-size: 20px;
 `;
 
 type ImageType = {
@@ -914,12 +937,13 @@ const Form = styled.form`
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: baseline;
 `;
 
 const FormField = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 10px;
+  margin-bottom: 10px;
 
   width: 400px;
 `;
@@ -927,6 +951,7 @@ const FormField = styled.div`
 const FormLabel = styled.label`
   font-size: 18px;
   margin-bottom: 5px;
+  margin-top: 20px;
 `;
 
 const FormInput: any = styled.input`
@@ -1038,7 +1063,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: 3px solid gold;
+  //border: 3px solid gold;
   /* background: linear-gradient(
     -45deg,
     #3467a1,

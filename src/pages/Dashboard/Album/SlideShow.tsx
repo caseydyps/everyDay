@@ -6,14 +6,46 @@ const SlideshowContainer = styled.div`
   height: 320px;
   width: 320px;
   overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  //border: 1px solid #d7dde2;
+`;
+
+const LargerViewContainer = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LargerViewImage = styled.img`
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
 `;
 
 const SlideshowImage = styled.img`
   position: absolute;
   top: 0;
   left: 0;
-  height: 500px;
-  width: 500px;
+  height: 322px;
+  width: 322px;
   border-radius: 10px;
   object-fit: cover;
 
@@ -30,6 +62,8 @@ const ThumbnailContainer = styled.div`
   justify-content: center;
   margin-top: 10px;
 `;
+
+const Wrap = styled.div``;
 
 const ThumbnailImage = styled.img`
   height: 70px;
@@ -69,9 +103,14 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
     };
   }, [activeIndex, interval, photos]);
   const [showSlideshow, setShowSlideshow] = useState(false);
+  const [showLargerView, setShowLargerView] = useState(false);
+
+  const handleImageClick = () => {
+    setShowLargerView(true);
+  };
 
   return (
-    <div>
+    <Wrap>
       <SlideshowContainer>
         {photos.map((photo, index) => (
           <SlideshowImage
@@ -79,7 +118,7 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
             src={photo.url}
             alt={`Slide ${index}`}
             className={index === activeIndex ? 'active' : ''}
-            style={{ width: '300px', height: '300px' }}
+            style={{ width: '320px', height: '320px' }}
           />
         ))}
       </SlideshowContainer>
@@ -97,7 +136,18 @@ const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
           />
         ))}
       </ThumbnailContainer>
-    </div>
+      {showLargerView && (
+        <LargerViewContainer>
+          <LargerViewImage
+            src={photos[activeIndex].url}
+            alt={`Larger view of slide ${activeIndex}`}
+          />
+          <CloseButton onClick={() => setShowLargerView(false)}>
+            Close
+          </CloseButton>
+        </LargerViewContainer>
+      )}
+    </Wrap>
   );
 };
 

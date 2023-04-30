@@ -9,6 +9,7 @@ import SideNav from '../../../Components/Nav/SideNav';
 import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
 import DefaultButton from '../../../Components/Button/Button';
+import { AddButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import {
   collection,
@@ -35,7 +36,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
 `;
 
 const Wrap = styled.div`
@@ -52,19 +53,20 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //border: gold solid 3px;
 `;
 
 const AddListButton: any = styled(DefaultButton)`
-  padding: 10px;
-  margin-left: 300px;
-  width: 70px;
-  height: 70px;
+  padding: 5px;
+  margin-left: 20px;
+  width: 120px;
+  height: 50px;
   position: sticky;
-  border-radius: 50%;
-  color: #3467a1;
-  background-color: rgba(255, 245, 201, 0.8);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+  border-radius: 25px;
+  color: #5981b0;
+  background-color: #f6f8f8;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
 const Input = styled.input`
@@ -378,9 +380,13 @@ const Todo = () => {
       <Wrapper>
         <Banner title="Todo" subTitle="Get Things Done"></Banner>
 
-        <AddListButton onClick={() => addList(dispatch)}>
-          <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon>
-        </AddListButton>
+        <AddButton
+          style={{ marginLeft: '10px' }}
+          onClick={() => addList(dispatch)}
+        >
+          Add List
+          {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
+        </AddButton>
 
         <DragNDrop
           data={data}

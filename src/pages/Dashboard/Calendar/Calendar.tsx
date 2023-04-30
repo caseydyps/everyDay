@@ -32,6 +32,7 @@ import {
   faPenToSquare,
   faTrashCan,
   faCircleXmark,
+  faCircleInfo,
   faEllipsis,
   faChevronRight,
   faChevronLeft,
@@ -39,7 +40,11 @@ import {
 import HourlyView from './HourView';
 import DailyHourlyView from './DailyHourView';
 import Layout from '../../../Components/layout';
-import DefaultButton from '../../../Components/Button/Button';
+import DefaultButton, {
+  CancelButton,
+  AddButton,
+  CloseButton,
+} from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import SideNav from '../../../Components/Nav/SideNav';
 const CalendarContainer = styled.div`
@@ -119,9 +124,15 @@ const ColumnWrap = styled.div`
   flex-direction: column;
 `;
 
+const MonthColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const Button = styled.button`
   margin-top: 10px;
   border: none;
+  z-index: 5;
   background-color: transparent;
   cursor: pointer;
   font-size: 1rem;
@@ -188,8 +199,8 @@ const InfoButton = styled(DefaultButton)`
     color: rgba(255, 255, 255, 0.75);
   }
   position: absolute;
-  right: 0px;
-  top: 0px;
+  right: 200px;
+  top: 300px;
 `;
 
 const Table = styled.table`
@@ -208,6 +219,8 @@ const Th = styled.thead`
 `;
 
 const Td = styled.td`
+  max-width: 100px;
+  max-height: 100px;
   width: 100px;
   height: 100px;
   justify-content: center;
@@ -249,7 +262,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //border: gold solid 3px;
 `;
 
 const Wrap = styled.div`
@@ -258,7 +271,7 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
 
   // background-color: rgba(64, 64, 64, 0.5);
 `;
@@ -297,29 +310,33 @@ const MenuWrap = styled.div`
 
 const Menu = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   position: fixed;
   top: 50%;
   left: 50%;
-  z-index: 2;
-  width: 300px;
-  background-color: #f6f8f8;
-  border-radius: 25px;
-  height: 200px;
   transform: translate(-50%, -50%);
+  width: 300px;
+  height: 400px;
+  padding: 25px;
+  border-radius: 20px;
+  //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: #1e3d6b;
+  border: 1px solid #d7dde2;
+  z-index: 2;
 `;
 
-const AddButton = styled(DefaultButton)`
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  cursor: pointer;
-  margin: 10px;
-  color: #5981b0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-`;
+// const AddButton = styled(DefaultButton)`
+//   border: none;
+//   border-radius: 20px;
+//   padding: 10px 20px;
+//   cursor: pointer;
+//   margin: 10px;
+//   color: #f6f8f8;
+//   background-color: #5981b0;
+//   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+// `;
 
 const Modal = styled.div`
   display: flex;
@@ -329,16 +346,25 @@ const Modal = styled.div`
 const ModalForm = styled.form`
   position: absolute;
   z-index: 3;
-  background-color: #3467a1;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
   border-radius: 10px;
-  box-shadow: 3px 3px 5px black;
-  padding: 20px;
+  //box-shadow: 3px 3px 5px black;
+  padding: 30px 30px;
   color: #f5f5f5;
-  width: 500px;
+  width: 400px;
 
   label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    color: #414141;
   }
 
   input[type='text'],
@@ -353,16 +379,6 @@ const ModalForm = styled.form`
     width: 100%;
     margin-bottom: 10px;
   }
-
-  button[type='submit'] {
-    background-color: #fff5c9;
-    border: none;
-    border-radius: 15px;
-    color: #3467a1;
-    cursor: pointer;
-    font-size: 16px;
-    padding: 10px 20px;
-  }
 `;
 
 interface EventWrapperProps {
@@ -370,6 +386,7 @@ interface EventWrapperProps {
   multiDay?: boolean;
   finished?: boolean;
 }
+
 const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
   align-items: center;
@@ -384,17 +401,13 @@ const EventWrapper = styled.div<EventWrapperProps>`
   }
   justify-content: space-between;
 
-  background-color: ${({ category }) => {
-    switch (category) {
-      case 'Work':
-        return '#7fc7af';
-      case 'Personal':
-        return '#d95b43';
-      case 'School':
-        return '#fff5c9';
-      default:
-        return 'white';
-    }
+  background-color: ${({ member, members }) => {
+    const memberIndex = members.findIndex((m) => m.role === member) % 5;
+    console.log(members);
+    console.log(member);
+    console.log(memberIndex);
+    const colors = ['#7fc7af', '#d95b43', '#fff5c9', '#6189c5', '#af7ac7'];
+    return colors[memberIndex];
   }};
   ${({ multiDay }) =>
     multiDay
@@ -406,8 +419,7 @@ const EventWrapper = styled.div<EventWrapperProps>`
       : `
         border: 1px solid #1E3D6B;
         margin: 0px;
-        background-color: #6189c5;
-        
+     
         
 
         
@@ -415,8 +427,8 @@ const EventWrapper = styled.div<EventWrapperProps>`
 `;
 
 const EventTime = styled.div`
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
 `;
 
 const ViewSelect = styled.select`
@@ -454,7 +466,7 @@ const DateDetailsWrapper = styled.div`
   width: 100px;
   height: 100px;
   margin-top: 20px;
-  border: 2px solid #3467a1;
+  //border: 2px solid #3467a1;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -474,9 +486,21 @@ const EventTitle = styled.div<EventTitleProps>`
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
 `;
 
+const DetailTitle = styled.div<EventTitleProps>`
+  font-size: 24px;
+  font-weight: bold;
+  color: #f6f8f8;
+  margin-bottom: 10px;
+  color: ${({ finished }) => (finished ? 'gray' : 'black')};
+`;
+
 const EventMember = styled.div`
   font-size: 16px;
   color: blue;
+`;
+
+const DetailMember = styled.div`
+  margin-bottom: 10px;
 `;
 
 const CenterWrap = styled.div`
@@ -495,9 +519,9 @@ const BannerWrap = styled.div`
 
 const EventList = styled.ul`
   list-style-type: none;
-  /* padding: 5px; */
+  padding: 5px;
   height: 100px;
-  width: 100px;
+  width: 95px;
   padding-left: 0px;
   margin: 5px 0px;
   font-size: 20px;
@@ -758,32 +782,27 @@ function Calendar() {
       ) : null;
     };
 
-    // const handleInfoClick = (e, eventObj) => {
-    //   e.stopPropagation();
+    const DetailMember: React.FC<EventMemberProps> = ({
+      members,
+      memberRole,
+    }) => {
+      const member = members.find((m) => m.role === memberRole);
+      return member ? (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <MemberAvatar
+            style={{ width: '48px', height: '48px' }}
+            src={member.avatar}
+            alt={member.role}
+          />
+          <span
+            style={{ color: '#F6F8F8', paddingLeft: '10px', fontSize: '20px' }}
+          >
+            {member.role}
+          </span>
+        </div>
+      ) : null;
+    };
 
-    //   const eventDetail = renderToString(
-    //     <EventDetails
-    //       eventObj={eventObj}
-    //       handleEditEvent={handleEditEvent}
-    //       handleDeleteEvent={handleDeleteEvent}
-    //     />
-    //   );
-
-    //   Swal.fire({
-    //     html: eventDetail,
-    //     confirmButtonText: 'OK',
-    //     confirmButtonColor: '#1E3D6B',
-    //     focusConfirm: false,
-    //     allowOutsideClick: false,
-    //     background: '#F6F8F8',
-    //     padding: '1rem',
-    //     width: '300px',
-    //     height: '200px',
-    //     heightAuto: false,
-    //     position: 'center',
-    //     reverseButtons: true,
-    //   });
-    // };
     return (
       <DateDetailsWrapper
         onDragOver={handleDragOver}
@@ -800,21 +819,66 @@ function Calendar() {
                   <MenuWrap>
                     {showButtons && (
                       <Menu>
-                        <EventTitle finished={event.finished}>
-                          {event.title}
-                        </EventTitle>
-                        <EventMember
+                        <DetailMember
                           members={membersArray}
                           memberRole={event.member}
-                        ></EventMember>
-                        <EventTime>{event.time}</EventTime>
-                        <EventTime>{`~${event.endTime}`}</EventTime>
-                        <Button onClick={() => handleEditEvent(event)}>
-                          <FontAwesomeIcon icon={faEdit} />
-                        </Button>
-                        <Button onClick={() => handleDeleteEvent(event)}>
-                          <FontAwesomeIcon icon={faTrashCan} />
-                        </Button>
+                        ></DetailMember>
+
+                        <DetailTitle
+                          style={{
+                            color: '#f6f8f8',
+                            fontSize: '20px',
+                            paddingLeft: '10px',
+                          }}
+                          finished={event.finished}
+                        >
+                          Event: {event.title}
+                        </DetailTitle>
+                        <EventTime
+                          style={{
+                            color: '#f6f8f8',
+                            fontSize: '20px',
+                            paddingLeft: '10px',
+                          }}
+                        >
+                          Start date: {event.date}
+                        </EventTime>
+                        <EventTime
+                          style={{
+                            color: '#f6f8f8',
+                            fontSize: '20px',
+                            paddingLeft: '10px',
+                          }}
+                        >
+                          Start time:{event.time}
+                        </EventTime>
+                        <EventTime
+                          style={{
+                            color: '#f6f8f8',
+                            fontSize: '20px',
+                            paddingLeft: '10px',
+                          }}
+                        >
+                          End date: {event.endDate}
+                        </EventTime>
+                        <EventTime
+                          style={{
+                            color: '#f6f8f8',
+                            fontSize: '20px',
+                            paddingLeft: '10px',
+                          }}
+                        >
+                          End time: {`${event.endTime}`}
+                        </EventTime>
+                        <RowWrap>
+                          <Button onClick={() => handleEditEvent(event)}>
+                            <FontAwesomeIcon icon={faEdit} />
+                          </Button>
+                          <Button onClick={() => handleDeleteEvent(event)}>
+                            <FontAwesomeIcon icon={faTrashCan} />
+                          </Button>
+                        </RowWrap>
+
                         <ExitButton
                           onClick={() => setShowButtons(!showButtons)}
                         >
@@ -827,6 +891,8 @@ function Calendar() {
                     draggable={!event.multiDay}
                     onDragStart={(e) => handleDragStart(e, event.id)}
                     category={event.category}
+                    member={event.member}
+                    members={membersArray}
                     finished={event.finished}
                     multiDay={event.date !== event.endDate}
                     onClick={() => setShowButtons(!showButtons)}
@@ -882,8 +948,13 @@ function Calendar() {
       text-align: left;
       align-items: center;
       font-size: 16px;
-      height: 250px;
-      width: 150px;
+      height: 220px;
+      width: 180px;
+      overflow-y: scroll;
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
       background-color: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -915,8 +986,10 @@ function Calendar() {
       background-color: #3467a1;
       color: #f5f5f5;
       border-radius: 15px;
-      border: 3px solid #f5f5f5;
+      border: 2px solid #f5f5f5;
       padding: 10px;
+      position: relative;
+      height: 50px;
     `;
 
     const Member = styled.span`
@@ -950,20 +1023,42 @@ function Calendar() {
     }) => {
       const member = members.find((m) => m.role === memberRole);
       return member ? (
-        <MemberAvatar src={member.avatar} alt={member.role} />
+        <MemberAvatar
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+          }}
+          src={member.avatar}
+          alt={member.role}
+        />
+      ) : null;
+    };
+    const EventRole: React.FC<EventMemberProps> = ({ members, memberRole }) => {
+      const member = members.find((m) => m.role === memberRole);
+      return member ? (
+        <span
+          style={{
+            position: 'absolute',
+            top: '45px',
+            right: '15px',
+            fontSize: '12px',
+          }}
+        >
+          {member.role}
+        </span>
       ) : null;
     };
 
     return (
-      <ColumnWrap>
+      <MonthColumnWrap>
         <MonthWrap>
           <Title>
             {selectedDate
               .toLocaleDateString('en-US', {
                 timeZone: 'Asia/Taipei',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
+                month: 'short',
+                day: 'numeric',
               })
               .replace(/\//g, '-')}
           </Title>
@@ -1022,15 +1117,45 @@ function Calendar() {
                       members={membersArray}
                       memberRole={event.member}
                     ></EventMember>
-                    <EventDetails>
-                      {event.title} - {event.date} ~ {event.endDate} at{' '}
+                    <EventRole
+                      members={membersArray}
+                      memberRole={event.member}
+                    ></EventRole>
+
+                    <EventDetails
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        fontSize: '20px',
+                      }}
+                    >
+                      {event.title}
+                    </EventDetails>
+                    <EventDetails
+                      style={{
+                        position: 'absolute',
+                        top: '40px',
+                        left: '12px',
+                        fontSize: '12px',
+                        color: '#414141',
+                      }}
+                    >
                       {event.time}
                     </EventDetails>
                   </EventListItem>
                 ))}
             </EventList>
           ) : (
-            <NoEvents>There are no events for the selected date.</NoEvents>
+            <>
+              <NoEvents>No event for the selected date.</NoEvents>
+              <AddButton
+                style={{ position: 'absolute', bottom: '0px', right: '0px' }}
+                onClick={handleAddEvent}
+              >
+                Add Event
+              </AddButton>
+            </>
           )}
         </MonthWrap>
 
@@ -1038,24 +1163,58 @@ function Calendar() {
           <Title>{`${months[date.getMonth()]} ${date.getFullYear()}`}</Title>
           {selectedMonthEvents.length > 0 ? (
             <EventList>
-              {selectedMonthEvents.map((event, index: number) => (
-                <EventListItem key={index}>
-                  <EventMember
-                    members={membersArray}
-                    memberRole={event.member}
-                  ></EventMember>
-                  <EventDetails>
-                    {event.title} - {event.date} ~ {event.endDate} at{' '}
-                    {event.time}
-                  </EventDetails>
-                </EventListItem>
-              ))}
+              {selectedMonthEvents
+                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .map((event, index: number) => (
+                  <EventListItem key={index}>
+                    <EventMember
+                      members={membersArray}
+                      memberRole={event.member}
+                    ></EventMember>
+                    <EventRole
+                      members={membersArray}
+                      memberRole={event.member}
+                    ></EventRole>
+                    <EventDetails
+                      style={{
+                        position: 'absolute',
+                        top: '10px',
+                        left: '10px',
+                        fontSize: '20px',
+                      }}
+                    >
+                      {event.title}
+                    </EventDetails>
+                    <EventDetails
+                      style={{
+                        position: 'absolute',
+                        top: '40px',
+                        left: '80px',
+                        fontSize: '12px',
+                        color: '#414141',
+                      }}
+                    >
+                      {event.time}
+                    </EventDetails>
+                    <EventDetails
+                      style={{
+                        position: 'absolute',
+                        top: '40px',
+                        left: '12px',
+                        fontSize: '12px',
+                        color: '#F6F8F8',
+                      }}
+                    >
+                      {event.date}
+                    </EventDetails>
+                  </EventListItem>
+                ))}
             </EventList>
           ) : (
             <NoEvents>這個月目前沒有活動</NoEvents>
           )}
         </MonthWrap>
-      </ColumnWrap>
+      </MonthColumnWrap>
     );
   }
 
@@ -1366,7 +1525,7 @@ function Calendar() {
 
   const handleInfoClick = () => {
     Swal.fire({
-      html: 'You can drag the box to change its position.',
+      html: 'Reschedule your event by dragging and dropping it to the desired time slot. Click on the event for more details, or edit and delete it.',
       confirmButtonText: 'OK',
       confirmButtonColor: '#5981b0',
       focusConfirm: false,
@@ -1375,7 +1534,7 @@ function Calendar() {
       iconColor: '#5981b0',
       background: '#F6F8F8',
       padding: '1rem',
-      width: '300px',
+      width: '400px',
       height: '200px',
       heightAuto: false,
       position: 'center',
@@ -1421,6 +1580,13 @@ function Calendar() {
           {showModal && (
             <Modal>
               <ModalForm onSubmit={handleEventSubmit}>
+                <CloseButton
+                  style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '10px',
+                  }}
+                ></CloseButton>
                 <label>
                   Title:
                   <input
@@ -1429,14 +1595,14 @@ function Calendar() {
                     onChange={(e) => setEventTitle(e.target.value)}
                   />
                 </label>
-                <label>
+                {/* <label>
                   <input
                     type="checkbox"
                     checked={isAllDay}
                     onChange={(e) => setIsAllDay(e.target.checked)}
                   />
                   All Day Event
-                </label>
+                </label> */}
                 <label>
                   Start:
                   <input
@@ -1454,7 +1620,7 @@ function Calendar() {
                   />
                 </label>
                 <label>
-                  Time:
+                  Start Time:
                   <input
                     type="time"
                     value={eventTime}
@@ -1463,7 +1629,7 @@ function Calendar() {
                   />
                 </label>
                 <label>
-                  Time:
+                  End Time:
                   <input
                     type="time"
                     value={eventEndTime}
@@ -1488,8 +1654,9 @@ function Calendar() {
                   Member:
                   <MembersSelector onSelectMember={handleSelectMember} />
                 </label>
-
-                <DefaultButton type="submit">Add</DefaultButton>
+                <Wrap>
+                  <AddButton type="submit">Add</AddButton>
+                </Wrap>
               </ModalForm>
             </Modal>
           )}

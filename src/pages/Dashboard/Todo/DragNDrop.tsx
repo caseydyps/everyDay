@@ -66,9 +66,20 @@ const colors = ['#F7D44C', '#EB7A53', '#98B7DB', '#A8D672', '#F6ECC9'];
 
 const Button = styled(DefaultButton)`
   display: flex;
-  // justify-content: space-between;
+  background-color: transparent;
   margin: 20px;
-  flex:direction: column;
+  border-radius: 50%;
+  flex-direction: column;
+  font-size: 20px;
+`;
+
+const CloseButton = styled(DefaultButton)`
+  display: flex;
+  background-color: transparent;
+  margin: 20px;
+  border-radius: 50%;
+  flex-direction: column;
+  font-size: 20px;
 `;
 
 const RowButton = styled(DefaultButton)`
@@ -76,10 +87,12 @@ const RowButton = styled(DefaultButton)`
   justify-content: space-between;
   margin: 0px;
   flex-direction: column;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   background-color: transparent;
   box-shadow: none;
+  color: #5981b0;
+  font-size: 20px;
 `;
 
 const DragNDropGroup: any = styled.div`
@@ -87,10 +100,19 @@ const DragNDropGroup: any = styled.div`
   flex-direction: column;
   width: 80%;
   height: auto;
+  min-height: 100px;
   padding: 10px;
   margin: 10px;
-  background-color: transparent;
-  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  //border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 20px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  //border-radius: 5px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
 
@@ -101,7 +123,7 @@ type DragNDropItemProps = {
 const DragNDropItem: any = styled.div<DragNDropItemProps>`
   height: 80px;
   margin: 25px;
-  background-color: grey;
+  background-color: #5981b0;
   position: relative;
   border-radius: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
@@ -182,7 +204,7 @@ const Checkbox = styled.div`
 const Avatar = styled.img`
   width: 50px;
   height: 50px;
-  margin-right: 1rem;
+  margin-right: 10px;
   flex-shrink: 0;
 `;
 
@@ -194,7 +216,7 @@ const ColumnWrap = styled.div`
 
   height: auto;
   width: 100%;
-  border: 3px solid #f6ecc9;
+  //border: 3px solid #f6ecc9;
 `;
 const ItemTextWrap = styled.div`
   display: flex;
@@ -211,7 +233,7 @@ const RowWrap = styled.div`
   flex-direction: row;
   position: absolute;
   margin: 0 auto;
-  top: -15px;
+  top: 0px;
   z-index: 3;
 `;
 
@@ -350,7 +372,7 @@ function DragNDrop({ data }: any) {
           );
           dragItem.current = targetItem;
         }
-        localStorage.setItem('List', JSON.stringify(newList));
+        // localStorage.setItem('List', JSON.stringify(newList));
         return newList;
       });
     }
@@ -751,7 +773,7 @@ function DragNDrop({ data }: any) {
     return (
       <ColumnWrap>
         <HideButton onClick={() => setHideChecked(!hideChecked)}>
-          {hideChecked ? '顯示完成' : '隱藏完成'}
+          {hideChecked ? 'Show Done' : 'Hide Done'}
         </HideButton>
         <DragNDropWrapper>
           {list.map((group, groupIndex) => (
@@ -765,14 +787,29 @@ function DragNDrop({ data }: any) {
                 </h4>
               </ListInfoWrap>
               {getListProgress(group)}
+
               {showAdd ? (
-                <AddItemForm groupIndex={groupIndex} onAddItem={addItem} />
+                <>
+                  <Button onClick={() => setShowAdd(!showAdd)}>
+                    <FontAwesomeIcon icon={faCircleXmark} />
+                  </Button>
+
+                  <AddItemForm
+                    groupIndex={groupIndex}
+                    onAddItem={(item) => {
+                      addItem(groupIndex, item);
+                      setShowAdd(false);
+                    }}
+                  />
+                </>
               ) : null}
               <ListRowWrap style={{ height: '80px', margin: '0px' }}>
                 <Button onClick={() => deleteList(groupIndex)}>
                   <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
                 </Button>
-                <Button onClick={showAddSection}>Add</Button>
+                <Button onClick={showAddSection}>
+                  <FontAwesomeIcon icon={faCirclePlus}></FontAwesomeIcon>
+                </Button>
                 <Button
                   onClick={() =>
                     setSortOrder(
@@ -855,15 +892,11 @@ function DragNDrop({ data }: any) {
                             backgroundColor: item.done
                               ? 'rgba(128, 128, 128, 0.5)'
                               : isOverdue
-                              ? '#c2c2c2'
-                              : '#c2c2c2',
+                              ? '#1E3D6B'
+                              : '#1E3D6B',
                             // backgroundColor: 'white',
 
-                            color: item.done ? '#737373' : 'black',
-                            boxShadow:
-                              isOverdue && !item.done
-                                ? '0 0 8px 5px rgba(232, 55, 55, 0.522)' // create a red glow when overdue
-                                : 'none', // no shadow when not overdue
+                            color: item.done ? '#737373' : '#F6F8F8',
                           }}
                         >
                           <ColumnWrap>
@@ -887,7 +920,26 @@ function DragNDrop({ data }: any) {
 
                             <ItemTextWrap>
                               {item.due ? (
-                                <DueText>{formatDate(item.due)}</DueText>
+                                <DueText
+                                  style={{
+                                    display:
+                                      hideChecked && item.done
+                                        ? 'none'
+                                        : 'block',
+                                    backgroundColor: item.done
+                                      ? 'rgba(128, 128, 128, 0.5)'
+                                      : isOverdue
+                                      ? 'rgba(232, 55, 55, 0.522)'
+                                      : '#1E3D6B',
+                                    border: item.done
+                                      ? '1px solid #737373'
+                                      : '1px solid #F6F8F8',
+
+                                    color: item.done ? '#737373' : '#F6F8F8',
+                                  }}
+                                >
+                                  {formatDate(item.due)}
+                                </DueText>
                               ) : (
                                 <DueText>No due</DueText>
                               )}
@@ -898,7 +950,7 @@ function DragNDrop({ data }: any) {
                                 <FontAwesomeIcon icon={faEllipsis} />
                               </MoreButton>
 
-                              <Text
+                              <EventTitle
                                 style={{
                                   textDecoration: item.done
                                     ? 'line-through'
@@ -906,7 +958,7 @@ function DragNDrop({ data }: any) {
                                 }}
                               >
                                 {item.text}
-                              </Text>
+                              </EventTitle>
                             </ItemTextWrap>
 
                             {showMore && (
@@ -990,15 +1042,17 @@ function DragNDrop({ data }: any) {
 
 const HideButton = styled(DefaultButton)`
   height: auto;
-
+  color: #5981b0;
+  border: 2px solid #5981b0;
   margin-top: 10px;
+  padding: 10px;
   max-width: 150px;
 `;
 
 const List = styled.div`
   width: 300px;
   background-color: transparent;
-  border: 3px solid blue;
+  // border: 3px solid blue;
   height: 100%;
 `;
 
@@ -1009,12 +1063,21 @@ const Text = styled.div`
   margin-right: 0px;
 `;
 
+const EventTitle = styled.div`
+  font-size: 24px;
+  margin-top: -10px;
+  margin-bottom: 5px;
+  margin-right: 10px;
+`;
+
 const DueText = styled.div`
   font-size: 12px;
   margin-top: -10px;
   margin-bottom: 5px;
-  border: 1px solid black;
+  margin-left: 5px;
+  border: 1px solid #f6f8f8;
   border-radius: 5px;
+  color: #f6f8f8;
 `;
 
 const CheckboxContainer = styled.div`
@@ -1030,8 +1093,8 @@ const MoreButton = styled(DefaultButton)`
   background-color: transparent;
   color: white;
   position: absolute;
-  top: -40px;
-  right: 10px;
+  top: -10px;
+  right: 20px;
 `;
 
 const CheckboxInput = styled.input`

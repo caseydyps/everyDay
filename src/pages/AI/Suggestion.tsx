@@ -6,6 +6,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { getStorage, ref } from 'firebase/storage';
+import LoadingAnimation from '../../Components/loading';
 import { getDownloadURL, uploadBytes } from 'firebase/storage';
 import {
   collection,
@@ -50,7 +51,9 @@ const Suggestion = () => {
     { id: string; title: string; date: Date; member: string; image: string }[]
   >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
+  const [calendarData, setCalendarData] = useState<Todo[]>([]);
   const moment = require('moment');
+  const [isLoading, setIsLoading] = useState(false);
   const {
     user,
     userName,
@@ -86,7 +89,7 @@ const Suggestion = () => {
     }
 
     fetchData();
-  }, []);
+  }, [familyId]);
 
   const getTodosData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'todo');
@@ -101,6 +104,13 @@ const Suggestion = () => {
     completed: boolean;
   }
 
+  const getCalendarData = async () => {
+    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+    const querySnapshot = await getDocs(familyDocRef);
+    const calendarData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return calendarData;
+  };
+
   useEffect(() => {
     const fetchTodosData = async () => {
       const todoData = await getTodosData();
@@ -114,58 +124,46 @@ const Suggestion = () => {
       );
     };
     fetchTodosData();
-  }, []);
+  }, [familyId]);
 
-  const calendarData = [
-    {
-      event: 'Doctor Appointment',
-      category: '#Calendar',
-      startTime: moment('2023-04-07 11:00').toDate(),
-      endTime: moment('2023-04-07 12:00').toDate(),
-      members: ['mom', 'baby'],
-      response: 'Appointment scheduled',
-    },
-    {
-      event: 'Playgroup',
-      category: '#Calendar',
-      startTime: moment('2023-04-10 10:00').toDate(),
-      endTime: moment('2023-04-10 11:30').toDate(),
-      members: ['dad', 'baby'],
-      response: 'Playgroup scheduled',
-    },
-    {
-      event: 'Baby Shower',
-      category: '#Calendar',
-      startTime: moment('2023-04-15 14:00').toDate(),
-      endTime: moment('2023-04-15 16:00').toDate(),
-      members: ['mom', 'dad'],
-      response: 'Shower scheduled',
-    },
-  ];
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      const calendarData = await getCalendarData();
+      console.log(calendarData);
+      setCalendarData(calendarData);
+    };
+    fetchCalendarData();
+  }, [familyId]);
 
-  const stickyNotesData = [
-    {
-      title: 'Grocery List',
-      category: '#StickyNotes',
-      content: 'Milk\nEggs\nBread',
-      response: 'Note added',
-    },
-    {
-      title: 'To-do List',
-      category: '#StickyNotes',
-      content: 'Buy baby clothes\nSchedule daycare tour\nResearch strollers',
-      response: 'Note added',
-    },
-    {
-      title: 'Important Dates',
-      category: '#StickyNotes',
-      content: 'Due date: 2023-07-01\nBaby shower: 2022-04-15',
-      response: 'Note added',
-    },
-  ];
+  // const calendarData = [
+  //   {
+  //     event: 'Doctor Appointment',
+  //     category: '#Calendar',
+  //     startTime: moment('2023-04-07 11:00').toDate(),
+  //     endTime: moment('2023-04-07 12:00').toDate(),
+  //     members: ['mom', 'baby'],
+  //     response: 'Appointment scheduled',
+  //   },
+  //   {
+  //     event: 'Playgroup',
+  //     category: '#Calendar',
+  //     startTime: moment('2023-04-10 10:00').toDate(),
+  //     endTime: moment('2023-04-10 11:30').toDate(),
+  //     members: ['dad', 'baby'],
+  //     response: 'Playgroup scheduled',
+  //   },
+  //   {
+  //     event: 'Baby Shower',
+  //     category: '#Calendar',
+  //     startTime: moment('2023-04-15 14:00').toDate(),
+  //     endTime: moment('2023-04-15 16:00').toDate(),
+  //     members: ['mom', 'dad'],
+  //     response: 'Shower scheduled',
+  //   },
+  // ];
 
   console.log(`這是我的家庭資料庫，包含了以下資料：
-  行事曆資料庫:${JSON.stringify(todoData)}`);
+  行事曆資料庫:${JSON.stringify(calendarData)}`);
   const runPrompt = async () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -177,25 +175,22 @@ const Suggestion = () => {
       console.log('智慧建議');
       const prompt = `  
       這是我家庭的資料庫，裡面有以下資料：
-     
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    - 記事本資料庫: ${JSON.stringify(stickyNotesData)}
-    - 里程碑資料庫: ${JSON.stringify(milestoneData)}
+   
     請使用以上資料庫,並用下方方式回答
     
 1. ${formattedDate}有哪些行程安排？附上今天的事件/時間/參與者。
-2.1. 從${formattedDate}開始的七天有哪些行程安排？附上未來七天的事件/時間/參與者還有${formattedDate}跟${formattedDate}七天後日期。
+2. 從${formattedDate}開始的七天有哪些行程安排？附上未來七天的事件/時間/參與者還有${formattedDate}跟${formattedDate}七天後日期。
 
 以下請用自然語言格式回答：
 
 {
-  "Q1": "今日行程：...",
-  "Q2": "未來七天行程：...",
+ "今日行程：...",
+"未來七天行程：...",
 }
-   
-    
       `;
+      console.log('智慧建議' + prompt);
 
       // 2. 下週有哪些行程安排？請附上下週的事件/時間/參與者。
       // 3. 是否有任何待辦事項需要處理？請附上未完成事件/到期時間/參與者。
@@ -207,7 +202,7 @@ const Suggestion = () => {
       const response = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt,
-        max_tokens: 500,
+        max_tokens: 1000,
         temperature: 0.5,
       });
 
@@ -222,12 +217,10 @@ const Suggestion = () => {
       今天是 ${formattedDate}
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    - 記事本資料庫: ${JSON.stringify(stickyNotesData)}
-    - 里程碑資料庫: ${JSON.stringify(milestoneData)}
-    請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻
-   
     
+    請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻
       `;
+      console.log(prompt);
 
       const response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
@@ -239,7 +232,7 @@ const Suggestion = () => {
           {
             role: 'user',
             content: `${prompt}
-        請用幽默的口吻,依照資料庫回答使用者的問題:${inputValue},回答時請附上事件發生日期/時間`,
+        請依照資料庫回答使用者的問題:${inputValue},回答時請附上事件發生日期/時間(如果有,不要年份)/參與者(如果有)`,
           },
         ],
         temperature: 0.5,
@@ -251,6 +244,7 @@ const Suggestion = () => {
       // const parsedResponse = JSON.parse(parsableJSONresponse);
       // console.log('parsedResponse:', parsedResponse);
       setResponseValue(response.data.choices[0].message.content);
+      setIsLoading(false);
       //console.log('Responses: ', parsedResponse.R);
     }
   };
@@ -263,25 +257,18 @@ const Suggestion = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     runPrompt();
+    setIsLoading(true);
   };
 
   const handleRedo = () => {
     setInputValue(''); // reset input value
     setResponseValue(''); // reset response value
+    setIsLoading(false);
   };
 
   return (
     <Container>
       <Card>
-        {/* <p
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          智慧建議
-        </p> */}
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>
             <Input
@@ -305,7 +292,9 @@ const Suggestion = () => {
           </div>
         </InputForm>
 
-        {responseValue && (
+        {isLoading ? (
+          <LoadingAnimation />
+        ) : responseValue ? (
           <Response>
             <Text>{responseValue}</Text>
             <div
@@ -320,7 +309,7 @@ const Suggestion = () => {
               </DefaultButton>
             </div>
           </Response>
-        )}
+        ) : null}
       </Card>
     </Container>
   );
@@ -343,6 +332,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
   background-color: transparent;
+  flex: 1;
 `;
 
 const Card = styled.div`
@@ -351,8 +341,16 @@ const Card = styled.div`
   border-radius: 10px;
   font-size: 36px;
   //box-shadow: 3px 3px 5px black;
-  background-color: #f6f8f8;
-  backdrop-filter: blur(5px);
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+
   position: relative;
   z-index: 1;
   p {

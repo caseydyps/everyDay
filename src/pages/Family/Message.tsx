@@ -23,7 +23,7 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   align-items: center;
   justify-content: ${(props) => (props.isSent ? 'flex-end' : 'flex-start')};
   max-width: 70%;
-  height: 50px;
+  height: 30px;
   margin: 0 auto;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
@@ -33,9 +33,9 @@ const MessageBubble = styled.div<MessageBubbleProps>`
 
   background-color: ${(props) =>
     props.isSent
-      ? '#90CAF9'
+      ? '#5981b0'
       : 'linear-gradient(rgb(255, 143, 178) 0%, rgb(167, 151, 255) 50%, rgb(0, 229, 255) 100%)'};
-  color: ${(props) => (props.isSent ? 'white' : 'black')};
+  color: ${(props) => (props.isSent ? '#F6F8F8' : '#414141')};
   backdrop-filter: blur(8px);
   ${({ isSent }) =>
     isSent

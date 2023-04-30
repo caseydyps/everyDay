@@ -60,19 +60,19 @@ const SideNav = () => {
             <StyledNavLink activeClassName="active" to="/dashboard">
               <FontAwesomeIcon icon={faTable} />
 
-              <Text> DASHBOARD</Text>
+              <Text> Dashboard</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/calendar">
               <FontAwesomeIcon icon={faCalendarDays} />
-              <Text> CALENDAR</Text>
+              <Text> Calendar</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/todo">
               <FontAwesomeIcon icon={faListCheck} />
-              <Text> TODO</Text>
+              <Text> Todo</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
@@ -92,18 +92,18 @@ const SideNav = () => {
             <StyledNavLink activeClassName="active" to="/gallery">
               <FontAwesomeIcon icon={faImage} />
 
-              <Text> GALLERY</Text>
+              <Text> Gallery</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/chat">
               <FontAwesomeIcon icon={faComments} />
-              <Text> CHAT</Text>
+              <Text> Chat</Text>
             </StyledNavLink>
           </NavItem>
           <NavItem>
             <StyledNavLink activeClassName="active" to="/milestone">
-              <FontAwesomeIcon icon={faTimeline} /> TIME MACHINE
+              <FontAwesomeIcon icon={faTimeline} /> Milestone
             </StyledNavLink>
           </NavItem>
         </NavList>
@@ -182,7 +182,7 @@ export const NavList = styled.ul<NavListProps>`
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  //border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   border-radius: 12px;

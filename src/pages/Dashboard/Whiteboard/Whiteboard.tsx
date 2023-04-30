@@ -9,7 +9,7 @@ import Banner from '../../../Components/Banner/Banner';
 import { IGif } from '@giphy/js-types';
 import { Gif } from '@giphy/react-components';
 import { Grid } from '@giphy/react-components';
-
+import { ThreeDButton } from '../../../Components/Button/Button';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import DefaultButton from '../../../Components/Button/Button';
@@ -27,6 +27,7 @@ import {
   faTrashCan,
   faCircleXmark,
   faMagnifyingGlass,
+  faCircleInfo,
   faX,
   faLock,
   faLockOpen,
@@ -61,7 +62,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
 `;
 
 type StickerType = {
@@ -84,8 +85,8 @@ const Sticker: any = styled.div<{
   left: ${(props) => props.offsetX}px;
   background-color: ${({ color }) => color};
   cursor: ${(props) => (props.dragging ? 'grabbing' : 'grab')};
-  width: 200px;
-  height: 200px;
+  width: 120px;
+  height: 120px;
   border: 0px solid black;
   border-radius: 5px;
   display: flex;
@@ -93,8 +94,8 @@ const Sticker: any = styled.div<{
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  box-shadow: ${(props) =>
-    props.isSticker ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'};
+  /* box-shadow: ${(props) =>
+    props.isSticker ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'}; */
 `;
 
 const AddButton = styled.button`
@@ -121,7 +122,7 @@ const ColorButton = styled(DefaultButton)<{ color: string }>`
   }
 `;
 const StickerInput = styled.input`
-  font-size: 32px;
+  font-size: 24px;
   border: none;
   height: auto;
   outline: none;
@@ -140,9 +141,9 @@ const DeleteButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(128, 128, 128, 0.5);
+  color: transparent;
   &:hover {
-    color: black;
+    color: #414141;
   }
 `;
 
@@ -155,9 +156,9 @@ const LockButton = styled.button`
   background-color: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(128, 128, 128, 0.5);
+  color: transparent;
   &:hover {
-    color: black;
+    color: #414141;
   }
 `;
 
@@ -174,9 +175,21 @@ const StickerRowWrap = styled.div`
   position: absolute;
   display: flex;
   flex-direction: row;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  border-radius: 25px;
-  bottom: 70px;
+  justify-content: center;
+
+  top: 140px;
+  width: 650px;
+  left: 55%;
+  transform: translateX(-50%);
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
 `;
 
 const GifWrap = styled.div`
@@ -194,8 +207,7 @@ const CenterWrap = styled.div`
   align-items: center; /* Center the child element vertically */
   flex-direction: column;
   height: 100%;
-  padding: 10px;
-  border: 3px solid blue;
+  padding: 20px;
 `;
 
 const Container = styled.div`
@@ -234,9 +246,6 @@ const SearchContainer = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
-  position: absolute;
-  bottom: 0;
 `;
 
 const SearchInput = styled.input`
@@ -244,30 +253,41 @@ const SearchInput = styled.input`
   border: 2px solid #ccc;
   border-radius: 25px;
   font-size: 16px;
-  width: 300px;
+  width: 100px;
 `;
 
 const SearchButton = styled.button`
-  background-color: #fff5c9;
-  color: #3467a1;
+  background-color: #f6f8f8;
+  color: #5981b0;
   padding: 10px;
   border: none;
   border-radius: 25px;
   font-size: 16px;
   cursor: pointer;
   &:hover {
-    background-color: #005a9e;
-    color: #fff5c9;
+    background-color: #5981b0;
+    color: #f6f8f8;
   }
+`;
+
+const InfoButton = styled(DefaultButton)`
+  background-color: transparent;
+  padding: 0px;
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  box-shadow: none;
+  :hover {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.75);
+  }
+  position: absolute;
+  left: 300px;
+  top: 10px;
 `;
 
 const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
 export const Whiteboard = () => {
-  const [stickers, setStickers] = useState(() => {
-    const savedStickers = localStorage.getItem('stickers');
-    return savedStickers ? JSON.parse(savedStickers) : [];
-  });
   const [newStickerColor, setNewStickerColor] = useState<string>('yellow');
   const stickerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [dragging, setDragging] = useState<number | null>(null);
@@ -275,12 +295,8 @@ export const Whiteboard = () => {
     x: 0,
     y: 0,
   });
-  const [stickerText, setStickerText] = useState<string[]>(() => {
-    const savedStickerText = localStorage.getItem('stickerText');
-    return savedStickerText
-      ? JSON.parse(savedStickerText)
-      : Array(stickers.length).fill('');
-  });
+  const [stickers, setStickers] = useState([]);
+  const [stickerText, setStickerText] = useState([]);
   const [image, setImage] = useState(null);
   const [gifUrl, setGifUrl] = useState<string>('');
   const [gif, setGif] = useState<IGif | null>(null);
@@ -316,11 +332,6 @@ export const Whiteboard = () => {
     setSearchTerm(event.target.value);
     setShowResults(false);
   };
-
-  useEffect(() => {
-    localStorage.setItem('stickers', JSON.stringify(stickers));
-    localStorage.setItem('stickerText', JSON.stringify(stickerText));
-  }, [stickers, stickerText]);
 
   useLayoutEffect(() => {
     const container = document.getElementById('Wrapper');
@@ -414,6 +425,8 @@ export const Whiteboard = () => {
 
     const stickersData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
     console.log(stickersData);
+    setStickers(stickersData);
+    setStickerText(stickersData.map((sticker) => sticker.content));
     return stickersData;
   };
 
@@ -424,11 +437,10 @@ export const Whiteboard = () => {
   ) => {
     const newSticker = {
       id: uuidv4(),
-      x: 150,
-      y: 0,
+      x: 180,
+      y: 220,
       content: content,
       color: color,
-      member: 'Nina',
       isSticker: isSticker,
     };
 
@@ -482,14 +494,55 @@ export const Whiteboard = () => {
   console.log(newStickerColor);
 
   //gifUrl = selectedGif ? selectedGif.images.original.url : '';
+  const [showTooltip, setShowTooltip] = useState(false);
 
+  const InfoButton = styled(ThreeDButton)`
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    left: 400px;
+    top: -20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  `;
   return (
     <Container>
       <SideNav></SideNav>
       <Wrapper id="Wrapper">
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
         <Banner title="Stick'n Draw" subTitle="Where Art and Fun Meet"></Banner>
+
         <CenterWrap>
+          <div
+            style={{ position: 'relative', display: 'inline-block' }}
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            {
+              <InfoButton>
+                <FontAwesomeIcon icon={faCircleInfo} />
+              </InfoButton>
+            }
+            {showTooltip && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '50px',
+                  left: '220px',
+                  backgroundColor: '#414141',
+                  color: '#fff',
+                  padding: '10px',
+                  borderRadius: '15px',
+                  zIndex: 2,
+                  width: '200px',
+                }}
+              >
+                {'Hover to left-top for lock & delete'}
+              </div>
+            )}
+          </div>
+
           {stickers.map((sticker: any, index: number) => (
             <>
               <Sticker
@@ -522,7 +575,7 @@ export const Whiteboard = () => {
                     const familyDocRef = doc(
                       db,
                       'Family',
-                      'Nkl0MgxpE9B1ieOsOoJ9',
+                      familyId,
                       'stickers',
                       stickerId
                     );
@@ -541,7 +594,7 @@ export const Whiteboard = () => {
                   }}
                   disabled={lockedStickers[index]}
                 />
-                {sticker.content !== 'New note' && (
+                {sticker.isSticker !== true && (
                   <>
                     <img
                       src={sticker.content}
@@ -572,41 +625,41 @@ export const Whiteboard = () => {
           <StickerRowWrap>
             <ColorButton
               color="white"
-              onClick={() => addSticker('transparent', false, 'New note')}
+              onClick={() => addSticker('transparent', true, '')}
             >
               文字
             </ColorButton>
             <ColorButton
               color="#FFF9C4"
-              onClick={() => addSticker('#FFF9C4', true, 'New note')}
+              onClick={() => addSticker('#FFF9C4', true, '')}
             ></ColorButton>
             <ColorButton
               color="#EF9A9A"
-              onClick={() => addSticker('#EF9A9A', true, 'New note')}
+              onClick={() => addSticker('#EF9A9A', true, '')}
             ></ColorButton>
             <ColorButton
               color="#81D4FA"
-              onClick={() => addSticker('#81D4FA', true, 'New note')}
+              onClick={() => addSticker('#81D4FA', true, '')}
             ></ColorButton>
             <ColorButton
               color="#A5D6A7"
-              onClick={() => addSticker('#A5D6A7', true, 'New note')}
+              onClick={() => addSticker('#A5D6A7', true, '')}
             ></ColorButton>
             <ColorButton color="grey" onClick={() => setStickers([])}>
               Clear
             </ColorButton>
+            <SearchContainer>
+              <SearchInput
+                type="text"
+                value={searchTerm}
+                onChange={handleInputChange}
+                placeholder="搜尋GIF"
+              />
+              <SearchButton onClick={handleSearch}>
+                <FontAwesomeIcon icon={faMagnifyingGlass} />
+              </SearchButton>
+            </SearchContainer>
           </StickerRowWrap>
-          <SearchContainer>
-            <SearchInput
-              type="text"
-              value={searchTerm}
-              onChange={handleInputChange}
-              placeholder="搜尋GIF"
-            />
-            <SearchButton onClick={handleSearch}>
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-            </SearchButton>
-          </SearchContainer>
 
           {showResults && (
             <Results>

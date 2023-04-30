@@ -132,7 +132,7 @@ const NavbarWrapper = styled.div`
   width: 100vw;
   border-bottom: 1px solid #e0e0e0;
   position: fixed;
-  z-index: 2;
+  z-index: 5;
   background-color: transparent;
   /* backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);

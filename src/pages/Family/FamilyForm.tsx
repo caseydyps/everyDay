@@ -649,13 +649,15 @@ const FamilyMemberForm = () => {
                   onIncrement={handleNumberOfMembersIncrement}
                   onDecrement={handleNumberOfMembersDecrement}
                 >
-                  您有幾位家庭成員?
+                  <h2 style={{ color: '#414141', marginTop: '0px' }}>
+                    How many members?
+                  </h2>
                 </AddMinusInput>
 
                 {numberOfMembers > 0 && (
                   <div>
                     <div>
-                      <Text>請依序設定家庭成員</Text>
+                      <Text>Set up your family one by one</Text>
                       <FormDropdown
                         value={currentMemberIndex}
                         onChange={(event) =>
@@ -664,14 +666,20 @@ const FamilyMemberForm = () => {
                       >
                         {members.map((member, index) => (
                           <option key={index} value={index}>
-                            {`家庭成員 ${index + 1}`}
+                            {`Member ${index + 1}`}
                           </option>
                         ))}
                       </FormDropdown>
                       {members[currentMemberIndex] && (
                         <div>
                           <FormField>
-                            <FormLabel>名稱 | 暱稱 </FormLabel>
+                            <FormLabel
+                              style={{
+                                color: '#414141',
+                              }}
+                            >
+                              Name
+                            </FormLabel>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].name}
@@ -685,7 +693,13 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel>Email</FormLabel>
+                            <FormLabel
+                              style={{
+                                color: '#414141',
+                              }}
+                            >
+                              Email
+                            </FormLabel>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].email}
@@ -699,7 +713,13 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel>生日</FormLabel>
+                            <FormLabel
+                              style={{
+                                color: '#414141',
+                              }}
+                            >
+                              Birthday
+                            </FormLabel>
                             <FormInput
                               type="date"
                               value={members[currentMemberIndex].birthday}
@@ -713,7 +733,13 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel>Role </FormLabel>
+                            <FormLabel
+                              style={{
+                                color: '#414141',
+                              }}
+                            >
+                              Role{' '}
+                            </FormLabel>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].role}
@@ -780,8 +806,8 @@ const FamilyMemberForm = () => {
             <FormCard>
               {numberOfMembers > 0 && (
                 <AvatarContainer>
-                  <FormLabel style={{ color: 'white', fontSize: '36px' }}>
-                    頭像設定
+                  <FormLabel style={{ color: '#414141', fontSize: '28px' }}>
+                    Avator Setup
                   </FormLabel>
                   <FormField>
                     <ColumnWrap
@@ -833,7 +859,7 @@ const FamilyMemberForm = () => {
                       <FlexWrap>
                         <Label htmlFor="skinColor-select">膚色:</Label>
                         <CirclePicker
-                          width="100%"
+                          width="50%"
                           color={members[currentMemberIndex].skinColor}
                           colors={[
                             '#fff1e6',
@@ -853,7 +879,7 @@ const FamilyMemberForm = () => {
                           }
                         />
                       </FlexWrap>
-                      <RowWrap>
+                      <RowWrapper>
                         <br />
                         <FlexWrap>
                           <Label htmlFor="eyebrows-select">眉毛:</Label>
@@ -896,8 +922,6 @@ const FamilyMemberForm = () => {
                           </Select>
                         </FlexWrap>
 
-                        <br />
-                        <br />
                         <FlexWrap>
                           <Label htmlFor="hair-select">髮型:</Label>
 
@@ -929,12 +953,12 @@ const FamilyMemberForm = () => {
                             {/* <option value="none">光頭</option> */}
                           </Select>
                         </FlexWrap>
-                      </RowWrap>
+                      </RowWrapper>
 
                       <FlexWrap>
                         <Label htmlFor="hair-color-select">髮色:</Label>
                         <CirclePicker
-                          width="100%"
+                          width="50%"
                           color={members[currentMemberIndex].hairColor}
                           colors={[
                             '#000000', // black
@@ -973,7 +997,7 @@ const FamilyMemberForm = () => {
                           <option value="b38a58">Light Brown</option>
                         </Select> */}
                       </FlexWrap>
-                      <RowWrap>
+                      <RowWrapper>
                         <br />
                         <FlexWrap>
                           <Label htmlFor="feature-select">特徵:</Label>
@@ -1034,7 +1058,7 @@ const FamilyMemberForm = () => {
                             <option value="607D8B">Grayish-blue</option>
                           </Select>
                         </FlexWrap>
-                      </RowWrap>
+                      </RowWrapper>
                     </ColumnWrap>
                   </FormField>
                   <AvatarImage
@@ -1046,7 +1070,7 @@ const FamilyMemberForm = () => {
                     alt="avatar"
                   />
 
-                  <Button
+                  <SaveButton
                     onClick={() =>
                       handleAvatarSave(
                         avatarUrl,
@@ -1066,7 +1090,7 @@ const FamilyMemberForm = () => {
                     }
                   >
                     Save Avatar
-                  </Button>
+                  </SaveButton>
                 </AvatarContainer>
               )}
             </FormCard>
@@ -1099,10 +1123,19 @@ const FormField = styled.div`
 `;
 
 const FlexWrap = styled.div`
-  text-align: center;
+  text-align: start;
   align-items: center;
   display: flex;
   justify-content: space-between;
+  z-index: 1;
+  margin: 15px;
+`;
+
+const AvatarWrap = styled.div`
+  text-align: start;
+  align-items: center;
+  display: flex;
+  justify-content: center;
   z-index: 1;
   margin: 5px;
 `;
@@ -1115,6 +1148,7 @@ const FormLabel = styled.label`
   margin-right: 10px;
   flex-basis: 30%;
   text-align: left;
+  color: '#414141';
 `;
 
 type FormInputProps = {
@@ -1162,13 +1196,26 @@ const AvatarImage = styled.img`
 `;
 
 const Button = styled.button`
-  background-color: #fff5c9;
-  color: #3467a1;
-  border: none;
+  background-color: #3467a1;
+  color: #f6f8f8;
+  border: 2px solid #f6f8f8;
   border-radius: 20px;
   font-weight: bold;
   padding: 10px 20px;
   margin-top: 60px;
+  font-size: 20px;
+  &:hover {
+    transform: scale(1.1);
+  }
+`;
+const SaveButton = styled.button`
+  background-color: #3467a1;
+  color: #f6f8f8;
+  border: 2px solid #f6f8f8;
+  border-radius: 20px;
+  font-weight: bold;
+  padding: 10px 20px;
+
   font-size: 20px;
   &:hover {
     transform: scale(1.1);
@@ -1220,10 +1267,10 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   margin-top: 0px;
-  background-color: #1e3d6b;
+  background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //border: gold solid 3px;
   padding: 20px;
 
   // background: linear-gradient(
@@ -1253,6 +1300,16 @@ const RowWrap = styled.div`
   align-items: center; /* Center vertically */
 `;
 
+const RowWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  min-width: 100%;
+  text-align: center;
+  justify-content: start; /* Center horizontally */
+  align-items: center; /* Center vertically */
+`;
+
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -1277,7 +1334,7 @@ const Title = styled.div`
   font-weight: bold;
   margin-top: 50px;
   text-align: center;
-  color: #f6f8f8;
+  color: #5981b0;
   font-family: 'Braah One';
 `;
 
@@ -1287,7 +1344,15 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #d7dde2;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
   /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
   position: relative;
   z-index: 1;
@@ -1348,6 +1413,7 @@ const Label = styled.label`
   font-size: 16px;
   font-weight: bold;
   flex-basis: 30%;
+  color: #414141;
 `;
 
 const Select = styled.select`
@@ -1376,11 +1442,13 @@ const Input = styled.input`
 const Text = styled.p`
   font-size: 20px;
   padding: 5px;
+  color: #414141;
 `;
 
 const Split = styled.p`
   font-size: 16px;
   padding: 5px;
+  color: #414141;
 `;
 
 const Popup = styled.div`

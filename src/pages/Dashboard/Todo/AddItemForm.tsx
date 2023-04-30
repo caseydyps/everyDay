@@ -40,7 +40,7 @@ type AddItemFormProps = {
   onAddItem: (groupIndex: number, item: Item) => void;
 };
 
-function AddItemForm({ groupIndex, onAddItem }: any) {
+function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
   const [title, setTitle] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date>(new Date());
   const [selectedMember, setSelectedMember] = useState<number | null>(null);
@@ -123,42 +123,44 @@ function AddItemForm({ groupIndex, onAddItem }: any) {
   }
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Label>
-        Title:
-        <TitleInput type="text" value={title} onChange={handleTitleChange} />
-      </Label>
+    <>
+      <Form onSubmit={handleSubmit}>
+        <Label>
+          Title:
+          <TitleInput type="text" value={title} onChange={handleTitleChange} />
+        </Label>
 
-      <Label>
-        <input
-          type="checkbox"
-          checked={dueDateNeeded}
-          onChange={handleDueDateNeededChange}
-        />
-        Due date needed
-      </Label>
+        <Label>
+          <input
+            type="checkbox"
+            checked={dueDateNeeded}
+            onChange={handleDueDateNeededChange}
+          />
+          Due date needed
+        </Label>
 
-      {dueDateNeeded && (
-        <DueDateLabel>
-          Due Date:
-          <DatePicker selected={dueDate} onChange={handleDateChange} />
-        </DueDateLabel>
-      )}
+        {dueDateNeeded && (
+          <DueDateLabel>
+            Due Date:
+            <DatePicker selected={dueDate} onChange={handleDateChange} />
+          </DueDateLabel>
+        )}
 
-      <MembersSelectorWrap>
-        {/* <Button onClick={() => setShowMembersSelector(!showMembersSelector)}>
+        <MembersSelectorWrap>
+          {/* <Button onClick={() => setShowMembersSelector(!showMembersSelector)}>
           Add member
         </Button> */}
-        <MembersSelector
-          onSelectMember={(selectedMember) => {
-            setShowMembersSelector(false);
-            handleMemberChange(selectedMember);
-          }}
-        />
-      </MembersSelectorWrap>
+          <MembersSelector
+            onSelectMember={(selectedMember) => {
+              setShowMembersSelector(false);
+              handleMemberChange(selectedMember);
+            }}
+          />
+        </MembersSelectorWrap>
 
-      <Button type="submit">Add Todo</Button>
-    </Form>
+        <Button type="submit">Add Todo</Button>
+      </Form>
+    </>
   );
 }
 
@@ -166,14 +168,16 @@ const Button = styled(DefaultButton)`
   display: flex;
   // justify-content: space-between;
   margin: 20px;
-  flex:direction: column;
+  flex-direction: column;
 `;
 
 const Form = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
+  text-align: start;
   margin-top: 1rem;
+  padding: 10px;
   justify-content: space-between;
   label {
     margin-top: 0.5rem;
@@ -212,7 +216,7 @@ const Form = styled.form`
 const Label = styled.label`
   display: flex;
   align-items: center;
-  font-size: 1rem;
+  font-size: 20px;
 `;
 
 const TitleInput = styled.input`
@@ -222,7 +226,8 @@ const TitleInput = styled.input`
 const DueDateLabel = styled.label`
   display: flex;
   align-items: center;
-  margin-top: 0.5rem;
+  margin-top: 10px;
+  font-size: 20px;
 `;
 
 const MembersSelectorWrap = styled.div`

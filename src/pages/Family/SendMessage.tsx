@@ -27,8 +27,8 @@ const Button = styled.button`
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
-  background-color: #fff5c9;
-  color: #3467a1;
+  background-color: #5981b0;
+  color: #f6f8f8;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
@@ -104,7 +104,6 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
         </Button>
       </Form>
       <SmartInputButton onClick={handleButtonClick}>
-        <FontAwesomeIcon icon={faBrain} />
         Smart Input
       </SmartInputButton>
       {showSmartInput && (

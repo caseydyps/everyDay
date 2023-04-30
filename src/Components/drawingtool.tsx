@@ -3,7 +3,9 @@ import styled from 'styled-components/macro';
 import { db } from '../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { arrayUnion } from 'firebase/firestore';
 import DefaultButton from './Button/Button';
+import { ChromePicker } from 'react-color';
 import {
   collection,
   updateDoc,
@@ -54,12 +56,23 @@ const ButtonWrap = styled.div`
   justify-content: center;
   align-items: stretch;
   margin: 0 auto;
-  width: 100%;
-  max-width: 800px;
+  border: 2px solid #d7dde2;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  flex-direction: column;
   position: absolute;
-  top: 160px;
-  right: 50%;
-  transform: translate(50%, 0);
+  top: 40%;
+  right: 2%;
+  padding: 5px;
+
   @media screen and (max-width: 768px) {
     flex-direction: column;
     align-items: center;
@@ -70,16 +83,17 @@ const ButtonWrap = styled.div`
 `;
 
 const Container = styled.div`
-  width: 800px;
-  height: 400px;
+  width: 737px;
+  height: 404px;
   margin-top: 50px;
 `;
 
 const CanvasButton = styled(DefaultButton)`
   border-radius: 50%;
   background-color: ${({ color }) => color};
-  margin-top: 20px;
-  color: white;
+
+  padding: 5px;
+  color: #5981b0;
   margin-right: 5px;
   margin-left: 5px;
   border: none;
@@ -87,9 +101,8 @@ const CanvasButton = styled(DefaultButton)`
 `;
 
 const CanvasContainer = styled.div`
-  max-width: 800px;
-  height: 400px;
-  border: 2px;
+  max-width: 737px;
+  height: 404px;
 `;
 
 type StrokeData = {
@@ -109,6 +122,8 @@ const DrawingTool = () => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
+
   const {
     user,
     userName,
@@ -180,7 +195,6 @@ const DrawingTool = () => {
   //     }
   //   };
   // };
-
   useEffect(() => {
     // Retrieve the strokes from Firestore when the component mounts
     const canvasRef = collection(
@@ -209,7 +223,7 @@ const DrawingTool = () => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [familyId, color, width]);
 
   const stackLimit = 500; // maximum stack size
 
@@ -247,6 +261,7 @@ const DrawingTool = () => {
   };
 
   const addStroke = async (strokeData: StrokeData) => {
+    console.log('Adding stroke to Firestore:', strokeData);
     const strokesCollectionRef = collection(
       db,
       'Family',
@@ -255,9 +270,13 @@ const DrawingTool = () => {
       familyId,
       'strokes'
     );
-    await addDoc(strokesCollectionRef, strokeData);
+    try {
+      const docRef = await addDoc(strokesCollectionRef, strokeData);
+      console.log('Stroke added to Firestore with ID:', docRef.id);
+    } catch (error) {
+      console.error('Error adding stroke to Firestore:', error);
+    }
   };
-
   const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
@@ -381,31 +400,30 @@ const DrawingTool = () => {
     undoStack.shift();
     undoStack.pop();
   }
+
   return (
     <Container>
       {/* <div>{`Strokes: ${undoStack.length}`}</div> */}
       <CanvasContainer>
-        <canvas
-          id="canvas"
-          ref={canvasRef}
-          onMouseDown={startPaint}
-          onMouseUp={endPaint}
-          onMouseMove={paint}
-          style={{
-            height: 'auto',
-            maxWidth: '800px',
-            maxHeight: '300px',
-            minHeight: '300px',
-            width: '800px',
-            border: '2px solid transparent',
-            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
-            borderRadius: '25px',
-            backgroundColor: 'rgba(255, 255, 255, 0.5)',
-          }}
-        />
-      </CanvasContainer>
-      <ButtonWrap>
-        <CanvasButton
+        <ButtonWrap>
+          <CanvasButton>
+            <input
+              type="color"
+              onChange={(event) => handleChangeColor(event.target.value)}
+              style={{
+                width: '2em',
+                height: '2em',
+                borderRadius: '50%',
+                padding: 0,
+                margin: 0,
+                appearance: 'none',
+                border: 'none',
+                backgroundColor: 'transparent',
+                outline: 'none',
+              }}
+            />
+          </CanvasButton>
+          {/* <CanvasButton
           color="black"
           onClick={() => handleChangeColor('black')}
           type="button"
@@ -424,41 +442,60 @@ const DrawingTool = () => {
           color="blue"
           onClick={() => handleChangeColor('blue')}
           type="button"
-        ></CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeColor('white')}
-          type="button"
-        >
-          <FontAwesomeIcon icon={faEraser} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(5)}
-        >
-          <FontAwesomeIcon icon={faPen} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(1)}
-        >
-          <FontAwesomeIcon icon={faPencil} />
-        </CanvasButton>
-        <CanvasButton
-          color="transparent"
-          onClick={() => handleChangeLineWidth(30)}
-        >
-          <FontAwesomeIcon icon={faPaintRoller} />
-        </CanvasButton>
-        <CanvasButton color="transparent" onClick={undoStroke}>
-          <FontAwesomeIcon icon={faClockRotateLeft} />
-        </CanvasButton>
-        <CanvasButton color="transparent" onClick={clearCanvas}>
-          <FontAwesomeIcon icon={faBroom} />
-        </CanvasButton>
-        {/* <button onClick={addStroke}>Save</button>
+        ></CanvasButton> */}
+          <CanvasButton
+            color="transparent"
+            onClick={() => handleChangeColor('white')}
+            type="button"
+          >
+            <FontAwesomeIcon icon={faEraser} />
+          </CanvasButton>
+          <CanvasButton
+            color="transparent"
+            onClick={() => handleChangeLineWidth(5)}
+          >
+            <FontAwesomeIcon icon={faPen} />
+          </CanvasButton>
+          <CanvasButton
+            color="transparent"
+            onClick={() => handleChangeLineWidth(1)}
+          >
+            <FontAwesomeIcon icon={faPencil} />
+          </CanvasButton>
+          <CanvasButton
+            color="transparent"
+            onClick={() => handleChangeLineWidth(30)}
+          >
+            <FontAwesomeIcon icon={faPaintRoller} />
+          </CanvasButton>
+          <CanvasButton color="transparent" onClick={undoStroke}>
+            <FontAwesomeIcon icon={faClockRotateLeft} />
+          </CanvasButton>
+          <CanvasButton color="transparent" onClick={clearCanvas}>
+            <FontAwesomeIcon icon={faBroom} />
+          </CanvasButton>
+          {/* <button onClick={addStroke}>Save</button>
     <button onClick={loadCanvas}>load</button> */}
-      </ButtonWrap>
+        </ButtonWrap>
+        <canvas
+          id="canvas"
+          ref={canvasRef}
+          onMouseDown={startPaint}
+          onMouseUp={endPaint}
+          onMouseMove={paint}
+          style={{
+            height: 'auto',
+            maxWidth: '737px',
+            maxHeight: '240px',
+            minHeight: '240px',
+            width: '737px',
+            border: '2px solid transparent',
+            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
+            borderRadius: '25px',
+            backgroundColor: 'rgb(255, 255, 255)',
+          }}
+        />
+      </CanvasContainer>
     </Container>
   );
 };

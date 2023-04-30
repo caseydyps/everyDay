@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/Nav/Navbar';
@@ -7,7 +7,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import UserAuthData from '../../Components/Login/Auth';
-
+import LoadingAnimation from '../../Components/loading';
 import {
   DefaultButton,
   CancelButton,
@@ -39,8 +39,9 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const Wrapper = styled.div`
-  width: 100%;
+  width: 500px;
   margin: 0 auto;
+  flex: 2;
 `;
 const Container = styled.div`
   width: 100vw;
@@ -57,7 +58,8 @@ const HastagWrap = styled.div`
 const CategoryWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  width: 100%;
+
   justify-content: center; /* centers child elements along the horizontal axis */
   align-items: center;
 `;
@@ -77,6 +79,7 @@ export const InputForm = styled.form`
   justify-content: baseline;
   margin-bottom: 10px;
   margin-top: 0px;
+  width: 100%;
 `;
 
 const Wrap = styled.div`
@@ -84,7 +87,18 @@ const Wrap = styled.div`
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
   margin-top: 20px;
+  position: fixed;
+  background-color: #5981b0;
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 `;
 
 const InputLabel = styled.label`
@@ -128,15 +142,11 @@ const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
   border-radius: 25px;
   cursor: pointer;
 
-  &:hover {
-    background-color: #eee;
-  }
-
   ${(props) =>
     props.active &&
     `
     background-color: #3467a1;
-    color: #fff;
+    color: #F6F8F8;
   `}
 `;
 
@@ -145,6 +155,7 @@ const CategorySelectorContainer = styled.div`
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
+  width: 100%;
 `;
 
 const Text = styled.div`
@@ -155,6 +166,7 @@ const Text = styled.div`
   background-color: #fff;
   padding: 10px;
   border-radius: 5px;
+  margin: 30px;
   //box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
@@ -165,6 +177,7 @@ const Instruction = styled.div`
   text-align: center;
   margin-bottom: 10px;
   padding: 10px;
+  width: 100%;
   border-radius: 5px;
   // box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
@@ -175,7 +188,15 @@ const Card = styled.div`
   border-radius: 10px;
   font-size: 36px;
   //box-shadow: 3px 3px 5px black;
-  background-color: #f6f8f8;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
   position: relative;
   z-index: 1;
   p {
@@ -288,8 +309,8 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
         <DefaultButton
           key={member}
           style={{
-            background: selectedMember === member ? '#1E3D6B' : '#F6F8F8',
-            color: selectedMember === member ? '#F6F8F8' : '#1E3D6B',
+            background: selectedMember === member ? '#3467a1' : '#F6F8F8',
+            color: selectedMember === member ? '#F6F8F8' : '#3467a1',
             padding: '5px 10px',
             margin: '5px',
             borderRadius: '25px',
@@ -310,6 +331,7 @@ const SmartInput = (props: any) => {
   const [responseValue, setResponseValue] = useState('');
   const [category, setCategory] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const {
     user,
     userName,
@@ -376,6 +398,7 @@ const SmartInput = (props: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
+      setIsLoading(false);
     }
     if (category === '#Todo') {
       console.log('todo');
@@ -403,7 +426,9 @@ const SmartInput = (props: any) => {
         temperature: 0.5,
       });
       console.log(response.data);
+
       setResponseValue(response.data.choices[0].text);
+      setIsLoading(false); // Set isLoading back to false
     }
     if (category === '#StickyNotes') {
       console.log('sticky notes');
@@ -431,6 +456,7 @@ const SmartInput = (props: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
+      setIsLoading(false);
     }
     if (category === '#Milestone') {
       console.log('milestone');
@@ -458,6 +484,7 @@ const SmartInput = (props: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
+      setIsLoading(false);
     }
   };
 
@@ -468,7 +495,7 @@ const SmartInput = (props: any) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    setIsLoading(true);
     await runPrompt();
   };
 
@@ -620,7 +647,60 @@ const SmartInput = (props: any) => {
     setResponseValue(''); // reset response value
     setSelectedMembers([]); // reset selected members
     setSelectedCategory(''); // reset selected category
+    setIsLoading(false);
   };
+
+  const LoadingImage = styled.img`
+    width: 50px;
+    height: 50px;
+  `;
+
+  const LoadingComponent = () => {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100%',
+        }}
+      >
+        <LoadingImage src={loadingGif} alt="Loading..." />
+      </div>
+    );
+  };
+
+  const fadeInOut = keyframes`
+from {
+  opacity: 1;
+}
+to {
+  opacity: 0;
+}
+`;
+  const LoadingDots = styled.div`
+    width: 3.5em;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    justify-content: space-between;
+
+    div {
+      width: 0.8em;
+      height: 0.8em;
+      border-radius: 50%;
+      background-color: #fc2f70;
+      animation: ${fadeInOut} 0.8s ease-in-out alternate infinite;
+
+      &:nth-of-type(1) {
+        animation-delay: -0.4s;
+      }
+
+      &:nth-of-type(2) {
+        animation-delay: -0.2s;
+      }
+    }
+  `;
 
   return (
     <Wrapper>
@@ -634,7 +714,7 @@ const SmartInput = (props: any) => {
         >
           智慧輸入
         </p> */}
-        <RowWrap>
+        <ColumnWrap>
           <ColumnWrap>
             <Instruction>First, choose your category</Instruction>
             <CategorySelector onSelect={handleCategorySelect} />
@@ -643,7 +723,7 @@ const SmartInput = (props: any) => {
             <Instruction>Choose your family member</Instruction>
             <MembersSelector onSelectMember={handleSelectMember} />
           </ColumnWrap>
-        </RowWrap>
+        </ColumnWrap>
 
         <InputForm onSubmit={handleSubmit}>
           <></>
@@ -654,13 +734,15 @@ const SmartInput = (props: any) => {
             placeholder="Input event, e.g: 今天晚上九點要去看電影"
           />
           <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <DefaultButton type="submit" style={{ margin: '10px' }}>
+            <DefaultButton type="submit" style={{ marginRight: '10px' }}>
               <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
             </DefaultButton>
           </div>
         </InputForm>
 
-        {responseValue && (
+        {isLoading ? (
+          <LoadingAnimation />
+        ) : responseValue ? (
           <ResponseDisplay>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
@@ -668,7 +750,7 @@ const SmartInput = (props: any) => {
               </DefaultButton>
             </div>
           </ResponseDisplay>
-        )}
+        ) : null}
       </Card>
     </Wrapper>
   );

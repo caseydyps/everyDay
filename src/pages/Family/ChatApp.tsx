@@ -14,8 +14,10 @@ const CenterWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
   margin-top: 30px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Container = styled.div`
@@ -26,7 +28,7 @@ const Container = styled.div`
   width: 100vw;
   height: 100%;
 
-  border: 3px solid gold;
+  //border: 3px solid gold;
 `;
 
 function ChatApp() {

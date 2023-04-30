@@ -92,7 +92,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //border: gold solid 3px;
 `;
 
 const CenterWrapper = styled.div`
@@ -102,7 +102,7 @@ const CenterWrapper = styled.div`
   flex-direction: column;
   height: 100vh;
   padding: 10px;
-  border: 3px solid blue;
+  //border: 3px solid blue;
 `;
 
 const Wrapper = styled.div`
@@ -111,15 +111,15 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
   margin-top: 30px;
 `;
 
 const Circle = styled.div`
-  width: 200px;
-  height: 200px;
+  width: 180px;
+  height: 180px;
   border-radius: 20%;
-  margin: 50px;
+  margin: 40px;
   padding: 20px;
   font-size: 20px;
 
@@ -188,7 +188,7 @@ const AiRowWrap = styled.div`
   flex-direction: row;
   justify-content: baseline;
   align-items: center;
-  border: 3px solid green;
+  // border: 3px solid green;
   width: 100%;
   height: 400px;
 `;

@@ -65,8 +65,7 @@ const BarAnimation = styled.div`
   left: -100%;
   width: 100%;
   height: 100%;
-  background-color: #fff5c9;
-  );
+  background-color: #5981b0;
   animation: ${barAnimation} 2s ease-in-out infinite;
 `;
 

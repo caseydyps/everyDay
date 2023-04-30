@@ -3,22 +3,115 @@ import styled from 'styled-components';
 
 export const DefaultButton = styled.button`
   background-color: #f6f8f8;
-  color: #1e3d6b;
-  // border: 2px solid #1e3d6b;
+  color: #5981b0;
+  // border: 2px solid #3467a1;
   border-radius: 20px;
   font-weight: bold;
   padding: 5px 10px;
   margin: 5px;
   font-size: 16px;
+  border: none;
   //box-shadow: 3px 3px 5px black;
   &:hover {
     transform: scale(1.1);
+    color: #1e3d6b;
   }
 `;
 
-const ConfirmButton = styled.button`
-  background-color: #629dda;
-  color: #fff;
+export const ThreeDButton = styled.button`
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  font-size: inherit;
+  font-family: inherit;
+  padding: 1.25em 2em;
+  border: 2px solid #bcc8d8;
+  border-radius: 0.75em;
+  font-weight: 700;
+  color: #414141;
+  text-transform: uppercase;
+  background: #f1f5fb;
+  transform-style: preserve-3d;
+  transition: 0.15s cubic-bezier(0, 0, 0.6, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: #a8bdd1;
+    box-shadow: 0 0 0 2px #bcc8d8, 0 0.625em 0 0 #e3e9f2;
+    transform: translate3d(0, 0.75em, -1em);
+    transition: 0.15s cubic-bezier(0, 0, 0.6, 1);
+  }
+
+  &:hover {
+    background: #e4ebf4;
+    transform: translate(0, 0.25em);
+  }
+
+  &:hover::before {
+    box-shadow: 0 0 0 2px #bcc8d8, 0 0.5em 0 0 #e3e9f2;
+    transform: translate3d(0, 0.5em, -1em);
+  }
+
+  &:active {
+    background: #d8e0eb;
+    transform: translate(0, 0.75em);
+  }
+
+  &:active::before {
+    box-shadow: 0 0 0 2px #bcc8d8, 0 0 #e3e9f2;
+    transform: translate3d(0, 0, -1em);
+  }
+`;
+
+export const AddButton = styled(DefaultButton)`
+  font-weight: bold;
+  font-size: 16px;
+  margin: 10px;
+  &:hover {
+    transform: scale(1.1);
+    background-color: #f6f8f8;
+    color: #5981b0;
+    border: 2px solid #5981b0;
+  }
+  border: 2px solid #f6f8f8;
+  border-radius: 20px;
+  padding: 10px 20px;
+  cursor: pointer;
+  z-index: 5;
+  margin: 20px;
+  width: 120px;
+  color: #f6f8f8;
+  background-color: #5981b0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+`;
+
+export const ConfirmButton = styled(DefaultButton)`
+  background-color: #f6f8f8;
+  color: #3467a1;
+  // border: 2px solid #3467a1;
+  border-radius: 20px;
+  font-weight: bold;
+  padding: 5px 10px;
+  margin: 5px;
+  font-size: 16px;
+  border: none;
+  //box-shadow: 3px 3px 5px black;
+  &:hover {
+    transform: scale(1.1);
+    color: #1e3d6b;
+  }
 `;
 
 export const CancelButton = styled.button`
@@ -115,7 +208,7 @@ export const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  background-color: #transparent;
+  background-color: transparent;
   box-shadow: 3px 3px 5px black;
   //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
@@ -138,7 +231,7 @@ export const Card = styled.div`
 const Banner = styled.div`
   width: 100vw;
   height: 300px;
-  border: 3px solid #red;
+  border: 3px solid red;
   color: #3467a1;
 `;
 
