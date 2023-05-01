@@ -607,7 +607,7 @@ const DateBox = styled.div`
   background-color: #5981b0;
   // box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 35px; /* changed top property to bottom */
+  bottom: 30px; /* changed top property to bottom */
   left: 5px;
   padding: 5px;
 `;
@@ -632,6 +632,7 @@ const EventImage = styled.img<any>`
   object-fit: cover;
   border-radius: 20px 20px 0 0;
   gap: 10px;
+  overflow-x: hidden;
 `;
 
 const FormWrapper = styled.div`

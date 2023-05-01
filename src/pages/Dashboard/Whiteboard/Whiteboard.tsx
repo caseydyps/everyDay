@@ -122,12 +122,12 @@ const ColorButton = styled(DefaultButton)<{ color: string }>`
   }
 `;
 const StickerInput = styled.input`
-  font-size: 24px;
+  font-size: 20px;
   border: none;
   height: auto;
   outline: none;
-  margin-top: 10px;
-  width: 90%;
+  margin-top: 5px;
+  width: 95%;
   background-color: transparent;
   text-align: center;
 `;
@@ -238,7 +238,7 @@ const Results = styled.div`
   transform: translate(-50%, -50%);
   background: rgba(128, 128, 128, 0.3);
   border-radius: 25px;
-  max-width: 800px;
+  max-width: 900px;
   z-index: 5;
 `;
 
@@ -362,8 +362,8 @@ export const Whiteboard = () => {
 
     const onMouseMove = (e: MouseEvent) => {
       if (dragging !== null) {
-        const newX = e.clientX - offset.x - 100;
-        const newY = e.clientY - offset.y - 180;
+        const newX = e.clientX - offset.x - 70;
+        const newY = e.clientY - offset.y - 70;
         console.log(
           'newX:',
           newX,
@@ -439,8 +439,8 @@ export const Whiteboard = () => {
   ) => {
     const newSticker: any = {
       id: uuidv4(),
-      x: 180,
-      y: 220,
+      x: 400,
+      y: 230,
       content: content,
       color: color,
       isSticker: isSticker,
@@ -674,8 +674,8 @@ export const Whiteboard = () => {
                       alt={result.title}
                       style={{
                         borderRadius: '25px',
-                        width: '120px',
-                        height: '120px',
+                        width: '110px',
+                        height: '110px',
                         margin: '5px',
                         border:
                           selectedGif && selectedGif.id === result.id

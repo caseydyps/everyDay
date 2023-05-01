@@ -402,6 +402,7 @@ function DragNDrop({ data }: any) {
   interface Member {
     name: string;
     avatarSrc: string;
+    role: string;
   }
 
   const addItem = async (
@@ -875,7 +876,7 @@ function DragNDrop({ data }: any) {
                     console.log('item', item);
                     console.log(membersArray);
                     const filteredMembers = membersArray.filter(
-                      (member) => member.role === item.member
+                      (member: Member) => member.role === item.member
                     );
                     console.log('filteredMembers', filteredMembers);
                     const matchingMemberAvatar = filteredMembers[0].avatar;

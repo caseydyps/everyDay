@@ -734,6 +734,7 @@ const AlbumTitle = styled.h4`
   font-size: 20px;
   margin: 20px;
   margin-bottom: 10px;
+  color: #414141;
 `;
 
 const AlbumDescription = styled.p`

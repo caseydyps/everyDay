@@ -39,7 +39,7 @@ const Suggestion = () => {
     { id: string; title: string; date: Date; member: string; image: string }[]
   >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
-  const [calendarData, setCalendarData] = useState<Todo[]>([]);
+  const [calendarData, setCalendarData] = useState<any>([]);
   const moment = require('moment');
   const {
     user,

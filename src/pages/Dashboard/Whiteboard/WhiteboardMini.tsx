@@ -122,12 +122,12 @@ const ColorButton = styled(DefaultButton)<{ color: string }>`
   }
 `;
 const StickerInput = styled.input`
-  font-size: 32px;
+  font-size: 20px;
   border: none;
   height: auto;
   outline: none;
-  margin-top: 10px;
-  width: 90%;
+  margin-top: 5px;
+  width: 95%;
   background-color: transparent;
   text-align: center;
 `;
@@ -345,7 +345,7 @@ export const Whiteboard = () => {
 
     const onMouseMove = (e: MouseEvent) => {
       if (dragging !== null) {
-        const newX = e.clientX - offset.x - 100;
+        const newX = e.clientX - offset.x - 200;
         const newY = e.clientY - offset.y - 180;
         console.log(
           'newX:',
@@ -510,7 +510,7 @@ export const Whiteboard = () => {
               }
               ref={(el: any) => (stickerRefs.current[index] = el)}
               style={{
-                left: sticker.x - 280,
+                left: sticker.x - 390,
                 top: sticker.y - 220,
               }}
               locked={lockedStickers[index]}
