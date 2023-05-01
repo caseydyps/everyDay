@@ -3,7 +3,7 @@ import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from '../../config/firebase.config';
-import SignIn from '../Login/SignIn';
+import SignIn from '../Login/SignInNav';
 import LogOut from '../Login/LogOut';
 import everyday from './everyday.png';
 import logo from './logo.png';
@@ -62,7 +62,7 @@ const Navbar = () => {
           EVERYDAY
           {/* <img style={{ width: '200px' }} src={logo} alt="EVERYDAY" /> */}
         </Logo>
-        <NavList open={open}>
+        {/* <NavList open={open}>
           <NavItem>
             <NavLink to="/dashboard">DASHBOARD</NavLink>
           </NavItem>
@@ -95,7 +95,10 @@ const Navbar = () => {
           ) : (
             <HamburgerIcon icon={faBars} />
           )}
-        </NavMenu>
+        </NavMenu> */}
+        <div style={{ position: 'absolute', right: '30px', top: '6px' }}>
+          {!user && <SignIn />}
+        </div>
 
         <UserSetting>
           <AvatarContainer onClick={handleAvatarClick}>

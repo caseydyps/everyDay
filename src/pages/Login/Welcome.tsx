@@ -95,26 +95,28 @@ function WelcomePage() {
         </>
       ) : (
         <Section style={{ backgroundColor: 'transparent' }}>
-          <h1 style={{ color: '#F6F8F8' }}>Welcome to EVERYDAY!</h1>
-          <p style={{ color: '#F6F8F8' }}>Your everyday family assistant</p>
+          <h1 style={{ color: '#5981b0' }}>Welcome to EVERYDAY!</h1>
+          <p style={{ color: '#5981b0' }}>Your everyday family assistant</p>
         </Section>
       )}
 
       {!user && (
         <>
           <CurveSection>
+            <h1 style={{ color: '#F6F8F8' }}>Can't wait? Login in seconds!</h1>
+            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
+            <SignIn />
+          </CurveSection>
+          <Section style={{ height: '200px' }}>
+            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
+
             <h1>Arrange your family with ease</h1>
 
             <p>
               Love in a family is like a flame. The more it is fueled by
               kindness and care, the warmer and stronger it grows.
             </p>
-            <ColumnWrap></ColumnWrap>
-          </CurveSection>
-
-          <h1 style={{ color: '#F6F8F8' }}>Can't wait? Login in seconds!</h1>
-          {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
-          <SignIn />
+          </Section>
 
           {/* <CircleButton></CircleButton> */}
         </>
@@ -162,8 +164,8 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px;
-  padding-top: 100px;
+  min-height: 300px;
+  padding-top: 70px;
   background: transparent;
   max-width: 100vw;
 `;
@@ -184,10 +186,10 @@ const CurveSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px;
-  padding-top: 100px;
+  min-height: 300px;
+  padding-top: 60px;
   background: transparent;
-  margin-top: 0px;
+  margin-top: 20px;
 `;
 
 const Curve = styled.div`

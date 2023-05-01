@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro';
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import TodoDashboard from './Todo/TodoDashboard';
 import Whiteboard from './Whiteboard/WhiteboardMini';
 import Gallery from './Album/GalleryMini';
@@ -10,11 +11,15 @@ import React from 'react';
 import Layout from '../../Components/layout';
 import GridLayout from 'react-grid-layout';
 import WeatherApp from './WeatherApp';
+import SmartInput from '../AI/SmartInput';
 import CalendarMini from './Calendar/CalendarMini';
 import Financial from './Financial';
 import Suggestion from '../AI/SuggestionMini';
 import FamilyMemberForm from '../Family/FamilyMini';
-import DefaultButton from '../../Components/Button/Button';
+import DefaultButton, {
+  CloseButton,
+  ThreeDButton,
+} from '../../Components/Button/Button';
 import SideNav from '../../Components/Nav/SideNav';
 import Swal from 'sweetalert2';
 
@@ -35,6 +40,18 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
+
+  // border: 2px solid black;
+`;
+
+const SmartInputContainer = styled.div`
+  max-width: 800px;
+  position: fixed;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
 
   // border: 2px solid black;
 `;
@@ -97,6 +114,7 @@ const Block = styled.div`
 
 const Dashboard = () => {
   const [showAside, setShowAside] = useState(true);
+  const [showSmartInput, setShowSmartInput] = useState(false);
   const Card = styled.div`
     background-color: #fff;
     border-radius: 5px;
@@ -317,6 +335,8 @@ const Dashboard = () => {
     {
       component: (
         <BoxM>
+          <Link to="/ai"></Link>
+          <BoxTitle>Suggestion</BoxTitle>
           <Suggestion></Suggestion>
         </BoxM>
       ),
@@ -433,12 +453,58 @@ const Dashboard = () => {
     });
   };
 
+  const SmartInputButton = styled(ThreeDButton)`
+    width: 90px;
+    margin: 0 auto;
+    position: absolute;
+    right: 10px;
+    top: 150px;
+    text-align: center;
+    margin: 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background-color: #5981b0;
+    color: #f6f8f8;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      background-color: #3467a1;
+      color: white;
+    }
+  `;
+
+  const handleButtonClick = () => {
+    setShowSmartInput(!showSmartInput);
+  };
+
   return (
     <Container>
       <SideNav />
       <Wrap>
+        <SmartInputButton onClick={handleButtonClick}>
+          Smart Input
+        </SmartInputButton>
         <Main>
           <Grid>
+            {showSmartInput && (
+              <SmartInputContainer>
+                <CloseButton
+                  style={{
+                    zIndex: '5',
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                  }}
+                  onClick={handleButtonClick}
+                ></CloseButton>
+                <SmartInput style={{ position: 'relative' }}></SmartInput>
+              </SmartInputContainer>
+            )}
             <InfoButton onClick={handleInfoClick}>
               <FontAwesomeIcon icon={faCircleInfo} />
             </InfoButton>
@@ -453,14 +519,14 @@ const Dashboard = () => {
                 onDrop={(e) => handleDrop(e, index)}
               >
                 {item.component}
-                <ButtonWrap>
+                {/* <ButtonWrap>
                   <Button onClick={() => handleRowChange(index, 1)}>
                     <FontAwesomeIcon icon={faCircleChevronDown} />
                   </Button>
                   <Button onClick={() => handleRowChange(index, -1)}>
                     <FontAwesomeIcon icon={faCircleChevronUp} />
                   </Button>
-                </ButtonWrap>
+                </ButtonWrap> */}
               </GridItem>
             ))}
           </Grid>

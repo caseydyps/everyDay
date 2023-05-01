@@ -765,10 +765,18 @@ const ColumnWrap = styled.div`
   justify-content: center;
 `;
 
-const UploadButton = styled(DefaultButton)`
-  width: 70px;
+const UploadButton = styled(ThreeDButton)`
+  width: 90px;
   margin: 20px;
+
+  padding: 10px;
+  border-radius: 25px;
   border: 2px solid #5981b0;
+  background-color: #5981b0;
+  color: #f6f8f8;
+  :hover {
+    background-color: #3467a1;
+  }
 `;
 
 const UpdateSection = styled.div`

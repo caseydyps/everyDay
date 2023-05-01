@@ -13,7 +13,7 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import { MembersSelector } from '../../AI/SmartInput';
-import { Card } from '../../../Components/Button/Button';
+import { Card, ThreeDButton } from '../../../Components/Button/Button';
 import { format } from 'date-fns';
 import {
   collection,
@@ -868,11 +868,19 @@ function DragNDrop({ data }: any) {
                       ? formattedDueDate < formattedCurrentDate
                       : false;
                     const isToday = formattedDueDate === formattedCurrentDate;
-                    console.log(formattedDueDate);
-                    console.log(formattedCurrentDate);
-                    console.log('Is overdue:', isOverdue);
-                    console.log('Is today:', isToday);
-
+                    // console.log(formattedDueDate);
+                    // console.log(formattedCurrentDate);
+                    // console.log('Is overdue:', isOverdue);
+                    // console.log('Is today:', isToday);
+                    console.log('item', item);
+                    console.log(membersArray);
+                    const filteredMembers = membersArray.filter(
+                      (member) => member.role === item.member
+                    );
+                    console.log('filteredMembers', filteredMembers);
+                    const matchingMemberAvatar = filteredMembers[0].avatar;
+                    console.log('matchingMemberAvatar', matchingMemberAvatar);
+                    //console.log('Matching member:', matchingMember);
                     return (
                       <>
                         <DragNDropItem
@@ -903,7 +911,7 @@ function DragNDrop({ data }: any) {
                           <ColumnWrap>
                             <AvatarRowWrap>
                               <Avatar
-                                src={item.member}
+                                src={matchingMemberAvatar}
                                 alt="Member Avatar"
                               ></Avatar>
 
@@ -1041,7 +1049,7 @@ function DragNDrop({ data }: any) {
   }
 }
 
-const HideButton = styled(DefaultButton)`
+const HideButton = styled(ThreeDButton)`
   height: auto;
   color: #5981b0;
   border: 2px solid #5981b0;

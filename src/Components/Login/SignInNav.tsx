@@ -8,8 +8,8 @@ import { ThreeDButton } from '../Button/Button';
 
 const Wrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: end;
+  justify-content: end;
   &:hover {
     transform: scale(1.1);
   }

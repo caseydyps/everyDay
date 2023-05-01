@@ -9,7 +9,10 @@ import Layout from '../../Components/layout';
 import SideNav from '../../Components/Nav/SideNav';
 import { v4 as uuidv4 } from 'uuid';
 import Time from '../../Components/Banner/time.png';
-import DefaultButton, { Card } from '../../Components/Button/Button';
+import DefaultButton, {
+  Card,
+  ThreeDButton,
+} from '../../Components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faFilter,
@@ -231,7 +234,7 @@ function Milestone() {
     };
 
     return (
-      <Wrap style={{ top: '0%' }}>
+      <Wrap>
         <CancelButton onClick={() => setIsEditing(false)}>
           <AnimatedFontAwesomeIcon
             icon={faCircleXmark}
@@ -888,11 +891,15 @@ const DateBox = styled.div`
   padding: 5px;
 `;
 
-const Button = styled(DefaultButton)`
+const Button = styled(ThreeDButton)`
   margin: 5px;
+  padding: 10px;
+  border-radius: 25px;
   border: 2px solid #5981b0;
+  background-color: #5981b0;
+  color: #f6f8f8;
   :hover {
-    border: 2px solid #1e3d6b;
+    background-color: #3467a1;
   }
 `;
 

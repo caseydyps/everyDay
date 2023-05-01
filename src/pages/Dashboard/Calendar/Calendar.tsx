@@ -8,6 +8,7 @@ import 'firebase/firestore';
 import { MembersSelector } from '../../AI/SmartInput';
 import { format } from 'date-fns-tz';
 import Banner from '../../../Components/Banner/Banner';
+import SmartInput from '../../AI/SmartInput';
 import Swal from 'sweetalert2';
 import { renderToString } from 'react-dom/server';
 import {
@@ -189,7 +190,7 @@ const TabButton = styled.button`
 `;
 
 const InfoButton = styled(DefaultButton)`
-  background-color: transparent;
+  background-color: #d7dde2;
   padding: 0px;
   color: rgba(255, 255, 255, 0.5);
   border: none;
@@ -263,6 +264,18 @@ const Container = styled.div`
   width: 100vw;
   height: 100%;
   //border: gold solid 3px;
+`;
+
+const SmartInputContainer = styled.div`
+  max-width: 800px;
+  position: fixed;
+  z-index: 6;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  backdrop-filter: blur(10px);
+
+  // border: 2px solid black;
 `;
 
 const Wrap = styled.div`
@@ -1551,6 +1564,10 @@ function Calendar() {
       reverseButtons: true,
     });
   };
+  const [showSmartInput, setShowSmartInput] = useState(false);
+  const handleButtonClick = () => {
+    setShowSmartInput(!showSmartInput);
+  };
 
   return (
     <Container>
@@ -1587,6 +1604,8 @@ function Calendar() {
           /> */}
 
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
+          <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
+
           {showModal && (
             <Modal>
               <ModalForm onSubmit={handleEventSubmit}>
@@ -1671,6 +1690,20 @@ function Calendar() {
             </Modal>
           )}
           <RowWrap>
+            {showSmartInput && (
+              <SmartInputContainer>
+                <CloseButton
+                  style={{
+                    zIndex: '5',
+                    position: 'absolute',
+                    top: '10px',
+                    left: '10px',
+                  }}
+                  onClick={handleButtonClick}
+                ></CloseButton>
+                <SmartInput style={{ position: 'relative' }}></SmartInput>
+              </SmartInputContainer>
+            )}
             <Table>
               <tbody>
                 {[

@@ -3,7 +3,7 @@ import { auth, db } from '../../config/firebase.config';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import styled from 'styled-components';
 import UserAuthData from '../../Components/Login/Auth';
-import { DefaultButton } from '../../Components/Button/Button';
+import { DefaultButton, ThreeDButton } from '../../Components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { faBrain } from '@fortawesome/free-solid-svg-icons';
@@ -22,14 +22,14 @@ const Input = styled.input`
   outline: none;
 `;
 
-const Button = styled.button`
+const Button = styled(ThreeDButton)`
   margin: 5px;
   padding: 10px 20px;
   border: none;
   border-radius: 20px;
   background-color: #5981b0;
   color: #f6f8f8;
-  font-size: 16px;
+  font-size: 12px;
   font-weight: bold;
   cursor: pointer;
   outline: none;

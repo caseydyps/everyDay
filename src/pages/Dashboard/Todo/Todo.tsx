@@ -8,8 +8,9 @@ import 'firebase/firestore';
 import SideNav from '../../../Components/Nav/SideNav';
 import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
+import SmartInput from '../../AI/SmartInput';
 import DefaultButton from '../../../Components/Button/Button';
-import { AddButton } from '../../../Components/Button/Button';
+import { AddButton, CloseButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import {
   collection,
@@ -374,19 +375,59 @@ const Todo = () => {
     updateData();
   }, [data, familyId]);
 
+  const [showSmartInput, setShowSmartInput] = useState(false);
+  const handleButtonClick = () => {
+    setShowSmartInput(!showSmartInput);
+  };
+
+  const SmartInputContainer = styled.div`
+    max-width: 800px;
+    position: fixed;
+    z-index: 6;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    backdrop-filter: blur(10px);
+
+    // border: 2px solid black;
+  `;
+
+  const RowWrap = styled.div`
+    display: flex;
+    flex-direction: row;
+  `;
+
   return (
     <Container>
       <SideNav></SideNav>
       <Wrapper>
         <Banner title="Todo" subTitle="Get Things Done"></Banner>
 
-        <AddButton
-          style={{ marginLeft: '10px' }}
-          onClick={() => addList(dispatch)}
-        >
-          Add List
-          {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
-        </AddButton>
+        <RowWrap>
+          <AddButton
+            style={{ marginLeft: '10px' }}
+            onClick={() => addList(dispatch)}
+          >
+            Add List
+            {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
+          </AddButton>
+          <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
+        </RowWrap>
+
+        {showSmartInput && (
+          <SmartInputContainer>
+            <CloseButton
+              style={{
+                zIndex: '5',
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+              }}
+              onClick={handleButtonClick}
+            ></CloseButton>
+            <SmartInput style={{ position: 'relative' }}></SmartInput>
+          </SmartInputContainer>
+        )}
 
         <DragNDrop
           data={data}

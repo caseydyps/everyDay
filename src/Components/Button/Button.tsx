@@ -23,78 +23,54 @@ export const ThreeDButton = styled.button`
   display: inline-block;
   cursor: pointer;
   outline: none;
-  border: 0;
+  border: none;
   vertical-align: middle;
   text-decoration: none;
   font-size: inherit;
   font-family: inherit;
   padding: 1.25em 2em;
-  border: 2px solid #bcc8d8;
   border-radius: 0.75em;
   font-weight: 700;
   color: #414141;
   text-transform: uppercase;
   background: #f1f5fb;
-  transform-style: preserve-3d;
   transition: 0.15s cubic-bezier(0, 0, 0.6, 1);
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    background: #a8bdd1;
-    box-shadow: 0 0 0 2px #bcc8d8, 0 0.625em 0 0 #e3e9f2;
-    transform: translate3d(0, 0.75em, -1em);
-    transition: 0.15s cubic-bezier(0, 0, 0.6, 1);
-  }
+  box-shadow: 0 0 0 2px #bcc8d8, 0 0.625em #e3e9f2;
 
   &:hover {
     background: #e4ebf4;
     transform: translate(0, 0.25em);
-  }
-
-  &:hover::before {
-    box-shadow: 0 0 0 2px #bcc8d8, 0 0.5em 0 0 #e3e9f2;
-    transform: translate3d(0, 0.5em, -1em);
+    box-shadow: 0 0 0 2px #bcc8d8, 0 0.375em #e3e9f2;
   }
 
   &:active {
     background: #d8e0eb;
     transform: translate(0, 0.75em);
-  }
-
-  &:active::before {
     box-shadow: 0 0 0 2px #bcc8d8, 0 0 #e3e9f2;
-    transform: translate3d(0, 0, -1em);
   }
 `;
 
-export const AddButton = styled(DefaultButton)`
-  font-weight: bold;
-  font-size: 16px;
-  margin: 10px;
-  &:hover {
-    transform: scale(1.1);
-    background-color: #f6f8f8;
-    color: #5981b0;
-    border: 2px solid #5981b0;
-  }
-  border: 2px solid #f6f8f8;
-  border-radius: 20px;
+export const AddButton = styled(ThreeDButton)`
+  margin: 5px;
   padding: 10px 20px;
-  cursor: pointer;
-  z-index: 5;
-  margin: 20px;
-  width: 120px;
-  color: #f6f8f8;
+  border: none;
+  width: 100px;
+  border-radius: 20px;
   background-color: #5981b0;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  color: #f6f8f8;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #3467a1;
+    color: white;
+  }
+  margin: 20px;
+  z-index: 5;
+  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 `;
 
 export const ConfirmButton = styled(DefaultButton)`

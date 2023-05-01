@@ -52,31 +52,31 @@ const Suggestion = () => {
     membersArray,
     memberRolesArray,
   } = UserAuthData();
-  useEffect(() => {
-    async function fetchData() {
-      const familyDocRef = collection(db, 'Family', familyId, 'Milestone');
-      try {
-        const querySnapshot = await getDocs(familyDocRef);
-        const data = querySnapshot.docs.map((doc) => ({
-          ...doc.data(),
-        }));
-        console.log(data);
-        setMilestoneData(
-          data as {
-            id: string;
-            title: string;
-            date: Date;
-            member: string;
-            image: string;
-          }[]
-        );
-      } catch (error) {
-        console.error('Error fetching data from Firestore: ', error);
-      }
-    }
+  // useEffect(() => {
+  //   async function fetchData() {
+  //     const familyDocRef = collection(db, 'Family', familyId, 'Milestone');
+  //     try {
+  //       const querySnapshot = await getDocs(familyDocRef);
+  //       const data = querySnapshot.docs.map((doc) => ({
+  //         ...doc.data(),
+  //       }));
+  //       console.log(data);
+  //       setMilestoneData(
+  //         data as {
+  //           id: string;
+  //           title: string;
+  //           date: Date;
+  //           member: string;
+  //           image: string;
+  //         }[]
+  //       );
+  //     } catch (error) {
+  //       console.error('Error fetching data from Firestore: ', error);
+  //     }
+  //   }
 
-    fetchData();
-  }, [familyId]);
+  //   fetchData();
+  // }, [familyId]);
 
   const getTodosData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'todo');
@@ -91,29 +91,51 @@ const Suggestion = () => {
     completed: boolean;
   }
 
+  // useEffect(() => {
+  //   console.log(familyId);
+  //   const fetchTodosData = async () => {
+  //     const todoData = await getTodosData();
+  //     console.log(todoData);
+  //     setTodoData(
+  //       todoData as {
+  //         id: string;
+  //         title: string;
+  //         completed: boolean;
+  //       }[]
+  //     );
+  //   };
+  //   fetchTodosData();
+  // }, [familyId]);
+
+  // useEffect(() => {
+  //   const fetchCalendarData = async () => {
+  //     const calendarData: any = await getCalendarData();
+  //     console.log(calendarData);
+  //     setCalendarData(calendarData);
+  //   };
+  //   fetchCalendarData();
+  // }, [familyId]);
+  console.log(todoData, calendarData);
+
   useEffect(() => {
+    console.log(familyId);
+
     const fetchTodosData = async () => {
       const todoData = await getTodosData();
       console.log(todoData);
-      setTodoData(
-        todoData as {
-          id: string;
-          title: string;
-          completed: boolean;
-        }[]
-      );
+      setTodoData(todoData as Todo[]);
     };
-    fetchTodosData();
-    runPrompt();
-  }, [familyId]);
 
-  useEffect(() => {
     const fetchCalendarData = async () => {
-      const calendarData: any = await getCalendarData();
+      const calendarData = await getCalendarData();
       console.log(calendarData);
       setCalendarData(calendarData);
     };
-    fetchCalendarData();
+
+    Promise.all([fetchTodosData(), fetchCalendarData()]).then(() => {
+      console.log(calendarData, todoData);
+      runPrompt();
+    });
   }, [familyId]);
 
   const getCalendarData = async () => {
@@ -162,28 +184,31 @@ const Suggestion = () => {
     //console.log('Responses: ', parsedResponse.R);
   };
 
+  useEffect(() => {
+    console.log(todoData, calendarData);
+    runPrompt();
+  }, [todoData, calendarData]);
+
   return (
     <Card>
-      <BoxText
+      {/* <BoxText
         style={{
           fontSize: '20px;',
         }}
       >
         Suggestions
-      </BoxText>
+      </BoxText> */}
 
       <Response>
-        <div>{responseValue}</div>
+        {todoData.length > 0 && calendarData.length > 0 ? (
+          <div>{responseValue}</div>
+        ) : (
+          <div>Loading...</div>
+        )}
       </Response>
     </Card>
   );
 };
-
-const BoxText = styled.h4`
-  position: absolute;
-  top: 10px;
-  left: 10px;
-`;
 
 const Card = styled.div`
   max-width: 240px;
@@ -215,6 +240,8 @@ const Response = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 14px;
+  min-width: 120px;
+  min-height: 80px;
   font-weight: bold;
   margin-top: 70px;
   color: #414141;
