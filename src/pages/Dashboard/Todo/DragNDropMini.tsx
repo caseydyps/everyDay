@@ -67,7 +67,7 @@ const DragNDropWrapper = styled.div`
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #transparent;
+    background-color: transparent;
     border-radius: 5px;
   }
 
@@ -82,16 +82,16 @@ const Button = styled(DefaultButton)`
   display: flex;
   // justify-content: space-between;
   margin: 20px;
-  flex:direction: column;
+  flex-direction: column;
 `;
 
 const RowButton = styled(DefaultButton)`
   display: flex;
   justify-content: space-between;
   margin: 0px;
-  flex:direction: column;
-  width:20px;
-  height:20px;
+  flex-direction: column;
+  width: 20px;
+  height: 20px;
   background-color: transparent;
 `;
 
@@ -899,6 +899,7 @@ const CheckboxInput = styled.input`
   color: dodgerblue;
   vertical-align: middle;
   -webkit-appearance: none;
+  appearance: none;
   background: none;
   border: 0;
   outline: 0;

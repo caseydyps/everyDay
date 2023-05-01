@@ -88,9 +88,6 @@ function Financial() {
         <CircularProgressbar
           value={currentSavingsPercentage}
           text={`${currentSavingsPercentage}%`}
-          styles={buildStyles({
-            valueColor: { color: 'red !important' },
-          })}
 
           // Set the color of the progress bar value to red
         />

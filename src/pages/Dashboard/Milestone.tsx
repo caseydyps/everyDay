@@ -610,7 +610,7 @@ function Milestone() {
 
                 return (
                   <EventWrap
-                    onLayout={(event) =>
+                    onLayout={(event: any) =>
                       setEventWrapWidth(event.nativeEvent.layout.width)
                     }
                   >
@@ -1136,8 +1136,11 @@ const pulse = keyframes`
     box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
   }
 `;
+type Dot = {
+  eventWrapWidth: any;
+};
 
-const Dot = styled.div`
+const Dot = styled.div<Dot>`
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -1167,7 +1170,10 @@ const TimelineLine = styled.div`
   right: 0;
   border-left: 2px solid #aaa;
 `;
+type EventWrapType = {
+  onLayout?: (event: Event) => void;
+};
 
-const EventWrap = styled.div`
+const EventWrap = styled.div<EventWrapType>`
   position: relative;
 `;

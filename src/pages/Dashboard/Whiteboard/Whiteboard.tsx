@@ -295,8 +295,8 @@ export const Whiteboard = () => {
     x: 0,
     y: 0,
   });
-  const [stickers, setStickers] = useState([]);
-  const [stickerText, setStickerText] = useState([]);
+  const [stickers, setStickers] = useState<any>([]);
+  const [stickerText, setStickerText] = useState<string[]>([]);
   const [image, setImage] = useState(null);
   const [gifUrl, setGifUrl] = useState<string>('');
   const [gif, setGif] = useState<IGif | null>(null);
@@ -412,7 +412,7 @@ export const Whiteboard = () => {
 
   useEffect(() => {
     const fetchStickers = async () => {
-      const stickers = await getStickers();
+      const stickers: Sticker[] = await getStickers();
       console.log(stickers);
       setStickers(stickers);
     };
@@ -423,10 +423,12 @@ export const Whiteboard = () => {
     const familyDocRef = collection(db, 'Family', familyId, 'stickers');
     const querySnapshot = await getDocs(familyDocRef);
 
-    const stickersData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    const stickersData: any = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+    }));
     console.log(stickersData);
     setStickers(stickersData);
-    setStickerText(stickersData.map((sticker) => sticker.content));
+    setStickerText(stickersData.map((sticker: Sticker) => sticker.content));
     return stickersData;
   };
 
@@ -435,7 +437,7 @@ export const Whiteboard = () => {
     isSticker: boolean,
     content: string
   ) => {
-    const newSticker = {
+    const newSticker: any = {
       id: uuidv4(),
       x: 180,
       y: 220,
@@ -445,7 +447,7 @@ export const Whiteboard = () => {
     };
 
     try {
-      const familyDocRef = doc(
+      const familyDocRef: any = doc(
         db,
         'Family',
         familyId,
@@ -567,11 +569,11 @@ export const Whiteboard = () => {
                   rows={3}
                   value={stickerText[index]}
                   onChange={(e) => {
-                    const newStickerText = [...stickerText];
+                    const newStickerText: string[] = [...stickerText];
                     newStickerText[index] = e.target.value;
                     setStickerText(newStickerText);
 
-                    const stickerId = stickers[index].id;
+                    const stickerId: any = stickers[index].id;
                     const familyDocRef = doc(
                       db,
                       'Family',

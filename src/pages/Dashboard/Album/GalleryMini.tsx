@@ -375,8 +375,8 @@ function Gallery() {
   const [isScrolling, setIsScrolling] = useState(true);
 
   useEffect(() => {
-    const galleryElement = galleryRef.current;
-    let scrollInterval = null;
+    const galleryElement: any = galleryRef.current;
+    let scrollInterval: any = null;
     if (isScrolling) {
       scrollInterval = setInterval(() => {
         if (galleryElement) {

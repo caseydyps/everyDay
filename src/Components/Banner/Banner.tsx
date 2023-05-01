@@ -113,16 +113,16 @@ interface BannerProps {
   subTitle: string;
 }
 
-const BannerPic = ({ picUrl, maxWidth, maxHeight }) => {
-  const BannerImg = styled.img`
-    position: absolute;
-    width: auto;
-    height: 250px;
-    object-fit: cover;
-    right: 50px;
-  `;
-  return <BannerImg src={picUrl} alt="Banner" />;
-};
+// const BannerPic = ({ picUrl, maxWidth, maxHeight }) => {
+//   const BannerImg = styled.img`
+//     position: absolute;
+//     width: auto;
+//     height: 250px;
+//     object-fit: cover;
+//     right: 50px;
+//   `;
+//   return <BannerImg src={picUrl} alt="Banner" />;
+// };
 
 const Banner = ({ title, subTitle }: BannerProps) => {
   let picUrl;

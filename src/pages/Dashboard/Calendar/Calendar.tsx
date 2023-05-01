@@ -385,7 +385,13 @@ interface EventWrapperProps {
   category: string;
   multiDay?: boolean;
   finished?: boolean;
+  member: string;
+  members: Member[];
 }
+
+type Member = {
+  role: string;
+};
 
 const EventWrapper = styled.div<EventWrapperProps>`
   display: flex;
@@ -650,7 +656,7 @@ function Calendar() {
     });
   };
 
-  const editEventtoFirestore = async (eventId: string, updatedData: any) => {
+  const editEventtoFirestore = async (eventId: any, updatedData: any) => {
     const eventRef = collection(db, 'Family', familyId, 'Calendar');
     console.log(eventId, updatedData);
     console.log(typeof eventId);
@@ -1164,7 +1170,11 @@ function Calendar() {
           {selectedMonthEvents.length > 0 ? (
             <EventList>
               {selectedMonthEvents
-                .sort((a, b) => new Date(a.date) - new Date(b.date))
+                .sort((a, b) => {
+                  const dateA: any = new Date(a.date);
+                  const dateB: any = new Date(b.date);
+                  return dateA - dateB;
+                })
                 .map((event, index: number) => (
                   <EventListItem key={index}>
                     <EventMember
@@ -1535,7 +1545,7 @@ function Calendar() {
       background: '#F6F8F8',
       padding: '1rem',
       width: '400px',
-      height: '200px',
+      // height: '200px',
       heightAuto: false,
       position: 'center',
       reverseButtons: true,

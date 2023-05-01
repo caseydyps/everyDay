@@ -399,13 +399,13 @@ const Dashboard = () => {
   };
   console.log(gridItems);
 
-  const handleDragStart = (e, index) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, index: any) => {
     e.dataTransfer.setData('text/plain', index);
   };
 
-  const handleDrop = (e, index) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, index: any) => {
     e.preventDefault();
-    const dragIndex = e.dataTransfer.getData('text/plain');
+    const dragIndex: any = e.dataTransfer.getData('text/plain');
     if (dragIndex !== index) {
       const newGridItems = [...gridItems];
       const draggedItem = newGridItems[dragIndex];
@@ -426,7 +426,7 @@ const Dashboard = () => {
       background: '#F6F8F8',
       padding: '1rem',
       width: '300px',
-      height: '200px',
+      // height: '200px',
       heightAuto: false,
       position: 'center',
       reverseButtons: true,

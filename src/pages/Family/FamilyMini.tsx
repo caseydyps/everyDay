@@ -205,8 +205,8 @@ const FamilyMemberForm = () => {
       </div>
     );
   }
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = (event) => {
+  const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const handleClick = (event: any) => {
     setAnchorEl(anchorEl ? null : event.currentTarget);
   };
   const open = Boolean(anchorEl);
@@ -328,22 +328,22 @@ const FormInput = styled.input`
   }
 `;
 
-const AvatarContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1
-  margin-bottom: 1rem;
+// const AvatarContainer = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   z-index: 1
+//   margin-bottom: 1rem;
 
-  flex: 1;
-  flex-direction: column;
-  > img {
-    width: 500px;
-    height: 500px;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-`;
+//   flex: 1;
+//   flex-direction: column;
+//   > img {
+//     width: 500px;
+//     height: 500px;
+//     object-fit: cover;
+//     border-radius: 50%;
+//   }
+// `;
 
 const AvatarImage = styled.img`
   max-width: 50px;

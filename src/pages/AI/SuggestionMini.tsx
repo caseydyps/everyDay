@@ -21,6 +21,7 @@ import {
 import DefaultButton from '../../Components/Button/Button';
 import { InputForm } from './SmartInput';
 import UserAuthData from '../../Components/Login/Auth';
+import { faM } from '@fortawesome/free-solid-svg-icons';
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -38,6 +39,7 @@ const Suggestion = () => {
     { id: string; title: string; date: Date; member: string; image: string }[]
   >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
+  const [calendarData, setCalendarData] = useState<Todo[]>([]);
   const moment = require('moment');
   const {
     user,
@@ -74,7 +76,7 @@ const Suggestion = () => {
     }
 
     fetchData();
-  }, []);
+  }, [familyId]);
 
   const getTodosData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'todo');
@@ -103,31 +105,23 @@ const Suggestion = () => {
     };
     fetchTodosData();
     runPrompt();
-  }, []);
+  }, [familyId]);
 
-  const calendarData = [
-    {
-      event: '看醫生',
-      category: '#Calendar',
-      startTime: '2023-04-28 11:00',
-      endTime: '2023-04-28 12:00',
-      members: '女兒',
-    },
-    {
-      event: '看電影',
-      category: '#Calendar',
-      startTime: '2023-04-30 10:00',
-      endTime: '2023-04-30 11:30',
-      members: '爸爸',
-    },
-    {
-      event: '聚餐',
-      category: '#Calendar',
-      startTime: '2023-05-01 14:00',
-      endTime: '2023-05-02 16:00',
-      members: '媽媽',
-    },
-  ];
+  useEffect(() => {
+    const fetchCalendarData = async () => {
+      const calendarData: any = await getCalendarData();
+      console.log(calendarData);
+      setCalendarData(calendarData);
+    };
+    fetchCalendarData();
+  }, [familyId]);
+
+  const getCalendarData = async () => {
+    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+    const querySnapshot = await getDocs(familyDocRef);
+    const calendarData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return calendarData;
+  };
 
   const runPrompt = async () => {
     const today = new Date();
@@ -141,11 +135,9 @@ const Suggestion = () => {
    ,這是我家庭的資料庫，裡面有以下資料：
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    - 里程碑資料庫: ${JSON.stringify(
-      milestoneData
-    )},從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內, 時間不需要年份)
+    ,從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內, 時間不需要年份)
       `;
-
+    console.log(prompt);
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages: [

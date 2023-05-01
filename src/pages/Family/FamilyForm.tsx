@@ -1177,7 +1177,7 @@ const AvatarContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1
+  z-index: 1;
   margin-bottom: 1rem;
 
   flex: 1;
@@ -1401,7 +1401,7 @@ const FormDropdown = styled.select`
   padding: 8px;
   border-radius: 25px;
   border: 1px solid #3467a1;
-  background-color: #transparent;
+  background-color: transparent;
   margin: 20px;
   &:focus {
     outline: none;

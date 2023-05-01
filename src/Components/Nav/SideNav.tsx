@@ -1,4 +1,4 @@
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, NavLinkProps } from 'react-router-dom';
 import styled from 'styled-components/macro';
 import React, { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
@@ -38,18 +38,22 @@ const SideNav = () => {
   const avatarUrl = user ? user.photoURL : null;
   const userUrl = user ? user.email : null;
 
-  const handleAvatarClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-  const handleLogout = () => {
-    setIsMenuOpen(false); // Close the menu
-    auth.signOut();
-  };
+  // const handleAvatarClick = () => {
+  //   setIsMenuOpen(!isMenuOpen);
+  // };
+  // const handleLogout = () => {
+  //   setIsMenuOpen(false); // Close the menu
+  //   auth.signOut();
+  // };
 
   const [open, setOpen] = useState(true);
 
   const toggleNav = () => {
     setOpen(!open);
+  };
+
+  type NavbarProps = {
+    showNav: boolean;
   };
 
   return (
@@ -117,7 +121,7 @@ const SideNav = () => {
   );
 };
 
-const NavbarWrapper = styled.div`
+const NavbarWrapper = styled.div<NavListProps>`
   z-index: 2;
 
   height: auto;
@@ -166,7 +170,7 @@ const Logo = styled(Link)`
 `;
 
 interface NavListProps {
-  open: boolean; // 添加 open 属性
+  showNav: boolean; // 添加 open 属性
 }
 export const NavList = styled.ul<NavListProps>`
   list-style: none;
@@ -212,7 +216,7 @@ export const NavItem = styled.li`
   }
 `;
 
-const NavToggle = styled.div`
+const NavToggle = styled.div<NavListProps>`
   cursor: pointer;
   margin-left: auto;
   position: fixed;
@@ -224,14 +228,11 @@ const NavToggle = styled.div`
   left: ${(props) => (props.showNav ? '150px' : '0px')};
 `;
 
-const UserSetting = styled.div``;
+type NavProps = {
+  activeClassName: string;
+};
 
-const AvatarContainer = styled.div`
-  margin: 20px;
-  margin-top: 30px;
-`;
-
-export const StyledNavLink = styled(NavLink)`
+export const StyledNavLink = styled(NavLink)<NavProps>`
   display: block;
   color: #6a6a6a;
   font-size: 14px;

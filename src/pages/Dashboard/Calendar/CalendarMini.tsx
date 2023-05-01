@@ -275,7 +275,7 @@ const EventList = styled.ul`
   }
 
   &::-webkit-scrollbar-track {
-    background-color: #transparent;
+    background-color: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -717,7 +717,7 @@ function Calendar() {
 
   const eventsOnSelectedDate = events.filter((event) => {
     const eventDateOnly = new Date(event.date).setHours(0, 0, 0, 0);
-    const selectedDateOnly = selectedDate.setHours(0, 0, 0, 0);
+    const selectedDateOnly: any = selectedDate.setHours(0, 0, 0, 0);
 
     return (
       selectedDateOnly === eventDateOnly ||

@@ -196,7 +196,6 @@ const Curve = styled.div`
   width: 100%;
   bottom: 0;
   text-align: center;
-s
 `;
 
 export const Container = styled.div`

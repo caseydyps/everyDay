@@ -455,6 +455,7 @@ function DragNDrop({ data }: any) {
     due: string | null;
     member: string;
     done: boolean;
+    title: string;
   };
 
   type Group = {
@@ -751,7 +752,7 @@ function DragNDrop({ data }: any) {
     setShowAdd(!showAdd);
   };
 
-  function formatDate(dueDate: string) {
+  function formatDate(dueDate: string | Date) {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -796,7 +797,7 @@ function DragNDrop({ data }: any) {
 
                   <AddItemForm
                     groupIndex={groupIndex}
-                    onAddItem={(item) => {
+                    onAddItem={(item: any) => {
                       addItem(groupIndex, item);
                       setShowAdd(false);
                     }}
@@ -1103,6 +1104,7 @@ const CheckboxInput = styled.input`
   color: dodgerblue;
   vertical-align: middle;
   -webkit-appearance: none;
+  appearance: none;
   background: none;
   border: 0;
   outline: 0;

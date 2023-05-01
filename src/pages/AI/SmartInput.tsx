@@ -650,26 +650,6 @@ const SmartInput = (props: any) => {
     setIsLoading(false);
   };
 
-  const LoadingImage = styled.img`
-    width: 50px;
-    height: 50px;
-  `;
-
-  const LoadingComponent = () => {
-    return (
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '100%',
-        }}
-      >
-        <LoadingImage src={loadingGif} alt="Loading..." />
-      </div>
-    );
-  };
-
   const fadeInOut = keyframes`
 from {
   opacity: 1;
@@ -678,29 +658,6 @@ to {
   opacity: 0;
 }
 `;
-  const LoadingDots = styled.div`
-    width: 3.5em;
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: center;
-    justify-content: space-between;
-
-    div {
-      width: 0.8em;
-      height: 0.8em;
-      border-radius: 50%;
-      background-color: #fc2f70;
-      animation: ${fadeInOut} 0.8s ease-in-out alternate infinite;
-
-      &:nth-of-type(1) {
-        animation-delay: -0.4s;
-      }
-
-      &:nth-of-type(2) {
-        animation-delay: -0.2s;
-      }
-    }
-  `;
 
   return (
     <Wrapper>

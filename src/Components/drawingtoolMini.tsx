@@ -300,9 +300,6 @@ const DrawingTool = () => {
         <canvas
           id="canvas"
           ref={canvasRef}
-          onMouseDown={startPaint}
-          onMouseUp={endPaint}
-          onMouseMove={paint}
           style={{
             height: 'auto',
             maxWidth: '737px',
@@ -310,7 +307,7 @@ const DrawingTool = () => {
             minHeight: '240px',
             width: '737px',
             border: '2px solid transparent',
-            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
+            //boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
             borderRadius: '25px',
             backgroundColor: 'transparent',
           }}

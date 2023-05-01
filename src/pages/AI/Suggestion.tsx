@@ -128,7 +128,7 @@ const Suggestion = () => {
 
   useEffect(() => {
     const fetchCalendarData = async () => {
-      const calendarData = await getCalendarData();
+      const calendarData: any = await getCalendarData();
       console.log(calendarData);
       setCalendarData(calendarData);
     };

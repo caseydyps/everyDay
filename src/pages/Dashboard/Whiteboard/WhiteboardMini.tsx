@@ -62,7 +62,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  border: 3px solid red;
+  //border: 3px solid red;
 `;
 
 type StickerType = {
@@ -294,20 +294,15 @@ export const Whiteboard = () => {
     x: 0,
     y: 0,
   });
-  const [stickers, setStickers] = useState([]);
-  const [stickerText, setStickerText] = useState([]);
-  const [image, setImage] = useState(null);
-  const [gifUrl, setGifUrl] = useState<string>('');
-  const [gif, setGif] = useState<IGif | null>(null);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
+  const [stickerText, setStickerText] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedGif, setSelectedGif] = useState<IGif | null>(null);
-  const [searchResults, setSearchResults] = useState<IGif[]>([]);
   const [locked, setLocked] = useState(false);
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
   // <button onClick={() => voteSticker(name)}>Vote</button>;
-  const [count, setCount] = useState(0);
+
   const [showResults, setShowResults] = useState(false);
   const {
     user,
@@ -320,17 +315,6 @@ export const Whiteboard = () => {
     membersArray,
     memberRolesArray,
   } = UserAuthData();
-
-  const handleSearch = async () => {
-    const { data } = await giphyFetch.search(searchTerm, { limit: 10 });
-    setSearchResults(data.slice(0, 10));
-    setShowResults(true);
-  };
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-    setShowResults(false);
-  };
 
   useLayoutEffect(() => {
     const container = document.getElementById('Wrapper');
@@ -411,7 +395,7 @@ export const Whiteboard = () => {
 
   useEffect(() => {
     const fetchStickers = async () => {
-      const stickers = await getStickers();
+      const stickers: any = await getStickers();
       console.log(stickers);
       setStickers(stickers);
     };
@@ -422,66 +406,68 @@ export const Whiteboard = () => {
     const familyDocRef = collection(db, 'Family', familyId, 'stickers');
     const querySnapshot = await getDocs(familyDocRef);
 
-    const stickersData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    const stickersData: any = querySnapshot.docs.map((doc) => ({
+      ...doc.data(),
+    }));
     console.log(stickersData);
     setStickers(stickersData);
-    setStickerText(stickersData.map((sticker) => sticker.content));
+    setStickerText(stickersData.map((sticker: Sticker) => sticker.content));
     return stickersData;
   };
 
-  const addSticker = async (
-    color: string,
-    isSticker: boolean,
-    content: string
-  ) => {
-    const newSticker = {
-      id: uuidv4(),
-      x: 180,
-      y: 220,
-      content: content,
-      color: color,
-      isSticker: isSticker,
-    };
+  // const addSticker = async (
+  //   color: string,
+  //   isSticker: boolean,
+  //   content: string
+  // ) => {
+  //   const newSticker = {
+  //     id: uuidv4(),
+  //     x: 180,
+  //     y: 220,
+  //     content: content,
+  //     color: color,
+  //     isSticker: isSticker,
+  //   };
 
-    try {
-      const familyDocRef = doc(
-        db,
-        'Family',
-        familyId,
-        'stickers',
-        newSticker.id
-      );
-      await setDoc(familyDocRef, newSticker);
-      console.log('Sticker has been added to Firestore!');
-      setStickers([...stickers, newSticker]);
-      setStickerText([...stickerText, '']);
-    } catch (error) {
-      console.error('Error adding sticker to Firestore: ', error);
-    }
-  };
+  //   try {
+  //     const familyDocRef = doc(
+  //       db,
+  //       'Family',
+  //       familyId,
+  //       'stickers',
+  //       newSticker.id
+  //     );
+  //     await setDoc(familyDocRef, newSticker);
+  //     console.log('Sticker has been added to Firestore!');
+  //     setStickers([...stickers, newSticker]);
+  //     setStickerText([...stickerText, '']);
+  //   } catch (error) {
+  //     console.error('Error adding sticker to Firestore: ', error);
+  //   }
+  // };
 
-  const deleteSticker = async (id: number) => {
-    console.log(id);
-    console.log(stickers);
+  // const deleteSticker = async (id: number) => {
+  //   console.log(id);
+  //   console.log(stickers);
 
-    try {
-      const familyDocRef = doc(
-        db,
-        'Family',
-        familyId,
-        'stickers',
-        stickers[id].id
-      );
-      await deleteDoc(familyDocRef);
-      console.log('Sticker has been deleted from Firestore!');
-      const newStickers = stickers.filter(
-        (sticker: Sticker) => sticker.id !== stickers[id].id
-      );
-      setStickers(newStickers);
-    } catch (error) {
-      console.error('Error deleting sticker from Firestore: ', error);
-    }
-  };
+  //   try {
+  //     const familyDocRef = doc(
+  //       db,
+  //       'Family',
+  //       familyId,
+  //       'stickers',
+  //       stickers[id].id
+  //     );
+  //     await deleteDoc(familyDocRef);
+  //     console.log('Sticker has been deleted from Firestore!');
+  //     const newStickers = stickers.filter(
+  //       (sticker: Sticker) => sticker.id !== stickers[id].id
+  //     );
+  //     setStickers(newStickers);
+  //   } catch (error) {
+  //     console.error('Error deleting sticker from Firestore: ', error);
+  //   }
+  // };
 
   const handleLockClick = (index: number) => {
     const newLockedStickers = [...lockedStickers];
@@ -534,11 +520,11 @@ export const Whiteboard = () => {
                 rows={3}
                 value={stickerText[index]}
                 onChange={(e) => {
-                  const newStickerText = [...stickerText];
+                  const newStickerText: string[] = [...stickerText];
                   newStickerText[index] = e.target.value;
                   setStickerText(newStickerText);
 
-                  const stickerId = stickers[index].id;
+                  const stickerId: any = stickers[index].id;
                   const familyDocRef = doc(
                     db,
                     'Family',
