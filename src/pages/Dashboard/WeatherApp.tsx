@@ -70,7 +70,9 @@ function WeatherApp() {
         ) : null}
 
         {data.weather ? (
-          <p style={{ color: '#939393' }}>{data.weather[0].main}</p>
+          <p style={{ fontSize: '12px', color: '#939393' }}>
+            {data.weather[0].main}
+          </p>
         ) : null}
       </Top>
     </Container>
