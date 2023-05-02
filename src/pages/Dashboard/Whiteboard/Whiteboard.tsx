@@ -217,7 +217,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  border: gold solid 3px;
+  //border: gold solid 3px;
 `;
 
 const Title = styled.h2`
