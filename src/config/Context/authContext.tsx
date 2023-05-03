@@ -11,7 +11,27 @@ import {
 } from 'firebase/auth';
 import UserAuthData from '../../Components/Login/Auth';
 
-export const AuthContext = createContext({
+type AuthContextType = {
+  isLogin: boolean;
+  user: {
+    name: string;
+    image: string;
+    role: string;
+    email: string;
+    userUID: string;
+  };
+  loading: boolean;
+  userEmail: string | null;
+  hasSetup: boolean;
+  login: () => void;
+  logout: () => void;
+  familyId: string;
+  memberRolesArray: string[];
+  membersArray: any;
+  setHasSetup: any;
+};
+
+export const AuthContext = createContext<AuthContextType>({
   isLogin: false,
   user: {
     name: '',
@@ -20,10 +40,15 @@ export const AuthContext = createContext({
     email: '',
     userUID: '',
   },
+  userEmail: '',
   loading: false,
-
+  hasSetup: false,
   login: () => {},
   logout: () => {},
+  familyId: '',
+  memberRolesArray: [],
+  membersArray: [],
+  setHasSetup: () => {},
 });
 
 const style = {
@@ -62,6 +87,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
     googleAvatarUrl,
     userEmail,
     hasSetup,
+    setHasSetup,
     hasCreateFamily,
     familyId,
     memberRolesArray,
@@ -109,8 +135,11 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         login,
         logout,
         familyId,
+        userEmail,
+        hasSetup,
         memberRolesArray,
         membersArray,
+        setHasSetup,
       }}
     >
       {children}

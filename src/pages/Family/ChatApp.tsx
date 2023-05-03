@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from './Navbar';
+// import Navbar from './Navbar';
 import Chat from './Chat';
 import SmartInput from '../AI/SmartInput';
 import { auth } from '../../config/firebase.config';

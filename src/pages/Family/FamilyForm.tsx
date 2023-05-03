@@ -33,7 +33,7 @@ const FamilyMemberForm = () => {
   //   familyId,
   //   setHasSetup,
   // } = UserAuthData();
-  const { user, userEmail, hasSetup, familyId, membersArray } =
+  const { user, userEmail, hasSetup, familyId, setHasSetup, membersArray } =
     useContext(AuthContext);
   console.log('user', user);
   console.log('hasSetup', hasSetup);
