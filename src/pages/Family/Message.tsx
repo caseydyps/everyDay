@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../config/Context/authContext';
 import { auth } from '../../config/firebase.config';
 import styled from 'styled-components/macro';
 import { LoadButton } from '../../Components/Button/Button';
@@ -91,15 +92,17 @@ interface MessageType {
 }
 
 const Message: any = ({ message }: Props) => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  // } = UserAuthData();
+  const { user, userEmail, hasSetup, familyId, membersArray } =
+    useContext(AuthContext);
   const isSent = message.uid === auth.currentUser?.uid;
 
   const date = message.timestamp && message.timestamp.toDate();

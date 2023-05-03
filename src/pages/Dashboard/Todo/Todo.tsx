@@ -1,5 +1,13 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
+import {
+  useState,
+  useEffect,
+  useContext,
+  useReducer,
+  useRef,
+  Dispatch,
+} from 'react';
+import { AuthContext } from '../../../config/Context/authContext';
 import DragNDrop from './DragNDrop';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
@@ -306,17 +314,18 @@ const getTodosData = async () => {
 };
 
 const Todo = () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);

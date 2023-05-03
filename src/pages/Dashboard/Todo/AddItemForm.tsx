@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../../../config/Context/authContext';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { MembersSelector } from '../../AI/SmartInput';
@@ -66,17 +67,18 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
         'https://api.dicebear.com/6.x/adventurer/svg?seed=Kid&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
     },
   ];
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { membersArray } = useContext(AuthContext);
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
   }

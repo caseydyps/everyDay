@@ -2,12 +2,14 @@ import { createContext, useState, useEffect, useCallback } from 'react';
 import React, { ReactNode } from 'react';
 import GoogleButton from 'react-google-button';
 import { auth } from '../../config/firebase.config';
+import { onAuthStateChanged } from 'firebase/auth';
 import {
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
   signOut,
 } from 'firebase/auth';
+import UserAuthData from '../../Components/Login/Auth';
 
 export const AuthContext = createContext({
   isLogin: false,
@@ -55,7 +57,18 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState<any>({});
   const [loading, setLoading] = useState(true);
-
+  const {
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    hasCreateFamily,
+    familyId,
+    memberRolesArray,
+    membersArray,
+    setHasCreateFamily,
+    handleFamilyCreate,
+  } = UserAuthData();
   //   const handleLoginResponse = useCallback(async (response) => {
   //     const result = await getRedirectResult(auth);
   //     const user = result.user;
@@ -95,6 +108,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
         loading,
         login,
         logout,
+        familyId,
+        memberRolesArray,
+        membersArray,
       }}
     >
       {children}

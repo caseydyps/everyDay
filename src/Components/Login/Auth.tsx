@@ -18,6 +18,7 @@ import { auth } from '../../config/firebase.config';
 const { v4: uuidv4 } = require('uuid');
 const UserAuthData = () => {
   const [user] = useAuthState(auth);
+  console.log(user);
   const [userName, setUserName] = useState<string | null>(null);
   const [googleAvatarUrl, setGoogleAvatarUrl] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -32,6 +33,7 @@ const UserAuthData = () => {
         setUserName(user.displayName);
         setGoogleAvatarUrl(user.photoURL);
         setUserEmail(user.email);
+        console.log(user);
       }
     }
 
@@ -127,7 +129,7 @@ const UserAuthData = () => {
           console.error('Error retrieving members data:', error)
         );
       console.log(membersData);
-      type Member = typeof membersData[number];
+      type Member = (typeof membersData)[number];
       const memberRoles = membersData.map((member: Member) => member.role);
       setMembersArray(membersData);
       setMemberRolesArray(memberRoles);

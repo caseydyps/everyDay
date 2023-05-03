@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -12,6 +12,7 @@ import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShowMini';
 import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
+import { AuthContext } from '../../../config/Context/authContext';
 import DefaultButton from '../../../Components/Button/Button';
 import { MembersSelector } from '../../AI/SmartInput';
 import {
@@ -99,20 +100,20 @@ function Gallery() {
   };
   const [selectedMember, setSelectedMember] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string>('');
-
+  const { familyId } = useContext(AuthContext);
   const regularStar = farStar;
   const solidStar = fasStar;
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
   const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,

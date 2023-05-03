@@ -1,5 +1,5 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import TodoDashboard from './Todo/TodoDashboard';
 import Whiteboard from './Whiteboard/WhiteboardMini';

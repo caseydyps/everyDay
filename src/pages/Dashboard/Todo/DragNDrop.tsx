@@ -4,10 +4,12 @@ import React, {
   useRef,
   useEffect,
   useReducer,
+  useContext,
 } from 'react';
 import UserAuthData from '../../../Components/Login/Auth';
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
+import { AuthContext } from '../../../config/Context/authContext';
 import { todoReducer } from './Todo';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -305,17 +307,18 @@ type DragNDropState = {
 function DragNDrop({ data }: any) {
   // const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import Message from './Message';
 import SendMessage from './SendMessage';
 import { db } from '../../config/firebase.config';
@@ -6,6 +6,7 @@ import { query, collection, orderBy, onSnapshot } from 'firebase/firestore';
 import styled from 'styled-components';
 import { LoadButton } from '../../Components/Button/Button';
 import UserAuthData from '../../Components/Login/Auth';
+import { AuthContext } from '../../config/Context/authContext';
 const ChatContainer = styled.div`
   display: flex;
   padding: 20px;
@@ -106,15 +107,7 @@ const Chat = () => {
     : messages;
   console.log('Messages with sticky:', messagesWithSticky);
 
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-  } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   useEffect(() => {
     console.log(familyId);
     if (!familyId) {

@@ -1,5 +1,6 @@
 import styled from 'styled-components/macro';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../config/Context/authContext';
 import axios from 'axios';
 import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
@@ -54,17 +55,19 @@ const Suggestion = () => {
   const [calendarData, setCalendarData] = useState<Todo[]>([]);
   const moment = require('moment');
   const [isLoading, setIsLoading] = useState(false);
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId, memberRolesArray } = useContext(AuthContext);
+
   useEffect(() => {
     async function fetchData() {
       const familyDocRef = collection(db, 'Family', familyId, 'Milestone');

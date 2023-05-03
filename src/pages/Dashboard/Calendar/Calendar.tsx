@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import styled from 'styled-components/macro';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
@@ -47,6 +47,7 @@ import DefaultButton, {
   CloseButton,
 } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
+import { AuthContext } from '../../../config/Context/authContext';
 import SideNav from '../../../Components/Nav/SideNav';
 const CalendarContainer = styled.div`
   display: flex;
@@ -592,17 +593,19 @@ function Calendar() {
     'Dec',
   ];
 
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+
+  const { familyId, membersArray } = useContext(AuthContext);
   const [showButtons, setShowButtons] = useState(false);
   interface Event {
     id: string;

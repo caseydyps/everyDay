@@ -1,5 +1,13 @@
 import styled from 'styled-components/macro';
-import { useState, useEffect, useReducer, useRef, Dispatch } from 'react';
+import {
+  useState,
+  useContext,
+  useEffect,
+  useReducer,
+  useRef,
+  Dispatch,
+} from 'react';
+import { AuthContext } from '../../../config/Context/authContext';
 import DragNDrop from './DragNDropMini';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
@@ -51,107 +59,6 @@ const Container = styled.div`
   height: 150px;
   max-width: 200px;
 `;
-
-const AddListButton: any = styled(DefaultButton)`
-  padding: 10px;
-  margin-right: 20px;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background-color: rgba(255, 245, 201, 0.8);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
-`;
-
-const Input = styled.input`
-  padding: 10px;
-  border-radius: 5px;
-  border: 2px solid #4caf50;
-
-  color: white;
-  font-size: 16px;
-  margin: 10px;
-`;
-
-const defaultData = [
-  {
-    title: '家事🏠',
-    items: [
-      {
-        text: 'take out garbage',
-        due: '2023-04-12',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: '洗碗',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=long03&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: '繳費',
-        due: '2023-04-11',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: false,
-      },
-    ],
-  },
-  {
-    title: '購物清單',
-    items: [
-      {
-        text: 'milk',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: 'Task 2',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: 'Task 3',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
-        done: false,
-      },
-    ],
-  },
-  {
-    title: '家庭活動',
-    items: [
-      {
-        text: 'Task 1',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: 'Task 2',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: 'Task 3',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
-        done: false,
-      },
-    ],
-  },
-];
 
 type TodoItem = {
   text: string;
@@ -277,38 +184,9 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
       return [...state, { title: action.payload, items: [] }];
   }
 };
-const getTodosData = async () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
-  console.log(familyId);
-  const familyDocRef = collection(db, 'Family', familyId, 'todo');
-  const querySnapshot = await getDocs(familyDocRef);
-  const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-  console.log(todosData);
-  return todosData;
-};
 
 const Todo = () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);

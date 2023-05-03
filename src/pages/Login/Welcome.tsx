@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../../config/Context/authContext';
 import { auth } from '../../config/firebase.config';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import SignIn from '../../Components/Login/SignIn';
@@ -38,6 +39,8 @@ function WelcomePage() {
     setHasCreateFamily,
     handleFamilyCreate,
   } = UserAuthData();
+  // const { user, userEmail, hasSetup, familyId, membersArray } =
+  //   useContext(AuthContext);
   // const [loggedfamilyId, setLoggedFamilyId] = useState<string | null>(null);
   const familyId: string = uuidv4();
 
@@ -95,8 +98,8 @@ function WelcomePage() {
         </>
       ) : (
         <Section style={{ backgroundColor: 'transparent' }}>
-          <h1 style={{ color: '#5981b0' }}>Welcome to EVERYDAY!</h1>
-          <p style={{ color: '#5981b0' }}>Your everyday family assistant</p>
+          <h1 style={{ color: '#F6F8F8' }}>Welcome to EVERYDAY!</h1>
+          <p style={{ color: '#F6F8F8' }}>Your everyday family assistant</p>
         </Section>
       )}
 
@@ -186,7 +189,7 @@ const CurveSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 300px;
+  min-height: 400px;
   padding-top: 60px;
   background: transparent;
   margin-top: 20px;

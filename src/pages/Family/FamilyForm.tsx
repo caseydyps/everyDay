@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled, { keyframes } from 'styled-components/macro';
 import Sidebar from '../../Components/Nav/Navbar';
 import { CirclePicker, TwitterPicker } from 'react-color';
@@ -8,7 +8,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import LoadingAnimation from '../../Components/loading';
 import confetti from 'canvas-confetti';
-
+import { AuthContext } from '../../config/Context/authContext';
 import {
   collection,
   updateDoc,
@@ -24,15 +24,17 @@ import {
 import UserAuthData from '../../Components/Login/Auth';
 import Layout from '../../Components/layout';
 const FamilyMemberForm = () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  // } = UserAuthData();
+  const { user, userEmail, hasSetup, familyId, membersArray } =
+    useContext(AuthContext);
   console.log('user', user);
   console.log('hasSetup', hasSetup);
   const [numberOfMembers, setNumberOfMembers] = useState<number>(0);

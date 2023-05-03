@@ -1,6 +1,6 @@
 import styled, { keyframes } from 'styled-components/macro';
-import { useState, useEffect, ChangeEvent, useRef } from 'react';
-// import Timeline from './Timeline';
+import { useState, useEffect, ChangeEvent, useRef, useContext } from 'react';
+import { AuthContext } from '../../config/Context/authContext';
 import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -52,18 +52,8 @@ function Milestone() {
     member: string;
     image: string | null;
   };
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
 
+  const { familyId, membersArray } = useContext(AuthContext);
   const [events, setEvents] = useState<EventType[]>([]);
   const [newEventTitle, setNewEventTitle] = useState<string>('');
   const [newEventDate, setNewEventDate] = useState<string>('');

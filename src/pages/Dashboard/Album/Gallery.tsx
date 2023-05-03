@@ -12,6 +12,8 @@ import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
 import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
+import { useContext } from 'react';
+import { AuthContext } from '../../../config/Context/authContext';
 import DefaultButton, {
   ThreeDButton,
   AddButton,
@@ -106,20 +108,22 @@ function Gallery() {
     ''
   );
   const [selectedDate, setSelectedDate] = useState<string>('');
-
+  //const { familyId } = useContext(AuthContext);
+  //console.log('familyId', familyId);
   const regularStar = farStar;
   const solidStar = fasStar;
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId } = useContext(AuthContext);
+  console.log('familyId', familyId);
   const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,

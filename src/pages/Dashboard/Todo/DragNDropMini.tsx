@@ -4,7 +4,9 @@ import React, {
   useRef,
   useEffect,
   useReducer,
+  useContext,
 } from 'react';
+import { AuthContext } from '../../../config/Context/authContext';
 import UserAuthData from '../../../Components/Login/Auth';
 import styled from 'styled-components/macro';
 import AddItemForm from './AddItemForm';
@@ -50,6 +52,7 @@ import {
   faCalendar,
   faCheck,
 } from '@fortawesome/free-solid-svg-icons';
+
 const DragNDropWrapper = styled.div`
   display: flex;
   overflow-y: scroll;
@@ -302,17 +305,18 @@ type DragNDropState = {
 function DragNDrop({ data }: any) {
   // const [state, dispatch] = useReducer(todoReducer, []);
   console.log(data);
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(

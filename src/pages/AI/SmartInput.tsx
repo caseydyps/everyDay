@@ -1,5 +1,5 @@
 import styled, { keyframes } from 'styled-components/macro';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import Sidebar from '../../Components/Nav/Navbar';
 import { v4 as uuidv4 } from 'uuid';
@@ -7,6 +7,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
 import UserAuthData from '../../Components/Login/Auth';
+import { AuthContext } from '../../config/Context/authContext';
 import LoadingAnimation from '../../Components/loading';
 import {
   DefaultButton,
@@ -282,17 +283,18 @@ interface MembersSelectorProps {
 
 export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   const [selectedMember, setSelectedMember] = useState<string>('');
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+
+  const { familyId, memberRolesArray } = useContext(AuthContext);
   console.log(memberRolesArray);
 
   console.log(selectedMember);

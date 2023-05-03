@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import styled from 'styled-components/macro';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
@@ -33,6 +33,7 @@ import DailyHourlyView from './DailyHourView';
 import Layout from '../../../Components/layout';
 import DefaultButton from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
+import { AuthContext } from '../../../config/Context/authContext';
 const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -328,18 +329,18 @@ function Calendar() {
     'Dec',
   ];
 
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
-
+  // const {
+  //   user,
+  //   userName,
+  //   googleAvatarUrl,
+  //   userEmail,
+  //   hasSetup,
+  //   familyId,
+  //   setHasSetup,
+  //   membersArray,
+  //   memberRolesArray,
+  // } = UserAuthData();
+  const { familyId, membersArray } = useContext(AuthContext);
   interface Event {
     id: string;
     title: string;
@@ -641,6 +642,7 @@ function Calendar() {
           margin: '0px',
           fontWeight: 'bold',
           color: '#F6F8F8',
+          fontSize: '16px',
         }}
       >{`${dayOfWeek},`}</h4>
     );
