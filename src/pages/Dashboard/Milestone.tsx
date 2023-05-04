@@ -9,6 +9,9 @@ import Layout from '../../Components/layout';
 import SideNav from '../../Components/Nav/SideNav';
 import { v4 as uuidv4 } from 'uuid';
 import Time from '../../Components/Banner/time.png';
+import Swal from 'sweetalert2';
+import resizeFile from 'react-image-file-resizer';
+
 import DefaultButton, {
   Card,
   ThreeDButton,
@@ -57,16 +60,20 @@ function Milestone() {
   const [events, setEvents] = useState<EventType[]>([]);
   const [newEventTitle, setNewEventTitle] = useState<string>('');
   const [newEventDate, setNewEventDate] = useState<string>('');
-  const [newEventMember, setNewEventMember] = useState<string | string[]>('');
+  const [newEventMember, setNewEventMember] = useState<string>(
+    membersArray.length > 0 ? membersArray[0].role : ''
+  );
   const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
     null
   );
+  const MAX_FILE_SIZE = 1048487;
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [file, setFile] = useState<any>(null);
   const [imagePreview, setImagePreview] = useState<ImageType | null>(null);
   const [member, setMember] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   type NewEvent = {
     id: number;
     title: string;
@@ -80,6 +87,18 @@ function Milestone() {
   const handleNewEventSubmit: HandleNewEventSubmit = async (e) => {
     e.preventDefault();
     console.log(newEventDate);
+    if (!newEventTitle || !newEventDate) {
+      // show an error message using SweetAlert
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please fill in all required fields!',
+        background: '#F6F8F8',
+        confirmButtonColor: '#5981b0',
+      });
+      return;
+    }
+
     const newEvent = {
       id: uuidv4(),
       title: newEventTitle,
@@ -102,6 +121,7 @@ function Milestone() {
     setNewEventDate('');
     setNewEventMember('');
     setNewEventImage(null);
+    setShowAddEvent(false);
   };
 
   type AvatarPreviewProps = {
@@ -207,7 +227,14 @@ function Milestone() {
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-
+      if (!title || !date || !member) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Please fill in all required fields!',
+        });
+        return;
+      }
       const editedEvent: any = {
         ...event,
         title,
@@ -281,7 +308,17 @@ function Milestone() {
               }}
             />
           </FormField>
-          <Button type="submit">Save</Button>
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+          <Button
+            type="submit"
+            disabled={!date}
+            title="Please fill in all required fields"
+            style={{
+              cursor: !date ? 'not-allowed' : 'pointer',
+            }}
+          >
+            Save
+          </Button>
         </form>
       </Wrap>
     );
@@ -319,8 +356,6 @@ function Milestone() {
   };
 
   const handleSelectMember = (member: string | string[]) => {
-    // event.preventDefault();
-
     setNewEventMember(member);
   };
   const handlefilterSelectMember = (member: string | string[]) => {
@@ -442,6 +477,32 @@ function Milestone() {
   const handleToggleButtons = () => {
     setShowButtons(!showButtons);
   };
+  console.log(membersArray);
+
+  const alertMaxFileSize = () => {
+    Swal.fire({
+      icon: 'warning',
+      text: 'Please upload an image that is smaller than 1MB.',
+    });
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      const fileSizeInMB = selectedFile.size / (1024 * 1024);
+      if (fileSizeInMB > 1) {
+        alertMaxFileSize();
+        event.target.value = ''; // clear the input field
+      } else {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const fileUrl = reader.result as string;
+          setFile(fileUrl);
+        };
+        reader.readAsDataURL(selectedFile);
+      }
+    }
+  };
 
   return (
     <Container>
@@ -546,9 +607,22 @@ function Milestone() {
                     }
                   />
                 </FormField>
+
+                {/* <MembersSelector onSelectMember={handleSelectMember} /> */}
                 <FormField>
                   <FormLabel>Member:</FormLabel>
-                  <MembersSelector onSelectMember={handleSelectMember} />
+                  <select
+                    value={newEventMember}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      setNewEventMember(e.target.value)
+                    }
+                  >
+                    {membersArray.map((member, index) => (
+                      <option key={index} value={member.role}>
+                        {member.role}
+                      </option>
+                    ))}
+                  </select>
                 </FormField>
                 <FormField>
                   <FormLabel>Image:</FormLabel>
@@ -558,22 +632,13 @@ function Milestone() {
                   ) : (
                     <input
                       type="file"
-                      onChange={(e) => {
-                        const files = e.target.files;
-                        if (files && files.length > 0) {
-                          const reader = new FileReader();
-                          reader.onload = () => {
-                            const fileUrl = reader.result as string;
-                            setFile(fileUrl);
-                          };
-                          reader.readAsDataURL(files[0]);
-                        }
-                      }}
+                      accept="image/*"
+                      onChange={handleFileChange}
                     />
                   )}
                 </FormField>
               </>
-
+              {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
               <Button
                 style={{ position: 'absolute', bottom: '25px', right: '150px' }}
                 type="submit"
@@ -1173,4 +1238,10 @@ type EventWrapType = {
 
 const EventWrap = styled.div<EventWrapType>`
   position: relative;
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  margin-top: 8px;
+  width: 100%;
 `;

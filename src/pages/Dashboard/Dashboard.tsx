@@ -298,15 +298,15 @@ const Dashboard = () => {
     }
   `;
 
-  const InfoButton = styled(DefaultButton)`
-    background-color: transparent;
-    padding: 0px;
-    color: rgba(255, 255, 255, 0.5);
-    border: none;
-    box-shadow: none;
+  const InfoButton = styled(ThreeDButton)`
+    //background-color: transparent;
+    padding: 10px;
+    //color: rgba(255, 255, 255, 0.5);
+    /* border: none;
+    box-shadow: none; */
     :hover {
-      background-color: transparent;
-      color: rgba(255, 255, 255, 0.75);
+      //background-color: transparent;
+      //color: rgba(255, 255, 255, 0.75);
     }
     position: absolute;
     right: 0px;
@@ -324,39 +324,47 @@ const Dashboard = () => {
   const [gridItems, setGridItems] = useState([
     {
       component: (
-        <BoxM>
-          <BoxTitle>Todo</BoxTitle>
-          <TodoDashboard />
-        </BoxM>
+        <a href="/todo" style={{ textDecoration: 'none' }}>
+          <BoxM>
+            <BoxTitle>Todo</BoxTitle>
+            <TodoDashboard />
+          </BoxM>
+        </a>
       ),
       spanColumns: 2,
       spanRows: 4,
     },
     {
       component: (
-        <BoxM>
-          <Link to="/ai"></Link>
-          <BoxTitle>Suggestion</BoxTitle>
-          <Suggestion></Suggestion>
-        </BoxM>
+        <a href="/ai" style={{ textDecoration: 'none' }}>
+          <BoxM>
+            <Link to="/ai"></Link>
+            <BoxTitle>Suggestion</BoxTitle>
+            <Suggestion></Suggestion>
+          </BoxM>
+        </a>
       ),
       spanColumns: 2,
       spanRows: 4,
     },
     {
       component: (
-        <BoxM>
-          <Gallery></Gallery>
-        </BoxM>
+        <a href="/gallery" style={{ textDecoration: 'none' }}>
+          <BoxM>
+            <Gallery></Gallery>
+          </BoxM>
+        </a>
       ),
       spanColumns: 2,
       spanRows: 4,
     },
     {
       component: (
-        <BoxL>
-          <Milestone></Milestone>
-        </BoxL>
+        <a href="/milestone" style={{ textDecoration: 'none' }}>
+          <BoxL>
+            <Milestone></Milestone>
+          </BoxL>
+        </a>
       ),
       spanColumns: 4,
       spanRows: 4,
@@ -381,9 +389,11 @@ const Dashboard = () => {
     // },
     {
       component: (
-        <BoxS style={{ backgroundColor: '#5981b0' }}>
-          <CalendarMini />
-        </BoxS>
+        <a href="/calendar" style={{ textDecoration: 'none' }}>
+          <BoxS style={{ backgroundColor: '#5981b0' }}>
+            <CalendarMini />
+          </BoxS>
+        </a>
       ),
       spanColumns: 1,
       spanRows: 2,
@@ -401,9 +411,11 @@ const Dashboard = () => {
 
     {
       component: (
-        <BoxXL>
-          <Whiteboard />
-        </BoxXL>
+        <a href="/whiteboard" style={{ textDecoration: 'none' }}>
+          <BoxXL>
+            <Whiteboard />
+          </BoxXL>
+        </a>
       ),
       spanColumns: 6,
       spanRows: 4,

@@ -11,7 +11,7 @@ const LogOut = () => {
     auth.signOut();
     setTimeout(() => {
       window.location.href = '/';
-    }, 2000); // Redirect after 3 seconds
+    }, 1000); // Redirect after 3 seconds
   };
 
   return <LogoutButton onClick={signOut}>登出</LogoutButton>;

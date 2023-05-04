@@ -62,6 +62,7 @@ const DayWrap = styled.div`
   font-family: Arial, sans-serif;
   margin: 5px;
   background-color: 'transparent';
+  position: relative;
 `;
 
 const MonthContainer = styled.div`
@@ -142,10 +143,12 @@ const Td = styled.td`
   //box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   border-radius: 20px;
   display: flex;
+  position: relative;
   // overflow-y: auto;
   margin: 5px;
   justify-content: center;
   align-items: center;
+
   &.inactive {
     color: #999;
   }
@@ -755,11 +758,11 @@ function Calendar() {
                 color: '#414141',
               }}
             >
-              {' '}
-              <h1 style={{ marginTop: '60px' }}>
-                {eventsCount > 0 ? eventsCount : 0}
-              </h1>
-              <h5 style={{ marginTop: '80px' }}>events</h5>
+              <RowWrap>
+                <Counts>{eventsCount > 0 ? eventsCount : '0'}</Counts>
+                <h5 style={{ position: 'fixed', top: 60 }}>events</h5>
+              </RowWrap>
+
               {/* {events.map((event) => {
                 const eventDate = new Date(event.date);
                 const selectedDateObj = new Date(selectedDate);
@@ -834,5 +837,12 @@ function Calendar() {
     </Container>
   );
 }
+
+const Counts = styled.span`
+  //margin-top: 50px;
+  position: fixed;
+  top: 35%;
+  font-size: 42px;
+`;
 
 export default Calendar;

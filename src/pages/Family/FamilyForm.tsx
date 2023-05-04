@@ -23,21 +23,15 @@ import {
 } from 'firebase/firestore';
 import UserAuthData from '../../Components/Login/Auth';
 import Layout from '../../Components/layout';
+import { ThreeDButton } from '../../Components/Button/Button';
 const FamilyMemberForm = () => {
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  // } = UserAuthData();
-  const { user, userEmail, hasSetup, familyId, setHasSetup, membersArray } =
+  const { familyId } = UserAuthData();
+  const { user, userEmail, hasSetup, setHasSetup, membersArray } =
     useContext(AuthContext);
+  console.log(familyId);
   console.log('user', user);
   console.log('hasSetup', hasSetup);
-  const [numberOfMembers, setNumberOfMembers] = useState<number>(0);
+  const [numberOfMembers, setNumberOfMembers] = useState<number>(1);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
@@ -57,6 +51,7 @@ const FamilyMemberForm = () => {
     });
     try {
       const matchingDocs = await getDocs(query(familyCollection, queryUser));
+      console.log(matchingDocs);
       const matchingDocRef = matchingDocs.docs[0].ref;
       console.log(matchingDocs);
       await updateDoc(matchingDocRef, { isSettingDone: true });
@@ -300,7 +295,7 @@ const FamilyMemberForm = () => {
   };
 
   const handleNumberOfMembersDecrement = () => {
-    if (numberOfMembers > 0) {
+    if (numberOfMembers > 1) {
       const newNumberOfMembers = numberOfMembers - 1;
       setNumberOfMembers(newNumberOfMembers);
       setMembers((prevMembers) => prevMembers.slice(0, newNumberOfMembers));
@@ -559,26 +554,39 @@ const FamilyMemberForm = () => {
 
     return (
       <FormField style={{ flexDirection: 'column' }}>
-        <FormLabel style={{ marginTop: '0', color: 'white', fontSize: '36px' }}>
+        <span style={{ marginTop: '0', color: 'white', fontSize: '16px' }}>
           {children}
-        </FormLabel>
+        </span>
         <RowWrap>
           <Button
-            style={{ marginTop: '0', borderRadius: '50%' }}
+            style={{
+              marginTop: '0',
+              borderRadius: '50%',
+              cursor: value === 1 ? 'not-allowed' : 'pointer',
+            }}
             onClick={onDecrement}
+            disabled={value === 1}
           >
             v
           </Button>
-          <Input
-            type="number"
-            min={numberOfMembers}
-            value={value}
-            onChange={() => {}}
-            style={{ textAlign: 'center' }}
-          />
+          <span
+            style={{
+              textAlign: 'center',
+              color: '#5981b0',
+              fontSize: '24px',
+              margin: '0 10px',
+            }}
+          >
+            {value}
+          </span>
           <Button
-            style={{ marginTop: '0', borderRadius: '50%' }}
+            style={{
+              marginTop: '0',
+              borderRadius: '50%',
+              cursor: value > 5 ? 'not-allowed' : 'pointer',
+            }}
             onClick={onIncrement}
+            disabled={value > 5}
           >
             ʌ
           </Button>
@@ -640,20 +648,31 @@ const FamilyMemberForm = () => {
           >
             Edit
           </Button>
+          <Button
+            onClick={() => {
+              window.location.href = '/dashboard';
+            }}
+          >
+            Dashboard
+          </Button>
         </Wrap>
       ) : (
         <>
           <FormContainer>
-            <FormCard style={{ zIndex: '2', width: 'auto' }}>
+            <FormCard style={{ flex: '1', zIndex: '2', width: 'auto' }}>
               <Form onSubmit={handleFormSubmit}>
                 <AddMinusInput
                   value={numberOfMembers}
                   onIncrement={handleNumberOfMembersIncrement}
                   onDecrement={handleNumberOfMembersDecrement}
                 >
-                  <h2 style={{ color: '#414141', marginTop: '0px' }}>
+                  <Text
+                    style={{
+                      color: '#414141',
+                    }}
+                  >
                     How many members?
-                  </h2>
+                  </Text>
                 </AddMinusInput>
 
                 {numberOfMembers > 0 && (
@@ -675,13 +694,13 @@ const FamilyMemberForm = () => {
                       {members[currentMemberIndex] && (
                         <div>
                           <FormField>
-                            <FormLabel
+                            <Text
                               style={{
                                 color: '#414141',
                               }}
                             >
                               Name
-                            </FormLabel>
+                            </Text>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].name}
@@ -695,13 +714,13 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel
+                            <Text
                               style={{
                                 color: '#414141',
                               }}
                             >
                               Email
-                            </FormLabel>
+                            </Text>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].email}
@@ -715,16 +734,17 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel
+                            <Text
                               style={{
                                 color: '#414141',
                               }}
                             >
                               Birthday
-                            </FormLabel>
+                            </Text>
                             <FormInput
                               type="date"
                               value={members[currentMemberIndex].birthday}
+                              max={new Date().toISOString().split('T')[0]}
                               onChange={(event) =>
                                 handleMemberBirthdayChange(
                                   currentMemberIndex,
@@ -735,13 +755,13 @@ const FamilyMemberForm = () => {
                           </FormField>
 
                           <FormField>
-                            <FormLabel
+                            <Text
                               style={{
                                 color: '#414141',
                               }}
                             >
                               Role{' '}
-                            </FormLabel>
+                            </Text>
                             <FormInput
                               type="text"
                               value={members[currentMemberIndex].role}
@@ -805,7 +825,7 @@ const FamilyMemberForm = () => {
                 </ConfettiButton>
               </Form>
             </FormCard>
-            <FormCard>
+            <FormCard style={{ flex: '3', zIndex: '2', width: 'auto' }}>
               {numberOfMembers > 0 && (
                 <AvatarContainer>
                   <FormLabel style={{ color: '#414141', fontSize: '28px' }}>
@@ -1163,7 +1183,7 @@ const FormInput = styled.input<FormInputProps>`
   padding: 0.5rem;
   border: 5px solid #3467a1;
   border-radius: 25px;
-  font-size: 20px;
+  font-size: 16px;
   line-height: 1.5;
   font-weight: bold;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -1197,17 +1217,19 @@ const AvatarImage = styled.img`
   max-height: 200px;
 `;
 
-const Button = styled.button`
-  background-color: #3467a1;
+const Button = styled(ThreeDButton)`
+  background-color: #5981b0;
   color: #f6f8f8;
   border: 2px solid #f6f8f8;
   border-radius: 20px;
   font-weight: bold;
   padding: 10px 20px;
   margin-top: 60px;
-  font-size: 20px;
+  margin: 10px;
+  font-size: 16px;
   &:hover {
     transform: scale(1.1);
+    color: #5981b0;
   }
 `;
 const SaveButton = styled.button`
@@ -1274,7 +1296,7 @@ export const Container = styled.div`
   height: 100%;
   //border: gold solid 3px;
   padding: 20px;
-
+  justify-content: center;
   // background: linear-gradient(
   //   -45deg,
   //   white,
@@ -1287,7 +1309,7 @@ export const Container = styled.div`
   /* display: flex;
 
   flex-direction: row;
-  justify-content: center;
+  
   //animation: ${GradientAnimation} 20s ease-in-out infinite;
   background-size: 300% 300%; */
 `;
@@ -1325,6 +1347,7 @@ const FormContainer = styled.div`
   align-items: center;
   display: flex;
   height: auto;
+  justify-content: center;
   margin-top: 50px;
   z-index: 1;
 `;
@@ -1374,10 +1397,9 @@ const Card = styled.div`
 `;
 
 const FormCard = styled(Card)`
-  flex: 1;
   height: 100%;
   min-height: 90vh;
-  width: 700px;
+  width: auto;
   backdrop-filter: blur(8px);
   font-size: 24px;
   background: none;
@@ -1442,7 +1464,7 @@ const Input = styled.input`
 `;
 
 const Text = styled.p`
-  font-size: 20px;
+  font-size: 16px;
   padding: 5px;
   color: #414141;
 `;

@@ -401,9 +401,9 @@ function Milestone() {
                     if (daysDifference === 0) {
                       daysText = 'Today';
                     } else if (daysDifference === 1) {
-                      daysText = 'Tomorrow';
+                      daysText = 'days to go';
                     } else if (daysDifference === -1) {
-                      daysText = 'Yesterday';
+                      daysText = 'days ago';
                     } else if (daysDifference > 1) {
                       daysText = 'days to go';
                     } else if (daysDifference < -1) {

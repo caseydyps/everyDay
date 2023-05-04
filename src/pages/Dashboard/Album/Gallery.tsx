@@ -101,6 +101,7 @@ function Gallery() {
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [selectedAlbumTitle, setSelectedAlbumTitle] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [showFavorite, setShowFavorite] = useState(false); // add this state value
   const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlbumTitle(e.target.value);
   };
@@ -364,6 +365,7 @@ function Gallery() {
   const filteredAlbums = albums.filter((album) => {
     let memberMatch = true;
     let dateMatch = true;
+    let favoriteMatch = true;
 
     if (selectedMember && !album.members.includes(selectedMember)) {
       memberMatch = false;
@@ -378,22 +380,27 @@ function Gallery() {
         albumDate.getDate() === selectedDateObj.getDate();
     }
 
-    return memberMatch && dateMatch;
+    if (showFavorite && !album.favorite) {
+      favoriteMatch = false;
+    }
+
+    return memberMatch && dateMatch && favoriteMatch;
   });
+
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
   const handleEditMember = (member: string | string[]) => {
     setMembers(member);
   };
 
-  const handleFilterMember = (member: string | string[]) => {
-    setSelectedMember(member);
-  };
+  const handleFilterMember = (member: string | string[]) => {};
   const [showSlideshow, setShowSlideshow] = useState(false);
+
   const InfoButton = styled(ThreeDButton)`
     position: absolute;
-    width: 30px;
-    height: 30px;
+    /* width: 20px;
+    height: 20px; */
+    padding: 10px;
     left: 400px;
     top: -20px;
     display: flex;
@@ -547,6 +554,25 @@ function Gallery() {
                 />
               </Text>
               <br />
+              <br />
+              <Text>
+                Filter by favorite:
+                <DefaultButton
+                  onClick={() => setShowFavorite(!showFavorite)} // add this button
+                  className={showFavorite ? 'active' : ''}
+                  style={{
+                    background: '#B7CCE2',
+                    color: 'white',
+                    padding: '5px 10px',
+                    margin: '5px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {showFavorite ? 'Show all' : 'Show only favorites'}
+                </DefaultButton>
+              </Text>
+              <br />
             </FilterSection>
           )}
 
@@ -648,20 +674,20 @@ function Gallery() {
                 )}
 
                 {/* {selectedAlbumId === album.id && (
+                <div>
+                  <h3>Photos in {album.title}</h3>
                   <div>
-                    <h3>Photos in {album.title}</h3>
-                    <div>
-                      {album.photos.map((photo) => (
-                        <img
-                          key={photo.id}
-                          src={photo.url}
-                          alt={photo.title}
-                          style={{ width: '200px', height: '300px' }}
-                        />
-                      ))}
-                    </div>
+                    {album.photos.map((photo) => (
+                      <img
+                        key={photo.id}
+                        src={photo.url}
+                        alt={photo.title}
+                        style={{ width: '200px', height: '300px' }}
+                      />
+                    ))}
                   </div>
-                )} */}
+                </div>
+              )} */}
               </AlbumWrapper>
             ))}
           </GalleryWrapper>
@@ -944,8 +970,8 @@ const Wrap = styled.div`
   flex-direction: column;
   flex-wrap: wrap;
   // border: 3px solid red;
-  margin-top: 30px;
-  padding: 20px;
+  //margin-top: 30px;
+  //padding: 20px;
 `;
 
 export default Gallery;

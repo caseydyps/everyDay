@@ -58,7 +58,7 @@ const Navbar = () => {
   return (
     <NavbarWrapper>
       <Nav>
-        <Logo to="/">
+        <Logo to="/dashboard">
           EVERYDAY
           {/* <img style={{ width: '200px' }} src={logo} alt="EVERYDAY" /> */}
         </Logo>

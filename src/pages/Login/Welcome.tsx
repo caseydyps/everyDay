@@ -47,6 +47,11 @@ function WelcomePage() {
   console.log('user', user);
   console.log('hasSetup', hasSetup);
   console.log('hasCreateFamily', hasCreateFamily);
+  if (hasSetup === true) {
+    setTimeout(() => {
+      window.location.href = '/dashboard';
+    }, 2000);
+  }
 
   return (
     <Container>
@@ -54,11 +59,8 @@ function WelcomePage() {
         <>
           {hasSetup ? (
             <Wrap>
-              <ColumnWrap>
-                <h1 style={{ color: '#5981b0', fontFamily: 'Braah One' }}>
-                  Welcome home,
-                </h1>
-                <RowWrap>
+              {/* <ColumnWrap> */}
+              {/* <RowWrap>
                   <LinkButton to="/dashboard">Straight to Dashboard</LinkButton>
                 </RowWrap>
                 <ColumnWrap>
@@ -68,58 +70,74 @@ function WelcomePage() {
                       Ask anything about your family!
                     </LinkButton>
                   </RowWrap>
-                </ColumnWrap>
-              </ColumnWrap>
+                </ColumnWrap> */}
+              {/* </ColumnWrap> */}
 
-              <Section></Section>
+              <Section style={{ backgroundColor: 'transparent' }}>
+                <h1 style={{ color: '#5981b0', fontFamily: 'Braah One' }}>
+                  Welcome home, {userName}!
+                </h1>
+                <p style={{ color: '#5981b0' }}>
+                  Hang on, your dashboard is loading.
+                </p>
+              </Section>
             </Wrap>
           ) : (
             <>
               {/* <LoadingAnimation /> */}
-              <h2 style={{ marginTop: '300px' }}>
-                Please click below to proceed with the setup.
-              </h2>
-              {hasCreateFamily ? (
-                <LinkButton to="/family" style={{ fontSize: '28px' }}>
-                  Family members setup
-                </LinkButton>
-              ) : (
-                <LinkButton
-                  onClick={() =>
-                    handleFamilyCreate(userName, userEmail, familyId)
-                  }
-                  style={{ fontSize: '28px' }}
-                >
-                  Create your family
-                </LinkButton>
-              )}
+              <WelcomeSection>
+                <h2 style={{ marginTop: '300px' }}>
+                  Two step away from finishing setup.
+                </h2>
+                {hasCreateFamily ? (
+                  <LinkButton to="/family" style={{ fontSize: '28px' }}>
+                    Family members setup
+                  </LinkButton>
+                ) : (
+                  <LinkButton
+                    onClick={() =>
+                      handleFamilyCreate(userName, userEmail, familyId)
+                    }
+                    style={{ fontSize: '28px' }}
+                  >
+                    Create your family
+                  </LinkButton>
+                )}
+              </WelcomeSection>
             </>
           )}
         </>
       ) : (
         <Section style={{ backgroundColor: 'transparent' }}>
-          <h1 style={{ color: '#F6F8F8' }}>Welcome to EVERYDAY!</h1>
-          <p style={{ color: '#F6F8F8' }}>Your everyday family assistant</p>
+          <h1 style={{ color: '#5981b0', fontFamily: 'Braah One' }}>
+            Welcome to EVERYDAY!
+          </h1>
+          <p style={{ color: '#5981b0' }}>Your everyday family assistant</p>
         </Section>
       )}
 
       {!user && (
         <>
           <CurveSection>
-            <h1 style={{ color: '#F6F8F8' }}>Can't wait? Login in seconds!</h1>
+            <h1 style={{ fontFamily: 'Braah One', color: '#F6F8F8' }}>
+              Can't wait? Login in seconds!
+            </h1>
             {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
             <SignIn />
           </CurveSection>
-          <Section style={{ height: '200px' }}>
+          <CurveSection style={{ height: '200px' }}>
             {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
 
-            <h1>Arrange your family with ease</h1>
+            <h1 style={{ fontFamily: 'Braah One' }}>
+              Arrange your family with ease
+            </h1>
 
+            <p>Love in a family is like a flame.</p>
             <p>
-              Love in a family is like a flame. The more it is fueled by
-              kindness and care, the warmer and stronger it grows.
+              The more it is fueled by kindness and care, the warmer and
+              stronger it grows.
             </p>
-          </Section>
+          </CurveSection>
 
           {/* <CircleButton></CircleButton> */}
         </>
@@ -173,6 +191,18 @@ const Section = styled.section`
   max-width: 100vw;
 `;
 
+const WelcomeSection = styled.section`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  max-width: 100vh;
+  justify-content: center;
+  text-align: center;
+  margin: 0 auto;
+`;
+
 const BubbleSection = styled.section`
   position: relative;
   display: flex;
@@ -189,8 +219,9 @@ const CurveSection = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 400px;
-  padding-top: 60px;
+  height: auto;
+  padding-top: 90px;
+  padding-bottom: 80px;
   background: transparent;
   margin-top: 20px;
 `;
@@ -205,7 +236,7 @@ const Curve = styled.div`
 
 export const Container = styled.div`
   width: 100%;
-  height: auto;
+  height: 100%;
   margin-top: 70px;
   /* background: linear-gradient(
     45deg,
@@ -220,7 +251,7 @@ export const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   //animation: ${GradientAnimation} 20s ease-in-out infinite;
-  background-size: 200% 500%;
+  //background-size: 200% 500%;
 `;
 
 const CircleButton = styled.div`

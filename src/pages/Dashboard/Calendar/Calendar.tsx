@@ -45,6 +45,7 @@ import DefaultButton, {
   CancelButton,
   AddButton,
   CloseButton,
+  ThreeDButton,
 } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import { AuthContext } from '../../../config/Context/authContext';
@@ -190,15 +191,15 @@ const TabButton = styled.button`
   }
 `;
 
-const InfoButton = styled(DefaultButton)`
-  background-color: #d7dde2;
-  padding: 0px;
-  color: rgba(255, 255, 255, 0.5);
-  border: none;
-  box-shadow: none;
+const InfoButton = styled(ThreeDButton)`
+  // background-color: #d7dde2;
+  padding: 10px;
+  //color: rgba(255, 255, 255, 0.5);
+  //border: none;
+  //box-shadow: none;
   :hover {
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.75);
+    // background-color: transparent;
+    // color: rgba(255, 255, 255, 0.75);
   }
   position: absolute;
   right: 200px;

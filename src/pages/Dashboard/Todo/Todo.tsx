@@ -314,18 +314,18 @@ const getTodosData = async () => {
 };
 
 const Todo = () => {
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
-  const { familyId, membersArray } = useContext(AuthContext);
+  const {
+    user,
+    userName,
+    googleAvatarUrl,
+    userEmail,
+    hasSetup,
+    familyId,
+    setHasSetup,
+    membersArray,
+    memberRolesArray,
+  } = UserAuthData();
+  //const { membersArray } = useContext(AuthContext);
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);

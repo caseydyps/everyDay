@@ -4,7 +4,7 @@ import styled from 'styled-components';
 const SlideshowContainer = styled.div`
   position: relative;
   height: 200px;
-  width: 200px;
+  width: 233px;
   overflow: hidden;
 `;
 
@@ -56,7 +56,7 @@ type SlideshowProps = {
   photos: Photo[];
 };
 
-const Slideshow = ({ interval = 2000, photos }: SlideshowProps) => {
+const Slideshow = ({ interval = 3000, photos }: SlideshowProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
