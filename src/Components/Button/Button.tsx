@@ -68,6 +68,10 @@ export const AddButton = styled(ThreeDButton)`
     background-color: #3467a1;
     color: white;
   }
+  &:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
   margin: 20px;
   z-index: 5;
   //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);

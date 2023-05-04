@@ -327,7 +327,7 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   );
 };
 
-const SmartInput = (props: any) => {
+const SmartInput = ({ onClose }) => {
   const [inputValue, setInputValue] = useState('');
   const [member, setMember] = useState<string | string[]>('');
   const [responseValue, setResponseValue] = useState('');
@@ -503,11 +503,15 @@ const SmartInput = (props: any) => {
 
   type HandleNewEventSubmit = (responseValue: string) => Promise<void>;
 
-  const handleNewEventSubmit: HandleNewEventSubmit = async (responseValue) => {
+  const handleNewEventSubmit: HandleNewEventSubmit = async (
+    responseValue,
+    onClose
+  ) => {
     console.log(category);
     console.log(responseValue);
     alert(JSON.parse(responseValue).response);
     setInputValue('');
+    onClose();
 
     if (category === '#Calendar') {
       console.log('calendar');
@@ -614,7 +618,7 @@ const SmartInput = (props: any) => {
         image: string | null;
       };
 
-  const ResponseDisplay = ({ children }: any) => {
+  const ResponseDisplay = ({ children, onClose }: any) => {
     console.log(responseValue);
     const parsedResponse = JSON.parse(responseValue);
     let sentence = '';
@@ -637,7 +641,9 @@ const SmartInput = (props: any) => {
       <Wrap>
         {children}
         {sentence && <Text>{sentence}</Text>}
-        <DefaultButton onClick={() => handleNewEventSubmit(responseValue)}>
+        <DefaultButton
+          onClick={() => handleNewEventSubmit(responseValue, onClose)}
+        >
           add this event?
         </DefaultButton>
       </Wrap>
@@ -702,7 +708,7 @@ to {
         {isLoading ? (
           <LoadingAnimation />
         ) : responseValue ? (
-          <ResponseDisplay>
+          <ResponseDisplay onClose={onClose}>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
                 <FontAwesomeIcon icon={faRotateLeft}></FontAwesomeIcon>

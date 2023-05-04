@@ -59,15 +59,20 @@ const SlideshowImage = styled.img`
 
 const ThumbnailContainer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: start;
   margin-top: 10px;
+  overflow-x: auto;
+  width: 320px;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 `;
 
 const Wrap = styled.div``;
 
 const ThumbnailImage = styled.img`
   height: 70px;
-  width: 70px;
+  min-width: 70px;
   object-fit: cover;
   margin: 0 5px;
   opacity: 0.5;

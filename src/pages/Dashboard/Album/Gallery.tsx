@@ -10,6 +10,7 @@ import { faStar, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
+import Swal from 'sweetalert2';
 import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
 import { useContext } from 'react';
@@ -113,6 +114,22 @@ function Gallery() {
   //console.log('familyId', familyId);
   const regularStar = farStar;
   const solidStar = fasStar;
+  const [canUpload, setCanUpload] = useState(false);
+
+  useEffect(() => {
+    console.log(albumTitle);
+    console.log(selectedAlbumId);
+    console.log(albumTitle);
+    console.log(date);
+    console.log(
+      file && selectedAlbumId !== null && albumTitle !== null && date !== null
+    );
+    if (file && albumTitle !== null && date !== null) {
+      setCanUpload(true);
+    } else {
+      setCanUpload(false);
+    }
+  }, [file, selectedAlbumId, albumTitle, selectedMember, date]);
   // const {
   //   user,
   //   userName,
@@ -150,8 +167,17 @@ function Gallery() {
 
   const handleUpload = async () => {
     console.log('handleUpload start');
+    console.log('can upload', canUpload);
     if (!file || file.length === 0) {
       console.error('No files selected!');
+      return;
+    }
+    if (!canUpload) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please fill in all required fields',
+      });
       return;
     }
 
@@ -480,15 +506,7 @@ function Gallery() {
               )}
               <br />
               <MembersSelector onSelectMember={handleEditMember} />
-              {/* <FileInputLabel>
-                選擇成員:
-                <select multiple value={members} onChange={handleMembersChange}>
-                  <option value="Alice">Alice</option>
-                  <option value="Bob">Bob</option>
-                  <option value="Charlie">Charlie</option>
-                  <option value="David">David</option>
-                </select>
-              </FileInputLabel> */}
+
               <br />
               {/* <FileInputLabel>
                 敘述:
@@ -506,7 +524,9 @@ function Gallery() {
                 />
               </FileInputLabel>
 
-              <AddButton onClick={handleUpload}>Upload</AddButton>
+              <AddButton onClick={handleUpload} disabled={!canUpload}>
+                Upload
+              </AddButton>
             </UpdateSection>
           )}
           {showFilterSection && (

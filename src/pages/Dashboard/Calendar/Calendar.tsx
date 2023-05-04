@@ -631,6 +631,7 @@ function Calendar() {
     draggedEventIdRef?: React.MutableRefObject<string | null>;
     isCurrentMonth?: boolean;
   };
+  const [isEventAdded, setIsEventAdded] = useState(false);
 
   useEffect(() => {
     const fetchCalendarData = async () => {
@@ -638,7 +639,8 @@ function Calendar() {
       setEvents(eventsData);
     };
     fetchCalendarData();
-  }, [familyId]);
+    setIsEventAdded(false);
+  }, [familyId, isEventAdded]);
 
   const getCalendarData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
@@ -649,9 +651,11 @@ function Calendar() {
 
   const postEventToFirestore = async (data: Event) => {
     const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+
     try {
       const docRef = await addDoc(familyDocRef, data);
       console.log('Document written with ID: ', docRef.id);
+      setIsEventAdded(true);
     } catch (error) {
       console.error('Error adding document: ', error);
     }
@@ -1573,6 +1577,10 @@ function Calendar() {
     setShowSmartInput(!showSmartInput);
   };
 
+  const handleClose = () => {
+    setShowSmartInput(false);
+  };
+
   return (
     <Container>
       <SideNav />
@@ -1705,7 +1713,10 @@ function Calendar() {
                   }}
                   onClick={handleButtonClick}
                 ></CloseButton>
-                <SmartInput style={{ position: 'relative' }}></SmartInput>
+                <SmartInput
+                  onClose={handleClose}
+                  style={{ position: 'relative' }}
+                ></SmartInput>
               </SmartInputContainer>
             )}
             <Table>
