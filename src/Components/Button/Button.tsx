@@ -1,6 +1,15 @@
 import { keyframes } from 'styled-components';
 import styled from 'styled-components';
 
+const fade = keyframes`
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+`;
+
 export const DefaultButton = styled.button`
   background-color: #f6f8f8;
   color: #5981b0;
@@ -15,6 +24,27 @@ export const DefaultButton = styled.button`
   &:hover {
     transform: scale(1.1);
     color: #1e3d6b;
+  }
+  transition: all 0.3s ease-in-out;
+
+  &:hover {
+    background-color: #0062cc;
+  }
+
+  &.fade-enter {
+    opacity: 0;
+  }
+
+  &.fade-enter-active {
+    animation: ${fade} 0.5s ease-out;
+  }
+
+  &.fade-exit {
+    opacity: 1;
+  }
+
+  &.fade-exit-active {
+    animation: ${fade} 0.5s ease-out reverse;
   }
 `;
 

@@ -367,7 +367,7 @@ function Milestone() {
 
   return (
     <Container>
-      <BoxTitle>Celebrates</BoxTitle>
+      {/* <BoxTitle>Celebrates</BoxTitle> */}
       <ColumnWrap>
         <ContentWrapper>
           <RowWrap>

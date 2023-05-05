@@ -24,11 +24,11 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   align-items: center;
   justify-content: ${(props) => (props.isSent ? 'flex-end' : 'flex-start')};
   max-width: 70%;
-  height: 40px;
+  height: 30px;
   margin: 0 auto;
   margin-bottom: 0.5rem;
   padding: 0.25rem 0.5rem;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 3px 3px 5px black;
   border-radius: ${({ isSent }) =>
     isSent ? '20px 20px 5px 20px' : '20px 20px 20px 0'};
 
@@ -60,7 +60,10 @@ const Wrapper = styled.div`
 const SenderName = styled.p`
   margin-top: 0px;
   color: #142850;
-  font-size: 0.8rem;
+  font-size: 8px;
+  position: absolute;
+  left: -30px;
+  top: 15px;
 `;
 
 interface MessageProps {
@@ -165,7 +168,7 @@ const Message: any = ({ message }: Props) => {
             </SenderName>
           )}
 
-          <p>{message.text}</p>
+          <p style={{ fontSize: '8px', margin: '5px' }}>{message.text}</p>
           <Time isSent={isSent}>{formatDate(date)}</Time>
         </MessageBubble>
       </MessageContainer>
@@ -195,8 +198,8 @@ const Time = styled.p<MessageBubbleProps>`
 `;
 
 const Avatar = styled.img`
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   margin-bottom: -50px;
 `;
 

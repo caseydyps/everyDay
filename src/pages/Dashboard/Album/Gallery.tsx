@@ -10,6 +10,7 @@ import { faStar, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
+import { ChatMini } from '../Dashboard';
 import Swal from 'sweetalert2';
 import Layout from '../../../Components/layout';
 import UserAuthData from '../../../Components/Login/Auth';
@@ -167,16 +168,16 @@ function Gallery() {
 
   const handleUpload = async () => {
     console.log('handleUpload start');
-    console.log('can upload', canUpload);
+    //console.log('can upload', canUpload);
     if (!file || file.length === 0) {
       console.error('No files selected!');
       return;
     }
-    if (!canUpload) {
+    if (!albumTitle || !File || !date) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: 'Please fill in all required fields',
+        text: 'Please fill in all required fields!',
       });
       return;
     }
@@ -392,6 +393,7 @@ function Gallery() {
     let memberMatch = true;
     let dateMatch = true;
     let favoriteMatch = true;
+    console.log(selectedDate, album.date);
 
     if (selectedMember && !album.members.includes(selectedMember)) {
       memberMatch = false;
@@ -419,7 +421,9 @@ function Gallery() {
     setMembers(member);
   };
 
-  const handleFilterMember = (member: string | string[]) => {};
+  const handleFilterMember = (member: string | string[]) => {
+    setSelectedMember(member);
+  };
   const [showSlideshow, setShowSlideshow] = useState(false);
 
   const InfoButton = styled(ThreeDButton)`
@@ -428,7 +432,7 @@ function Gallery() {
     height: 20px; */
     padding: 10px;
     left: 400px;
-    top: -20px;
+    top: -50px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -597,6 +601,7 @@ function Gallery() {
           )}
 
           <GalleryWrapper>
+            <ChatMini></ChatMini>
             <div
               style={{ position: 'absolute', top: '220px', left: '600px' }}
               onMouseEnter={() => setShowTooltip(true)}

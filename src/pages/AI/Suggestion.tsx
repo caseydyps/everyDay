@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../config/Context/authContext';
 import axios from 'axios';
@@ -35,6 +35,7 @@ import {
   faPaperPlane,
   faRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
+import { ChatContainer } from '@chatscope/chat-ui-kit-react';
 const configJs = require('../../config/config.js');
 
 const { Configuration, OpenAIApi } = require('openai');
@@ -46,6 +47,7 @@ const config = new Configuration({
 const openai = new OpenAIApi(config);
 
 const Suggestion = () => {
+  const [conversation, setConversation] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
   const [milestoneData, setMilestoneData] = useState<
@@ -216,11 +218,14 @@ const Suggestion = () => {
       setResponseValue(response.data.choices[0].text);
       //console.log('Responses: ', parsedResponse.R);
     } else {
+      const conversationHistory = conversation
+        .map((message) => message.text)
+        .join('\n');
       const prompt = ` 這是我家庭的資料庫，裡面有以下資料：
       今天是 ${formattedDate}
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    
+    ${conversationHistory}
     請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻
       `;
       console.log(prompt);
@@ -259,6 +264,8 @@ const Suggestion = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const message = { text: inputValue, sender: 'user' };
+    // setConversation([...conversation, message]);
     runPrompt();
     setIsLoading(true);
   };
@@ -272,6 +279,34 @@ const Suggestion = () => {
   return (
     <Container>
       <Card>
+        <p style={{ color: '#1E3D6B', fontFamily: 'Braah one' }}>
+          Ask anything about your family !
+        </p>
+        <SuggestionWrap>
+          <SuggestionItem onClick={() => setInputValue('智慧建議')}>
+            智慧建議
+          </SuggestionItem>
+          <SuggestionItem
+            onClick={() => setInputValue('今天的行事曆事件有哪些？')}
+          >
+            今天的行事曆事件有哪些？
+          </SuggestionItem>
+          <SuggestionItem
+            onClick={() => setInputValue('今天的代辦事項有哪些？')}
+          >
+            今天的代辦事項有哪些？
+          </SuggestionItem>
+          <SuggestionItem onClick={() => setInputValue('這週有什麼事？')}>
+            這週有什麼事？
+          </SuggestionItem>
+          <SuggestionItem onClick={() => setInputValue('爸爸今天有什麼事情？')}>
+            爸爸今天有什麼事情？
+          </SuggestionItem>
+          <SuggestionItem onClick={() => setInputValue('看電影是什麼時候？')}>
+            看電影是什麼時候？
+          </SuggestionItem>
+        </SuggestionWrap>
+
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>
             <Input
@@ -289,7 +324,11 @@ const Suggestion = () => {
               alignItems: 'center',
             }}
           >
-            <DefaultButton type="submit" style={{ margin: '10px' }}>
+            <DefaultButton
+              className={isLoading ? 'fade-enter-active' : ''}
+              type="submit"
+              style={{ margin: '10px' }}
+            >
               <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
             </DefaultButton>
           </div>
@@ -338,6 +377,15 @@ const Container = styled.div`
   flex: 1;
 `;
 
+const SuggestionWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  flex-wrap: wrap;
+`;
+
 const Card = styled.div`
   width: 600px;
   padding: 20px;
@@ -379,6 +427,21 @@ const InputLabel = styled.label`
   font-weight: bold;
   color: #fff;
   width: 100%;
+`;
+
+const SuggestionItem = styled.div`
+  background-color: #5981b0;
+  border-radius: 25px;
+  padding: 4px 8px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 250px;
+  text-align: center;
+  &:hover {
+    background-color: #3467a1;
+  }
 `;
 
 const Input = styled.input`

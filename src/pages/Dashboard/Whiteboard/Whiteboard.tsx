@@ -14,6 +14,7 @@ import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
 import DefaultButton from '../../../Components/Button/Button';
 import Layout from '../../../Components/layout';
+import { ChatMini } from '../Dashboard';
 import 'firebase/firestore';
 import UserAuthData from '../../../Components/Login/Auth';
 
@@ -513,6 +514,7 @@ export const Whiteboard = () => {
       <SideNav></SideNav>
       <Wrapper id="Wrapper">
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
+        <ChatMini />
         <Banner title="Stick'n Draw" subTitle="Where Art and Fun Meet"></Banner>
 
         <CenterWrap>

@@ -9,6 +9,7 @@ import { MembersSelector } from '../../AI/SmartInput';
 import { format } from 'date-fns-tz';
 import Banner from '../../../Components/Banner/Banner';
 import SmartInput from '../../AI/SmartInput';
+import { ChatMini } from '../Dashboard';
 import Swal from 'sweetalert2';
 import { renderToString } from 'react-dom/server';
 import {
@@ -427,7 +428,7 @@ const EventWrapper = styled.div<EventWrapperProps>`
     console.log(members);
     console.log(member);
     console.log(memberIndex);
-    const colors = ['#7fc7af', '#d95b43', '#fff5c9', '#6189c5', '#af7ac7'];
+    const colors = ['#83d1ae', '#f3a977', '#fff5c9', '#90b1e3', '#e3aaeb '];
     return colors[memberIndex];
   }};
   ${({ multiDay }) =>
@@ -1585,6 +1586,7 @@ function Calendar() {
     <Container>
       <SideNav />
       <Wrap>
+        <ChatMini />
         <Banner title="Calendar" subTitle="EVERY DAY COUNTS"></Banner>
 
         <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>

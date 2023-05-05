@@ -80,13 +80,6 @@ const Suggestion = () => {
   //   fetchData();
   // }, [familyId]);
 
-  const getTodosData = async () => {
-    const familyDocRef = collection(db, 'Family', familyId, 'todo');
-    const querySnapshot = await getDocs(familyDocRef);
-    const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-    return todosData;
-  };
-
   interface Todo {
     id: string;
     title: string;
@@ -117,7 +110,20 @@ const Suggestion = () => {
   //   };
   //   fetchCalendarData();
   // }, [familyId]);
-  console.log(todoData, calendarData);
+
+  const getCalendarData = async () => {
+    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
+    const querySnapshot = await getDocs(familyDocRef);
+    const calendarData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return calendarData;
+  };
+
+  const getTodosData = async () => {
+    const familyDocRef = collection(db, 'Family', familyId, 'todo');
+    const querySnapshot = await getDocs(familyDocRef);
+    const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+    return todosData;
+  };
 
   useEffect(() => {
     console.log(familyId);
@@ -136,16 +142,15 @@ const Suggestion = () => {
 
     Promise.all([fetchTodosData(), fetchCalendarData()]).then(() => {
       console.log(calendarData, todoData);
-      runPrompt();
     });
   }, [familyId]);
 
-  const getCalendarData = async () => {
-    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
-    const querySnapshot = await getDocs(familyDocRef);
-    const calendarData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-    return calendarData;
-  };
+  useEffect(() => {
+    console.log(todoData, calendarData);
+    if (calendarData.length > 0 && todoData.length > 0) {
+      runPrompt();
+    }
+  }, [todoData, calendarData]);
 
   const runPrompt = async () => {
     const today = new Date();
@@ -153,13 +158,28 @@ const Suggestion = () => {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    console.log(calendarData);
+    console.log(todoData);
+    const filteredTodoData = todoData
+      .flatMap(({ items }) => items) // Get an array of all items
+      .filter(({ done }) => !done); // Filter to only include items where done is false
+
+    console.log(filteredTodoData);
+
+    const { category, id, note, ...newObj } = calendarData;
+    const filteredCalendarData = calendarData.map(
+      ({ category, id, note, ...newObj }) => newObj
+    );
+    const upcomingEvents = filteredCalendarData.filter((event) => {
+      const eventDate = new Date(event.date);
+      return eventDate >= today;
+    });
 
     const prompt = ` 
-   ,這是我家庭的資料庫，裡面有以下資料：
-    - 行事曆資料庫: ${JSON.stringify(calendarData)}
-    - 待辦事項資料庫: ${JSON.stringify(todoData)}
-    ,從以上資料判斷,今天是 ${formattedDate},今天到下週有什麼事情嗎?(20字以內, 時間不需要年份)
+    今天是 ${formattedDate},你是智能管家，行事曆資料庫: ${JSON.stringify(
+      upcomingEvents
+    )}
+    待辦事項資料庫: ${JSON.stringify(filteredTodoData)}
+    ,從以上資料判斷,今天到下週有什麼事件呢?
       `;
     console.log(prompt);
     const response = await openai.createChatCompletion({
@@ -167,29 +187,25 @@ const Suggestion = () => {
       messages: [
         {
           role: 'system',
-          content: `你是我的家庭助理`,
+          content: `你是我的家庭助理, 請用30字以內簡短回答`,
         },
         {
           role: 'user',
           content: `${prompt}`,
         },
       ],
-      temperature: 0.2,
+      temperature: 0.5,
       max_tokens: 500,
     });
     // const parsableJSONresponse = response.data.choices[0].text;
-    console.log(response);
+    console.log(prompt, upcomingEvents, filteredTodoData, response);
     console.log(response.data.choices[0].message.content);
     // const parsedResponse = JSON.parse(parsableJSONresponse);
     // console.log('parsedResponse:', parsedResponse);
     setResponseValue(response.data.choices[0].message.content);
     //console.log('Responses: ', parsedResponse.R);
   };
-
-  useEffect(() => {
-    console.log(todoData, calendarData);
-    runPrompt();
-  }, [todoData, calendarData]);
+  //runPrompt();
 
   return (
     <Card>
@@ -205,7 +221,7 @@ const Suggestion = () => {
         {todoData.length > 0 && calendarData.length > 0 ? (
           <div>{responseValue}</div>
         ) : (
-          <div>Loading...</div>
+          <div></div>
         )}
       </Response>
     </Card>
@@ -242,8 +258,10 @@ const Response = styled.div`
   align-items: center;
   justify-content: center;
   font-size: 14px;
+  overflow: auto;
   min-width: 120px;
   min-height: 80px;
+  max-height: 120px;
   font-weight: bold;
   margin-top: 70px;
   color: #414141;

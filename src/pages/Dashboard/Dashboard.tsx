@@ -1,4 +1,4 @@
-import styled from 'styled-components/macro';
+import styled, { keyframes } from 'styled-components/macro';
 import { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import TodoDashboard from './Todo/TodoDashboard';
@@ -7,15 +7,18 @@ import Gallery from './Album/GalleryMini';
 import Milestone from './MilestoneMini';
 import Sidebar from '../../Components/Nav/Navbar';
 import Navbar from '../../Components/Navbar/Navbar';
+import SendMessage from '../Family/SendMessageMini';
 import React from 'react';
 import Layout from '../../Components/layout';
 import GridLayout from 'react-grid-layout';
 import WeatherApp from './WeatherApp';
 import SmartInput from '../AI/SmartInput';
+import Chat from '../Family/ChatMini';
 import CalendarMini from './Calendar/CalendarMini';
 import Financial from './Financial';
 import Suggestion from '../AI/SuggestionMini';
 import FamilyMemberForm from '../Family/FamilyMini';
+import { CSSTransition } from 'react-transition-group';
 import DefaultButton, {
   CloseButton,
   ThreeDButton,
@@ -29,6 +32,7 @@ import {
   faCircleChevronUp,
   faToggleOff,
   faCircleInfo,
+  faCommentDots,
   faToggleOn,
 } from '@fortawesome/free-solid-svg-icons';
 import { icon } from '@fortawesome/fontawesome-svg-core';
@@ -111,6 +115,86 @@ const Block = styled.div`
   display: flex;
   flex: 1;
 `;
+
+const ChatButton = styled(ThreeDButton)`
+  width: 50px;
+  height: 50px;
+  margin: 0 auto;
+  position: absolute;
+  right: 10px;
+
+  text-align: center;
+  margin: 0 auto;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 50%;
+  background-color: #5981b0;
+  color: #f6f8f8;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    background-color: #3467a1;
+    color: white;
+  }
+`;
+
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const fadeOut = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+`;
+
+export const ChatMini = () => {
+  const [showChat, setShowChat] = useState(false);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        bottom: '80px',
+        right: '20px',
+        zIndex: '8',
+      }}
+    >
+      <ChatButton onClick={() => setShowChat(!showChat)}>
+        <FontAwesomeIcon icon={faCommentDots} />
+      </ChatButton>
+      {showChat && (
+        <CSSTransition in={showChat} timeout={300} classNames="fade">
+          <ChatBoxContainer show={showChat}>
+            <ChatBoxHeader>
+              <ChatBoxTitle>Family Time</ChatBoxTitle>
+              <ChatBoxCloseButton onClick={() => setShowChat(false)}>
+                Close
+              </ChatBoxCloseButton>
+            </ChatBoxHeader>
+            <Chat></Chat>
+          </ChatBoxContainer>
+        </CSSTransition>
+      )}
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const [showAside, setShowAside] = useState(true);
@@ -362,6 +446,7 @@ const Dashboard = () => {
       component: (
         <a href="/milestone" style={{ textDecoration: 'none' }}>
           <BoxL>
+            <BoxTitle>Celebrate</BoxTitle>
             <Milestone></Milestone>
           </BoxL>
         </a>
@@ -502,6 +587,7 @@ const Dashboard = () => {
           Smart Input
         </SmartInputButton>
         <Main>
+          <ChatMini></ChatMini>
           <Grid>
             {showSmartInput && (
               <SmartInputContainer>
@@ -556,4 +642,79 @@ const BoxTitle = styled.h4`
   top: -10px;
   left: 10px;
   padding: 0;
+  font-family: 'Braah One';
+`;
+const ChatBoxContainer = styled.div`
+  position: fixed;
+  bottom: 70px;
+  right: 90px;
+  z-index: 8;
+  max-width: 400px;
+  background-color: #f6f8f8;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: ${({ isVisible }) => (isVisible ? fadeIn : fadeOut)} 0.3s ease-out;
+`;
+
+const ChatBoxHeader = styled.div`
+  padding: 10px;
+  border-bottom: 1px solid #e6e6e6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1e3d6b;
+  color: #f6f8f8;
+`;
+
+const ChatBoxTitle = styled.div`
+  font-weight: bold;
+  font-size: 24px;
+  margin: 0 auto;
+  color: #f6f8f8;
+  font-family: 'Braah One';
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+`;
+
+const ChatBoxCloseButton = styled.div`
+  cursor: pointer;
+  font-size: 14px;
+  position: absolute;
+  right: 5%;
+`;
+
+const ChatBoxMessageArea = styled.div`
+  flex: 1;
+  overflow-y: scroll;
+  padding: 10px;
+`;
+
+const ChatBoxInputArea = styled.div`
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #e6e6e6;
+  padding: 10px;
+`;
+
+const ChatBoxInput = styled.input`
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  padding: 5px;
+  border-radius: 5px;
+  margin-right: 10px;
+`;
+
+const ChatBoxSendButton = styled.button`
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 15px;
+  font-size: 16px;
+  cursor: pointer;
 `;

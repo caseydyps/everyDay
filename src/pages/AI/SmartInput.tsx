@@ -327,7 +327,7 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   );
 };
 
-const SmartInput = ({ onClose }) => {
+const SmartInput = ({ onClose, input }) => {
   const [inputValue, setInputValue] = useState('');
   const [member, setMember] = useState<string | string[]>('');
   const [responseValue, setResponseValue] = useState('');
@@ -691,7 +691,6 @@ to {
         </ColumnWrap>
 
         <InputForm onSubmit={handleSubmit}>
-          <></>
           <InputField
             type="text"
             value={inputValue}

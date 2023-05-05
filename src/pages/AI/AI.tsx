@@ -6,6 +6,7 @@ import Sidebar from '../../Components/Nav/Navbar';
 import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+import { ChatMini } from '../Dashboard/Dashboard';
 import { getStorage, ref } from 'firebase/storage';
 import SideNav from '../../Components/Nav/SideNav';
 import { getDownloadURL, uploadBytes } from 'firebase/storage';
@@ -23,6 +24,7 @@ import {
 import SmartInput from './SmartInput';
 import Banner from '../../Components/Banner/Banner';
 import Suggestion from './Suggestion';
+import AskGPTPage from './gptChat';
 
 const AI = () => {
   const [showSmartInput, setShowSmartInput] = useState(false);
@@ -41,36 +43,106 @@ const AI = () => {
       setShowSmartInput(!showSmartInput);
     }
   };
+
+  const HelpContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  `;
+
+  const Instruction = styled.div`
+    font-size: 14px;
+  `;
+
+  const SuggestionContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+  `;
+
+  const SuggestionItem = styled.div`
+    background-color: #f3f3f3;
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+      background-color: #e3e3e3;
+    }
+  `;
+
   return (
     <Container>
-      <SideNav></SideNav>
+      <SideNav />
       <Wrapper>
-        <Banner title={'AI'} subTitle="Smart input, smart advice"></Banner>
-
-        <AiRowWrap>
+        <Banner title={'AI'} subTitle="Your personal Alfred" />
+        <ChatMini />
+        <Section>
+          <AiRowWrap>
+            {/* <CenteredSubText>
+              Get personalized suggestions from your digital assistant
+            </CenteredSubText> */}
+            <Suggestion />
+            {/* <Circle onClick={handleClick2}>
+              <AiWrapper>
+                <CenteredText>Smart Advice</CenteredText>
+              </AiWrapper>
+            </Circle> */}
+            {/* <Label> */}
+            {/* Get personalized suggestions and advice from your digital assistant. */}
+            {/* </Label> */}
+          </AiRowWrap>
+        </Section>
+        {/* <AiRowWrap>
           <Circle onClick={handleClick1}>
             <AiWrapper>
               <CenteredText>Smart Input</CenteredText>
-              <CenteredSubText>Add event via natural language</CenteredSubText>
+              <CenteredSubText>
+                Add events easily with natural language
+              </CenteredSubText>
             </AiWrapper>
           </Circle>
-          <SmartInput />
-        </AiRowWrap>
-        <AiRowWrap>
+          <SmartInput /> */}
+        {/* <Label>Use natural language to add events quickly and easily.</Label> */}
+        {/* </AiRowWrap> */}
+        {/* <ChatBox></ChatBox> */}
+        {/* <AiRowWrap>
           <Suggestion />
           <Circle onClick={handleClick2}>
             <AiWrapper>
               <CenteredText>Smart Advice</CenteredText>
               <CenteredSubText>
-                Suggestions from digital assistant
+                Get personalized suggestions from your digital assistant
               </CenteredSubText>
             </AiWrapper>
           </Circle>
-        </AiRowWrap>
+          {/* <Label> */}
+        {/* Get personalized suggestions and advice from your digital assistant. */}
+        {/* </Label> */}
+        {/* </AiRowWrap>  */}
       </Wrapper>
     </Container>
   );
 };
+const Section = styled.section`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 300px;
+  padding-top: 70px;
+  background: transparent;
+  max-width: 100vw;
+  //  border: 2px solid #5981b0;
+`;
+
+const Help = styled.div`
+  width: 100vw;
+  height: 100px;
+  border: 2px solid #5981b0;
+`;
 
 export const GradientAnimation = keyframes`
   0% {

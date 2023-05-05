@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 import Time from '../../Components/Banner/time.png';
 import Swal from 'sweetalert2';
 import resizeFile from 'react-image-file-resizer';
-
+import { ChatMini } from './Dashboard';
 import DefaultButton, {
   Card,
   ThreeDButton,
@@ -508,6 +508,7 @@ function Milestone() {
     <Container>
       <SideNav></SideNav>
       <Wrapper>
+        <ChatMini />
         <Banner title="Time Machine" subTitle="Time less memories"></Banner>
 
         <RowWrap>

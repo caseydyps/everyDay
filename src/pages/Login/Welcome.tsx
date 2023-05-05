@@ -6,6 +6,10 @@ import SignIn from '../../Components/Login/SignIn';
 import LogOut from '../../Components/Login/LogOut';
 import styled, { keyframes } from 'styled-components/macro';
 import { Link } from 'react-router-dom';
+import aiImage from './ai.png';
+import cart from './cart.png';
+import gallery from './gallery.png';
+import message from './message.png';
 // import { color, backgroundColor } from '../../theme';
 import { NavList, NavItem } from '../../Components/Nav/Navbar';
 import { db, storage } from '../../config/firebase.config';
@@ -27,6 +31,58 @@ import checkIfUserExists from '../../Components/Login/Auth';
 import DefaultButton from '../../Components/Button/Button';
 import LoadingAnimation from '../../Components/loading';
 const { v4: uuidv4 } = require('uuid');
+
+const CardContainer = styled.div`
+  height: 300px;
+  width: 250px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  margin: 10px;
+  padding: 20px;
+`;
+
+const CardTitle = styled.h2`
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #1e3d6b;
+  font-family: 'Braah One';
+`;
+
+const CardImage = styled.img`
+  width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+`;
+
+const CardText = styled.p`
+  text-align: center;
+  margin-top: 10px;
+`;
+
+type CardProps = {
+  title: string;
+  imageSrc: string;
+  altText: string;
+  children: React.ReactNode;
+};
+
+const Card: React.FC<CardProps> = ({ title, imageSrc, altText, children }) => {
+  return (
+    <CardContainer>
+      <CardTitle>{title}</CardTitle>
+      <CardImage src={imageSrc} alt={altText} />
+      <CardText>{children}</CardText>
+    </CardContainer>
+  );
+};
 
 function WelcomePage() {
   const {
@@ -112,31 +168,66 @@ function WelcomePage() {
           <h1 style={{ color: '#5981b0', fontFamily: 'Braah One' }}>
             Welcome to EVERYDAY!
           </h1>
-          <p style={{ color: '#5981b0' }}>Your everyday family assistant</p>
+          <p
+            style={{
+              color: '#5981b0',
+              fontFamily: 'Braah One',
+              fontSize: '24px',
+            }}
+          >
+            Your everyday family assistant !
+          </p>
+          <SignIn />
         </Section>
       )}
 
       {!user && (
         <>
-          <CurveSection>
-            <h1 style={{ fontFamily: 'Braah One', color: '#F6F8F8' }}>
-              Can't wait? Login in seconds!
-            </h1>
-            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
-            <SignIn />
-          </CurveSection>
-          <CurveSection style={{ height: '200px' }}>
+          <CurveSection style={{ height: 'auto' }}>
             {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
 
             <h1 style={{ fontFamily: 'Braah One' }}>
               Arrange your family with ease
             </h1>
-
-            <p>Love in a family is like a flame.</p>
+            {/* <p>Love in a family is like a flame.</p>
             <p>
               The more it is fueled by kindness and care, the warmer and
               stronger it grows.
-            </p>
+            </p> */}
+            <RowWrap>
+              <Card title="Get things done" imageSrc={cart} altText="GTD">
+                Organize your tasks with ease. Keep track of deadlines and
+                delegate tasks efficiently with our intuitive task management
+                system.
+              </Card>
+              <Card title="Smart input" imageSrc={aiImage} altText="AI">
+                Our AI-powered input system predicts your text, saving you time
+                and hassle. With GPT integration, you can get insights and ask
+                questions about your family's events.
+              </Card>
+              <Card
+                title="Communicate"
+                imageSrc={message}
+                altText="Communicate"
+              >
+                Stay connected with your loved ones in real-time using our
+                messaging system. Keep each other updated, and add a personal
+                touch with our fun doodle board.
+              </Card>
+              <Card title="Memories" imageSrc={gallery} altText="Memories">
+                Capture and relive life's precious moments with our built-in
+                photo gallery. Organize by event or date, and celebrate
+                milestones with ease.
+              </Card>
+            </RowWrap>
+          </CurveSection>
+
+          <CurveSection>
+            <h1 style={{ fontFamily: 'Braah One', color: '#3467a1' }}>
+              Can't wait? Login in seconds!
+            </h1>
+            {/* <NavLink to="/family">{googleAvatarUrl}</NavLink> */}
+            <SignIn />
           </CurveSection>
 
           {/* <CircleButton></CircleButton> */}
@@ -189,6 +280,7 @@ const Section = styled.section`
   padding-top: 70px;
   background: transparent;
   max-width: 100vw;
+  //  border: 2px solid #5981b0;
 `;
 
 const WelcomeSection = styled.section`
@@ -233,6 +325,23 @@ const Curve = styled.div`
   bottom: 0;
   text-align: center;
 `;
+
+// const Card = styled.div`
+//   height: 200px;
+//   width: 200px;
+//   background-color: rgba(255, 255, 255, 0.25);
+//   backdrop-filter: blur(6px);
+//   -webkit-backdrop-filter: blur(6px);
+//   border: 1px solid rgba(255, 255, 255, 0.18);
+//   box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+//   -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+//   border-radius: 12px;
+//   -webkit-border-radius: 12px;
+//   color: rgba(255, 255, 255, 0.75);
+//   text-align: center;
+//   margin: 10px;
+//   padding: 10px;
+// `;
 
 export const Container = styled.div`
   width: 100%;

@@ -17,6 +17,7 @@ import SideNav from '../../../Components/Nav/SideNav';
 import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
 import SmartInput from '../../AI/SmartInput';
+import { ChatMini } from '../Dashboard';
 import DefaultButton from '../../../Components/Button/Button';
 import { AddButton, CloseButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
@@ -410,6 +411,7 @@ const Todo = () => {
     <Container>
       <SideNav></SideNav>
       <Wrapper>
+        <ChatMini />
         <Banner title="Todo" subTitle="Get Things Done"></Banner>
 
         <RowWrap>
