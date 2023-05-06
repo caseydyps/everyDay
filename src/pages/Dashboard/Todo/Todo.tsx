@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { AuthContext } from '../../../config/Context/authContext';
 import DragNDrop from './DragNDrop';
+import { nanoid } from 'nanoid';
 import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
 import firebase from 'firebase/app';
@@ -26,6 +27,8 @@ import {
   updateDoc,
   getDocs,
   doc,
+  setDoc,
+  onSnapshot,
   query,
   where,
 } from 'firebase/firestore';
@@ -89,86 +92,25 @@ const Input = styled.input`
   margin: 10px;
 `;
 
-const defaultData = [
+const defaultList = [
   {
-    title: '家事🏠',
-    items: [
-      {
-        text: 'take out garbage',
-        due: '2023-04-12',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: '洗碗',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=long03&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: '繳費',
-        due: '2023-04-11',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-        done: false,
-      },
-    ],
+    title: 'Todo',
+    items: [],
   },
   {
-    title: '購物清單',
-    items: [
-      {
-        text: 'milk',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: 'Task 2',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: 'Task 3',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
-        done: false,
-      },
-    ],
+    title: 'Doing',
+    items: [],
   },
   {
-    title: '家庭活動',
-    items: [
-      {
-        text: 'Task 1',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: false,
-      },
-      {
-        text: 'Task 2',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=P…lor=f5f5f5&features=blush&featuresProbability=100',
-        done: true,
-      },
-      {
-        text: 'Task 3',
-        due: '2023-04-07',
-        member:
-          'https://api.dicebear.com/6.x/adventurer/svg?seed=S…or=f5f5f5&features=mustache&featuresProbability=0',
-        done: false,
-      },
-    ],
+    title: 'Done',
+    items: [],
   },
 ];
+
+const defaultData = defaultList.map((list) => ({
+  ...list,
+  id: nanoid(),
+}));
 
 type TodoItem = {
   text: string;
@@ -327,17 +269,31 @@ const Todo = () => {
     memberRolesArray,
   } = UserAuthData();
   //const { membersArray } = useContext(AuthContext);
-  const [data, dispatch] = useReducer<any>(todoReducer, []);
+  const [data, dispatch] = useReducer<any>(todoReducer, [defaultData]);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);
   // useEffect(() => {
   //   localStorage.setItem('List', JSON.stringify(data));
   // }, [data]);
 
-  const addList = (dispatch: Dispatch<ActionType>) => {
-    const title = prompt('輸入新清單名稱');
-    console.log(data);
-    title && dispatch({ type: 'ADD_LIST', payload: title });
+  const addList = async (dispatch: Dispatch<ActionType>) => {
+    const title = prompt('Enter the title for the new list:');
+
+    if (title) {
+      const listRef = doc(db, 'Family', familyId, 'todo', title);
+      const newItem = {
+        title: title,
+        items: [],
+      };
+
+      try {
+        await setDoc(listRef, newItem);
+        console.log('New list created in Firestore!');
+        dispatch({ type: 'ADD_LIST', payload: newItem });
+      } catch (error) {
+        console.error('Error creating new list in Firestore: ', error);
+      }
+    }
   };
 
   const dueDateRef = useRef<HTMLInputElement>(null);
@@ -358,14 +314,18 @@ const Todo = () => {
   useEffect(() => {
     const fetchTodosData = async (dispatch: Dispatch<ActionType>) => {
       console.log(familyId);
-      const passId = familyId;
       const familyDocRef = collection(db, 'Family', familyId, 'todo');
-      const querySnapshot = await getDocs(familyDocRef);
-      const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-      console.log(todosData);
-      // const todosData = await getTodosData();
+      const unsubscribe = onSnapshot(familyDocRef, (querySnapshot) => {
+        const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
+        console.log(todosData);
 
-      dispatch({ type: 'SET_DATA', payload: todosData }); // update data state with todosData
+        // Always ensure todosData is an array
+        const todosArray = Array.isArray(todosData) ? todosData : [];
+
+        dispatch({ type: 'SET_DATA', payload: todosArray });
+      });
+
+      return () => unsubscribe();
     };
     fetchTodosData(dispatch);
   }, [familyId]);

@@ -287,7 +287,7 @@ function Milestone() {
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setMember(e.target.value)
               }
-            />
+            ></FormInput>
           </FormField>
           <FormField>
             <FormLabel>Image:</FormLabel>
@@ -612,18 +612,19 @@ function Milestone() {
                 {/* <MembersSelector onSelectMember={handleSelectMember} /> */}
                 <FormField>
                   <FormLabel>Member:</FormLabel>
-                  <select
+                  <FormSelection
                     value={newEventMember}
                     onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                       setNewEventMember(e.target.value)
                     }
                   >
+                    <option value="">Select member</option>
                     {membersArray.map((member, index) => (
                       <option key={index} value={member.role}>
                         {member.role}
                       </option>
                     ))}
-                  </select>
+                  </FormSelection>
                 </FormField>
                 <FormField>
                   <FormLabel>Image:</FormLabel>
@@ -1022,6 +1023,15 @@ const FormInput: any = styled.input`
   padding: 5px;
   border: none;
   border-radius: 5px;
+  width: 150px;
+`;
+
+const FormSelection: any = styled.select`
+  font-size: 16px;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  width: 150px;
 `;
 
 const FormButton = styled.button`

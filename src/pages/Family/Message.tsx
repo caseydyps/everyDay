@@ -27,7 +27,7 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   height: 40px;
   margin: 0 auto;
   margin-bottom: 0.5rem;
-  padding: 0.25rem 0.5rem;
+  padding: 5px 10px;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
   border-radius: ${({ isSent }) =>
     isSent ? '20px 20px 5px 20px' : '20px 20px 20px 0'};
@@ -60,7 +60,9 @@ const Wrapper = styled.div`
 const SenderName = styled.p`
   margin-top: 0px;
   color: #142850;
-  font-size: 0.8rem;
+  font-size: 12px;
+  position: absolute;
+  left: -37px;
 `;
 
 interface MessageProps {
@@ -190,7 +192,7 @@ const Time = styled.p<MessageBubbleProps>`
   color: #777;
   position: absolute;
   bottom: -20px;
-  right: ${({ isSent }) => (isSent ? '0px' : 'auto')};
+  right: ${({ isSent }) => (isSent ? '-20px' : 'auto')};
   width: 100px;
 `;
 

@@ -28,7 +28,7 @@ export const DefaultButton = styled.button`
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: #0062cc;
+    background-color: transparent;
   }
 
   &.fade-enter {

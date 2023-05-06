@@ -90,7 +90,7 @@ const Container = styled.div`
 
 const CanvasButton = styled(DefaultButton)`
   border-radius: 50%;
-  background-color: ${({ color }) => color};
+  background-color: transparent;
 
   padding: 5px;
   color: #5981b0;
@@ -123,7 +123,8 @@ const DrawingTool = () => {
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
-
+  const [strokes, setStrokes] = useState<StrokeData[]>([]);
+  //const [lineWidth, setLineWidth] = useState(5);
   const {
     user,
     userName,
@@ -181,7 +182,6 @@ const DrawingTool = () => {
     // const context = canvas.getContext('2d');
   };
 
-  // const throttle = <T extends any[]>(
   //   callback: (...args: T) => void,
   //   delay: number
   // ) => {
@@ -196,33 +196,38 @@ const DrawingTool = () => {
   //   };
   // };
   useEffect(() => {
-    // Retrieve the strokes from Firestore when the component mounts
-    const canvasRef = collection(
-      db,
-      'Family',
-      familyId,
-      'canva',
-      familyId,
-      'strokes'
-    );
-    getDocs(canvasRef).then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        handleStrokeUpdate(doc.data() as StrokeData);
-      });
-    });
+    const loadStrokes = async () => {
+      // Retrieve the strokes from Firestore when the component mounts
+      const strokesCollectionRef = collection(
+        db,
+        'Family',
+        familyId,
+        'canva',
+        familyId,
+        'strokes'
+      );
+      try {
+        const querySnapshot = await getDocs(strokesCollectionRef);
+        const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+        console.log('Strokes data retrieved from Firestore:', strokesData);
 
-    // Subscribe to Firestore data changes
-    const unsubscribe = onSnapshot(canvasRef, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          handleStrokeUpdate(change.doc.data() as StrokeData);
-        }
-      });
-    });
+        strokesData.forEach((stroke, index) => {
+          stroke.forEach((s) => {
+            console.log(s);
+            handleStrokeUpdate(s);
+          });
+        });
 
-    return () => {
-      unsubscribe();
+        // Load the canvas
+        loadCanvas();
+
+        console.log('Canvas loaded successfully');
+      } catch (error) {
+        console.error('Error loading canvas:', error);
+      }
     };
+
+    loadStrokes();
   }, [familyId, color, width]);
 
   const stackLimit = 500; // maximum stack size
@@ -242,14 +247,24 @@ const DrawingTool = () => {
         context.stroke();
 
         // Save the stroke to Firestore
-        addStroke({
-          startX,
-          startY,
+        // addStroke({
+        //   startX,
+        //   startY,
+        //   endX: offsetX,
+        //   endY: offsetY,
+        //   color,
+        //   width,
+        // });
+
+        const newStroke: StrokeData = {
+          startX: prevOffset.current.x,
+          startY: prevOffset.current.y,
           endX: offsetX,
           endY: offsetY,
           color,
           width,
-        });
+        };
+        setStrokes([...strokes, newStroke]);
 
         // Update the undo stack
         const state = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -270,17 +285,48 @@ const DrawingTool = () => {
       familyId,
       'strokes'
     );
+    console.log(strokes);
+
+    const strokeObject = { strokes };
+
     try {
-      const docRef = await addDoc(strokesCollectionRef, strokeData);
+      const docRef = await addDoc(strokesCollectionRef, strokeObject);
       console.log('Stroke added to Firestore with ID:', docRef.id);
+      //handleStrokeUpdate(strokes);
     } catch (error) {
       console.error('Error adding stroke to Firestore:', error);
     }
   };
+
+  // const loadCanvas = async () => {
+  //   const strokesCollectionRef = collection(
+  //     db,
+  //     'Family',
+  //     familyId,
+  //     'canva',
+  //     familyId,
+  //     'strokes'
+  //   );
+
+  //   try {
+  //     const querySnapshot = await getDocs(strokesCollectionRef);
+  //     const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+  //     console.log('Strokes data retrieved from Firestore:', strokesData);
+
+  //     strokesData.forEach((stroke) => {
+  //       // redraw the stroke on the canvas
+  //       // you will need to implement this part based on your specific canvas implementation
+  //     });
+
+  //     console.log('Canvas loaded successfully');
+  //   } catch (error) {
+  //     console.error('Error loading canvas:', error);
+  //   }
+  // };
   const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
-
+    console.log(strokeData);
     context.beginPath();
     context.moveTo(strokeData.startX, strokeData.startY);
     context.lineTo(strokeData.endX, strokeData.endY);
@@ -290,18 +336,16 @@ const DrawingTool = () => {
   };
 
   const handleChangeColor = (newColor: string) => {
+    addStroke(strokes);
     setColor(newColor);
   };
 
   const handleChangeLineWidth = (newWidth: number) => {
+    addStroke(strokes);
     setWidth(newWidth);
   };
   const clearCanvas = async () => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
-    context?.clearRect(0, 0, canvas.width, canvas.height);
-    const strokesCollectionRef: CollectionReference = collection(
+    const collectionRef = collection(
       db,
       'Family',
       familyId,
@@ -310,46 +354,34 @@ const DrawingTool = () => {
       'strokes'
     );
 
-    const deleteDocumentsInBatch: any = async (
-      querySnapshot: QuerySnapshot<StrokeData>
-    ) => {
-      const batch = writeBatch(db);
+    const querySnapshot = await getDocs(collectionRef);
 
-      querySnapshot.forEach((doc) => {
-        batch.delete(doc.ref);
-      });
-
-      await batch.commit();
-    };
-
-    const deleteAllStrokes = async () => {
-      let querySnapshot = await getDocs(strokesCollectionRef);
-
-      while (!querySnapshot.empty) {
-        // Process the documents in batches
-        await deleteDocumentsInBatch(querySnapshot);
-
-        // Get the next batch of documents
-        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-        const nextQuerySnapshot: any = await getDocs(
-          query(strokesCollectionRef, startAfter(lastVisible))
-        );
-        querySnapshot = nextQuerySnapshot;
+    querySnapshot.forEach(async (doc) => {
+      try {
+        await deleteDoc(doc.ref);
+        console.log(`Document ${doc.id} deleted successfully`);
+      } catch (error) {
+        console.error(`Error deleting document ${doc.id}:`, error);
       }
-    };
+    });
+    setStrokes([]);
+    console.log('Strokes array cleared');
 
-    await deleteAllStrokes();
-    setUndoStack([]);
+    window.location.reload();
   };
 
   const undoStroke = () => {
     const canvas = canvasRef.current;
-    const context = canvas ? canvas.getContext('2d') : null;
-    console.log(undoStack);
-    const lastState = undoStack.pop(); // get the last saved state from the stack
-    if (lastState && context) {
-      context.putImageData(lastState, 0, 0); // restore the last saved state
-      setUndoStack(undoStack.slice(0, undoStack.length - 1)); // remove the last state from the stack
+    if (canvas) {
+      const context = canvas.getContext('2d');
+      if (context && undoStack.length > 0) {
+        // Restore the previous state from the undo stack
+        const prevState = undoStack[undoStack.length - 1];
+        context.putImageData(prevState, 0, 0);
+
+        // Update the undo stack to remove the previous state
+        setUndoStack(undoStack.slice(0, -1));
+      }
     }
   };
 
@@ -363,7 +395,7 @@ const DrawingTool = () => {
       return;
     }
 
-    const familyDocRef = doc(
+    const strokesCollectionRef = collection(
       db,
       'Family',
       familyId,
@@ -372,27 +404,20 @@ const DrawingTool = () => {
       'strokes'
     );
     try {
-      const docSnapshot = await getDoc(familyDocRef);
-      if (docSnapshot.exists()) {
-        const dataURL = docSnapshot.data().dataURL;
-        console.log(dataURL);
-        const image = new Image();
-        image.onload = () => {
-          canvas.width = image.width;
-          canvas.height = image.height;
-          context.drawImage(image, 0, 0);
+      const querySnapshot = await getDocs(strokesCollectionRef);
+      const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+      console.log('Strokes data retrieved from Firestore:', strokesData);
 
-          // Set context properties
-          contextRef.current = context;
-          contextRef.current.scale(2, 2);
-          contextRef.current.lineCap = 'round';
-          contextRef.current.lineWidth = width;
-          contextRef.current.strokeStyle = color;
-        };
-        image.src = dataURL;
-      }
+      strokesData.forEach((stroke, index) => {
+        stroke.forEach((s) => {
+          console.log(s);
+          handleStrokeUpdate(s);
+        });
+      });
+
+      console.log('Canvas loaded successfully');
     } catch (error) {
-      console.error('Error loading canvas data from Firestore: ', error);
+      console.error('Error loading canvas:', error);
     }
   };
 
@@ -401,11 +426,35 @@ const DrawingTool = () => {
     undoStack.pop();
   }
 
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleClick = async () => {
+    setIsAdding(true);
+    const strokeData = {
+      /* populate stroke data here */
+    };
+    try {
+      console.log(strokes);
+      await addStroke(strokes);
+      console.log('Stroke added successfully');
+    } catch (error) {
+      console.error('Error adding stroke:', error);
+    }
+    setIsAdding(false);
+  };
+
+  const handleLineWidthChange = (event) => {
+    addStroke(strokes);
+    setWidth(event.target.value);
+  };
+
   return (
     <Container>
       {/* <div>{`Strokes: ${undoStack.length}`}</div> */}
       <CanvasContainer>
         <ButtonWrap>
+          <button onClick={handleClick}>Save</button>
+          <button onClick={loadCanvas}>load</button>
           <CanvasButton>
             <input
               type="color"
@@ -450,7 +499,26 @@ const DrawingTool = () => {
           >
             <FontAwesomeIcon icon={faEraser} />
           </CanvasButton>
-          <CanvasButton
+          <input
+            type="range"
+            id="lineWidth"
+            min="1"
+            max="50"
+            value={width}
+            onChange={handleLineWidthChange}
+            style={{
+              WebkitAppearance: 'none',
+              appearance: 'none',
+              width: '100%',
+              height: '10px',
+              background: '#d3d3d3',
+              outline: 'none',
+              opacity: '0.7',
+              transition: 'opacity .2s',
+              borderRadius: '10px',
+            }}
+          />
+          {/* <CanvasButton
             color="transparent"
             onClick={() => handleChangeLineWidth(5)}
           >
@@ -467,10 +535,10 @@ const DrawingTool = () => {
             onClick={() => handleChangeLineWidth(30)}
           >
             <FontAwesomeIcon icon={faPaintRoller} />
-          </CanvasButton>
-          <CanvasButton color="transparent" onClick={undoStroke}>
+          </CanvasButton> */}
+          {/* <CanvasButton color="transparent" onClick={undoStroke}>
             <FontAwesomeIcon icon={faClockRotateLeft} />
-          </CanvasButton>
+          </CanvasButton> */}
           <CanvasButton color="transparent" onClick={clearCanvas}>
             <FontAwesomeIcon icon={faBroom} />
           </CanvasButton>
@@ -486,8 +554,8 @@ const DrawingTool = () => {
           style={{
             height: 'auto',
             maxWidth: '737px',
-            maxHeight: '240px',
-            minHeight: '240px',
+            maxHeight: '404px',
+            minHeight: '404px',
             width: '737px',
             border: '2px solid transparent',
             boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',

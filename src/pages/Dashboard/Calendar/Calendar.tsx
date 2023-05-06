@@ -65,7 +65,7 @@ const WeekWrap = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2rem;
+  padding: 20px 0px;
   font-family: Arial, sans-serif;
   margin: 5px;
 `;
@@ -148,6 +148,23 @@ const Button = styled.button`
   }
 `;
 
+const EventEditButton = styled.button`
+  top: 50px;
+  right: 20px;
+  //position: absolute;
+  border: none;
+  z-index: 5;
+  background-color: transparent;
+  cursor: pointer;
+  //font-size: 1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #5981b0;
+  &:hover {
+    color: #3467a1;
+  }
+`;
+
 const ExitButton = styled.button`
   margin-top: 10px;
   border: none;
@@ -203,7 +220,7 @@ const InfoButton = styled(ThreeDButton)`
     // color: rgba(255, 255, 255, 0.75);
   }
   position: absolute;
-  right: 200px;
+  right: 150px;
   top: 300px;
 `;
 
@@ -266,6 +283,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
+  padding-top: 0px;
   //border: gold solid 3px;
 `;
 
@@ -298,6 +316,17 @@ const RowWrap = styled.div`
   justify-content: center;
   align-items: center;
   max-width: 100%;
+`;
+const EditWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  //max-width: 100%;
+  margin-left: 160px;
+  top: -50px;
+  height: 50px;
+  //width: 200px;
 `;
 
 const TabWrap = styled.div`
@@ -456,7 +485,10 @@ const EventTime = styled.div`
 const ViewSelect = styled.select`
   width: 150px;
   height: 40px;
-  margin: 0 auto;
+  position: absolute;
+  right: 220px;
+  top: 250px;
+  //margin: 0 auto;
   border-radius: 5px;
   border: 1px solid #d7dde2;
   background-color: #f6f8f8;
@@ -772,24 +804,28 @@ function Calendar() {
       const eventDate = new Date(event.date);
       if (eventDate.getMonth() === date.getMonth()) {
         const startDate = new Date(eventDate);
-        if (event.endDate === event.date) {
-          // Single day event
-          return startDate.getDate() === date.getDate();
-        } else {
-          // Multiday event
-          startDate.setDate(startDate.getDate() - 1);
-          const endDate = new Date(event.endDate);
-          return date >= startDate && date <= endDate;
-        }
+
+        // Single day event
+        return startDate.getDate() === date.getDate();
       } else {
         return false;
       }
     });
 
+    const handleShowButtons = (clickedEvent: Event) => {
+      setSelectedEvents((prevState) =>
+        prevState.map((event) =>
+          event.id === clickedEvent.id
+            ? { ...event, showButtons: !event.showButtons }
+            : { ...event, showButtons: false }
+        )
+      );
+    };
+
     // console.log(selectedEvents);
     // console.log(isCurrentMonth);
     // console.log(date.getMonth());
-    console.log(membersArray);
+    //console.log(membersArray);
     interface EventMemberProps {
       members: Array<{ avatar: string; role: string }>;
       memberRole: string;
@@ -830,7 +866,14 @@ function Calendar() {
         </div>
       ) : null;
     };
+    const [selectedEventId, setSelectedEventId] = useState('');
+    console.log(selectedEventId, showButtons);
 
+    useEffect(() => {
+      setTimeout(() => {
+        console.log(selectedEventId);
+      }, 100);
+    }, [selectedEventId]);
     return (
       <DateDetailsWrapper
         onDragOver={handleDragOver}
@@ -844,8 +887,22 @@ function Calendar() {
             {selectedEvents.map((event: Event, index: number) =>
               isCurrentMonth ? (
                 <li key={index}>
-                  <MenuWrap>
-                    {showButtons && (
+                  <MenuWrap></MenuWrap>
+                  <EventWrapper
+                    draggable={!event.multiDay}
+                    onDragStart={(e) => handleDragStart(e, event.id)}
+                    category={event.category}
+                    member={event.member}
+                    members={membersArray}
+                    finished={event.finished}
+                    //multiDay={event.date !== event.endDate}
+                    onClick={() => {
+                      setSelectedEventId(event.id);
+                      console.log(selectedEventId);
+                      setShowButtons(true);
+                    }}
+                  >
+                    {selectedEventId === event.id && showButtons && (
                       <Menu>
                         <DetailMember
                           members={membersArray}
@@ -914,17 +971,6 @@ function Calendar() {
                         </ExitButton>
                       </Menu>
                     )}
-                  </MenuWrap>
-                  <EventWrapper
-                    draggable={!event.multiDay}
-                    onDragStart={(e) => handleDragStart(e, event.id)}
-                    category={event.category}
-                    member={event.member}
-                    members={membersArray}
-                    finished={event.finished}
-                    multiDay={event.date !== event.endDate}
-                    onClick={() => setShowButtons(!showButtons)}
-                  >
                     <EventMember
                       members={membersArray}
                       memberRole={event.member}
@@ -1108,15 +1154,17 @@ function Calendar() {
               month: '2-digit',
               day: '2-digit',
             });
+            const selectedDateInTaipei = selectedDate.toLocaleString('en-US', {
+              timeZone: 'Asia/Taipei',
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            });
 
             return (
-              eventDateInTaipei ===
-              selectedDate.toLocaleDateString('en-US', {
-                timeZone: 'Asia/Taipei',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-              })
+              eventDateInTaipei === selectedDateInTaipei
+              // &&
+              // selectedDateInTaipei <= eventEndDateInTaipei
             );
           }).length > 0 ? (
             <EventList>
@@ -1166,11 +1214,20 @@ function Calendar() {
                         top: '40px',
                         left: '12px',
                         fontSize: '12px',
-                        color: '#414141',
+                        color: '#F6F8F8',
                       }}
                     >
                       {event.time}
                     </EventDetails>
+
+                    <EditWrap>
+                      <EventEditButton onClick={() => handleEditEvent(event)}>
+                        <FontAwesomeIcon icon={faEdit} />
+                      </EventEditButton>
+                      <EventEditButton onClick={() => handleDeleteEvent(event)}>
+                        <FontAwesomeIcon icon={faTrashCan} />
+                      </EventEditButton>
+                    </EditWrap>
                   </EventListItem>
                 ))}
             </EventList>
@@ -1188,7 +1245,7 @@ function Calendar() {
         </MonthWrap>
 
         <MonthWrap>
-          <Title>{`${months[date.getMonth()]} ${date.getFullYear()}`}</Title>
+          <Title>{`${months[date.getMonth()]} ${date.getFullYear()} `}</Title>
           {selectedMonthEvents.length > 0 ? (
             <EventList>
               {selectedMonthEvents
@@ -1223,7 +1280,7 @@ function Calendar() {
                         top: '40px',
                         left: '80px',
                         fontSize: '12px',
-                        color: '#414141',
+                        color: '#F6F8F8',
                       }}
                     >
                       {event.time}
@@ -1332,37 +1389,37 @@ function Calendar() {
     const newEvent = {
       title: eventTitle,
       date: eventDate,
-      endDate: eventEndDate,
+      //endDate: eventEndDate,
       category: eventCategory,
       member: eventMember,
       id: uuidv4(),
-      multiDay: isMultiDay,
+      //multiDay: isMultiDay,
       time: eventTime,
-      endTime: eventEndTime,
+      //endTime: eventEndTime,
       description: '',
       finished: false,
       note: '',
       day: eventDay,
       endDay: eventEndDay,
     };
-    if (!isAllDay) {
-      newEvent.time = eventTime;
-      newEvent.endTime = eventEndTime;
-    }
+    // if (!isAllDay) {
+    //   newEvent.time = eventTime;
+    //   newEvent.endTime = eventEndTime;
+    // }
     postEventToFirestore(newEvent); // post new event to Firestore
     setEvents([...events, newEvent]);
     setShowModal(false);
     setEventTitle('');
     setEventDate('');
-    setEventEndDate('');
+    // setEventEndDate('');
     setEventTime('');
-    setEventEndTime('');
+    // setEventEndTime('');
     setEventCategory('');
     setEventMember('');
     setEventNote('');
     setIsAllDay(false);
     setEventDay('');
-    setEventEndDay('');
+    // setEventEndDay('');
   };
 
   const handleAddEvent = () => {
@@ -1557,7 +1614,7 @@ function Calendar() {
 
   const handleInfoClick = () => {
     Swal.fire({
-      html: 'Reschedule your event by dragging and dropping it to the desired time slot. Click on the event for more details, or edit and delete it.',
+      html: 'Reschedule your event by dragging and dropping it to the desired time slot. Edit or delete event from event details at the right.',
       confirmButtonText: 'OK',
       confirmButtonColor: '#5981b0',
       focusConfirm: false,
@@ -1589,11 +1646,6 @@ function Calendar() {
         <ChatMini />
         <Banner title="Calendar" subTitle="EVERY DAY COUNTS"></Banner>
 
-        <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>
-          <option value="month">Month</option>
-          <option value="week">Week</option>
-          <option value="day">Day</option>
-        </ViewSelect>
         <InfoButton onClick={handleInfoClick}>
           <FontAwesomeIcon icon={faCircleInfo} />
         </InfoButton>
@@ -1619,7 +1671,12 @@ function Calendar() {
 
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
-
+          <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>
+            <option value="">Month/Week</option>
+            <option value="month">Month</option>
+            <option value="week">Week</option>
+            {/* <option value="day">Day</option> */}
+          </ViewSelect>
           {showModal && (
             <Modal>
               <ModalForm onSubmit={handleEventSubmit}>
@@ -1654,14 +1711,14 @@ function Calendar() {
                     onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
-                <label>
+                {/* <label>
                   Due:
                   <input
                     type="date"
                     value={eventEndDate}
                     onChange={(e) => handleEndDateChange(e.target.value)}
                   />
-                </label>
+                </label> */}
                 <label>
                   Start Time:
                   <input
@@ -1671,7 +1728,7 @@ function Calendar() {
                     onChange={(e) => setEventTime(e.target.value)}
                   />
                 </label>
-                <label>
+                {/* <label>
                   End Time:
                   <input
                     type="time"
@@ -1679,7 +1736,7 @@ function Calendar() {
                     step="1800"
                     onChange={(e) => setEventEndTime(e.target.value)}
                   />
-                </label>
+                </label> */}
 
                 {/* <label>
                     Category:
@@ -1814,6 +1871,14 @@ function Calendar() {
               months[date.getMonth()]
             } ${date.getFullYear()}`}</MonthLabel>
             <Button onClick={handleNextWeek}>Next</Button>
+            <ViewSelect
+              onChange={(event) => handleViewClick(event.target.value)}
+            >
+              <option value="">Month/Week</option>
+              <option value="month">Month</option>
+              <option value="week">Week</option>
+              {/* <option value="day">Day</option> */}
+            </ViewSelect>
           </MonthContainer>
 
           <DateDetails
@@ -1850,14 +1915,14 @@ function Calendar() {
                     onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
-                <label>
+                {/* <label>
                   Due:
                   <input
                     type="date"
                     value={eventEndDate}
                     onChange={(e) => handleEndDateChange(e.target.value)}
                   />
-                </label>
+                </label> */}
                 <label>
                   Time:
                   <input
@@ -1867,7 +1932,7 @@ function Calendar() {
                     onChange={(e) => setEventTime(e.target.value)}
                   />
                 </label>
-                <label>
+                {/* <label>
                   Time:
                   <input
                     type="time"
@@ -1875,7 +1940,7 @@ function Calendar() {
                     value={eventEndTime}
                     onChange={(e) => setEventEndTime(e.target.value)}
                   />
-                </label>
+                </label> */}
 
                 <label>
                   Category:

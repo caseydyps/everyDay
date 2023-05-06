@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
 import DrawingTool from '../../../Components/drawingtool';
+//import Drawing from '../../../Components/drawing';
 import axios from 'axios';
 import TenorGif from './Giphy';
 import { GiphyFetch } from '@giphy/js-fetch-api';
@@ -512,6 +513,7 @@ export const Whiteboard = () => {
   return (
     <Container>
       <SideNav></SideNav>
+
       <Wrapper id="Wrapper">
         {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
         <ChatMini />
@@ -626,6 +628,7 @@ export const Whiteboard = () => {
             </>
           ))}
           <DrawingTool></DrawingTool>
+          {/* <Drawing></Drawing> */}
           <StickerRowWrap>
             <ColorButton
               color="white"

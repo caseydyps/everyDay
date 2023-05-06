@@ -84,7 +84,7 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
               onMouseLeave={handleMouseLeave}
               key={event.id}
               rowSpan={event.endTime - event.time + 1}
-              draggable="true"
+              //draggable="true"
               //   onDragStart={(event) => handleDragStart(event, event.id)}
               //   onDragOver={(event) => handleDragOver(event)}
               //   onDrop={(event) => handleDrop(event, event.id)}
@@ -92,14 +92,14 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
               <ColumnWrap>
                 {event.title} - {event.member}
               </ColumnWrap>
-              {hoveredEventId === event.id && (
+              {/* {hoveredEventId === event.id && (
                 <ColumnWrap>
                   <p>{event.date}</p>
                   <p>
                     {event.time} - {event.endTime}
                   </p>
                 </ColumnWrap>
-              )}
+              )} */}
             </TableCell>
           );
         })}
@@ -215,11 +215,11 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
                       return (
                         event.day === day &&
                         event.time <= hour &&
-                        eventWeekNumber === weekNumber &&
-                        event.endTime >= hour &&
-                        event.day === day &&
-                        eventWeekNumber === weekNumber &&
-                        event.multiDay === false
+                        eventWeekNumber === weekNumber
+                        // event.endTime >= hour &&
+                        //event.day === day &&
+                        //eventWeekNumber === weekNumber &&
+                        //event.multiDay === false
                       );
                     })}
                   />
@@ -264,7 +264,7 @@ const TableHeader = styled.th`
 `;
 
 const TableData = styled.td`
-  padding: 8px;
+  //padding: 8px;
   border: 1px solid #ccc;
   align-items: center;
   justify-content: center;
@@ -282,11 +282,13 @@ const TableCell = styled.td`
   //border: 1px solid #ccc;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   background-color: rgba(52, 103, 161, 0.5);
-  width: 100%;
+  width: auto;
+  font-size: 12px;
   text-align: center;
   margin: 0 auto;
-  border-radius: 25px;
-  padding: 20px;
+  border-radius: 5px;
+  padding: 0px 10px;
+  display: flex;
   ${(props) => props.rowSpan && `row-span: ${props.rowSpan};`}
 `;
 

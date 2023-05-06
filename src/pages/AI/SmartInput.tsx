@@ -511,7 +511,7 @@ const SmartInput = ({ onClose, input }) => {
     console.log(responseValue);
     alert(JSON.parse(responseValue).response);
     setInputValue('');
-    onClose();
+    //onClose();
 
     if (category === '#Calendar') {
       console.log('calendar');
