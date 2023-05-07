@@ -401,13 +401,13 @@ function Milestone() {
                     if (daysDifference === 0) {
                       daysText = 'Today';
                     } else if (daysDifference === 1) {
-                      daysText = 'days to go';
+                      daysText = 'days3go';
                     } else if (daysDifference === -1) {
-                      daysText = 'days ago';
+                      daysText = 'daysAgo';
                     } else if (daysDifference > 1) {
-                      daysText = 'days to go';
+                      daysText = 'days2go';
                     } else if (daysDifference < -1) {
-                      daysText = 'days ago';
+                      daysText = 'daysAgo';
                     }
                     return (
                       <>
@@ -423,13 +423,15 @@ function Milestone() {
                             <DateBox>
                               <DateInfo>
                                 <Day>{Math.abs(daysDifference)}</Day>
-                                <DayText>{daysText}</DayText>
+                                <DayText style={{ fontSize: '6px' }}>
+                                  {daysText}
+                                </DayText>
                               </DateInfo>
                             </DateBox>
                             <InfoWrap>
                               <EventTitle>
                                 {monthName}
-                                {dateObj.getDate()}
+                                {dateObj.getDate()}日
                               </EventTitle>
                               <EventTitle>{event.title}</EventTitle>
                               <EventTitle>{event.member}</EventTitle>
@@ -572,8 +574,8 @@ const DayText = styled.div`
   font-weight: bold;
   text-align: center;
 
-  margin-right: 5px;
-  margin-left: 5px;
+  margin-right: auto;
+
   color: #414141;
 
   //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
@@ -608,7 +610,7 @@ const DateBox = styled.div`
   background-color: #5981b0;
   // box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 30px; /* changed top property to bottom */
+  bottom: 35px; /* changed top property to bottom */
   left: 5px;
   padding: 5px;
 `;
@@ -801,7 +803,7 @@ const Month = styled.div`
 `;
 
 const Day = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: bold;
   color: #f6f8f8;
 `;

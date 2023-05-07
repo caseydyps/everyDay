@@ -284,7 +284,7 @@ const Dashboard = () => {
     transition: transform 0.2s ease-in-out;
   }
    &:hover {
-    transform: scale(0.95);
+    transform: scale(1);
     background-color: rgba(255, 255, 255, 0.25);
     transition: transform 0.2s ease-in-out;
   }

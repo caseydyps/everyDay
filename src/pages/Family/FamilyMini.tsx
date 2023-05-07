@@ -264,7 +264,7 @@ const StyledPopper = styled(Popper)`
   display: flex;
   width: 100px;
   height: 60px;
-
+  font-size: 16px;
   color: #f6f8f8;
   text-align: center;
   background-color: #5981b0;

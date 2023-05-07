@@ -19,8 +19,8 @@ import Banner from '../../../Components/Banner/Banner';
 import Layout from '../../../Components/layout';
 import SmartInput from '../../AI/SmartInput';
 import { ChatMini } from '../Dashboard';
-import DefaultButton from '../../../Components/Button/Button';
-import { AddButton, CloseButton } from '../../../Components/Button/Button';
+import DefaultButton, { AddButton } from '../../../Components/Button/Button';
+import { CloseButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import {
   collection,
@@ -367,23 +367,28 @@ const Todo = () => {
     flex-direction: row;
   `;
 
+  const InputButton = styled(AddButton)`
+    position: absolute;
+    bottom: 90px;
+    right: 10px;
+  `;
+  const AddListButton = styled(AddButton)`
+    position: absolute;
+    bottom: 170px;
+    right: 10px;
+  `;
+
   return (
     <Container>
       <SideNav></SideNav>
       <Wrapper>
         <ChatMini />
+        <AddListButton onClick={() => addList(dispatch)}>
+          Add List
+          {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
+        </AddListButton>
+        <InputButton onClick={handleButtonClick}>Smart Input</InputButton>
         <Banner title="Todo" subTitle="Get Things Done"></Banner>
-
-        <RowWrap>
-          <AddButton
-            style={{ marginLeft: '10px' }}
-            onClick={() => addList(dispatch)}
-          >
-            Add List
-            {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
-          </AddButton>
-          <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
-        </RowWrap>
 
         {showSmartInput && (
           <SmartInputContainer>

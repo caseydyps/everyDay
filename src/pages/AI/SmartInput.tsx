@@ -361,7 +361,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     setSelectedCategory(category);
   };
 
-  const runPrompt = async () => {
+  const runPrompt = async (setIsEventAdded: any) => {
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
@@ -400,7 +400,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
-      setIsEventAdded(true);
+      //setIsEventAdded(true);
       setIsLoading(false);
     }
     if (category === '#Todo') {
@@ -499,7 +499,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setIsLoading(true);
-    await runPrompt();
+    await runPrompt(setIsEventAdded);
   };
 
   type HandleNewEventSubmit = (responseValue: string) => Promise<void>;
@@ -512,7 +512,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     console.log(responseValue);
     alert(JSON.parse(responseValue).response);
     setInputValue('');
-    setIsEventAdded(true);
+    // setIsEventAdded(true);
     onClose();
 
     if (category === '#Calendar') {

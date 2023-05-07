@@ -70,8 +70,8 @@ const ButtonWrap = styled.div`
   color: rgba(255, 255, 255, 0.75);
   flex-direction: column;
   position: absolute;
-  top: 40%;
-  right: 2%;
+  top: 32%;
+  right: 9%;
   padding: 5px;
 
   @media screen and (max-width: 768px) {

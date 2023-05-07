@@ -213,8 +213,8 @@ function WelcomePage() {
                 system and interactive doodle board
               </Card>
               <Card title="Memories" imageSrc={gallery} altText="Memories">
-                Relive life's moments with our photo gallery. Organize by event
-                or date and celebrate milestones effortlessly.
+                Relive life's moments with our photo gallery. Organize and
+                celebrate milestones effortlessly.
               </Card>
             </RowWrap>
           </CurveSection>

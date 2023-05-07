@@ -665,7 +665,7 @@ const FamilyMemberForm = () => {
       ) : (
         <>
           <FormContainer>
-            <FormCard style={{ flex: '1', zIndex: '2', width: 'auto' }}>
+            <FormCard style={{ flex: '2', zIndex: '2', width: 'auto' }}>
               <Form onSubmit={handleFormSubmit}>
                 <AddMinusInput
                   value={numberOfMembers}
@@ -1144,10 +1144,10 @@ const Form = styled.form`
 
 const FormField = styled.div`
   margin: 10px;
-  text-align: center;
+  text-align: left;
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
 `;
 
 const FlexWrap = styled.div`
@@ -1185,7 +1185,7 @@ type FormInputProps = {
 
 const FormInput = styled.input<FormInputProps>`
   display: block;
-  width: 50%;
+  width: 200px;
   padding: 0.5rem;
   border: 5px solid #3467a1;
   border-radius: 25px;
@@ -1370,8 +1370,8 @@ const Title = styled.div`
 `;
 
 const Card = styled.div`
-  width: 300px;
-  margin: 20px;
+  width: 200px;
+  margin: 10px;
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
@@ -1493,8 +1493,8 @@ const Popup = styled.div`
 const ConfettiButton = styled(Button)`
   position: fixed;
   width: 150px;
-  left: 240%;
-  bottom: 5%;
+  left: 195%;
+  bottom: 3%;
   z-index: 5;
   transform: translateX(-50%);
   &:hover {

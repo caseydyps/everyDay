@@ -504,7 +504,7 @@ export const Whiteboard = () => {
             draggable="false"
             ref={(el: any) => (stickerRefs.current[index] = el)}
             style={{
-              left: sticker.x - 275,
+              left: sticker.x - 385,
               top: sticker.y - 220,
             }}
             locked={lockedStickers[index]}

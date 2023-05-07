@@ -642,6 +642,7 @@ function Calendar() {
 
   const { familyId, membersArray } = useContext(AuthContext);
   const [showButtons, setShowButtons] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState('');
   interface Event {
     id: string;
     title: string;
@@ -871,14 +872,14 @@ function Calendar() {
         </div>
       ) : null;
     };
-    const [selectedEventId, setSelectedEventId] = useState('');
-    console.log(selectedEventId, showButtons);
 
-    useEffect(() => {
-      setTimeout(() => {
-        console.log(selectedEventId);
-      }, 100);
-    }, [selectedEventId]);
+    // console.log(selectedEventId, showButtons);
+
+    // useEffect(() => {
+    //   setTimeout(() => {
+    //     console.log(selectedEventId);
+    //   }, 100);
+    // }, [selectedEventId]);
     return (
       <DateDetailsWrapper
         onDragOver={handleDragOver}
@@ -907,7 +908,7 @@ function Calendar() {
                       setShowButtons(true);
                     }}
                   >
-                    {selectedEventId === event.id && showButtons && (
+                    {/* {selectedEventId === event.id && showButtons && (
                       <Menu>
                         <DetailMember
                           members={membersArray}
@@ -975,7 +976,7 @@ function Calendar() {
                           <FontAwesomeIcon icon={faCircleXmark} />
                         </ExitButton>
                       </Menu>
-                    )}
+                    )} */}
                     <EventMember
                       members={membersArray}
                       memberRole={event.member}
@@ -1833,8 +1834,9 @@ function Calendar() {
                           <span
                             style={{
                               position: 'absolute', // add this line
-                              top: '10px', // add this line
+                              top: '5px', // add this line
                               left: '10px', // add this line
+                              fontSize: '18px',
                             }}
                           >
                             {isCurrentMonth ? dayOfMonth : ''}
