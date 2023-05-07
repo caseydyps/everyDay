@@ -181,7 +181,7 @@ type ActionType =
     }
   | {
       type: 'ADD_LIST';
-      payload: string;
+      payload: { title: string; items: never[] };
     }
   | {
       type: 'SET_DATA';
@@ -396,7 +396,7 @@ const Todo = () => {
               }}
               onClick={handleButtonClick}
             ></CloseButton>
-            <SmartInput style={{ position: 'relative' }}></SmartInput>
+            <SmartInput onClose={handleButtonClick}></SmartInput>
           </SmartInputContainer>
         )}
 

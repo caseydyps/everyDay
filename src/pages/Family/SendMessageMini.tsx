@@ -11,7 +11,7 @@ import { faBrain } from '@fortawesome/free-solid-svg-icons';
 import SmartInput from '../AI/SmartInput';
 import { CloseButton } from '../../Components/Button/Button';
 interface SendMessageProps {
-  scroll: React.RefObject<HTMLDivElement>;
+  scroll: any;
 }
 
 const Input = styled.input`
@@ -139,10 +139,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
             style={{ zIndex: '5', position: 'absolute', top: '0', left: '0' }}
             onClick={handleButtonClick}
           ></CloseButton>
-          <SmartInput
-            style={{ position: 'relative' }}
-            input={input}
-          ></SmartInput>
+          <SmartInput onClose={handleButtonClick}></SmartInput>
         </Container>
       )}
     </>

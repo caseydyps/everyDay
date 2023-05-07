@@ -24,7 +24,6 @@ import {
 import SmartInput from './SmartInput';
 import Banner from '../../Components/Banner/Banner';
 import Suggestion from './Suggestion';
-import AskGPTPage from './gptChat';
 
 const AI = () => {
   const [showSmartInput, setShowSmartInput] = useState(false);

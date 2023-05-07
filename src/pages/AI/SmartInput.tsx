@@ -327,7 +327,7 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   );
 };
 
-const SmartInput = ({ onClose, input }) => {
+const SmartInput = ({ onClose }: any) => {
   const [inputValue, setInputValue] = useState('');
   const [member, setMember] = useState<string | string[]>('');
   const [responseValue, setResponseValue] = useState('');
@@ -503,9 +503,9 @@ const SmartInput = ({ onClose, input }) => {
 
   type HandleNewEventSubmit = (responseValue: string) => Promise<void>;
 
-  const handleNewEventSubmit: HandleNewEventSubmit = async (
-    responseValue,
-    onClose
+  const handleNewEventSubmit: any = async (
+    responseValue: string,
+    onClose: () => void
   ) => {
     console.log(category);
     console.log(responseValue);

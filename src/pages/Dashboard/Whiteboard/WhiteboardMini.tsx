@@ -495,75 +495,73 @@ export const Whiteboard = () => {
     <Wrapper id="Wrapper">
       {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
 
-      <CenterWrap>
-        {stickers.map((sticker: any, index: number) => (
-          <>
-            <Sticker
-              key={sticker.id}
-              color={sticker.color}
-              isSticker={sticker.isSticker}
-              onMouseDown={
-                lockedStickers[index]
-                  ? null
-                  : (e: React.MouseEvent<HTMLDivElement>) =>
-                      onStickerMouseDown(index, e)
-              }
-              ref={(el: any) => (stickerRefs.current[index] = el)}
-              style={{
-                left: sticker.x - 390,
-                top: sticker.y - 220,
-              }}
-              locked={lockedStickers[index]}
-            >
-              <StickerInput
-                as="textarea"
-                rows={3}
-                value={stickerText[index]}
-                onChange={(e) => {
-                  const newStickerText: string[] = [...stickerText];
-                  newStickerText[index] = e.target.value;
-                  setStickerText(newStickerText);
+      {stickers.map((sticker: any, index: number) => (
+        <>
+          <Sticker
+            key={sticker.id}
+            color={sticker.color}
+            isSticker={sticker.isSticker}
+            onMouseDown={
+              lockedStickers[index]
+                ? null
+                : (e: React.MouseEvent<HTMLDivElement>) =>
+                    onStickerMouseDown(index, e)
+            }
+            ref={(el: any) => (stickerRefs.current[index] = el)}
+            style={{
+              left: sticker.x - 390,
+              top: sticker.y - 220,
+            }}
+            locked={lockedStickers[index]}
+          >
+            <StickerInput
+              as="textarea"
+              rows={3}
+              value={stickerText[index]}
+              onChange={(e) => {
+                const newStickerText: string[] = [...stickerText];
+                newStickerText[index] = e.target.value;
+                setStickerText(newStickerText);
 
-                  const stickerId: any = stickers[index].id;
-                  const familyDocRef = doc(
-                    db,
-                    'Family',
-                    familyId,
-                    'stickers',
-                    stickerId
-                  );
-                  updateDoc(familyDocRef, { content: e.target.value })
-                    .then(() =>
-                      console.log('Sticker text has been updated in Firestore!')
+                const stickerId: any = stickers[index].id;
+                const familyDocRef = doc(
+                  db,
+                  'Family',
+                  familyId,
+                  'stickers',
+                  stickerId
+                );
+                updateDoc(familyDocRef, { content: e.target.value })
+                  .then(() =>
+                    console.log('Sticker text has been updated in Firestore!')
+                  )
+                  .catch((error) =>
+                    console.error(
+                      'Error updating sticker text in Firestore: ',
+                      error
                     )
-                    .catch((error) =>
-                      console.error(
-                        'Error updating sticker text in Firestore: ',
-                        error
-                      )
-                    );
-                }}
-                disabled={lockedStickers[index]}
-              />
-              {sticker.isSticker !== true && (
-                <>
-                  <img
-                    src={sticker.content}
-                    alt=""
-                    style={{
-                      borderRadius: '20px',
-                      width: '100%',
-                      height: '100%',
-                    }}
-                    draggable="false"
-                  />
-                </>
-              )}
-            </Sticker>
-          </>
-        ))}
-        <DrawingTool></DrawingTool>
-      </CenterWrap>
+                  );
+              }}
+              disabled={lockedStickers[index]}
+            />
+            {sticker.isSticker !== true && (
+              <>
+                <img
+                  src={sticker.content}
+                  alt=""
+                  style={{
+                    borderRadius: '20px',
+                    width: '100%',
+                    height: '100%',
+                  }}
+                  draggable="false"
+                />
+              </>
+            )}
+          </Sticker>
+        </>
+      ))}
+      <DrawingTool></DrawingTool>
     </Wrapper>
   );
 };

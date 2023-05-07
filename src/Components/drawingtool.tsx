@@ -36,6 +36,7 @@ import {
   faMagnifyingGlass,
   faRotateLeft,
   faEraser,
+  faFloppyDisk,
   faPencil,
   faCircle,
   faPaintRoller,
@@ -101,8 +102,8 @@ const CanvasButton = styled(DefaultButton)`
 `;
 
 const CanvasContainer = styled.div`
-  max-width: 737px;
-  height: 404px;
+  max-width: 741px;
+  height: 244px;
 `;
 
 type StrokeData = {
@@ -123,7 +124,7 @@ const DrawingTool = () => {
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
-  const [strokes, setStrokes] = useState<StrokeData[]>([]);
+  const [strokes, setStrokes] = useState<any>([]);
   //const [lineWidth, setLineWidth] = useState(5);
   const {
     user,
@@ -156,7 +157,7 @@ const DrawingTool = () => {
     context.lineWidth = width;
     context.strokeStyle = color;
     contextRef.current = context;
-  }, [color, width]);
+  }, []);
 
   const startPaint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX, offsetY } = nativeEvent;
@@ -212,7 +213,7 @@ const DrawingTool = () => {
         console.log('Strokes data retrieved from Firestore:', strokesData);
 
         strokesData.forEach((stroke, index) => {
-          stroke.forEach((s) => {
+          stroke.forEach((s: StrokeData) => {
             console.log(s);
             handleStrokeUpdate(s);
           });
@@ -228,7 +229,7 @@ const DrawingTool = () => {
     };
 
     loadStrokes();
-  }, [familyId, color, width]);
+  }, [familyId]);
 
   const stackLimit = 500; // maximum stack size
 
@@ -336,12 +337,12 @@ const DrawingTool = () => {
   };
 
   const handleChangeColor = (newColor: string) => {
-    addStroke(strokes);
+    //addStroke(strokes);
     setColor(newColor);
   };
 
   const handleChangeLineWidth = (newWidth: number) => {
-    addStroke(strokes);
+    //addStroke(strokes);
     setWidth(newWidth);
   };
   const clearCanvas = async () => {
@@ -409,7 +410,7 @@ const DrawingTool = () => {
       console.log('Strokes data retrieved from Firestore:', strokesData);
 
       strokesData.forEach((stroke, index) => {
-        stroke.forEach((s) => {
+        stroke.forEach((s: StrokeData) => {
           console.log(s);
           handleStrokeUpdate(s);
         });
@@ -443,18 +444,15 @@ const DrawingTool = () => {
     setIsAdding(false);
   };
 
-  const handleLineWidthChange = (event) => {
-    addStroke(strokes);
-    setWidth(event.target.value);
-  };
-
   return (
     <Container>
       {/* <div>{`Strokes: ${undoStack.length}`}</div> */}
       <CanvasContainer>
         <ButtonWrap>
-          <button onClick={handleClick}>Save</button>
-          <button onClick={loadCanvas}>load</button>
+          <CanvasButton onClick={handleClick}>
+            <FontAwesomeIcon icon={faFloppyDisk} />
+          </CanvasButton>
+          <CanvasButton onClick={loadCanvas}>load</CanvasButton>
           <CanvasButton>
             <input
               type="color"
@@ -499,7 +497,7 @@ const DrawingTool = () => {
           >
             <FontAwesomeIcon icon={faEraser} />
           </CanvasButton>
-          <input
+          {/* <input
             type="range"
             id="lineWidth"
             min="1"
@@ -517,8 +515,8 @@ const DrawingTool = () => {
               transition: 'opacity .2s',
               borderRadius: '10px',
             }}
-          />
-          {/* <CanvasButton
+          /> */}
+          <CanvasButton
             color="transparent"
             onClick={() => handleChangeLineWidth(5)}
           >
@@ -535,7 +533,7 @@ const DrawingTool = () => {
             onClick={() => handleChangeLineWidth(30)}
           >
             <FontAwesomeIcon icon={faPaintRoller} />
-          </CanvasButton> */}
+          </CanvasButton>
           {/* <CanvasButton color="transparent" onClick={undoStroke}>
             <FontAwesomeIcon icon={faClockRotateLeft} />
           </CanvasButton> */}
@@ -553,10 +551,10 @@ const DrawingTool = () => {
           onMouseMove={paint}
           style={{
             height: 'auto',
-            maxWidth: '737px',
-            maxHeight: '404px',
-            minHeight: '404px',
-            width: '737px',
+            maxWidth: '741px',
+            maxHeight: '242px',
+            minHeight: '242px',
+            width: '741px',
             border: '2px solid transparent',
             boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
             borderRadius: '25px',

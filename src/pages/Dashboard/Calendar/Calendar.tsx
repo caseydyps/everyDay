@@ -682,7 +682,7 @@ function Calendar() {
     return todosData;
   };
 
-  const postEventToFirestore = async (data: Event) => {
+  const postEventToFirestore = async (data: any) => {
     const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
 
     try {
@@ -812,15 +812,15 @@ function Calendar() {
       }
     });
 
-    const handleShowButtons = (clickedEvent: Event) => {
-      setSelectedEvents((prevState) =>
-        prevState.map((event) =>
-          event.id === clickedEvent.id
-            ? { ...event, showButtons: !event.showButtons }
-            : { ...event, showButtons: false }
-        )
-      );
-    };
+    // const handleShowButtons = (clickedEvent: Event) => {
+    //   setSelectedEvents((prevState) =>
+    //     prevState.map((event) =>
+    //       event.id === clickedEvent.id
+    //         ? { ...event, showButtons: !event.showButtons }
+    //         : { ...event, showButtons: false }
+    //     )
+    //   );
+    // };
 
     // console.log(selectedEvents);
     // console.log(isCurrentMonth);
@@ -1386,7 +1386,7 @@ function Calendar() {
   const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const isMultiDay = eventDate !== eventEndDate;
-    const newEvent = {
+    const newEvent: any = {
       title: eventTitle,
       date: eventDate,
       //endDate: eventEndDate,

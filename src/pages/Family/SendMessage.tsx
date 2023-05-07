@@ -115,7 +115,7 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
             style={{ zIndex: '5', position: 'absolute', top: '0', left: '0' }}
             onClick={handleButtonClick}
           ></CloseButton>
-          <SmartInput style={{ position: 'relative' }}></SmartInput>
+          <SmartInput onClose={handleButtonClick}></SmartInput>
         </Container>
       )}
     </>

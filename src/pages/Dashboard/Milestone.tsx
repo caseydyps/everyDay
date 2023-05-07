@@ -355,9 +355,9 @@ function Milestone() {
     }
   };
 
-  const handleSelectMember = (member: string | string[]) => {
-    setNewEventMember(member);
-  };
+  // const handleSelectMember = (member: string | string[]) => {
+  //   setNewEventMember(member);
+  // };
   const handlefilterSelectMember = (member: string | string[]) => {
     // event.preventDefault();
     setFilter({ ...filter, member: member });
@@ -619,7 +619,7 @@ function Milestone() {
                     }
                   >
                     <option value="">Select member</option>
-                    {membersArray.map((member, index) => (
+                    {membersArray.map((member: any, index: number) => (
                       <option key={index} value={member.role}>
                         {member.role}
                       </option>

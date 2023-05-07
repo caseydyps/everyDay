@@ -600,7 +600,7 @@ const Dashboard = () => {
                   }}
                   onClick={handleButtonClick}
                 ></CloseButton>
-                <SmartInput style={{ position: 'relative' }}></SmartInput>
+                <SmartInput onClose={handleButtonClick}></SmartInput>
               </SmartInputContainer>
             )}
             <InfoButton onClick={handleInfoClick}>
@@ -644,7 +644,11 @@ const BoxTitle = styled.h4`
   padding: 0;
   font-family: 'Braah One';
 `;
-const ChatBoxContainer = styled.div`
+
+type ChatBoxProps = {
+  show: boolean;
+};
+const ChatBoxContainer = styled.div<ChatBoxProps>`
   position: fixed;
   bottom: 70px;
   right: 90px;
@@ -655,7 +659,6 @@ const ChatBoxContainer = styled.div`
   box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  animation: ${({ isVisible }) => (isVisible ? fadeIn : fadeOut)} 0.3s ease-out;
 `;
 
 const ChatBoxHeader = styled.div`

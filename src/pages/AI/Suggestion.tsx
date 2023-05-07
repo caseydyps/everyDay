@@ -219,14 +219,14 @@ const Suggestion = () => {
       //console.log('Responses: ', parsedResponse.R);
     } else {
       const conversationHistory = conversation
-        .map((message) => message.text)
+        .map((message: any) => message.text)
         .join('\n');
       const prompt = ` 這是我家庭的資料庫，裡面有以下資料：
       今天是 ${formattedDate}
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
     ${conversationHistory}
-    請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻
+    請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻,盡量不超過30字,回答時請附上事件發生日期/時間(如果有,不要年份)/參與者(如果有),不用反問使用者
       `;
       console.log(prompt);
 

@@ -8,6 +8,7 @@ import { db } from '../../config/firebase.config';
 import firebase from 'firebase/app';
 import LoadingAnimation from '../../Components/loading';
 import confetti from 'canvas-confetti';
+import Swal from 'sweetalert2';
 import { AuthContext } from '../../config/Context/authContext';
 import {
   collection,
@@ -484,7 +485,12 @@ const FamilyMemberForm = () => {
     feature: string,
     featuresProbability: number
   ) => {
-    alert('成功設定頭像!');
+    Swal.fire({
+      title: 'Avatar setup success!',
+      icon: 'success',
+      showConfirmButton: false,
+      timer: 1500,
+    });
     setMembers((prevMembers) =>
       prevMembers.map((member, i) =>
         i === index
@@ -543,7 +549,7 @@ const FamilyMemberForm = () => {
   };
 
   interface AddMinusInputProps {
-    value: number | string;
+    value: number;
     onIncrement: () => void;
     onDecrement: () => void;
     children: React.ReactNode;
@@ -825,7 +831,7 @@ const FamilyMemberForm = () => {
                 </ConfettiButton>
               </Form>
             </FormCard>
-            <FormCard style={{ flex: '3', zIndex: '2', width: 'auto' }}>
+            <FormCard style={{ flex: '3', width: 'auto' }}>
               {numberOfMembers > 0 && (
                 <AvatarContainer>
                   <FormLabel style={{ color: '#414141', fontSize: '28px' }}>
@@ -881,7 +887,7 @@ const FamilyMemberForm = () => {
                       <FlexWrap>
                         <Label htmlFor="skinColor-select">膚色:</Label>
                         <CirclePicker
-                          width="50%"
+                          width="600px"
                           color={members[currentMemberIndex].skinColor}
                           colors={[
                             '#fff1e6',
@@ -895,7 +901,7 @@ const FamilyMemberForm = () => {
                             '#994d00',
                             '#803300',
                           ]}
-                          circleSize={36}
+                          circleSize={32}
                           onChangeComplete={(color) =>
                             handleSkinColorChange(currentMemberIndex, color.hex)
                           }
@@ -980,7 +986,7 @@ const FamilyMemberForm = () => {
                       <FlexWrap>
                         <Label htmlFor="hair-color-select">髮色:</Label>
                         <CirclePicker
-                          width="50%"
+                          width="600px"
                           color={members[currentMemberIndex].hairColor}
                           colors={[
                             '#000000', // black
@@ -994,7 +1000,7 @@ const FamilyMemberForm = () => {
                             '#ffd966', // light blonde
                             '#ffffff', // white/gray
                           ]}
-                          circleSize={36}
+                          circleSize={32}
                           onChangeComplete={(color) =>
                             handleHairColorChange(currentMemberIndex, color.hex)
                           }
@@ -1232,15 +1238,15 @@ const Button = styled(ThreeDButton)`
     color: #5981b0;
   }
 `;
-const SaveButton = styled.button`
-  background-color: #3467a1;
+const SaveButton = styled(Button)`
+  background-color: #5981b0;
   color: #f6f8f8;
   border: 2px solid #f6f8f8;
   border-radius: 20px;
   font-weight: bold;
   padding: 10px 20px;
 
-  font-size: 20px;
+  font-size: 16px;
   &:hover {
     transform: scale(1.1);
   }
@@ -1349,7 +1355,7 @@ const FormContainer = styled.div`
   height: auto;
   justify-content: center;
   margin-top: 50px;
-  z-index: 1;
+  z-index: 3;
 `;
 
 const SettingDoneBtn = styled.button``;
@@ -1398,7 +1404,7 @@ const Card = styled.div`
 
 const FormCard = styled(Card)`
   height: 100%;
-  min-height: 90vh;
+  min-height: 60vh;
   width: auto;
   backdrop-filter: blur(8px);
   font-size: 24px;
@@ -1485,11 +1491,11 @@ const Popup = styled.div`
 `;
 
 const ConfettiButton = styled(Button)`
-  position: absolute;
-  width: 250px;
-  left: 100%;
-  bottom: 10%;
-  z-index: 4;
+  position: fixed;
+  width: 150px;
+  left: 240%;
+  bottom: 5%;
+  z-index: 5;
   transform: translateX(-50%);
   &:hover {
     transform: scale(1.1) translateX(-50%);

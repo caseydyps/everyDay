@@ -84,6 +84,8 @@ const Suggestion = () => {
     id: string;
     title: string;
     completed: boolean;
+    items: any;
+    done: boolean;
   }
 
   // useEffect(() => {
@@ -165,11 +167,17 @@ const Suggestion = () => {
 
     console.log(filteredTodoData);
 
-    const { category, id, note, ...newObj } = calendarData;
+    type CalendarData = {
+      category: string;
+      id: string;
+      note: string;
+      // 其他屬性
+    };
+    const { category, id, note, ...newObj }: CalendarData = calendarData;
     const filteredCalendarData = calendarData.map(
-      ({ category, id, note, ...newObj }) => newObj
+      ({ category, id, note, ...newObj }: CalendarData) => newObj
     );
-    const upcomingEvents = filteredCalendarData.filter((event) => {
+    const upcomingEvents = filteredCalendarData.filter((event: any) => {
       const eventDate = new Date(event.date);
       return eventDate >= today;
     });

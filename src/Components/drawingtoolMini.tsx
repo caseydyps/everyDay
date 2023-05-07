@@ -36,6 +36,7 @@ import {
   faMagnifyingGlass,
   faRotateLeft,
   faEraser,
+  faFloppyDisk,
   faPencil,
   faCircle,
   faPaintRoller,
@@ -43,6 +44,7 @@ import {
   faBroom,
   faPen,
 } from '@fortawesome/free-solid-svg-icons';
+import { AnyNaptrRecord } from 'dns';
 const CanvasWrap = styled.div`
   canvas {
     border: 1px solid;
@@ -83,13 +85,14 @@ const ButtonWrap = styled.div`
 `;
 
 const Container = styled.div`
-  width: 737px;
-  height: 240px;
+  width: 100%;
+  height: 100%;
+  margin-top: 0px;
 `;
 
 const CanvasButton = styled(DefaultButton)`
   border-radius: 50%;
-  background-color: ${({ color }) => color};
+  background-color: transparent;
 
   padding: 5px;
   color: #5981b0;
@@ -100,8 +103,8 @@ const CanvasButton = styled(DefaultButton)`
 `;
 
 const CanvasContainer = styled.div`
-  max-width: 737px;
-  height: 404px;
+  max-width: 733px;
+  height: 240px;
 `;
 
 type StrokeData = {
@@ -122,7 +125,8 @@ const DrawingTool = () => {
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
   const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
-
+  const [strokes, setStrokes] = useState<any>([]);
+  //const [lineWidth, setLineWidth] = useState(5);
   const {
     user,
     userName,
@@ -154,7 +158,7 @@ const DrawingTool = () => {
     context.lineWidth = width;
     context.strokeStyle = color;
     contextRef.current = context;
-  }, [color, width]);
+  }, []);
 
   const startPaint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     const { offsetX, offsetY } = nativeEvent;
@@ -180,7 +184,6 @@ const DrawingTool = () => {
     // const context = canvas.getContext('2d');
   };
 
-  // const throttle = <T extends any[]>(
   //   callback: (...args: T) => void,
   //   delay: number
   // ) => {
@@ -195,34 +198,39 @@ const DrawingTool = () => {
   //   };
   // };
   useEffect(() => {
-    // Retrieve the strokes from Firestore when the component mounts
-    const canvasRef = collection(
-      db,
-      'Family',
-      familyId,
-      'canva',
-      familyId,
-      'strokes'
-    );
-    getDocs(canvasRef).then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        handleStrokeUpdate(doc.data() as StrokeData);
-      });
-    });
+    const loadStrokes = async () => {
+      // Retrieve the strokes from Firestore when the component mounts
+      const strokesCollectionRef = collection(
+        db,
+        'Family',
+        familyId,
+        'canva',
+        familyId,
+        'strokes'
+      );
+      try {
+        const querySnapshot = await getDocs(strokesCollectionRef);
+        const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+        console.log('Strokes data retrieved from Firestore:', strokesData);
 
-    // Subscribe to Firestore data changes
-    const unsubscribe = onSnapshot(canvasRef, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          handleStrokeUpdate(change.doc.data() as StrokeData);
-        }
-      });
-    });
+        strokesData.forEach((stroke, index) => {
+          stroke.forEach((s: StrokeData) => {
+            console.log(s);
+            handleStrokeUpdate(s);
+          });
+        });
 
-    return () => {
-      unsubscribe();
+        // Load the canvas
+        loadCanvas();
+
+        console.log('Canvas loaded successfully');
+      } catch (error) {
+        console.error('Error loading canvas:', error);
+      }
     };
-  }, [familyId, color, width]);
+
+    loadStrokes();
+  }, [familyId]);
 
   const stackLimit = 500; // maximum stack size
 
@@ -241,14 +249,24 @@ const DrawingTool = () => {
         context.stroke();
 
         // Save the stroke to Firestore
-        addStroke({
-          startX,
-          startY,
+        // addStroke({
+        //   startX,
+        //   startY,
+        //   endX: offsetX,
+        //   endY: offsetY,
+        //   color,
+        //   width,
+        // });
+
+        const newStroke: StrokeData = {
+          startX: prevOffset.current.x,
+          startY: prevOffset.current.y,
           endX: offsetX,
           endY: offsetY,
           color,
           width,
-        });
+        };
+        setStrokes([...strokes, newStroke]);
 
         // Update the undo stack
         const state = context.getImageData(0, 0, canvas.width, canvas.height);
@@ -269,17 +287,48 @@ const DrawingTool = () => {
       familyId,
       'strokes'
     );
+    console.log(strokes);
+
+    const strokeObject = { strokes };
+
     try {
-      const docRef = await addDoc(strokesCollectionRef, strokeData);
+      const docRef = await addDoc(strokesCollectionRef, strokeObject);
       console.log('Stroke added to Firestore with ID:', docRef.id);
+      //handleStrokeUpdate(strokes);
     } catch (error) {
       console.error('Error adding stroke to Firestore:', error);
     }
   };
+
+  // const loadCanvas = async () => {
+  //   const strokesCollectionRef = collection(
+  //     db,
+  //     'Family',
+  //     familyId,
+  //     'canva',
+  //     familyId,
+  //     'strokes'
+  //   );
+
+  //   try {
+  //     const querySnapshot = await getDocs(strokesCollectionRef);
+  //     const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+  //     console.log('Strokes data retrieved from Firestore:', strokesData);
+
+  //     strokesData.forEach((stroke) => {
+  //       // redraw the stroke on the canvas
+  //       // you will need to implement this part based on your specific canvas implementation
+  //     });
+
+  //     console.log('Canvas loaded successfully');
+  //   } catch (error) {
+  //     console.error('Error loading canvas:', error);
+  //   }
+  // };
   const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
-
+    console.log(strokeData);
     context.beginPath();
     context.moveTo(strokeData.startX, strokeData.startY);
     context.lineTo(strokeData.endX, strokeData.endY);
@@ -288,10 +337,113 @@ const DrawingTool = () => {
     context.stroke();
   };
 
+  const handleChangeColor = (newColor: string) => {
+    //addStroke(strokes);
+    setColor(newColor);
+  };
+
+  const handleChangeLineWidth = (newWidth: number) => {
+    //addStroke(strokes);
+    setWidth(newWidth);
+  };
+  const clearCanvas = async () => {
+    const collectionRef = collection(
+      db,
+      'Family',
+      familyId,
+      'canva',
+      familyId,
+      'strokes'
+    );
+
+    const querySnapshot = await getDocs(collectionRef);
+
+    querySnapshot.forEach(async (doc) => {
+      try {
+        await deleteDoc(doc.ref);
+        console.log(`Document ${doc.id} deleted successfully`);
+      } catch (error) {
+        console.error(`Error deleting document ${doc.id}:`, error);
+      }
+    });
+    setStrokes([]);
+    console.log('Strokes array cleared');
+
+    window.location.reload();
+  };
+
+  const undoStroke = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext('2d');
+      if (context && undoStack.length > 0) {
+        // Restore the previous state from the undo stack
+        const prevState = undoStack[undoStack.length - 1];
+        context.putImageData(prevState, 0, 0);
+
+        // Update the undo stack to remove the previous state
+        setUndoStack(undoStack.slice(0, -1));
+      }
+    }
+  };
+
+  const loadCanvas = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+    const context = canvas.getContext('2d');
+    if (!context) {
+      return;
+    }
+
+    const strokesCollectionRef = collection(
+      db,
+      'Family',
+      familyId,
+      'canva',
+      familyId,
+      'strokes'
+    );
+    try {
+      const querySnapshot = await getDocs(strokesCollectionRef);
+      const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
+      console.log('Strokes data retrieved from Firestore:', strokesData);
+
+      strokesData.forEach((stroke, index) => {
+        stroke.forEach((s: StrokeData) => {
+          console.log(s);
+          handleStrokeUpdate(s);
+        });
+      });
+
+      console.log('Canvas loaded successfully');
+    } catch (error) {
+      console.error('Error loading canvas:', error);
+    }
+  };
+
   if (undoStack.length < stackLimit) {
     undoStack.shift();
     undoStack.pop();
   }
+
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleClick = async () => {
+    setIsAdding(true);
+    const strokeData = {
+      /* populate stroke data here */
+    };
+    try {
+      console.log(strokes);
+      await addStroke(strokes);
+      console.log('Stroke added successfully');
+    } catch (error) {
+      console.error('Error adding stroke:', error);
+    }
+    setIsAdding(false);
+  };
 
   return (
     <Container>
@@ -300,16 +452,17 @@ const DrawingTool = () => {
         <canvas
           id="canvas"
           ref={canvasRef}
+          onMouseDown={startPaint}
+          onMouseUp={endPaint}
+          onMouseMove={paint}
           style={{
             height: 'auto',
-            maxWidth: '737px',
+            maxWidth: '733px',
             maxHeight: '240px',
             minHeight: '240px',
-            width: '737px',
-            border: '2px solid transparent',
-            //boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
-            borderRadius: '25px',
-            backgroundColor: 'transparent',
+            width: '733px',
+            borderRadius: '20px',
+            backgroundColor: 'rgb(255, 255, 255)',
           }}
         />
       </CanvasContainer>

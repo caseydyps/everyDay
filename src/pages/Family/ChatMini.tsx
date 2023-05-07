@@ -100,10 +100,10 @@ const Chat = () => {
   //   }
   // };
 
-  const handleUnstickButtonClick = () => {
-    console.log('Unstick button clicked! Sticky message:', stickyMessage);
-    setStickyMessage(null);
-  };
+  // const handleUnstickButtonClick = () => {
+  //   console.log('Unstick button clicked! Sticky message:', stickyMessage);
+  //   setStickyMessage(null);
+  // };
 
   const messagesWithSticky = stickyMessage
     ? [stickyMessage, ...messages.filter((m) => m.id !== stickyMessage.id)]
@@ -159,7 +159,7 @@ const Chat = () => {
 
   return (
     <ChatContainer id="chat-container">
-      {/* <ChatTop ref={scrollTop} /> */}
+      <ChatTop ref={scrollTop} />
       {/* <TopButton onClick={handleTopButtonClick}>
         {chatContainerTop ? 'Bottom' : 'Top'}
       </TopButton> */}
@@ -187,7 +187,7 @@ const Chat = () => {
           ? `You have ${unreadMessageCount} unread messages`
           : null}
       </div> */}
-      {/* <ChatBottom id="chat-bottom" ref={scroll} /> */}
+      <ChatBottom id="chat-bottom" ref={scroll} />
     </ChatContainer>
   );
 };
