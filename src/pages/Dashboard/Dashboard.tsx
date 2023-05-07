@@ -433,11 +433,9 @@ const Dashboard = () => {
     },
     {
       component: (
-        <a href="/gallery" style={{ textDecoration: 'none' }}>
-          <BoxM>
-            <Gallery></Gallery>
-          </BoxM>
-        </a>
+        <BoxM>
+          <Gallery></Gallery>
+        </BoxM>
       ),
       spanColumns: 2,
       spanRows: 4,
@@ -553,9 +551,9 @@ const Dashboard = () => {
   const SmartInputButton = styled(ThreeDButton)`
     width: 90px;
     margin: 0 auto;
-    position: absolute;
+    position: fixed;
     right: 10px;
-    top: 150px;
+    bottom: 100px;
     text-align: center;
     margin: 5px;
     padding: 10px 20px;
@@ -583,10 +581,10 @@ const Dashboard = () => {
     <Container>
       <SideNav />
       <Wrap>
-        <SmartInputButton onClick={handleButtonClick}>
-          Smart Input
-        </SmartInputButton>
         <Main>
+          <SmartInputButton onClick={handleButtonClick}>
+            Smart Input
+          </SmartInputButton>
           <ChatMini></ChatMini>
           <Grid>
             {showSmartInput && (

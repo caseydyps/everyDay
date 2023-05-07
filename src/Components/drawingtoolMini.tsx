@@ -461,7 +461,7 @@ const DrawingTool = () => {
             maxHeight: '240px',
             minHeight: '240px',
             width: '733px',
-            borderRadius: '20px',
+            borderRadius: '10px',
             backgroundColor: 'rgb(255, 255, 255)',
           }}
         />

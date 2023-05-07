@@ -327,7 +327,7 @@ export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   );
 };
 
-const SmartInput = ({ onClose }: any) => {
+const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   const [inputValue, setInputValue] = useState('');
   const [member, setMember] = useState<string | string[]>('');
   const [responseValue, setResponseValue] = useState('');
@@ -400,6 +400,7 @@ const SmartInput = ({ onClose }: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
+      setIsEventAdded(true);
       setIsLoading(false);
     }
     if (category === '#Todo') {
@@ -511,7 +512,8 @@ const SmartInput = ({ onClose }: any) => {
     console.log(responseValue);
     alert(JSON.parse(responseValue).response);
     setInputValue('');
-    //onClose();
+    setIsEventAdded(true);
+    onClose();
 
     if (category === '#Calendar') {
       console.log('calendar');
@@ -530,13 +532,13 @@ const SmartInput = ({ onClose }: any) => {
       const newEvent = {
         title: JSON.parse(responseValue).title,
         date: JSON.parse(responseValue).date,
-        endDate: JSON.parse(responseValue).endDate,
+        //endDate: JSON.parse(responseValue).endDate,
         category: JSON.parse(responseValue).category,
         member: JSON.parse(responseValue).member,
         id: uuidv4(),
-        multiDay: isMultiDay,
+        //multiDay: isMultiDay,
         time: JSON.parse(responseValue).time,
-        endTime: JSON.parse(responseValue).endTime,
+        //endTime: JSON.parse(responseValue).endTime,
         note: '',
       };
       postEventToFirestore(newEvent);
@@ -595,13 +597,13 @@ const SmartInput = ({ onClose }: any) => {
     | {
         title: string;
         date: string;
-        endDate: string;
+        ///endDate: string;
         category: string;
         member: string;
         id: string;
-        multiDay: boolean;
+        //multiDay: boolean;
         time: string;
-        endTime: string;
+        //endTime: string;
         note: string;
       }
     | {

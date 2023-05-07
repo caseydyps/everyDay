@@ -19,6 +19,7 @@ import {
   doc,
   addDoc,
   deleteDoc,
+  onSnapshot,
   setDoc,
   query,
   where,
@@ -668,8 +669,12 @@ function Calendar() {
 
   useEffect(() => {
     const fetchCalendarData = async () => {
-      const eventsData: any[] = await getCalendarData();
-      setEvents(eventsData);
+      try {
+        const eventsData: any = await getCalendarData();
+        setEvents(eventsData);
+      } catch (error) {
+        console.error('Error fetching calendar data:', error);
+      }
     };
     fetchCalendarData();
     setIsEventAdded(false);
@@ -1775,6 +1780,7 @@ function Calendar() {
                 <SmartInput
                   onClose={handleClose}
                   style={{ position: 'relative' }}
+                  setIsEventAdded={setIsEventAdded}
                 ></SmartInput>
               </SmartInputContainer>
             )}

@@ -179,15 +179,17 @@ const Suggestion = () => {
     );
     const upcomingEvents = filteredCalendarData.filter((event: any) => {
       const eventDate = new Date(event.date);
-      return eventDate >= today;
+      return (
+        eventDate >= today || eventDate.toDateString() === today.toDateString()
+      );
     });
-
+    console.log(calendarData, upcomingEvents);
     const prompt = ` 
-    今天是 ${formattedDate},你是智能管家，行事曆資料庫: ${JSON.stringify(
+    今天是${formattedDate},你是智能管家，請從行事曆資料庫: ${JSON.stringify(
       upcomingEvents
     )}
     待辦事項資料庫: ${JSON.stringify(filteredTodoData)}
-    ,從以上資料判斷,今天到下週有什麼事件呢?
+    ,以家庭助理的口吻分析今天到明天有什麼事件(包含行事曆跟代辦事項), 盡量簡單明瞭, 以50字以內簡短回答
       `;
     console.log(prompt);
     const response = await openai.createChatCompletion({
@@ -264,14 +266,14 @@ const Response = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: start;
   font-size: 14px;
   overflow: auto;
   min-width: 120px;
   min-height: 80px;
   max-height: 120px;
   font-weight: bold;
-  margin-top: 70px;
+  margin-top: 55px;
   color: #414141;
   padding: 10px;
   background-color: rgba(255, 255, 255, 0.25);

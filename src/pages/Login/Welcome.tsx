@@ -33,8 +33,8 @@ import LoadingAnimation from '../../Components/loading';
 const { v4: uuidv4 } = require('uuid');
 
 const CardContainer = styled.div`
-  height: 300px;
-  width: 250px;
+  height: 280px;
+  width: 200px;
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -63,8 +63,9 @@ const CardImage = styled.img`
 `;
 
 const CardText = styled.p`
-  text-align: center;
+  text-align: left;
   margin-top: 10px;
+  font-size: 14px;
 `;
 
 type CardProps = {
@@ -196,28 +197,24 @@ function WelcomePage() {
             </p> */}
             <RowWrap>
               <Card title="Get things done" imageSrc={cart} altText="GTD">
-                Organize your tasks with ease. Keep track of deadlines and
-                delegate tasks efficiently with our intuitive task management
-                system.
+                Say goodbye to chaos and hello to productivity with our family
+                task management system.
               </Card>
               <Card title="Smart input" imageSrc={aiImage} altText="AI">
-                Our AI-powered input system predicts your text, saving you time
-                and hassle. With GPT integration, you can get insights and ask
-                questions about your family's events.
+                Our AI input system and GPT integration make event planning a
+                breeze
               </Card>
               <Card
                 title="Communicate"
                 imageSrc={message}
                 altText="Communicate"
               >
-                Stay connected with your loved ones in real-time using our
-                messaging system. Keep each other updated, and add a personal
-                touch with our fun doodle board.
+                Chat, draw, and share memories with our real-time messaging
+                system and interactive doodle board
               </Card>
               <Card title="Memories" imageSrc={gallery} altText="Memories">
-                Capture and relive life's precious moments with our built-in
-                photo gallery. Organize by event or date, and celebrate
-                milestones with ease.
+                Relive life's moments with our photo gallery. Organize by event
+                or date and celebrate milestones effortlessly.
               </Card>
             </RowWrap>
           </CurveSection>

@@ -501,15 +501,10 @@ export const Whiteboard = () => {
             key={sticker.id}
             color={sticker.color}
             isSticker={sticker.isSticker}
-            onMouseDown={
-              lockedStickers[index]
-                ? null
-                : (e: React.MouseEvent<HTMLDivElement>) =>
-                    onStickerMouseDown(index, e)
-            }
+            draggable="false"
             ref={(el: any) => (stickerRefs.current[index] = el)}
             style={{
-              left: sticker.x - 390,
+              left: sticker.x - 275,
               top: sticker.y - 220,
             }}
             locked={lockedStickers[index]}
@@ -518,30 +513,6 @@ export const Whiteboard = () => {
               as="textarea"
               rows={3}
               value={stickerText[index]}
-              onChange={(e) => {
-                const newStickerText: string[] = [...stickerText];
-                newStickerText[index] = e.target.value;
-                setStickerText(newStickerText);
-
-                const stickerId: any = stickers[index].id;
-                const familyDocRef = doc(
-                  db,
-                  'Family',
-                  familyId,
-                  'stickers',
-                  stickerId
-                );
-                updateDoc(familyDocRef, { content: e.target.value })
-                  .then(() =>
-                    console.log('Sticker text has been updated in Firestore!')
-                  )
-                  .catch((error) =>
-                    console.error(
-                      'Error updating sticker text in Firestore: ',
-                      error
-                    )
-                  );
-              }}
               disabled={lockedStickers[index]}
             />
             {sticker.isSticker !== true && (

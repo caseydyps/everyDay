@@ -74,13 +74,15 @@ const Slideshow = ({ interval = 3000, photos }: SlideshowProps) => {
     <div>
       <SlideshowContainer>
         {photos.map((photo, index) => (
-          <SlideshowImage
-            key={index}
-            src={photo.url}
-            alt={`Slide ${index}`}
-            className={index === activeIndex ? 'active' : ''}
-            style={{ width: '100%', height: '100%' }}
-          />
+          <a href="/gallery" style={{ textDecoration: 'none' }}>
+            <SlideshowImage
+              key={index}
+              src={photo.url}
+              alt={`Slide ${index}`}
+              className={index === activeIndex ? 'active' : ''}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </a>
         ))}
       </SlideshowContainer>
       {/* <ThumbnailContainer

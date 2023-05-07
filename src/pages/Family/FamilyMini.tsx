@@ -166,14 +166,19 @@ const FamilyMemberForm = () => {
     onDecrement: () => void;
     children: React.ReactNode;
   }
+  const [hoverIndex, setHoverIndex] = useState<number>(-1);
 
-  function handleCardClick(index: number) {
-    setSelectedCardIndex(index);
-  }
+  const handleMouseEnter = (
+    event: React.MouseEvent<HTMLDivElement>,
+    index: number
+  ) => {
+    setHoverIndex(index);
+    setAnchorEl(event.currentTarget);
+  };
 
-  function handleCardLeave() {
-    setSelectedCardIndex(-1);
-  }
+  const handleMouseLeave = () => {
+    setHoverIndex(-1);
+  };
 
   console.log('hasSetup', hasSetup, 'formSubmitted', formSubmitted);
   console.log(members);
@@ -208,32 +213,34 @@ const FamilyMemberForm = () => {
     );
   }
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
-  const handleClick = (event: any) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
+  const handleClick = (target: HTMLElement) => {
+    setAnchorEl(target.parentNode);
   };
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popper' : undefined;
+  console.log(members);
 
   return (
     <Container>
       <BoxTitle>{members.length}</BoxTitle>
       {members.map((member, index) => (
-        <>
-          <Card
-            key={index}
-            //onMouseOver={() => handleCardClick(index)}
-            //onMouseOut={handleCardLeave}
-          >
-            <AvatarImage
-              onClick={handleClick}
-              src={member.avatar}
-              alt="avatar"
-            ></AvatarImage>
-            <StyledPopper id={id} open={open} anchorEl={anchorEl}>
-              <h5>{getCurrentAge(member.birthday)}</h5>
+        <Card
+          key={index}
+          onMouseEnter={(event) => handleMouseEnter(event, index)}
+          onMouseLeave={handleMouseLeave}
+        >
+          <AvatarImage src={member.avatar} alt="avatar" />
+          {hoverIndex === index && (
+            <StyledPopper open={Boolean(anchorEl)} anchorEl={anchorEl}>
+              <>
+                {member.role}
+                <br />
+                {member.birthday}
+                {getCurrentAge(member.birthday)}
+              </>
             </StyledPopper>
-          </Card>
-        </>
+          )}
+        </Card>
       ))}
     </Container>
   );
@@ -249,18 +256,21 @@ const BoxTitle = styled.h3`
 `;
 
 const StyledPopper = styled(Popper)`
-  padding: 10px;
-  height: auto;
+  padding: 20px;
+  margin-top: 50px;
   border-radius: 10px;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   display: flex;
   width: 100px;
-  height: 50px;
+  height: 60px;
+
   color: #f6f8f8;
   text-align: center;
-  background-color: #3467a1;
+  background-color: #5981b0;
   backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
 `;
 
 const colors = {

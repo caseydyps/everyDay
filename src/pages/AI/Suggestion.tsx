@@ -283,28 +283,38 @@ const Suggestion = () => {
           Ask anything about your family !
         </p>
         <SuggestionWrap>
-          <SuggestionItem onClick={() => setInputValue('智慧建議')}>
-            智慧建議
-          </SuggestionItem>
-          <SuggestionItem
-            onClick={() => setInputValue('今天的行事曆事件有哪些？')}
-          >
-            今天的行事曆事件有哪些？
-          </SuggestionItem>
-          <SuggestionItem
-            onClick={() => setInputValue('今天的代辦事項有哪些？')}
-          >
-            今天的代辦事項有哪些？
-          </SuggestionItem>
-          <SuggestionItem onClick={() => setInputValue('這週有什麼事？')}>
-            這週有什麼事？
-          </SuggestionItem>
-          <SuggestionItem onClick={() => setInputValue('爸爸今天有什麼事情？')}>
-            爸爸今天有什麼事情？
-          </SuggestionItem>
-          <SuggestionItem onClick={() => setInputValue('看電影是什麼時候？')}>
-            看電影是什麼時候？
-          </SuggestionItem>
+          <RowWrap>
+            <ColumnWrap>
+              <SuggestionItem onClick={() => setInputValue('智慧建議')}>
+                智慧建議
+              </SuggestionItem>
+              <SuggestionItem
+                onClick={() => setInputValue('今天的行事曆事件有哪些？')}
+              >
+                今天的行事曆事件有哪些？
+              </SuggestionItem>
+              <SuggestionItem
+                onClick={() => setInputValue('今天的代辦事項有哪些？')}
+              >
+                今天的代辦事項有哪些？
+              </SuggestionItem>
+            </ColumnWrap>
+            <ColumnWrap>
+              <SuggestionItem onClick={() => setInputValue('這週有什麼事？')}>
+                這週有什麼事？
+              </SuggestionItem>
+              <SuggestionItem
+                onClick={() => setInputValue('爸爸今天有什麼事情？')}
+              >
+                爸爸今天有什麼事情？
+              </SuggestionItem>
+              <SuggestionItem
+                onClick={() => setInputValue('看電影是什麼時候？')}
+              >
+                看電影是什麼時候？
+              </SuggestionItem>
+            </ColumnWrap>
+          </RowWrap>
         </SuggestionWrap>
 
         <InputForm onSubmit={handleSubmit}>
@@ -384,6 +394,20 @@ const SuggestionWrap = styled.div`
   justify-content: center;
   background-color: transparent;
   flex-wrap: wrap;
+`;
+
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const RowWrap = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Card = styled.div`

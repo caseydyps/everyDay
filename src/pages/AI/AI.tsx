@@ -76,7 +76,7 @@ const AI = () => {
     <Container>
       <SideNav />
       <Wrapper>
-        <Banner title={'AI'} subTitle="Your personal Alfred" />
+        <Banner title={'AI'} subTitle="Hey AI," />
         <ChatMini />
         <Section>
           <AiRowWrap>
@@ -130,8 +130,9 @@ const Section = styled.section`
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 300px;
-  padding-top: 70px;
+  min-height: 250px;
+  padding-top: 0px;
+  padding-bottom: 20px;
   background: transparent;
   max-width: 100vw;
   //  border: 2px solid #5981b0;
@@ -261,6 +262,6 @@ const AiRowWrap = styled.div`
   align-items: center;
   // border: 3px solid green;
   width: 100%;
-  height: 400px;
+  height: 370px;
 `;
 export default AI;
