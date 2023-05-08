@@ -82,7 +82,7 @@ const SideNav = () => {
           <NavItem>
             <StyledNavLink activeClassName="active" to="/ai">
               <FontAwesomeIcon icon={faRobot} />
-              <Text> AI</Text>
+              <Text> Hey AI</Text>
             </StyledNavLink>
           </NavItem>
 

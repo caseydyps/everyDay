@@ -1068,7 +1068,8 @@ const HideButton = styled(ThreeDButton)`
   border: 2px solid #5981b0;
   margin-top: 10px;
   padding: 10px;
-  max-width: 150px;
+  max-width: 120px;
+  font-size: 16px;
 `;
 
 const List = styled.div`
