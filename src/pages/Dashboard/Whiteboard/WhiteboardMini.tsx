@@ -1,51 +1,18 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
-import styled from 'styled-components/macro';
-import { v4 as uuidv4 } from 'uuid';
-import DrawingTool from '../../../Components/drawingtoolMini';
-import axios from 'axios';
-import TenorGif from './Giphy';
 import { GiphyFetch } from '@giphy/js-fetch-api';
-import Banner from '../../../Components/Banner/Banner';
-import { IGif } from '@giphy/js-types';
-import { Gif } from '@giphy/react-components';
-import { Grid } from '@giphy/react-components';
-import { ThreeDButton } from '../../../Components/Button/Button';
-import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import DefaultButton from '../../../Components/Button/Button';
-import Layout from '../../../Components/layout';
 import 'firebase/firestore';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import DefaultButton, { ThreeDButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faMagnifyingGlass,
-  faCircleInfo,
-  faX,
-  faLock,
-  faLockOpen,
-  faEyeSlash,
-} from '@fortawesome/free-solid-svg-icons';
+import DrawingTool from '../../../Components/drawingtoolMini';
+import { db } from '../../../config/firebase.config';
 import {
   collection,
-  updateDoc,
-  getDocs,
-  getDoc,
-  addDoc,
-  deleteDoc,
   doc,
-  setDoc,
-  query,
-  where,
+  getDoc,
+  getDocs,
+  updateDoc,
 } from 'firebase/firestore';
-import SideNav from '../../../Components/Nav/SideNav';
 
 type Sticker = {
   x: number;
@@ -64,14 +31,6 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
   //border: 3px solid red;
 `;
-
-type StickerType = {
-  dragging: boolean;
-  offsetX: number;
-  offsetY: number;
-  color: string;
-  isSticker: boolean;
-};
 
 const Sticker: any = styled.div<{
   dragging: boolean;
@@ -94,33 +53,8 @@ const Sticker: any = styled.div<{
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  /* box-shadow: ${(props) =>
-    props.isSticker ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'}; */
 `;
 
-const AddButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: lightgreen;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-const ColorButton = styled(DefaultButton)<{ color: string }>`
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: ${({ color }) => color};
-  border: none;
-  border-radius: 15px;
-  cursor: pointer;
-  color: black;
-  &:hover {
-    opacity: 0.8;
-  }
-`;
 const StickerInput = styled.input`
   font-size: 20px;
   border: none;
@@ -131,161 +65,6 @@ const StickerInput = styled.input`
   background-color: transparent;
   text-align: center;
 `;
-
-const DeleteButton = styled.button`
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  padding: 5px;
-  font-size: 18px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  color: transparent;
-  &:hover {
-    color: #414141;
-  }
-`;
-
-const LockButton = styled.button`
-  position: absolute;
-  top: 5px;
-  right: 25px;
-  padding: 5px;
-  font-size: 18px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  color: transparent;
-  &:hover {
-    color: #414141;
-  }
-`;
-
-const HideButton = styled(DefaultButton)`
-  margin-left: 30px;
-`;
-
-const RowWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const StickerRowWrap = styled.div`
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-
-  top: 140px;
-  width: 650px;
-  left: 55%;
-  transform: translateX(-50%);
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  color: rgba(255, 255, 255, 0.75);
-`;
-
-const GifWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  flex-wrap: wrap;
-  width: auto;
-`;
-
-const CenterWrap = styled.div`
-  display: flex;
-  justify-content: center; /* Center the child element horizontally */
-  align-items: center; /* Center the child element vertically */
-  flex-direction: column;
-  height: 100%;
-`;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin-top: 0px;
-  background-color: transparent;
-  width: 100vw;
-  height: 100%;
-  border: gold solid 3px;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-`;
-
-const Centered = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-
-const Results = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(128, 128, 128, 0.3);
-  border-radius: 25px;
-  max-width: 800px;
-  z-index: 5;
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const SearchInput = styled.input`
-  padding: 10px;
-  border: 2px solid #ccc;
-  border-radius: 25px;
-  font-size: 16px;
-  width: 100px;
-`;
-
-const SearchButton = styled.button`
-  background-color: #f6f8f8;
-  color: #5981b0;
-  padding: 10px;
-  border: none;
-  border-radius: 25px;
-  font-size: 16px;
-  cursor: pointer;
-  &:hover {
-    background-color: #5981b0;
-    color: #f6f8f8;
-  }
-`;
-
-const InfoButton = styled(DefaultButton)`
-  background-color: transparent;
-  padding: 0px;
-  color: rgba(255, 255, 255, 0.5);
-  border: none;
-  box-shadow: none;
-  :hover {
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.75);
-  }
-  position: absolute;
-  left: 300px;
-  top: 10px;
-`;
-
-const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
-
 export const Whiteboard = () => {
   const [newStickerColor, setNewStickerColor] = useState<string>('yellow');
   const stickerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -296,25 +75,11 @@ export const Whiteboard = () => {
   });
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [stickerText, setStickerText] = useState<string[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
   const [locked, setLocked] = useState(false);
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
-  // <button onClick={() => voteSticker(name)}>Vote</button>;
-
-  const [showResults, setShowResults] = useState(false);
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+  const { familyId } = UserAuthData();
 
   useLayoutEffect(() => {
     const container = document.getElementById('Wrapper');
@@ -378,21 +143,6 @@ export const Whiteboard = () => {
     };
   }, [dragging, offset, stickers]);
 
-  const onStickerMouseDown = (id: number, e: React.MouseEvent) => {
-    if (locked) return;
-    setDragging(id);
-    const index = stickers.findIndex((sticker: Sticker) => sticker.id === id);
-
-    const rect = stickerRefs.current[index]?.getBoundingClientRect();
-    console.log('rect:', rect);
-    if (rect) {
-      setOffset({
-        x: e.clientX - (rect.left + window.pageXOffset),
-        y: e.clientY - (rect.top + window.pageYOffset),
-      });
-    }
-  };
-
   useEffect(() => {
     const fetchStickers = async () => {
       const stickers: any = await getStickers();
@@ -415,86 +165,8 @@ export const Whiteboard = () => {
     return stickersData;
   };
 
-  // const addSticker = async (
-  //   color: string,
-  //   isSticker: boolean,
-  //   content: string
-  // ) => {
-  //   const newSticker = {
-  //     id: uuidv4(),
-  //     x: 180,
-  //     y: 220,
-  //     content: content,
-  //     color: color,
-  //     isSticker: isSticker,
-  //   };
-
-  //   try {
-  //     const familyDocRef = doc(
-  //       db,
-  //       'Family',
-  //       familyId,
-  //       'stickers',
-  //       newSticker.id
-  //     );
-  //     await setDoc(familyDocRef, newSticker);
-  //     console.log('Sticker has been added to Firestore!');
-  //     setStickers([...stickers, newSticker]);
-  //     setStickerText([...stickerText, '']);
-  //   } catch (error) {
-  //     console.error('Error adding sticker to Firestore: ', error);
-  //   }
-  // };
-
-  // const deleteSticker = async (id: number) => {
-  //   console.log(id);
-  //   console.log(stickers);
-
-  //   try {
-  //     const familyDocRef = doc(
-  //       db,
-  //       'Family',
-  //       familyId,
-  //       'stickers',
-  //       stickers[id].id
-  //     );
-  //     await deleteDoc(familyDocRef);
-  //     console.log('Sticker has been deleted from Firestore!');
-  //     const newStickers = stickers.filter(
-  //       (sticker: Sticker) => sticker.id !== stickers[id].id
-  //     );
-  //     setStickers(newStickers);
-  //   } catch (error) {
-  //     console.error('Error deleting sticker from Firestore: ', error);
-  //   }
-  // };
-
-  const handleLockClick = (index: number) => {
-    const newLockedStickers = [...lockedStickers];
-    newLockedStickers[index] = !newLockedStickers[index];
-    setLockedStickers(newLockedStickers);
-  };
-
-  console.log(stickers);
-  console.log(newStickerColor);
-
-  //gifUrl = selectedGif ? selectedGif.images.original.url : '';
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const InfoButton = styled(ThreeDButton)`
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    left: 400px;
-    top: -20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `;
   return (
     <Wrapper id="Wrapper">
-      {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
-
       {stickers.map((sticker: any, index: number) => (
         <>
           <Sticker

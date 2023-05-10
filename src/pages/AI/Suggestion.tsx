@@ -1,49 +1,22 @@
-import styled, { keyframes } from 'styled-components/macro';
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../../config/Context/authContext';
-import axios from 'axios';
-import Sidebar from '../../Components/Nav/Navbar';
-import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
+import { faPaperPlane, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'firebase/firestore';
-import { getStorage, ref } from 'firebase/storage';
-import LoadingAnimation from '../../Components/loading';
-import { getDownloadURL, uploadBytes } from 'firebase/storage';
 import {
   collection,
-  updateDoc,
-  getDocs,
-  doc,
-  addDoc,
-  deleteDoc,
-  setDoc,
-  query,
-  where,
+  getDocs
 } from 'firebase/firestore';
+import React, { useContext, useEffect, useState } from 'react';
+import styled from 'styled-components/macro';
 import DefaultButton from '../../Components/Button/Button';
+import LoadingAnimation from '../../Components/loading';
+import { AuthContext } from '../../config/Context/authContext';
+import { db } from '../../config/firebase.config';
 import { InputForm } from './SmartInput';
-import UserAuthData from '../../Components/Login/Auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faPaperPlane,
-  faRotateLeft,
-} from '@fortawesome/free-solid-svg-icons';
-import { ChatContainer } from '@chatscope/chat-ui-kit-react';
 const configJs = require('../../config/config.js');
-
 const { Configuration, OpenAIApi } = require('openai');
-
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,
 });
-
 const openai = new OpenAIApi(config);
 
 const Suggestion = () => {
@@ -57,17 +30,6 @@ const Suggestion = () => {
   const [calendarData, setCalendarData] = useState<Todo[]>([]);
   const moment = require('moment');
   const [isLoading, setIsLoading] = useState(false);
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
   const { familyId, memberRolesArray } = useContext(AuthContext);
 
   useEffect(() => {
@@ -140,33 +102,6 @@ const Suggestion = () => {
     fetchCalendarData();
   }, [familyId]);
 
-  // const calendarData = [
-  //   {
-  //     event: 'Doctor Appointment',
-  //     category: '#Calendar',
-  //     startTime: moment('2023-04-07 11:00').toDate(),
-  //     endTime: moment('2023-04-07 12:00').toDate(),
-  //     members: ['mom', 'baby'],
-  //     response: 'Appointment scheduled',
-  //   },
-  //   {
-  //     event: 'Playgroup',
-  //     category: '#Calendar',
-  //     startTime: moment('2023-04-10 10:00').toDate(),
-  //     endTime: moment('2023-04-10 11:30').toDate(),
-  //     members: ['dad', 'baby'],
-  //     response: 'Playgroup scheduled',
-  //   },
-  //   {
-  //     event: 'Baby Shower',
-  //     category: '#Calendar',
-  //     startTime: moment('2023-04-15 14:00').toDate(),
-  //     endTime: moment('2023-04-15 16:00').toDate(),
-  //     members: ['mom', 'dad'],
-  //     response: 'Shower scheduled',
-  //   },
-  // ];
-
   console.log(`這是我的家庭資料庫，包含了以下資料：
   行事曆資料庫:${JSON.stringify(calendarData)}`);
   const runPrompt = async () => {
@@ -197,13 +132,6 @@ const Suggestion = () => {
       `;
       console.log('智慧建議' + prompt);
 
-      // 2. 下週有哪些行程安排？請附上下週的事件/時間/參與者。
-      // 3. 是否有任何待辦事項需要處理？請附上未完成事件/到期時間/參與者。
-      // 4. 是否有任何重要日期或事件即將到來？請附上建議的回應。
-      // "Q2": "下週行程安排是：...",
-      // "Q3": "待辦事項有：...",
-      // "Q4": "重要日期或事件是：..."
-
       const response = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt,
@@ -211,12 +139,9 @@ const Suggestion = () => {
         temperature: 0.5,
       });
 
-      // const parsableJSONresponse = response.data.choices[0].text;
       console.log(response.data.choices[0].text);
-      // const parsedResponse = JSON.parse(parsableJSONresponse);
-      // console.log('parsedResponse:', parsedResponse);
+
       setResponseValue(response.data.choices[0].text);
-      //console.log('Responses: ', parsedResponse.R);
     } else {
       const conversationHistory = conversation
         .map((message: any) => message.text)
@@ -246,14 +171,12 @@ const Suggestion = () => {
         temperature: 0.5,
         max_tokens: 500,
       });
-      // const parsableJSONresponse = response.data.choices[0].text;
+
       console.log(response);
       console.log(response.data.choices[0].message.content);
-      // const parsedResponse = JSON.parse(parsableJSONresponse);
-      // console.log('parsedResponse:', parsedResponse);
+
       setResponseValue(response.data.choices[0].message.content);
       setIsLoading(false);
-      //console.log('Responses: ', parsedResponse.R);
     }
   };
 
@@ -265,14 +188,14 @@ const Suggestion = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const message = { text: inputValue, sender: 'user' };
-    // setConversation([...conversation, message]);
+
     runPrompt();
     setIsLoading(true);
   };
 
   const handleRedo = () => {
-    setInputValue(''); // reset input value
-    setResponseValue(''); // reset response value
+    setInputValue('');
+    setResponseValue('');
     setIsLoading(false);
   };
 
@@ -415,7 +338,7 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  //box-shadow: 3px 3px 5px black;
+
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -439,7 +362,6 @@ const Card = styled.div`
     border-radius: 50%;
   }
   &:hover {
-    /* transform: scale(1.1); */
   }
 `;
 
@@ -488,11 +410,4 @@ const Response = styled.div`
   color: #fff;
 `;
 
-const Wrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  margin-top: 20px;
-`;
 export default Suggestion;

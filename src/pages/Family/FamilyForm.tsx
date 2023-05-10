@@ -1,30 +1,22 @@
-import React, { useState, useEffect, useContext } from 'react';
-import styled, { keyframes } from 'styled-components/macro';
-import Sidebar from '../../Components/Nav/Navbar';
-import { CirclePicker, TwitterPicker } from 'react-color';
-// import AvatarCreator from './Avatar';
-// import { handleLoadAvatar } from './Avatar';
-import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
-import LoadingAnimation from '../../Components/loading';
 import confetti from 'canvas-confetti';
-import Swal from 'sweetalert2';
-import { AuthContext } from '../../config/Context/authContext';
 import {
   collection,
-  updateDoc,
-  getDocs,
-  getDoc,
-  setDoc,
-  addDoc,
   doc,
-  writeBatch,
+  getDocs,
   query,
+  setDoc,
+  updateDoc,
   where,
+  writeBatch
 } from 'firebase/firestore';
-import UserAuthData from '../../Components/Login/Auth';
-import Layout from '../../Components/layout';
+import React, { useContext, useEffect, useState } from 'react';
+import { CirclePicker } from 'react-color';
+import styled, { keyframes } from 'styled-components/macro';
+import Swal from 'sweetalert2';
 import { ThreeDButton } from '../../Components/Button/Button';
+import UserAuthData from '../../Components/Login/Auth';
+import { AuthContext } from '../../config/Context/authContext';
+import { db } from '../../config/firebase.config';
 const FamilyMemberForm = () => {
   const { familyId } = UserAuthData();
   const { user, userEmail, hasSetup, setHasSetup, membersArray } =
@@ -36,11 +28,6 @@ const FamilyMemberForm = () => {
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
-
-  // const handleFamilyConnect = async () => {
-  //   e.preventDefault();
-  // };
-
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(members);
@@ -56,25 +43,21 @@ const FamilyMemberForm = () => {
       const matchingDocRef = matchingDocs.docs[0].ref;
       console.log(matchingDocs);
       await updateDoc(matchingDocRef, { isSettingDone: true });
-
-      // Delete all existing user documents
       const querySnapshot = await getDocs(usersRef);
       const batch = writeBatch(db);
       querySnapshot.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
       const familyDocRef = doc(db, 'Family', familyId);
-      console.log(familyId);
+     
       const familyData = {
         familyId: familyId,
         familyMembers: members.map((member) => ({ userEmail: member.email })),
         isSettingDone: true,
       };
-
-      // Save each member as a separate document in the users collection
       members.forEach(async (member) => {
         await setDoc(doc(usersRef, member.name), member);
         await setDoc(familyDocRef, familyData);
-        console.log(member.email);
+        
       });
 
       console.log('Members have been saved to Firestore!');
@@ -90,12 +73,6 @@ const FamilyMemberForm = () => {
     const fetchMembers = async () => {
       console.log(familyId);
       const familyDocRef = collection(db, 'Family', familyId, 'members');
-
-      //const familyCollection = collection(db, 'Family', familyId, 'users');
-      // const queryUser = where('familyId', '==', {
-      //   userId: familyId,
-      // });
-
       const membersData: any = await getDocs(familyDocRef)
         .then((querySnapshot) =>
           querySnapshot.docs.map((doc) => ({ ...doc.data() }))
@@ -103,41 +80,20 @@ const FamilyMemberForm = () => {
         .catch((error) =>
           console.error('Error retrieving members data:', error)
         );
-      console.log(membersData);
+     
       const matchingData = membersData.find(
         (data: any) => data.familyId === familyId
       );
-      console.log(matchingData);
-      //todo: set members by fetching firestore
+      
+      
       setMembers(membersData);
-      //console.log(matchingData.familyMembers.length);
+      
       if (membersData.length > 0) {
         setFormSubmitted(true);
       }
     };
     fetchMembers();
   }, [familyId]);
-
-  // const handleLoadAvatar = () => {
-  //   const avatarDetails = JSON.parse(localStorage.getItem('members'));
-
-  //   if (avatarDetails) {
-  //     setSeed(avatarDetails[index].seed);
-  //     setEyebrows(avatarDetails[avatarIndex].eyebrows);
-  //     setEyes(avatarDetails[avatarIndex].eyes);
-  //     setHair(avatarDetails[avatarIndex].hair);
-  //     setHairColor(avatarDetails[avatarIndex].hairColor);
-  //     setMouth(avatarDetails[avatarIndex].mouth);
-  //     setBackground(avatarDetails[avatarIndex].background);
-  //     setFeature(avatarDetails[avatarIndex].feature);
-  //     setFeaturesProbability(avatarDetails[avatarIndex].featuresProbability);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   handleLoadAvatar();
-  // }, []);
-
   interface FamilyMember {
     name: string;
     avatar: string;
@@ -158,7 +114,6 @@ const FamilyMemberForm = () => {
     anniversaries: { date: string; description: string }[];
   }
 
-  // const handleNumberOfMembersChange = (
   //   event: React.ChangeEvent<HTMLInputElement>
   // ) => {
   //   const numberOfMembers = parseInt(event.target.value);
@@ -222,55 +177,7 @@ const FamilyMemberForm = () => {
     newMembers[index].role = event.target.value;
     setMembers(newMembers);
   };
-
-  const handleMemberAnniversaryChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newMembers = [...members];
-    const anniversaryDate = event.target.value;
-    const anniversaryDescription = '';
-    newMembers[index].anniversaries.push({
-      date: anniversaryDate,
-      description: anniversaryDescription,
-    });
-    setMembers(newMembers);
-  };
-
-  const handleMemberAnniversaryDateChange = (
-    index: number,
-    anniversaryIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newMembers = [...members];
-    newMembers[index].anniversaries[anniversaryIndex].date = event.target.value;
-    setMembers(newMembers);
-  };
-
-  const handleMemberAnniversaryDescriptionChange = (
-    index: number,
-    anniversaryIndex: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newMembers = [...members];
-    newMembers[index].anniversaries[anniversaryIndex].description =
-      event.target.value;
-    setMembers(newMembers);
-  };
-
-  const handleAddAnniversary = (index: number) => {
-    const newMembers = [...members];
-    newMembers[index].anniversaries.push({ date: '', description: '' });
-    setMembers(newMembers);
-  };
-
-  interface FormInputProps {
-    type: string;
-    min?: number;
-    value: number | string;
-    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  }
-
+ 
   const handleNumberOfMembersIncrement = () => {
     setNumberOfMembers(numberOfMembers + 1);
     setMembers((prevMembers: any) => [
@@ -352,22 +259,6 @@ const FamilyMemberForm = () => {
     featuresProbability,
   ]);
 
-  const generateAvatarUrl = () => {
-    const baseUrl = `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&skinColor=${skinColor}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`;
-
-    setAvatarUrl(baseUrl);
-  };
-
-  const handleSeedChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newMembers = [...members];
-    newMembers[index].seed = event.target.value;
-    setSeed(event.target.value);
-    setMembers(newMembers);
-  };
-
   const handleSkinColorChange = (index: number, event: any) => {
     console.log(event);
     console.log('here');
@@ -400,23 +291,17 @@ const FamilyMemberForm = () => {
   ) => {
     const value = event.target.value;
     const newMembers = [...members];
-
-    // If "none" is selected, set hair to "short19" and probability to 0
     if (value === 'none') {
       setHair('short19');
       setHairProbability(0);
       newMembers[index].hair = 'short19';
       newMembers[index].hairProbability = 0;
     } else {
-      // Otherwise, set hair to the selected value and probability to 100
       setHair(value);
       setHairProbability(100);
       newMembers[index].hair = value;
       newMembers[index].hairProbability = 100;
     }
-
-    // Update the members array in local storage and state
-    // localStorage.setItem('members', JSON.stringify(newMembers));
     setMembers(newMembers);
   };
 
@@ -514,7 +399,6 @@ const FamilyMemberForm = () => {
     );
   };
   const handleClick = () => {
-    // Configure the confetti settings
     type Options = {
       angle: number;
       spread: number;
@@ -601,19 +485,6 @@ const FamilyMemberForm = () => {
     );
   }
 
-  function handleCardClick(index: number) {
-    setSelectedCardIndex(index);
-  }
-
-  function handleCardLeave() {
-    setSelectedCardIndex(-1);
-  }
-
-  console.log('hasSetup', hasSetup, 'formSubmitted', formSubmitted);
-  console.log(members);
-  console.log(members.length);
-
-  console.log('avatarUrl', avatarUrl);
   return (
     <Container>
       {hasSetup ? (
@@ -624,8 +495,6 @@ const FamilyMemberForm = () => {
               {members.map((member, index) => (
                 <Card
                   key={index}
-                  // onMouseOver={() => handleCardClick(index)}
-                  // onMouseOut={handleCardLeave}
                 >
                   <RowWrap>
                     <Text> {member.name}</Text>
@@ -680,7 +549,6 @@ const FamilyMemberForm = () => {
                     How many members?
                   </Text>
                 </AddMinusInput>
-
                 {numberOfMembers > 0 && (
                   <div>
                     <div>
@@ -718,7 +586,6 @@ const FamilyMemberForm = () => {
                               }
                             />
                           </FormField>
-
                           <FormField>
                             <Text
                               style={{
@@ -780,45 +647,6 @@ const FamilyMemberForm = () => {
                               }
                             />
                           </FormField>
-
-                          {/* <FormField>
-                          <FormLabel>紀念日</FormLabel>
-                          {members[currentMemberIndex].anniversaries.map(
-                            (anniversary, anniversaryIndex) => (
-                              <ColumnWrap key={anniversaryIndex}>
-                                <FormInput
-                                  type="date"
-                                  value={anniversary.date}
-                                  onChange={(event) =>
-                                    handleMemberAnniversaryDateChange(
-                                      currentMemberIndex,
-                                      anniversaryIndex,
-                                      event
-                                    )
-                                  }
-                                />
-                                <FormInput
-                                  type="text"
-                                  value={anniversary.description}
-                                  onChange={(event) =>
-                                    handleMemberAnniversaryDescriptionChange(
-                                      currentMemberIndex,
-                                      anniversaryIndex,
-                                      event
-                                    )
-                                  }
-                                />
-                              </ColumnWrap>
-                            )
-                          )}
-                          <Button
-                            onClick={() =>
-                              handleAddAnniversary(currentMemberIndex)
-                            }
-                          >
-                            Add Anniversary
-                          </Button>
-                        </FormField> */}
                         </div>
                       )}
                     </div>
@@ -872,18 +700,6 @@ const FamilyMemberForm = () => {
                         )
                       }
                     >
-                      {/* <Label htmlFor="seed-select">Select a seed:</Label>
-                      <Select
-                        id="seed-select"
-                        value={members[currentMemberIndex].seed}
-                        onChange={(event) =>
-                          handleSeedChange(currentMemberIndex, event)
-                        }
-                      >
-                        <option value="Precious">Precious</option>
-                        <option value="Cookie">Cookie</option>
-                        <option value="Sassy">Sassy</option>
-                      </Select> */}
                       <FlexWrap>
                         <Label htmlFor="skinColor-select">膚色:</Label>
                         <CirclePicker
@@ -978,7 +794,6 @@ const FamilyMemberForm = () => {
                             <option value="short15">8+9</option>
                             <option value="short16">刺蝟</option>
                             <option value="short19">當兵</option>
-                            {/* <option value="none">光頭</option> */}
                           </Select>
                         </FlexWrap>
                       </RowWrapper>
@@ -989,41 +804,22 @@ const FamilyMemberForm = () => {
                           width="600px"
                           color={members[currentMemberIndex].hairColor}
                           colors={[
-                            '#000000', // black
-                            '#331a00', // dark brown
-                            '#4d2600', // medium brown
-                            '#663300', // chestnut brown
-                            '#804d00', // auburn
-                            '#b37300', // blonde
-                            '#cc9900', // golden blonde
-                            '#e6b800', // honey blonde
-                            '#ffd966', // light blonde
-                            '#ffffff', // white/gray
+                            '#000000', 
+                            '#331a00', 
+                            '#4d2600',
+                            '#663300', 
+                            '#804d00', 
+                            '#b37300', 
+                            '#cc9900', 
+                            '#e6b800', 
+                            '#ffd966', 
+                            '#ffffff', 
                           ]}
                           circleSize={32}
                           onChangeComplete={(color) =>
                             handleHairColorChange(currentMemberIndex, color.hex)
                           }
                         />
-                        {/* 
-                        <Select
-                          id="hair-color-select"
-                          value={members[currentMemberIndex].hairColor}
-                          onChange={(event) =>
-                            handleHairColorChange(currentMemberIndex, event)
-                          }
-                        >
-                          <option value="0e0e0e">Black</option>
-                          <option value="562306">Brown</option>
-                          <option value="e6c770">Blonde</option>
-                          <option value="6a4e35">Red</option>
-                          <option value="796a45">Gray</option>
-                          <option value="914b2d">Auburn</option>
-                          <option value="733d1f">Chestnut</option>
-                          <option value="f5d23d">Blonde Highlights</option>
-                          <option value="221b15">Dark Brown</option>
-                          <option value="b38a58">Light Brown</option>
-                        </Select> */}
                       </FlexWrap>
                       <RowWrapper>
                         <br />
@@ -1038,7 +834,6 @@ const FamilyMemberForm = () => {
                           >
                             <option value="blush">臉紅😳</option>
                             <option value="freckles">雀斑</option>
-
                             <option value="none">無</option>
                           </Select>
                         </FlexWrap>
@@ -1134,7 +929,6 @@ export default FamilyMemberForm;
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-
   margin: 0 0;
   flex: 1;
   justify-content: center;
@@ -1196,7 +990,6 @@ const FormInput = styled.input<FormInputProps>`
   flex-basis: 70%;
   &:focus {
     outline: none;
-
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
   }
 `;
@@ -1207,7 +1000,6 @@ const AvatarContainer = styled.div`
   align-items: center;
   z-index: 1;
   margin-bottom: 1rem;
-
   flex: 1;
   flex-direction: column;
   > img {
@@ -1252,33 +1044,6 @@ const SaveButton = styled(Button)`
   }
 `;
 
-const AvatarPlaceholder = styled.div`
-  width: 100px;
-  height: 100px;
-  background-color: lightgray;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24px;
-  font-weight: bold;
-`;
-
-const Avatar = styled.img`
-  width: 50px;
-  height: 50px;
-  margin-right: 1rem;
-  border-radius: 50%;
-`;
-const FormButton = styled.button`
-  background-color: #0077c2;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 32px;
-  cursor: pointer;
-`;
 
 export const GradientAnimation = keyframes`
   0% {
@@ -1300,24 +1065,9 @@ export const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  //border: gold solid 3px;
   padding: 20px;
   justify-content: center;
-  // background: linear-gradient(
-  //   -45deg,
-  //   white,
-  //   #fff5c9,
-  //   #9bb9de,
-  //   #629dda,
-  //   #ff9f4d,
-  //   #142850
-  // );
-  /* display: flex;
-
-  flex-direction: row;
-  
-  //animation: ${GradientAnimation} 20s ease-in-out infinite;
-  background-size: 300% 300%; */
+ 
 `;
 
 const RowWrap = styled.div`
@@ -1326,8 +1076,8 @@ const RowWrap = styled.div`
   flex-wrap: wrap;
   min-width: 100%;
   text-align: center;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: center;
+  align-items: center; 
 `;
 
 const RowWrapper = styled.div`
@@ -1336,8 +1086,7 @@ const RowWrapper = styled.div`
   white-space: nowrap;
   min-width: 100%;
   text-align: center;
-  justify-content: start; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  justify-content: start;
 `;
 
 const ColumnWrap = styled.div`
@@ -1357,8 +1106,6 @@ const FormContainer = styled.div`
   margin-top: 50px;
   z-index: 3;
 `;
-
-const SettingDoneBtn = styled.button``;
 
 const Title = styled.div`
   font-size: 48px;
@@ -1384,7 +1131,6 @@ const Card = styled.div`
   border-radius: 12px;
   -webkit-border-radius: 12px;
   color: rgba(255, 255, 255, 0.75);
-  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
   position: relative;
   z-index: 1;
   p {
@@ -1454,21 +1200,6 @@ const Select = styled.select`
   border: 1px solid #ccc;
 `;
 
-const Input = styled.input`
-  width: 150px;
-  padding: 8px;
-
-  border-radius: 25px;
-  border: 1px solid #ccc;
-  font-size: 32px;
-  color: #333;
-
-  &:focus {
-    outline: none;
-    border-color: #2196f3;
-  }
-`;
-
 const Text = styled.p`
   font-size: 16px;
   padding: 5px;
@@ -1481,15 +1212,6 @@ const Split = styled.p`
   color: #414141;
 `;
 
-const Popup = styled.div`
-  background-color: #629dda;
-  color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  height: 30px;
-  width: 300px;
-`;
-
 const ConfettiButton = styled(Button)`
   position: fixed;
   width: 150px;
@@ -1500,12 +1222,6 @@ const ConfettiButton = styled(Button)`
   &:hover {
     transform: scale(1.1) translateX(-50%);
   }
-`;
-
-const Background = styled.div`
-  background-color: #142850;
-  height: 100px;
-  padding: 10px;
 `;
 
 const CardDiv = styled.div`

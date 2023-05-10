@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components/macro';
-
+import React from 'react';
 interface Event {
   id: string;
   title: string;
@@ -25,13 +25,12 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
   console.log(events);
   const [hoveredEventId, setHoveredEventId] = useState<string | null>(null);
 
-  // Generate hours array
+  
   const hours = [];
   for (let h = 0; h < 24; h++) {
     hours.push(`${h.toString().padStart(2, '0')}:00`);
   }
 
-  // Generate days array
   const days = [
     '星期日',
     '星期一',
@@ -42,34 +41,11 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
     '星期六',
   ];
 
-  const handleDragStart = (event: DragEvent, id: string) => {
-    if (event.dataTransfer) {
-      event.dataTransfer.setData('eventID', id);
-    }
-  };
-
-  const handleDragOver = (event: DragEvent) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event: DragEvent) => {
-    event.preventDefault();
-    const eventID = event.dataTransfer
-      ? event.dataTransfer.getData('eventID')
-      : '';
-
-    console.log('Dropped event with ID:', eventID);
-  };
-
   const handleMouseEnter = (eventId: string) => {
-    console.log('enter');
-    console.log(eventId);
     setHoveredEventId(eventId);
-    console.log(hoveredEventId);
   };
 
   const handleMouseLeave = () => {
-    console.log('leave');
     setHoveredEventId(null);
   };
 
@@ -77,29 +53,16 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
     return (
       <div>
         {events.map((event) => {
-          console.log(event.id + hoveredEventId);
           return (
             <TableCell
               onMouseEnter={() => handleMouseEnter(event.id)}
               onMouseLeave={handleMouseLeave}
               key={event.id}
               rowSpan={event.endTime - event.time + 1}
-              //draggable="true"
-              //   onDragStart={(event) => handleDragStart(event, event.id)}
-              //   onDragOver={(event) => handleDragOver(event)}
-              //   onDrop={(event) => handleDrop(event, event.id)}
             >
               <ColumnWrap>
                 {event.title} - {event.member}
               </ColumnWrap>
-              {/* {hoveredEventId === event.id && (
-                <ColumnWrap>
-                  <p>{event.date}</p>
-                  <p>
-                    {event.time} - {event.endTime}
-                  </p>
-                </ColumnWrap>
-              )} */}
             </TableCell>
           );
         })}
@@ -108,9 +71,9 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
   };
 
   function getWeekNumber(date: any) {
-    // console.log(typeof date);
+    
     const dateObj = new Date(date);
-    const dayOfWeek = (dateObj.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
+    const dayOfWeek = (dateObj.getDay() + 6) % 7; 
     const jan1 = new Date(dateObj.getFullYear(), 0, 1);
     const daysSinceJan1 =
       Math.floor((dateObj.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) +
@@ -121,24 +84,24 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
   }
 
   function getDatesForWeekNumber(weekNumber: number, year: number) {
-    // Get the first day of the year
+    
     const firstDayOfYear = new Date(year, 0, 1);
 
-    // Get the day of the week for January 1st
+    
     const januaryFirstDayOfWeek = firstDayOfYear.getDay();
 
-    // Calculate the number of days from January 1st to the first day of the first week
+    
     const daysToFirstWeekDay = (7 - januaryFirstDayOfWeek) % 7;
 
-    // Calculate the date of the first day of the first week
+    
     const firstWeekStartDate = new Date(year, 0, 1 + daysToFirstWeekDay);
 
-    // Calculate the start date of the week number
+    
     const weekStartDate = new Date(
       firstWeekStartDate.getTime() + (weekNumber - 1) * 7 * 24 * 60 * 60 * 1000
     );
 
-    // Generate an array of date strings for the week
+    
     const dateStringsForWeek = [];
     for (let i = 0; i < 7; i++) {
       const date = new Date(weekStartDate.getTime() + i * 24 * 60 * 60 * 1000);
@@ -181,15 +144,10 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
                 <EventList
                   events={events.filter((event) => {
                     const eventWeekNumber = getWeekNumber(event.date);
-                    //console.log(event);
-                    //console.log(event.multiDay);
-
                     const weekArray = getDatesForWeekNumber(
                       weekNumber,
                       date.getFullYear()
                     );
-                    //console.log(weekArray[index]);
-
                     return (
                       event.date <= weekArray[index] &&
                       event.endDate >= weekArray[index] &&
@@ -206,7 +164,6 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
           {hours.map((hour: any) => (
             <TableRow key={hour}>
               <TableHeader>{hour}</TableHeader>
-
               {days.map((day) => (
                 <TableData key={`${day}_${hour}`}>
                   <EventList
@@ -216,10 +173,6 @@ const HourlyView: any = ({ events, weekNumber, date }: Props) => {
                         event.day === day &&
                         event.time <= hour &&
                         eventWeekNumber === weekNumber
-                        // event.endTime >= hour &&
-                        //event.day === day &&
-                        //eventWeekNumber === weekNumber &&
-                        //event.multiDay === false
                       );
                     })}
                   />
@@ -251,7 +204,7 @@ const Table = styled.table`
 `;
 
 const TableRow = styled.tr`
-  //border: 1px solid #ccc;
+  
   border-radius: 10px;
 `;
 
@@ -259,27 +212,17 @@ const TableHeader = styled.th`
   padding: 8px;
   text-align: center;
   border-radius: 10px;
-
-  //border: 1px solid #ccc;
 `;
 
 const TableData = styled.td`
-  //padding: 8px;
+  
   border: 1px solid #ccc;
   align-items: center;
   justify-content: center;
   margin: 0 auto;
 `;
 
-const EventListItem = styled.li`
-  border: 1px solid #ccc;
-  padding: 8px;
-  margin-bottom: -1px;
-  background-color: #f2f2f2;
-`;
-
 const TableCell = styled.td`
-  //border: 1px solid #ccc;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
   background-color: rgba(52, 103, 161, 0.5);
   width: auto;

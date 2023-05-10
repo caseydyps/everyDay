@@ -1,56 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components/macro';
-import { db } from '../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { arrayUnion } from 'firebase/firestore';
-import DefaultButton from './Button/Button';
-import { ChromePicker } from 'react-color';
 import {
-  collection,
-  updateDoc,
-  getDocs,
-  doc,
-  addDoc,
-  deleteDoc,
-  onSnapshot,
-  QuerySnapshot,
-  setDoc,
-  getDoc,
-  writeBatch,
-  startAfter,
-  CollectionReference,
-  query,
-  where,
-} from 'firebase/firestore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import UserAuthData from './Login/Auth';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faMagnifyingGlass,
-  faRotateLeft,
+  faBroom,
   faEraser,
   faFloppyDisk,
-  faPencil,
-  faCircle,
   faPaintRoller,
-  faClockRotateLeft,
-  faBroom,
   faPen,
+  faPencil,
 } from '@fortawesome/free-solid-svg-icons';
-const CanvasWrap = styled.div`
-  canvas {
-    border: 1px solid;
-    width: 100%;
-    height: 100%;
-  }
-`;
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'firebase/firestore';
+import { addDoc, collection, deleteDoc, getDocs } from 'firebase/firestore';
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import { db } from '../config/firebase.config';
+import DefaultButton from './Button/Button';
+import UserAuthData from './Login/Auth';
 
 const ButtonWrap = styled.div`
   display: flex;
@@ -98,7 +61,6 @@ const CanvasButton = styled(DefaultButton)`
   margin-right: 5px;
   margin-left: 5px;
   border: none;
-  // box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 `;
 
 const CanvasContainer = styled.div`
@@ -123,20 +85,10 @@ const DrawingTool = () => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [currentColor, setCurrentColor] = useState('#000000'); // Default color is black
+  const [currentColor, setCurrentColor] = useState('#000000');
   const [strokes, setStrokes] = useState<any>([]);
-  //const [lineWidth, setLineWidth] = useState(5);
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
+
+  const { familyId } = UserAuthData();
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -168,7 +120,6 @@ const DrawingTool = () => {
     contextRef.current.moveTo(offsetX, offsetY);
     setIsPainting(true);
 
-    // Add this line to start a new path when starting to draw
     contextRef.current.beginPath();
 
     prevOffset.current = { x: offsetX, y: offsetY };
@@ -179,26 +130,10 @@ const DrawingTool = () => {
     contextRef.current.lineWidth = width;
     contextRef.current.closePath();
     setIsPainting(false);
-    // const canvas = canvasRef.current;
-    // const context = canvas.getContext('2d');
   };
 
-  //   callback: (...args: T) => void,
-  //   delay: number
-  // ) => {
-  //   let previousCall = new Date().getTime();
-  //   return (...args: T) => {
-  //     const time = new Date().getTime();
-
-  //     if (time - previousCall >= delay) {
-  //       previousCall = time;
-  //       callback.apply(null, args);
-  //     }
-  //   };
-  // };
   useEffect(() => {
     const loadStrokes = async () => {
-      // Retrieve the strokes from Firestore when the component mounts
       const strokesCollectionRef = collection(
         db,
         'Family',
@@ -218,8 +153,6 @@ const DrawingTool = () => {
             handleStrokeUpdate(s);
           });
         });
-
-        // Load the canvas
         loadCanvas();
 
         console.log('Canvas loaded successfully');
@@ -231,7 +164,7 @@ const DrawingTool = () => {
     loadStrokes();
   }, [familyId]);
 
-  const stackLimit = 500; // maximum stack size
+  const stackLimit = 500;
 
   const paint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isPainting) {
@@ -246,17 +179,6 @@ const DrawingTool = () => {
         const startY = prevOffset.current.y;
         context.lineTo(offsetX, offsetY);
         context.stroke();
-
-        // Save the stroke to Firestore
-        // addStroke({
-        //   startX,
-        //   startY,
-        //   endX: offsetX,
-        //   endY: offsetY,
-        //   color,
-        //   width,
-        // });
-
         const newStroke: StrokeData = {
           startX: prevOffset.current.x,
           startY: prevOffset.current.y,
@@ -267,7 +189,6 @@ const DrawingTool = () => {
         };
         setStrokes([...strokes, newStroke]);
 
-        // Update the undo stack
         const state = context.getImageData(0, 0, canvas.width, canvas.height);
         setUndoStack((prevStack) => [...prevStack, state]);
 
@@ -293,41 +214,14 @@ const DrawingTool = () => {
     try {
       const docRef = await addDoc(strokesCollectionRef, strokeObject);
       console.log('Stroke added to Firestore with ID:', docRef.id);
-      //handleStrokeUpdate(strokes);
     } catch (error) {
       console.error('Error adding stroke to Firestore:', error);
     }
   };
 
-  // const loadCanvas = async () => {
-  //   const strokesCollectionRef = collection(
-  //     db,
-  //     'Family',
-  //     familyId,
-  //     'canva',
-  //     familyId,
-  //     'strokes'
-  //   );
-
-  //   try {
-  //     const querySnapshot = await getDocs(strokesCollectionRef);
-  //     const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
-  //     console.log('Strokes data retrieved from Firestore:', strokesData);
-
-  //     strokesData.forEach((stroke) => {
-  //       // redraw the stroke on the canvas
-  //       // you will need to implement this part based on your specific canvas implementation
-  //     });
-
-  //     console.log('Canvas loaded successfully');
-  //   } catch (error) {
-  //     console.error('Error loading canvas:', error);
-  //   }
-  // };
   const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
-    console.log(strokeData);
     context.beginPath();
     context.moveTo(strokeData.startX, strokeData.startY);
     context.lineTo(strokeData.endX, strokeData.endY);
@@ -337,12 +231,10 @@ const DrawingTool = () => {
   };
 
   const handleChangeColor = (newColor: string) => {
-    //addStroke(strokes);
     setColor(newColor);
   };
 
   const handleChangeLineWidth = (newWidth: number) => {
-    //addStroke(strokes);
     setWidth(newWidth);
   };
   const clearCanvas = async () => {
@@ -366,24 +258,7 @@ const DrawingTool = () => {
       }
     });
     setStrokes([]);
-    console.log('Strokes array cleared');
-
     window.location.reload();
-  };
-
-  const undoStroke = () => {
-    const canvas = canvasRef.current;
-    if (canvas) {
-      const context = canvas.getContext('2d');
-      if (context && undoStack.length > 0) {
-        // Restore the previous state from the undo stack
-        const prevState = undoStack[undoStack.length - 1];
-        context.putImageData(prevState, 0, 0);
-
-        // Update the undo stack to remove the previous state
-        setUndoStack(undoStack.slice(0, -1));
-      }
-    }
   };
 
   const loadCanvas = async () => {
@@ -431,9 +306,7 @@ const DrawingTool = () => {
 
   const handleClick = async () => {
     setIsAdding(true);
-    const strokeData = {
-      /* populate stroke data here */
-    };
+    const strokeData = {};
     try {
       console.log(strokes);
       await addStroke(strokes);
@@ -446,7 +319,6 @@ const DrawingTool = () => {
 
   return (
     <Container>
-      {/* <div>{`Strokes: ${undoStack.length}`}</div> */}
       <CanvasContainer>
         <ButtonWrap>
           <CanvasButton onClick={handleClick}>
@@ -470,26 +342,7 @@ const DrawingTool = () => {
               }}
             />
           </CanvasButton>
-          {/* <CanvasButton
-          color="black"
-          onClick={() => handleChangeColor('black')}
-          type="button"
-        ></CanvasButton>
-        <CanvasButton
-          color="red"
-          onClick={() => handleChangeColor('red')}
-          type="button"
-        ></CanvasButton>
-        <CanvasButton
-          color="green"
-          onClick={() => handleChangeColor('green')}
-          type="button"
-        ></CanvasButton>
-        <CanvasButton
-          color="blue"
-          onClick={() => handleChangeColor('blue')}
-          type="button"
-        ></CanvasButton> */}
+
           <CanvasButton
             color="transparent"
             onClick={() => handleChangeColor('white')}
@@ -497,25 +350,6 @@ const DrawingTool = () => {
           >
             <FontAwesomeIcon icon={faEraser} />
           </CanvasButton>
-          {/* <input
-            type="range"
-            id="lineWidth"
-            min="1"
-            max="50"
-            value={width}
-            onChange={handleLineWidthChange}
-            style={{
-              WebkitAppearance: 'none',
-              appearance: 'none',
-              width: '100%',
-              height: '10px',
-              background: '#d3d3d3',
-              outline: 'none',
-              opacity: '0.7',
-              transition: 'opacity .2s',
-              borderRadius: '10px',
-            }}
-          /> */}
           <CanvasButton
             color="transparent"
             onClick={() => handleChangeLineWidth(5)}
@@ -534,14 +368,10 @@ const DrawingTool = () => {
           >
             <FontAwesomeIcon icon={faPaintRoller} />
           </CanvasButton>
-          {/* <CanvasButton color="transparent" onClick={undoStroke}>
-            <FontAwesomeIcon icon={faClockRotateLeft} />
-          </CanvasButton> */}
+
           <CanvasButton color="transparent" onClick={clearCanvas}>
             <FontAwesomeIcon icon={faBroom} />
           </CanvasButton>
-          {/* <button onClick={addStroke}>Save</button>
-    <button onClick={loadCanvas}>load</button> */}
         </ButtonWrap>
         <canvas
           id="canvas"

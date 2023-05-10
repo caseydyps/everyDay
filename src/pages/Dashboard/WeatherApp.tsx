@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
+import React from 'react';
 type DataType = {
   main?: {
     temp: number;

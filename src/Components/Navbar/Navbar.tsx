@@ -1,4 +1,3 @@
-import React from 'react';
 import styled from 'styled-components';
 import SmartInputMini from '../../pages/AI/SmartInputMini';
 
@@ -25,15 +24,6 @@ const Icon = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const SearchBar = styled.input`
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-left: 1rem;
-  flex-grow: 1;
 `;
 
 const Navbar = () => {

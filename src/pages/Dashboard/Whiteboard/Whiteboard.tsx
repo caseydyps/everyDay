@@ -1,51 +1,33 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
 import DrawingTool from '../../../Components/drawingtool';
-//import Drawing from '../../../Components/drawing';
-import axios from 'axios';
-import TenorGif from './Giphy';
 import { GiphyFetch } from '@giphy/js-fetch-api';
-import Banner from '../../../Components/Banner/Banner';
 import { IGif } from '@giphy/js-types';
-import { Gif } from '@giphy/react-components';
-import { Grid } from '@giphy/react-components';
-import { ThreeDButton } from '../../../Components/Button/Button';
-import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import DefaultButton from '../../../Components/Button/Button';
-import Layout from '../../../Components/layout';
-import { ChatMini } from '../Dashboard';
 import 'firebase/firestore';
+import Banner from '../../../Components/Banner/Banner';
+import DefaultButton, { ThreeDButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { db } from '../../../config/firebase.config';
+import { ChatMini } from '../Dashboard';
 import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faMagnifyingGlass,
   faCircleInfo,
-  faX,
+  faEyeSlash,
   faLock,
   faLockOpen,
-  faEyeSlash,
+  faMagnifyingGlass,
+  faPlusCircle,
+  faX
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   collection,
-  updateDoc,
-  getDocs,
-  getDoc,
-  addDoc,
   deleteDoc,
   doc,
+  getDoc,
+  getDocs,
   setDoc,
-  query,
-  where,
+  updateDoc
 } from 'firebase/firestore';
 import SideNav from '../../../Components/Nav/SideNav';
 
@@ -64,16 +46,8 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  //border: 3px solid red;
+  
 `;
-
-type StickerType = {
-  dragging: boolean;
-  offsetX: number;
-  offsetY: number;
-  color: string;
-  isSticker: boolean;
-};
 
 const Sticker: any = styled.div<{
   dragging: boolean;
@@ -96,19 +70,9 @@ const Sticker: any = styled.div<{
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
-  /* box-shadow: ${(props) =>
-    props.isSticker ? '0 0 10px rgba(0, 0, 0, 0.5)' : 'none'}; */
+ 
 `;
 
-const AddButton = styled.button`
-  margin-top: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: lightgreen;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-`;
 
 const ColorButton = styled(DefaultButton)<{ color: string }>`
   margin: 10px;
@@ -164,9 +128,6 @@ const LockButton = styled.button`
   }
 `;
 
-const HideButton = styled(DefaultButton)`
-  margin-left: 30px;
-`;
 
 const RowWrap = styled.div`
   display: flex;
@@ -178,7 +139,6 @@ const StickerRowWrap = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-
   top: 140px;
   width: 650px;
   left: 55%;
@@ -205,8 +165,8 @@ const GifWrap = styled.div`
 
 const CenterWrap = styled.div`
   display: flex;
-  justify-content: center; /* Center the child element horizontally */
-  align-items: center; /* Center the child element vertically */
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   height: 100%;
   padding: 20px;
@@ -219,18 +179,7 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  //border: gold solid 3px;
-`;
-
-const Title = styled.h2`
-  text-align: center;
-`;
-
-const Centered = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  
 `;
 
 const Results = styled.div`
@@ -272,20 +221,6 @@ const SearchButton = styled.button`
   }
 `;
 
-const InfoButton = styled(DefaultButton)`
-  background-color: transparent;
-  padding: 0px;
-  color: rgba(255, 255, 255, 0.5);
-  border: none;
-  box-shadow: none;
-  :hover {
-    background-color: transparent;
-    color: rgba(255, 255, 255, 0.75);
-  }
-  position: absolute;
-  left: 300px;
-  top: 10px;
-`;
 
 const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
@@ -299,9 +234,6 @@ export const Whiteboard = () => {
   });
   const [stickers, setStickers] = useState<any>([]);
   const [stickerText, setStickerText] = useState<string[]>([]);
-  const [image, setImage] = useState(null);
-  const [gifUrl, setGifUrl] = useState<string>('');
-  const [gif, setGif] = useState<IGif | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGif, setSelectedGif] = useState<IGif | null>(null);
   const [searchResults, setSearchResults] = useState<IGif[]>([]);
@@ -309,19 +241,9 @@ export const Whiteboard = () => {
   const [lockedStickers, setLockedStickers] = useState(() =>
     Array(stickers.length).fill(false)
   );
-  // <button onClick={() => voteSticker(name)}>Vote</button>;
-  const [count, setCount] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
     familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
   } = UserAuthData();
 
   const handleSearch = async () => {
@@ -336,7 +258,6 @@ export const Whiteboard = () => {
   };
 
   useLayoutEffect(() => {
-    const container = document.getElementById('Wrapper');
     const updateStickerPosition = async (
       id: number,
       newX: number,
@@ -466,9 +387,6 @@ export const Whiteboard = () => {
   };
 
   const deleteSticker = async (id: number) => {
-    console.log(id);
-    console.log(stickers);
-
     try {
       const familyDocRef = doc(
         db,
@@ -492,14 +410,8 @@ export const Whiteboard = () => {
     const newLockedStickers = [...lockedStickers];
     newLockedStickers[index] = !newLockedStickers[index];
     setLockedStickers(newLockedStickers);
-  };
-
-  console.log(stickers);
-  console.log(newStickerColor);
-
-  //gifUrl = selectedGif ? selectedGif.images.original.url : '';
+  };  
   const [showTooltip, setShowTooltip] = useState(false);
-
   const InfoButton = styled(ThreeDButton)`
     position: absolute;
     width: 30px;
@@ -513,12 +425,9 @@ export const Whiteboard = () => {
   return (
     <Container>
       <SideNav></SideNav>
-
       <Wrapper id="Wrapper">
-        {/* <AddButton onClick={addSticker}>Add Sticker</AddButton> */}
         <ChatMini />
         <Banner title="Stick'n Draw" subTitle="Where Art and Fun Meet"></Banner>
-
         <CenterWrap>
           <div
             style={{ position: 'relative', display: 'inline-block' }}
@@ -628,7 +537,6 @@ export const Whiteboard = () => {
             </>
           ))}
           <DrawingTool></DrawingTool>
-          {/* <Drawing></Drawing> */}
           <StickerRowWrap>
             <ColorButton
               color="white"

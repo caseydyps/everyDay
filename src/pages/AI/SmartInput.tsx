@@ -1,76 +1,39 @@
-import styled, { keyframes } from 'styled-components/macro';
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import Sidebar from '../../Components/Nav/Navbar';
-import { v4 as uuidv4 } from 'uuid';
-import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import UserAuthData from '../../Components/Login/Auth';
-import { AuthContext } from '../../config/Context/authContext';
-import LoadingAnimation from '../../Components/loading';
 import {
-  DefaultButton,
-  CancelButton,
-  CloseButton,
-} from '../../Components/Button/Button';
-import {
-  collection,
-  updateDoc,
-  getDocs,
-  getDoc,
-  addDoc,
-  deleteDoc,
-  doc,
-  setDoc,
-  query,
-  where,
-} from 'firebase/firestore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
   faPaperPlane,
   faRotateLeft,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  doc,
+  getDoc,
+  setDoc
+} from 'firebase/firestore';
+import React, { useContext, useState } from 'react';
+import styled from 'styled-components/macro';
+import { v4 as uuidv4 } from 'uuid';
+import {
+  DefaultButton,
+} from '../../Components/Button/Button';
+import UserAuthData from '../../Components/Login/Auth';
+import LoadingAnimation from '../../Components/loading';
+import { AuthContext } from '../../config/Context/authContext';
+import { db } from '../../config/firebase.config';
 
 const Wrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   flex: 2;
 `;
-const Container = styled.div`
-  width: 100vw;
-  display: flex;
-  flex-direction: row;
-`;
-
-const HastagWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
 
 const CategoryWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
-
-  justify-content: center; /* centers child elements along the horizontal axis */
+  justify-content: center;
   align-items: center;
-`;
-
-const Button = styled.button`
-  background-color: #eaeaea;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 32px;
-  color: #555;
 `;
 
 export const InputForm = styled.form`
@@ -102,11 +65,6 @@ const Wrap = styled.div`
   transform: translate(-50%, -50%);
 `;
 
-const InputLabel = styled.label`
-  margin-bottom: 10px;
-  font-size: 16px;
-`;
-
 const InputField = styled.input`
   margin: 20px;
   padding: 10px;
@@ -114,26 +72,6 @@ const InputField = styled.input`
   border-radius: 4px;
   font-size: 16px;
   width: 100%;
-`;
-
-const SubmitButton = styled.button`
-  padding: 0.5rem;
-  font-size: 1rem;
-  background-color: #0077cc;
-  color: black;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #005ea8;
-  }
-`;
-
-const ResponseDisplay = styled.div`
-  border-radius: 4px;
-  padding: 1rem;
 `;
 
 const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
@@ -168,7 +106,7 @@ const Text = styled.div`
   padding: 10px;
   border-radius: 5px;
   margin: 30px;
-  //box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  
 `;
 
 const Instruction = styled.div`
@@ -180,7 +118,7 @@ const Instruction = styled.div`
   padding: 10px;
   width: 100%;
   border-radius: 5px;
-  // box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  
 `;
 
 const Card = styled.div`
@@ -188,7 +126,6 @@ const Card = styled.div`
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-  //box-shadow: 3px 3px 5px black;
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -211,16 +148,9 @@ const Card = styled.div`
     border-radius: 50%;
   }
   &:hover {
-    /* transform: scale(1.1); */
   }
 `;
 
-const RowWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: space-between;
-`;
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -238,7 +168,6 @@ const config = new Configuration({
 });
 
 const openai = new OpenAIApi(config);
-//const [membersArray, setMembersArray] = useState<string[]>([]);
 interface CategorySelectorProps {
   onSelect: (category: string) => void;
 }
@@ -248,9 +177,6 @@ const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
   const categories = [
     '#Calendar',
     '#Todo',
-    // '#Album',
-    // '#AI',
-    // '#StickyNotes',
     '#Milestone',
   ];
 
@@ -279,21 +205,10 @@ interface MembersSelectorProps {
   selectedMembers?: string[] | string;
 }
 
-//console.log(formatDate(date));
+
 
 export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
   const [selectedMember, setSelectedMember] = useState<string>('');
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
-
   const { familyId, memberRolesArray } = useContext(AuthContext);
   console.log(memberRolesArray);
 
@@ -335,11 +250,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
+    
     familyId,
     setHasSetup,
     membersArray,
@@ -347,12 +258,12 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   } = UserAuthData();
   const [selectedMembers, setSelectedMembers] = useState(memberRolesArray);
   const handleCategorySelect = (category: string) => {
-    // event.preventDefault();
+    
     setCategory(category);
   };
 
   const handleSelectMember = (member: string | string[]) => {
-    // event.preventDefault();
+    
 
     setMember(member);
   };
@@ -400,7 +311,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       });
       console.log(response.data);
       setResponseValue(response.data.choices[0].text);
-      //setIsEventAdded(true);
+      
       setIsLoading(false);
     }
     if (category === '#Todo') {
@@ -431,7 +342,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       console.log(response.data);
 
       setResponseValue(response.data.choices[0].text);
-      setIsLoading(false); // Set isLoading back to false
+      setIsLoading(false); 
     }
     if (category === '#StickyNotes') {
       console.log('sticky notes');
@@ -441,15 +352,15 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   請依照繁體中文格式，生成以下 JSON 回應：
 
   
-  // {
-  //   "id": ${uuidv4()},
-  //   "event": ${category},
-  //   "content": "便利貼內容",
-  //   "color": "便利貼顏色",
-  //   "response": "此便利貼已添加到您的便利貼列表。回應訊息",
-  //   "x":150,
-  //   "y":150,
-  // }
+  
+  
+  
+  
+  
+  
+  
+  
+  
     `;
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -512,7 +423,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     console.log(responseValue);
     alert(JSON.parse(responseValue).response);
     setInputValue('');
-    // setIsEventAdded(true);
+    
     onClose();
 
     if (category === '#Calendar') {
@@ -532,13 +443,13 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       const newEvent = {
         title: JSON.parse(responseValue).title,
         date: JSON.parse(responseValue).date,
-        //endDate: JSON.parse(responseValue).endDate,
+        
         category: JSON.parse(responseValue).category,
         member: JSON.parse(responseValue).member,
         id: uuidv4(),
-        //multiDay: isMultiDay,
+        
         time: JSON.parse(responseValue).time,
-        //endTime: JSON.parse(responseValue).endTime,
+        
         note: '',
       };
       postEventToFirestore(newEvent);
@@ -553,14 +464,14 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       const postEventToFirestore = async (data: EventData) => {
         const todoRef = doc(db, 'Family', familyId, 'todo', 'todo');
         try {
-          // Get the existing items array from the todo document
+          
           console.log('here');
           const todoDoc = await getDoc(todoRef);
           const items = todoDoc.exists() ? todoDoc.data().items : [];
 
           const updatedItems = [...items, newItem];
 
-          // Update the items array in the todo document
+          
           await setDoc(todoRef, {
             items: updatedItems,
             title: 'todo',
@@ -597,13 +508,10 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     | {
         title: string;
         date: string;
-        ///endDate: string;
         category: string;
         member: string;
         id: string;
-        //multiDay: boolean;
         time: string;
-        //endTime: string;
         note: string;
       }
     | {
@@ -653,34 +561,16 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   };
 
   const handleRedo = () => {
-    setInputValue(''); // reset input value
-    setResponseValue(''); // reset response value
-    setSelectedMembers([]); // reset selected members
-    setSelectedCategory(''); // reset selected category
+    setInputValue(''); 
+    setResponseValue(''); 
+    setSelectedMembers([]); 
+    setSelectedCategory(''); 
     setIsLoading(false);
   };
-
-  const fadeInOut = keyframes`
-from {
-  opacity: 1;
-}
-to {
-  opacity: 0;
-}
-`;
 
   return (
     <Wrapper>
       <Card>
-        {/* <p
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          智慧輸入
-        </p> */}
         <ColumnWrap>
           <ColumnWrap>
             <Instruction>First, choose your category</Instruction>

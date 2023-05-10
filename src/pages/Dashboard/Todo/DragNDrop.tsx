@@ -1,71 +1,30 @@
-import React, {
-  useState,
-  useCallback,
-  useRef,
-  useEffect,
-  useReducer,
-  useContext,
-} from 'react';
-import UserAuthData from '../../../Components/Login/Auth';
-import styled from 'styled-components/macro';
-import AddItemForm from './AddItemForm';
-import { AuthContext } from '../../../config/Context/authContext';
-import { todoReducer } from './Todo';
-import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { MembersSelector } from '../../AI/SmartInput';
-import { Card, ThreeDButton } from '../../../Components/Button/Button';
 import { format } from 'date-fns';
+import 'firebase/firestore';
+import { deleteDoc, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import { ThreeDButton } from '../../../Components/Button/Button';
+import { AuthContext } from '../../../config/Context/authContext';
+import { db } from '../../../config/firebase.config';
+import { MembersSelector } from '../../AI/SmartInput';
 import {
-  collection,
-  updateDoc,
-  addDoc,
-  getDocs,
-  getDoc,
-  setDoc,
-  writeBatch,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  arrayUnion,
-} from 'firebase/firestore';
-
-import DefaultButton from '../../../Components/Button/Button';
-import { Container } from '../../Family/FamilyForm';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faUserPen,
-  faCircleXmark,
-  faArrowDownWideShort,
   faArrowDownShortWide,
-  faPerson,
+  faArrowDownWideShort,
   faCalendarDays,
-  faUsers,
   faEllipsis,
   faPencil,
-  faCalendar,
-  faCheck,
+  faTrashCan,
+  faUsers,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import DefaultButton from '../../../Components/Button/Button';
 const DragNDropWrapper = styled.div`
   display: flex;
-
-  // justify-content: space-between;
   margin: 10px;
   flex-direction: row;
   overflow-x: scroll;
   height: 100%;
 `;
-
-const colors = ['#F7D44C', '#EB7A53', '#98B7DB', '#A8D672', '#F6ECC9'];
-
 const Button = styled(DefaultButton)`
   display: flex;
   background-color: transparent;
@@ -74,16 +33,6 @@ const Button = styled(DefaultButton)`
   flex-direction: column;
   font-size: 20px;
 `;
-
-const CloseButton = styled(DefaultButton)`
-  display: flex;
-  background-color: transparent;
-  margin: 20px;
-  border-radius: 50%;
-  flex-direction: column;
-  font-size: 20px;
-`;
-
 const RowButton = styled(DefaultButton)`
   display: flex;
   justify-content: space-between;
@@ -108,13 +57,11 @@ const DragNDropGroup: any = styled.div`
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  //border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   border-radius: 20px;
   -webkit-border-radius: 12px;
   color: rgba(255, 255, 255, 0.75);
-  //border-radius: 5px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 `;
 
@@ -159,50 +106,6 @@ const DragNDropItem: any = styled.div<DragNDropItemProps>`
   }
 `;
 
-const CheckContainer = styled.label`
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  position: relative;
-  cursor: pointer;
-`;
-type CheckmarkProps = {
-  checked: boolean;
-};
-
-const Checkmark = styled.div<CheckmarkProps>`
-  display: inline-block;
-  width: 25px;
-  height: 25px;
-  margin-right: 10px;
-  color: ${(props) => (props.checked ? '#f6ecc9' : 'black')};
-  border: 1px solid black;
-  border-radius: 50%; /* make the border circle-shaped */
-  background-color: ${(props) => (props.checked ? 'transparent' : '#f6ecc9')};
-
-  &:after {
-    content: '';
-    display: block;
-    width: 6px;
-    height: 11px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin: 2px;
-    visibility: ${(props) => (props.checked ? 'visible' : 'hidden')};
-  }
-`;
-
-const Checkbox = styled.div`
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-  border-radius: 50%;
-`;
-
 const Avatar = styled.img`
   width: 50px;
   height: 50px;
@@ -215,10 +118,8 @@ const ColumnWrap = styled.div`
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-
   height: auto;
   width: 100%;
-  //border: 3px solid #f6ecc9;
 `;
 const ItemTextWrap = styled.div`
   display: flex;
@@ -294,30 +195,7 @@ type Item = {
   member: string;
 };
 
-type DragNDropProps = {
-  data: DataItem[];
-};
-
-type DragNDropState = {
-  list: DataItem[];
-  dragging: boolean;
-  sortOrder: 'ascending' | 'descending';
-};
-
 function DragNDrop({ data }: any) {
-  // const [state, dispatch] = useReducer(todoReducer, []);
-  console.log(data);
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
   const { familyId, membersArray } = useContext(AuthContext);
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
@@ -331,7 +209,6 @@ function DragNDrop({ data }: any) {
 
   const dragItem = useRef<ItemType | null>(null);
   const dragItemNode = useRef<HTMLDivElement | null>(null);
-
   type ItemType = {
     id: number;
     name: string;
@@ -345,12 +222,9 @@ function DragNDrop({ data }: any) {
     e: React.DragEvent<HTMLDivElement>,
     item: ItemType
   ) => {
-    console.log('Starting to drag', item);
-
     dragItemNode.current = e.target as HTMLDivElement;
     dragItemNode.current.addEventListener('dragend', handleDragEnd);
     dragItem.current = item;
-
     setTimeout(() => {
       setDragging(true);
     }, 0);
@@ -359,9 +233,7 @@ function DragNDrop({ data }: any) {
     e: React.DragEvent<HTMLDivElement>,
     targetItem: ItemType
   ) => {
-    console.log('Entering a drag target', targetItem);
     if (dragItemNode.current !== e.target) {
-      console.log('Target is NOT the same as dragged item');
       setList((oldList) => {
         let newList = JSON.parse(JSON.stringify(oldList));
         if (dragItem.current) {
@@ -375,7 +247,6 @@ function DragNDrop({ data }: any) {
           );
           dragItem.current = targetItem;
         }
-        // localStorage.setItem('List', JSON.stringify(newList));
         return newList;
       });
     }
@@ -390,69 +261,13 @@ function DragNDrop({ data }: any) {
     dragItemNode.current = null;
   };
   const [hideChecked, setHideChecked] = useState(false);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedMembers, setSelectedMembers] = useState([]);
   const [showMembersSelector, setShowMembersSelector] = useState(false);
-  const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(event.target.value);
-  };
 
-  type TodoItem = {
-    title: string;
-    due: Date;
-    member: Member;
-  };
   interface Member {
     name: string;
     avatarSrc: string;
     role: string;
   }
-
-  const addItem = async (
-    groupIndex: number,
-    { title, due, member }: TodoItem
-  ) => {
-    const text = title;
-    const dueDate = due ? due : null;
-    console.log(title, due, member);
-    if (text && member) {
-      const newItem = {
-        text,
-        due: dueDate,
-        member: member,
-        done: false,
-      };
-
-      const todoRef = doc(
-        db,
-        'Family',
-        familyId,
-        'todo',
-        list[groupIndex].title
-      );
-      try {
-        // Get the existing items array from the todo document
-        const todoDoc = await getDoc(todoRef);
-        const items = todoDoc.exists() ? todoDoc.data().items : [];
-
-        const updatedItems = [...items, newItem];
-
-        // Update the items array in the todo document
-        await setDoc(todoRef, {
-          items: updatedItems,
-          title: list[groupIndex].title,
-        });
-
-        setList((oldList) => {
-          const newList = [...oldList];
-          newList[groupIndex].items = updatedItems;
-          return newList;
-        });
-      } catch (error) {
-        console.error('Error saving item to Firestore: ', error);
-      }
-    }
-  };
 
   type Item = {
     text: string;
@@ -462,14 +277,6 @@ function DragNDrop({ data }: any) {
     title: string;
   };
 
-  type Group = {
-    title: string;
-    items: Item[];
-  };
-  type List = {
-    items: ItemType[];
-    title: string;
-  };
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
@@ -481,7 +288,6 @@ function DragNDrop({ data }: any) {
           items.splice(itemIndex, 1);
           updateDoc(todoRef, { items: items })
             .then(() => {
-              console.log(itemIndex, 'Item has been deleted from Firestore!');
               setList((oldList) => {
                 const newList = [...oldList];
                 newList[groupIndex].items = items;
@@ -499,15 +305,6 @@ function DragNDrop({ data }: any) {
         console.error('Error fetching document from Firestore: ', error)
       );
   };
-
-  // const editItem = (groupIndex: number, itemIndex: number) => {
-  //   setList((prevList: List) => {
-  //     const newList = [...prevList];
-  //     newList[groupIndex].items.splice(itemIndex, 1);
-  //     localStorage.setItem('List', JSON.stringify(newList));
-  //     return newList;
-  //   });
-  // };
   const handleChange: any = async (
     e: React.ChangeEvent<HTMLInputElement>,
     groupIndex: number,
@@ -546,7 +343,6 @@ function DragNDrop({ data }: any) {
         });
         return newList;
       });
-      console.log('Item has been updated in Firestore!');
     } catch (error) {
       console.error('Error updating item in Firestore: ', error);
     }
@@ -683,12 +479,6 @@ function DragNDrop({ data }: any) {
     }
   }
 
-  type GroupType = {
-    id: number;
-    title: string;
-    items: ItemType[];
-  };
-
   function getTotalTaskCount(group: DataItem): number {
     let count = 0;
     if (Array.isArray(group.items)) {
@@ -698,19 +488,6 @@ function DragNDrop({ data }: any) {
     }
     return count;
   }
-
-  function getUnfinishedTaskCount(group: DataItem) {
-    let count = 0;
-    if (Array.isArray(group.items)) {
-      for (const item of group.items) {
-        if (!item.done) {
-          count++;
-        }
-      }
-    }
-    return count;
-  }
-
   function getfinishedTaskCount(group: DataItem) {
     let count = 0;
     if (Array.isArray(group.items)) {
@@ -725,7 +502,6 @@ function DragNDrop({ data }: any) {
 
   function getListProgress(list: DataItem) {
     const totalTasks = getTotalTaskCount(list);
-    const unfinishedTasks = getUnfinishedTaskCount(list);
     const finishedTasks = getfinishedTaskCount(list);
     const progress =
       totalTasks === 0 ? 0 : Math.round((finishedTasks / totalTasks) * 100);
@@ -750,12 +526,7 @@ function DragNDrop({ data }: any) {
       </div>
     );
   }
-  const [showAdd, setShowAdd] = useState(false);
   const [showMore, setShowMore] = useState(false);
-  const showAddSection = () => {
-    setShowAdd(!showAdd);
-  };
-
   function formatDate(dueDate: string | Date) {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -785,36 +556,15 @@ function DragNDrop({ data }: any) {
             <List>
               <ListInfoWrap index={groupIndex}>
                 <h4>{group.title}</h4>
-                {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
-              <h4>Total tasks: {getTotalTaskCount(group)}</h4> */}
                 <h4>
                   {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
                 </h4>
               </ListInfoWrap>
               {getListProgress(group)}
-
-              {/* {showAdd ? (
-                <>
-                  <Button onClick={() => setShowAdd(!showAdd)}>
-                    <FontAwesomeIcon icon={faCircleXmark} />
-                  </Button>
-
-                  <AddItemForm
-                    groupIndex={groupIndex}
-                    onAddItem={(item: any) => {
-                      addItem(groupIndex, item);
-                      setShowAdd(false);
-                    }}
-                  />
-                </>
-              ) : null} */}
               <ListRowWrap style={{ height: '80px', margin: '0px' }}>
                 <Button onClick={() => deleteList(groupIndex)}>
                   <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
                 </Button>
-                {/* <Button onClick={showAddSection}>
-                  <FontAwesomeIcon icon={faCirclePlus}></FontAwesomeIcon>
-                </Button> */}
                 <Button
                   onClick={() =>
                     setSortOrder(
@@ -853,8 +603,6 @@ function DragNDrop({ data }: any) {
                       }
                     })
                     .map((item, itemIndex: number) => {
-                      console.log('Due date:', item.due);
-                      console.log('Current date:', new Date());
                       const dueDate = item.due ? new Date(item.due) : null; // convert date string to Date object
                       const currentDate = new Date(); // get current date
                       const formattedDueDate = dueDate
@@ -872,23 +620,15 @@ function DragNDrop({ data }: any) {
                       const isOverdue = formattedDueDate
                         ? formattedDueDate < formattedCurrentDate
                         : false;
-                      const isToday = formattedDueDate === formattedCurrentDate;
-                      // console.log(formattedDueDate);
-                      // console.log(formattedCurrentDate);
-                      // console.log('Is overdue:', isOverdue);
-                      // console.log('Is today:', isToday);
-                      console.log('item', item);
-                      console.log(membersArray);
                       const filteredMembers = membersArray.filter(
                         (member: Member) => member.role === item.member
                       );
-                      console.log('filteredMembers', filteredMembers);
+
                       let matchingMemberAvatar = '';
                       if (filteredMembers.length > 0) {
                         matchingMemberAvatar = filteredMembers[0].avatar;
                       }
-                      console.log('matchingMemberAvatar', matchingMemberAvatar);
-                      //console.log('Matching member:', matchingMember);
+
                       return (
                         <>
                           <DragNDropItem
@@ -914,8 +654,6 @@ function DragNDrop({ data }: any) {
                                 : isOverdue
                                 ? '#1E3D6B'
                                 : '#1E3D6B',
-                              // backgroundColor: 'white',
-
                               color: item.done ? '#737373' : '#F6F8F8',
                             }}
                           >
@@ -937,7 +675,6 @@ function DragNDrop({ data }: any) {
                                   />
                                 </CheckboxContainer>
                               </AvatarRowWrap>
-
                               <ItemTextWrap>
                                 {item.due ? (
                                   <DueText
@@ -963,7 +700,6 @@ function DragNDrop({ data }: any) {
                                 ) : (
                                   <DueText>No due</DueText>
                                 )}
-
                                 <MoreButton
                                   onClick={() => setShowMore(!showMore)}
                                 >
@@ -1049,8 +785,6 @@ function DragNDrop({ data }: any) {
                         </>
                       );
                     })}
-
-                {/* <button>My task only</button> */}
               </DragNDropGroup>
             </List>
           ))}
@@ -1075,15 +809,7 @@ const HideButton = styled(ThreeDButton)`
 const List = styled.div`
   width: 300px;
   background-color: transparent;
-  // border: 3px solid blue;
   height: 100%;
-`;
-
-const Text = styled.div`
-  font-size: 32px;
-  margin-top: -10px;
-  margin-bottom: 5px;
-  margin-right: 0px;
 `;
 
 const EventTitle = styled.div`
@@ -1135,7 +861,6 @@ const CheckboxInput = styled.input`
   background-color: #ffffff;
   transition: background 300ms;
   cursor: pointer;
-
   &:before {
     content: '';
     color: transparent;
@@ -1148,31 +873,12 @@ const CheckboxInput = styled.input`
     background-size: contain;
     box-shadow: inset 0 0 0 3px #3467a1;
   }
-
   &:checked {
     background-color: lightgray;
     &:before {
       box-shadow: none;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E %3Cpath d='M15.88 8.29L10 14.17l-1.88-1.88a.996.996 0 1 0-1.41 1.41l2.59 2.59c.39.39 1.02.39 1.41 0L17.3 9.7a.996.996 0 0 0 0-1.41c-.39-.39-1.03-.39-1.42 0z' fill='%23fff'/%3E %3C/svg%3E");
     }
-  }
-`;
-
-const CheckboxLabel = styled.label`
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  border: 1px solid #999;
-  border-radius: 50%;
-
-  &:after {
-    content: '';
-    display: none;
-    width: 12px;
-    height: 12px;
-    background-color: #333;
-    border-radius: 50%;
-    margin: 4px;
   }
 `;
 

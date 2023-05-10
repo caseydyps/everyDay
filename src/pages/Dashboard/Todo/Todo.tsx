@@ -1,62 +1,33 @@
-import styled from 'styled-components/macro';
-import {
-  useState,
-  useEffect,
-  useContext,
-  useReducer,
-  useRef,
-  Dispatch,
-} from 'react';
-import { AuthContext } from '../../../config/Context/authContext';
-import DragNDrop from './DragNDrop';
-import { nanoid } from 'nanoid';
-import Sidebar from '../../../Components/Nav/Navbar';
-import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
 import 'firebase/firestore';
-import SideNav from '../../../Components/Nav/SideNav';
-import Banner from '../../../Components/Banner/Banner';
-import Layout from '../../../Components/layout';
-import SmartInput from '../../AI/SmartInput';
-import { ChatMini } from '../Dashboard';
-import DefaultButton, { AddButton } from '../../../Components/Button/Button';
-import { CloseButton } from '../../../Components/Button/Button';
-import UserAuthData from '../../../Components/Login/Auth';
 import {
   collection,
-  updateDoc,
-  getDocs,
   doc,
-  setDoc,
+  getDocs,
   onSnapshot,
-  query,
-  where,
+  setDoc,
+  updateDoc,
 } from 'firebase/firestore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-} from '@fortawesome/free-solid-svg-icons';
-
+import { nanoid } from 'nanoid';
+import { Dispatch, useEffect, useReducer, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import Banner from '../../../Components/Banner/Banner';
+import DefaultButton, {
+  AddButton,
+  CloseButton,
+} from '../../../Components/Button/Button';
+import UserAuthData from '../../../Components/Login/Auth';
+import SideNav from '../../../Components/Nav/SideNav';
+import { db } from '../../../config/firebase.config';
+import SmartInput from '../../AI/SmartInput';
+import { ChatMini } from '../Dashboard';
+import DragNDrop from './DragNDrop';
+import React from 'react';
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  //border: 3px solid red;
-`;
-
-const Wrap = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  height: 80px;
 `;
 
 const Container = styled.div`
@@ -66,30 +37,6 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  //border: gold solid 3px;
-`;
-
-const AddListButton: any = styled(DefaultButton)`
-  padding: 5px;
-  margin-left: 20px;
-  width: 120px;
-  height: 50px;
-  position: sticky;
-  border-radius: 25px;
-  color: #5981b0;
-  background-color: #f6f8f8;
-  border: none;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-`;
-
-const Input = styled.input`
-  padding: 10px;
-  border-radius: 5px;
-  border: 2px solid #4caf50;
-
-  color: white;
-  font-size: 16px;
-  margin: 10px;
 `;
 
 const defaultList = [
@@ -229,52 +176,20 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
         },
       };
     case 'SET_DATA':
-      return action.payload; // update state with todosData
+      return action.payload;
     default:
       return state;
     case 'ADD_LIST':
       return [...state, { title: action.payload, items: [] }];
   }
 };
-const getTodosData = async () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
-  console.log(familyId);
-  const familyDocRef = collection(db, 'Family', familyId, 'todo');
-  const querySnapshot = await getDocs(familyDocRef);
-  const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-  console.log(todosData);
-  return todosData;
-};
 
 const Todo = () => {
-  const {
-    user,
-    userName,
-    googleAvatarUrl,
-    userEmail,
-    hasSetup,
-    familyId,
-    setHasSetup,
-    membersArray,
-    memberRolesArray,
-  } = UserAuthData();
-  //const { membersArray } = useContext(AuthContext);
+  const { familyId } = UserAuthData();
+
   const [data, dispatch] = useReducer<any>(todoReducer, [defaultData]);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   console.log(data);
-  // useEffect(() => {
-  //   localStorage.setItem('List', JSON.stringify(data));
-  // }, [data]);
 
   const addList = async (dispatch: Dispatch<ActionType>) => {
     const title = prompt('Enter the title for the new list:');
@@ -317,9 +232,6 @@ const Todo = () => {
       const familyDocRef = collection(db, 'Family', familyId, 'todo');
       const unsubscribe = onSnapshot(familyDocRef, (querySnapshot) => {
         const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-        console.log(todosData);
-
-        // Always ensure todosData is an array
         const todosArray = Array.isArray(todosData) ? todosData : [];
 
         dispatch({ type: 'SET_DATA', payload: todosArray });
@@ -358,13 +270,6 @@ const Todo = () => {
     left: 50%;
     transform: translate(-50%, -50%);
     backdrop-filter: blur(10px);
-
-    // border: 2px solid black;
-  `;
-
-  const RowWrap = styled.div`
-    display: flex;
-    flex-direction: row;
   `;
 
   const InputButton = styled(AddButton)`
@@ -385,7 +290,6 @@ const Todo = () => {
         <ChatMini />
         <AddListButton onClick={() => addList(dispatch)}>
           Add List
-          {/* <FontAwesomeIcon icon={faPlus} beat></FontAwesomeIcon> */}
         </AddListButton>
         <InputButton onClick={handleButtonClick}>Smart Input</InputButton>
         <Banner title="Todo" subTitle="Get Things Done"></Banner>

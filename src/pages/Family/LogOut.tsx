@@ -1,4 +1,3 @@
-import React from 'react';
 import { auth } from '../../config/firebase.config';
 
 const style = {

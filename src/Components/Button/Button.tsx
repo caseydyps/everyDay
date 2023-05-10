@@ -13,36 +13,29 @@ const fade = keyframes`
 export const DefaultButton = styled.button`
   background-color: #f6f8f8;
   color: #5981b0;
-  // border: 2px solid #3467a1;
   border-radius: 20px;
   font-weight: bold;
   padding: 5px 10px;
   margin: 5px;
   font-size: 16px;
   border: none;
-  //box-shadow: 3px 3px 5px black;
   &:hover {
     transform: scale(1.1);
     color: #1e3d6b;
   }
   transition: all 0.3s ease-in-out;
-
   &:hover {
     background-color: transparent;
   }
-
   &.fade-enter {
     opacity: 0;
   }
-
   &.fade-enter-active {
     animation: ${fade} 0.5s ease-out;
   }
-
   &.fade-exit {
     opacity: 1;
   }
-
   &.fade-exit-active {
     animation: ${fade} 0.5s ease-out reverse;
   }
@@ -66,13 +59,11 @@ export const ThreeDButton = styled.button`
   background: #f1f5fb;
   transition: 0.15s cubic-bezier(0, 0, 0.6, 1);
   box-shadow: 0 0 0 2px #bcc8d8, 0 0.625em #e3e9f2;
-
   &:hover {
     background: #e4ebf4;
     transform: translate(0, 0.25em);
     box-shadow: 0 0 0 2px #bcc8d8, 0 0.375em #e3e9f2;
   }
-
   &:active {
     background: #d8e0eb;
     transform: translate(0, 0.75em);
@@ -93,7 +84,6 @@ export const AddButton = styled(ThreeDButton)`
   cursor: pointer;
   outline: none;
   transition: all 0.2s ease-in-out;
-
   &:hover {
     background-color: #3467a1;
     color: white;
@@ -104,20 +94,18 @@ export const AddButton = styled(ThreeDButton)`
   }
   margin: 20px;
   z-index: 5;
-  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  
 `;
 
 export const ConfirmButton = styled(DefaultButton)`
   background-color: #f6f8f8;
   color: #3467a1;
-  // border: 2px solid #3467a1;
   border-radius: 20px;
   font-weight: bold;
   padding: 5px 10px;
   margin: 5px;
   font-size: 16px;
   border: none;
-  //box-shadow: 3px 3px 5px black;
   &:hover {
     transform: scale(1.1);
     color: #1e3d6b;
@@ -125,19 +113,17 @@ export const ConfirmButton = styled(DefaultButton)`
 `;
 
 export const CancelButton = styled.button`
-  background-color: #eb5757; /* a shade of red that contrasts with the theme color */
-  color: #ffffff; /* white text color */
-  border: none; /* removes the default button border */
-  padding: 10px 20px; /* adds some padding to the button */
-  border-radius: 4px; /* rounds the button edges */
-  cursor: pointer; /* shows the pointer cursor on hover */
-  font-size: 16px; /* sets the font size */
-  font-weight: 500; /* sets the font weight */
-  transition: all 0.3s ease; /* adds a smooth transition effect */
-
-  /* styles the button on hover */
+  background-color: #eb5757;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
   &:hover {
-    background-color: #c0392b; /* a darker shade of red */
+    background-color: #c0392b;
   }
 `;
 
@@ -150,9 +136,7 @@ export const CloseButton = styled.button`
   font-size: 24px;
   font-weight: bold;
   transition: all 0.3s ease;
-  position: relative; /* adds positioning context for the pseudo-element */
-
-  /* adds a pseudo-element and styles it as an X */
+  position: relative;
   &::before,
   &::after {
     content: '';
@@ -163,11 +147,11 @@ export const CloseButton = styled.button`
     width: 20px;
     height: 2px;
     background-color: white;
-    transition: all 0.3s ease; /* adds a smooth transition effect */
+    transition: all 0.3s ease;
   }
 
   &::after {
-    transform: translate(-50%, -50%) rotate(-45deg); /* rotates the second line in the opposite direction */
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 
   &:hover {
@@ -175,17 +159,12 @@ export const CloseButton = styled.button`
   }
 
   &:active {
-    /* adds styles when the button is clicked */
+   
     &::before,
     &::after {
       background-color: black;
     }
   }
-`;
-
-const EditButton = styled.button`
-  background-color: gray;
-  color: #fff;
 `;
 
 export const Button = styled.button`
@@ -220,7 +199,7 @@ export const Card = styled.div`
   font-size: 36px;
   background-color: transparent;
   box-shadow: 3px 3px 5px black;
-  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  
   position: relative;
   z-index: 1;
   p {
@@ -236,13 +215,6 @@ export const Card = styled.div`
   &:hover {
     transform: scale(1.1);
   }
-`;
-
-const Banner = styled.div`
-  width: 100vw;
-  height: 300px;
-  border: 3px solid red;
-  color: #3467a1;
 `;
 
 export default DefaultButton;

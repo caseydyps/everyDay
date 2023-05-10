@@ -1,85 +1,25 @@
-import styled from 'styled-components/macro';
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import Sidebar from '../../Components/Nav/Navbar';
-import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { getStorage, ref } from 'firebase/storage';
+import { collection, getDocs } from 'firebase/firestore';
+import { useContext, useEffect, useState } from 'react';
+import styled from 'styled-components/macro';
 import { AuthContext } from '../../config/Context/authContext';
-import { getDownloadURL, uploadBytes } from 'firebase/storage';
-import {
-  collection,
-  updateDoc,
-  getDocs,
-  doc,
-  addDoc,
-  deleteDoc,
-  setDoc,
-  query,
-  where,
-} from 'firebase/firestore';
-import DefaultButton from '../../Components/Button/Button';
-import { InputForm } from './SmartInput';
-import UserAuthData from '../../Components/Login/Auth';
-import { faM } from '@fortawesome/free-solid-svg-icons';
+import { db } from '../../config/firebase.config';
+import React from 'react';
 const configJs = require('../../config/config.js');
-
 const { Configuration, OpenAIApi } = require('openai');
-
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,
 });
-
 const openai = new OpenAIApi(config);
 
 const Suggestion = () => {
-  const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
   const [milestoneData, setMilestoneData] = useState<
     { id: string; title: string; date: Date; member: string; image: string }[]
   >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
   const [calendarData, setCalendarData] = useState<any>([]);
-  const moment = require('moment');
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
   const { familyId } = useContext(AuthContext);
-  // useEffect(() => {
-  //   async function fetchData() {
-  //     const familyDocRef = collection(db, 'Family', familyId, 'Milestone');
-  //     try {
-  //       const querySnapshot = await getDocs(familyDocRef);
-  //       const data = querySnapshot.docs.map((doc) => ({
-  //         ...doc.data(),
-  //       }));
-  //       console.log(data);
-  //       setMilestoneData(
-  //         data as {
-  //           id: string;
-  //           title: string;
-  //           date: Date;
-  //           member: string;
-  //           image: string;
-  //         }[]
-  //       );
-  //     } catch (error) {
-  //       console.error('Error fetching data from Firestore: ', error);
-  //     }
-  //   }
-
-  //   fetchData();
-  // }, [familyId]);
-
   interface Todo {
     id: string;
     title: string;
@@ -87,31 +27,6 @@ const Suggestion = () => {
     items: any;
     done: boolean;
   }
-
-  // useEffect(() => {
-  //   console.log(familyId);
-  //   const fetchTodosData = async () => {
-  //     const todoData = await getTodosData();
-  //     console.log(todoData);
-  //     setTodoData(
-  //       todoData as {
-  //         id: string;
-  //         title: string;
-  //         completed: boolean;
-  //       }[]
-  //     );
-  //   };
-  //   fetchTodosData();
-  // }, [familyId]);
-
-  // useEffect(() => {
-  //   const fetchCalendarData = async () => {
-  //     const calendarData: any = await getCalendarData();
-  //     console.log(calendarData);
-  //     setCalendarData(calendarData);
-  //   };
-  //   fetchCalendarData();
-  // }, [familyId]);
 
   const getCalendarData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
@@ -160,18 +75,13 @@ const Suggestion = () => {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-    console.log(todoData);
     const filteredTodoData = todoData
-      .flatMap(({ items }) => items) // Get an array of all items
-      .filter(({ done }) => !done); // Filter to only include items where done is false
-
-    console.log(filteredTodoData);
-
+      .flatMap(({ items }) => items)
+      .filter(({ done }) => !done);
     type CalendarData = {
       category: string;
       id: string;
       note: string;
-      // 其他屬性
     };
     const { category, id, note, ...newObj }: CalendarData = calendarData;
     const filteredCalendarData = calendarData.map(
@@ -207,26 +117,11 @@ const Suggestion = () => {
       temperature: 0.5,
       max_tokens: 500,
     });
-    // const parsableJSONresponse = response.data.choices[0].text;
-    console.log(prompt, upcomingEvents, filteredTodoData, response);
-    console.log(response.data.choices[0].message.content);
-    // const parsedResponse = JSON.parse(parsableJSONresponse);
-    // console.log('parsedResponse:', parsedResponse);
     setResponseValue(response.data.choices[0].message.content);
-    //console.log('Responses: ', parsedResponse.R);
   };
-  //runPrompt();
 
   return (
     <Card>
-      {/* <BoxText
-        style={{
-          fontSize: '20px;',
-        }}
-      >
-        Suggestions
-      </BoxText> */}
-
       <Response>
         {todoData.length > 0 && calendarData.length > 0 ? (
           <div>{responseValue}</div>
@@ -244,9 +139,7 @@ const Card = styled.div`
   border-radius: 10px;
   height: 100%;
   font-size: 24px;
-
   background-color: transparent;
-  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   position: relative;
   color: #414141;
   z-index: 1;

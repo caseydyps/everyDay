@@ -1,6 +1,4 @@
-import React from 'react';
 import GoogleButton from 'react-google-button';
-
 import { auth } from '../../config/firebase.config';
 import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 

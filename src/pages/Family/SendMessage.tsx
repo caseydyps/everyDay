@@ -2,12 +2,10 @@ import React, { useState, useContext } from 'react';
 import { auth, db } from '../../config/firebase.config';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import styled from 'styled-components';
-import UserAuthData from '../../Components/Login/Auth';
 import { AuthContext } from '../../config/Context/authContext';
-import { DefaultButton, ThreeDButton } from '../../Components/Button/Button';
+import {ThreeDButton } from '../../Components/Button/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
-import { faBrain } from '@fortawesome/free-solid-svg-icons';
 import SmartInput from '../AI/SmartInput';
 import { CloseButton } from '../../Components/Button/Button';
 interface SendMessageProps {
@@ -47,27 +45,10 @@ const SmartInputButton = styled(Button)`
   margin: 0 auto;
 `;
 
-const VoteButton = styled(Button)`
-  background-color: #f0ad4e;
-  margin-left: 10px;
-
-  &:hover {
-    background-color: #ec971f;
-  }
-`;
 
 const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
   const [input, setInput] = useState('');
   const [showSmartInput, setShowSmartInput] = useState(false);
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  // } = UserAuthData();
   const { user, userEmail, hasSetup, familyId, membersArray } =
     useContext(AuthContext);
   const sendMessage = async (e: React.FormEvent<HTMLFormElement>) => {

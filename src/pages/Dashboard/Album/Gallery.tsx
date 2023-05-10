@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
 import 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
 import styled from 'styled-components/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
+import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
 import { ChatMini } from '../Dashboard';
 import Swal from 'sweetalert2';
-import Layout from '../../../Components/layout';
-import UserAuthData from '../../../Components/Login/Auth';
 import { useContext } from 'react';
 import { AuthContext } from '../../../config/Context/authContext';
 import DefaultButton, {
@@ -25,17 +21,7 @@ import { MembersSelector } from '../../AI/SmartInput';
 import Banner from '../../../Components/Banner/Banner';
 import {
   faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
   faTrashCan,
-  faCircleXmark,
-  faMagnifyingGlass,
-  faX,
-  faLock,
-  faLockOpen,
-  faEyeSlash,
   faCircleInfo,
   faCloudArrowUp,
 } from '@fortawesome/free-solid-svg-icons';
@@ -43,15 +29,12 @@ import {
   collection,
   updateDoc,
   getDocs,
-  doc,
   addDoc,
   getDoc,
   deleteDoc,
-  setDoc,
   query,
   where,
 } from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid';
 import SideNav from '../../../Components/Nav/SideNav';
 
 type Album = {
@@ -102,8 +85,7 @@ function Gallery() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [selectedAlbumTitle, setSelectedAlbumTitle] = useState<string>('');
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
-  const [showFavorite, setShowFavorite] = useState(false); // add this state value
+  const [showFavorite, setShowFavorite] = useState(false);
   const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlbumTitle(e.target.value);
   };
@@ -111,55 +93,21 @@ function Gallery() {
     ''
   );
   const [selectedDate, setSelectedDate] = useState<string>('');
-  //const { familyId } = useContext(AuthContext);
-  //console.log('familyId', familyId);
   const regularStar = farStar;
   const solidStar = fasStar;
   const [canUpload, setCanUpload] = useState(false);
 
   useEffect(() => {
-    console.log(albumTitle);
-    console.log(selectedAlbumId);
-    console.log(albumTitle);
-    console.log(date);
-    console.log(
-      file && selectedAlbumId !== null && albumTitle !== null && date !== null
-    );
     if (file && albumTitle !== null && date !== null) {
       setCanUpload(true);
     } else {
       setCanUpload(false);
     }
   }, [file, selectedAlbumId, albumTitle, selectedMember, date]);
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
-  const { familyId } = useContext(AuthContext);
-  console.log('familyId', familyId);
-  const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedOptions = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-    setMembers(selectedOptions);
-  };
 
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    setDescription(e.target.value);
-  };
+  const { familyId } = useContext(AuthContext);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    console.log('files', files);
-    console.log(typeof files);
     if (files && files.length > 0) {
       setFile(files);
       console.log('selectedFiles', files);
@@ -167,8 +115,6 @@ function Gallery() {
   };
 
   const handleUpload = async () => {
-    console.log('handleUpload start');
-    //console.log('can upload', canUpload);
     if (!file || file.length === 0) {
       console.error('No files selected!');
       return;
@@ -183,14 +129,12 @@ function Gallery() {
     }
 
     try {
-      // Check if an album with the same name already exists in Firestore
       const albumsRef = collection(db, 'Family', familyId, 'photos');
       const querySnapshot = await getDocs(
         query(albumsRef, where('title', '==', albumTitle))
       );
       let albumDoc;
       if (querySnapshot.empty) {
-        // If no album exists with the same name, create a new one
         console.log('No album exists with the same name, creating a new one');
         albumDoc = await addDoc(albumsRef, {
           title: albumTitle,
@@ -201,59 +145,37 @@ function Gallery() {
           date: date,
         });
       } else {
-        // If an album already exists with the same name, use its document reference
         albumDoc = querySnapshot.docs[0].ref;
-        console.log(
-          "An album already exists with the same name, using it's document reference"
-        );
       }
-
-      // Retrieve the current photos array from Firestore
       const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
       const currentPhotos: any = albumData.photos || [];
-      console.log('currentPhotos', currentPhotos);
-
       const updatedPhotos = [...currentPhotos];
 
-      // Loop over each selected file
       for (let i = 0; i < file.length; i++) {
         const currFile = file[i];
-
-        // Generate a unique ID for the new photo
         const newId = Date.now();
-
-        // Upload the file to Firebase Storage
         const storageRef = ref(
           storage,
           `${albumTitle}/${Date.now()}_${currFile.name}`
         );
         await uploadBytes(storageRef, currFile);
-
-        // Get the download URL of the uploaded file
         const downloadURL = await getDownloadURL(storageRef);
-        console.log('File uploaded to Firebase Storage: ', downloadURL);
         setShowUpdateSection(false);
-        // Add the new photo to the album in Firestore
+
         const newPhoto = {
           id: newId,
           title: currFile.name,
           url: downloadURL,
         };
         updatedPhotos.push(newPhoto);
-        console.log('Photo added to updated photos array!');
       }
 
-      // Update the photos array in Firestore
       await updateDoc(albumDoc, { photos: updatedPhotos });
-      console.log('Updated photos array in Firestore!');
-
-      // Reset the file input and album form
       setFile(null);
       setAlbumTitle('');
       setAlbumId('');
       setMembers([]);
       setDescription('');
-
       fetchAlbums();
     } catch (error) {
       console.error('Error uploading file to Firebase: ', error);
@@ -267,19 +189,12 @@ function Gallery() {
 
   const fetchAlbums = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'photos');
-
     const querySnapshot = await getDocs(familyDocRef);
     const albumsData: any = [];
-
-    querySnapshot.docs.forEach((doc) => {
-      console.log(doc.data());
-    });
+    querySnapshot.docs.forEach((doc) => {});
     for (const albumDoc of querySnapshot.docs) {
       const album = albumDoc.data();
-      console.log('Album:', album);
       const firstPhoto = album.photos[0];
-      console.log('First photo:', firstPhoto);
-
       if (firstPhoto) {
         const photoRef = ref(storage, firstPhoto.url);
         console.log('Photo ref:', photoRef);
@@ -295,22 +210,15 @@ function Gallery() {
   useEffect(() => {
     const fetchAlbums = async () => {
       const familyDocRef = collection(db, 'Family', familyId, 'photos');
-
       const querySnapshot = await getDocs(familyDocRef);
       const albumsData: any = [];
-
-      querySnapshot.docs.forEach((doc) => {
-        console.log(doc.data());
-      });
+      querySnapshot.docs.forEach((doc) => {});
       for (const albumDoc of querySnapshot.docs) {
         const album = albumDoc.data();
-        console.log('Album:', album);
         const firstPhoto = album.photos[0];
-        console.log('First photo:', firstPhoto);
-
         if (firstPhoto) {
           const photoRef = ref(storage, firstPhoto.url);
-          console.log('Photo ref:', photoRef);
+
           const downloadURL = await getDownloadURL(photoRef);
           albumsData.push({ ...album, firstPhotoURL: downloadURL });
         } else {
@@ -319,13 +227,10 @@ function Gallery() {
       }
       setAlbums(albumsData);
     };
-
     fetchAlbums();
   }, [familyId]);
 
   const handleDeleteAlbum = async (album: Album) => {
-    console.log(album.title);
-
     try {
       const albumsRef = collection(db, 'Family', familyId, 'photos');
 
@@ -334,14 +239,11 @@ function Gallery() {
       );
 
       if (querySnapshot.empty) {
-        console.log('No matching album found');
         return;
       }
-      // Delete the album document
+
       const albumDoc = querySnapshot.docs[0].ref;
       await deleteDoc(albumDoc);
-      console.log('Album deleted successfully!');
-      // Reset the selected album state
       const updatedAlbums = albums.filter((a) => a.id !== album.id);
       setAlbums(updatedAlbums);
       setSelectedAlbumId('');
@@ -351,13 +253,9 @@ function Gallery() {
       console.error('Error deleting album: ', error);
     }
   };
-
   const handleToggleFavorite = async (album: Album) => {
-    console.log('Hi');
     const albumRef = collection(db, 'Family', familyId, 'photos');
-
     try {
-      // Update the favorite property of the album document
       const querySnapshot = await getDocs(
         query(albumRef, where('title', '==', album.title))
       );
@@ -369,9 +267,6 @@ function Gallery() {
 
       const albumDocRef = querySnapshot.docs[0].ref;
       await updateDoc(albumDocRef, { favorite: !album.favorite });
-      console.log('Album favorite status updated successfully!');
-
-      // Update the selected album state
       const updatedAlbums = albums.map((a) => {
         if (a.id === album.id) {
           return {
@@ -393,12 +288,9 @@ function Gallery() {
     let memberMatch = true;
     let dateMatch = true;
     let favoriteMatch = true;
-    console.log(selectedDate, album.date);
-
     if (selectedMember && !album.members.includes(selectedMember)) {
       memberMatch = false;
     }
-
     if (selectedDate) {
       const albumDate = new Date(album.date);
       const selectedDateObj = new Date(selectedDate);
@@ -407,29 +299,22 @@ function Gallery() {
         albumDate.getMonth() === selectedDateObj.getMonth() &&
         albumDate.getDate() === selectedDateObj.getDate();
     }
-
     if (showFavorite && !album.favorite) {
       favoriteMatch = false;
     }
-
     return memberMatch && dateMatch && favoriteMatch;
   });
-
   const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
   const handleEditMember = (member: string | string[]) => {
     setMembers(member);
   };
-
   const handleFilterMember = (member: string | string[]) => {
     setSelectedMember(member);
   };
   const [showSlideshow, setShowSlideshow] = useState(false);
-
   const InfoButton = styled(ThreeDButton)`
     position: absolute;
-    /* width: 20px;
-    height: 20px; */
     padding: 10px;
     left: 400px;
     top: -50px;
@@ -510,15 +395,7 @@ function Gallery() {
               )}
               <br />
               <MembersSelector onSelectMember={handleEditMember} />
-
               <br />
-              {/* <FileInputLabel>
-                敘述:
-                <textarea
-                  value={description}
-                  onChange={handleDescriptionChange}
-                />
-              </FileInputLabel> */}
               <FileInputLabel>
                 Date:
                 <StyledDateInput
@@ -527,7 +404,6 @@ function Gallery() {
                   onChange={(e) => setDate(e.target.value)}
                 />
               </FileInputLabel>
-
               <AddButton onClick={handleUpload} disabled={!canUpload}>
                 Upload
               </AddButton>
@@ -567,7 +443,6 @@ function Gallery() {
                 </DefaultButton>
                 <MembersSelector onSelectMember={handleFilterMember} />
               </Text>
-
               <br />
               <Text>
                 Filter by date:
@@ -582,7 +457,7 @@ function Gallery() {
               <Text>
                 Filter by favorite:
                 <DefaultButton
-                  onClick={() => setShowFavorite(!showFavorite)} // add this button
+                  onClick={() => setShowFavorite(!showFavorite)}
                   className={showFavorite ? 'active' : ''}
                   style={{
                     background: '#B7CCE2',
@@ -630,21 +505,6 @@ function Gallery() {
                 </div>
               )}
             </div>
-            {/* {filteredAlbums.map((album) => (
-              <div key={album.id}>
-                <AlbumTitle>{album.title}</AlbumTitle> */}
-            {/* <AlbumMembers>{album.members.join(', ')}</AlbumMembers> */}
-            {/* <div>{album.date}</div>
-                {album.photos.map((photo) => (
-                  <img
-                    key={photo.id}
-                    src={photo.url}
-                    alt={photo.title}
-                    style={{ width: '200px', height: 'auto' }}
-                  />
-                ))}
-              </div>
-            ))} */}
 
             {filteredAlbums.map((album) => (
               <AlbumWrapper key={album.id}>
@@ -660,13 +520,9 @@ function Gallery() {
                     <FontAwesomeIcon icon={faTrashCan} />
                   </DefaultButton>
                 </RowWrap>
-
                 <AlbumTitle>{album.title}</AlbumTitle>
-
                 <AlbumDescription>{album.description}</AlbumDescription>
-
                 <AlbumMembers>{album.members}</AlbumMembers>
-
                 {!showSlideshow && (
                   <AlbumCover
                     src={album.firstPhotoURL}
@@ -693,26 +549,9 @@ function Gallery() {
                     >
                       Close
                     </DefaultButton>
-
                     <Slideshow photos={album.photos} />
                   </>
                 )}
-
-                {/* {selectedAlbumId === album.id && (
-                <div>
-                  <h3>Photos in {album.title}</h3>
-                  <div>
-                    {album.photos.map((photo) => (
-                      <img
-                        key={photo.id}
-                        src={photo.url}
-                        alt={photo.title}
-                        style={{ width: '200px', height: '300px' }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )} */}
               </AlbumWrapper>
             ))}
           </GalleryWrapper>
@@ -728,13 +567,9 @@ const GalleryWrapper = styled.div`
   gap: 20px;
   height: auto;
   flex-wrap: wrap;
-  //overflow-x: scroll;
-  //scrollbar-width: narrow;
-  //border: 1px solid black;
+
   justify-content: center;
   align-items: center;
-
-  //scrollbar-color: #3467a1 transparent;
 
   &::-webkit-scrollbar {
     width: 2px;
@@ -809,11 +644,6 @@ const AlbumCover = styled.img`
   object-fit: cover;
 `;
 
-const NoPhotosText = styled.p`
-  font-size: 16px;
-  margin: 0;
-`;
-
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -841,7 +671,6 @@ const UpdateSection = styled.div`
   align-items: center;
   justify-content: center;
   border-radius: 25px;
-
   max-width: 700px;
   padding: 20px;
   color: black;
@@ -887,7 +716,6 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  //sborder: gold solid 3px;
 `;
 
 const StyledFileInput = styled.input`
@@ -994,9 +822,6 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  // border: 3px solid red;
-  //margin-top: 30px;
-  //padding: 20px;
 `;
 
 export default Gallery;

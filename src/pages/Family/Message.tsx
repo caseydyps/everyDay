@@ -2,22 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../../config/Context/authContext';
 import { auth } from '../../config/firebase.config';
 import styled from 'styled-components/macro';
-import { LoadButton } from '../../Components/Button/Button';
-import UserAuthData from '../../Components/Login/Auth';
 import { db } from '../../config/firebase.config';
-import {
-  collection,
-  updateDoc,
-  getDocs,
-  getDoc,
-  setDoc,
-  addDoc,
-  doc,
-  writeBatch,
-  query,
-  where,
-} from 'firebase/firestore';
-import UserAvatar from '../../Components/Nav/Avatar';
+import { collection, getDocs } from 'firebase/firestore';
 
 const MessageBubble = styled.div<MessageBubbleProps>`
   display: flex;
@@ -31,7 +17,6 @@ const MessageBubble = styled.div<MessageBubbleProps>`
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
   border-radius: ${({ isSent }) =>
     isSent ? '20px 20px 5px 20px' : '20px 20px 20px 0'};
-
   background-color: ${(props) =>
     props.isSent
       ? '#5981b0'
@@ -53,8 +38,8 @@ const MessageBubble = styled.div<MessageBubbleProps>`
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: center; /* Center the child element horizontally */
-  align-items: center; /* Center the child element vertically */
+  justify-content: center;
+  align-items: center;
 `;
 
 const SenderName = styled.p`
@@ -64,15 +49,6 @@ const SenderName = styled.p`
   position: absolute;
   left: -37px;
 `;
-
-interface MessageProps {
-  message: {
-    uid: string;
-    name: string;
-    text: string;
-    timestamp: Date;
-  };
-}
 
 interface MessageBubbleProps {
   isSent: boolean;
@@ -94,21 +70,9 @@ interface MessageType {
 }
 
 const Message: any = ({ message }: Props) => {
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  // } = UserAuthData();
-  const { user, userEmail, hasSetup, familyId, membersArray } =
-    useContext(AuthContext);
+  const { familyId } = useContext(AuthContext);
   const isSent = message.uid === auth.currentUser?.uid;
-
   const date = message.timestamp && message.timestamp.toDate();
-
   const [members, setMembers] = useState<any[]>([]);
   const formatDate = (date: Date) => {
     if (!date || !date.getMonth) {
@@ -118,13 +82,11 @@ const Message: any = ({ message }: Props) => {
     const day = String(date.getDate()).padStart(2, '0');
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
-
     return `${month}/${day} ${hour}:${minute}`;
   };
 
   useEffect(() => {
     const fetchMembers = async () => {
-      console.log(familyId);
       const familyDocRef = collection(db, 'Family', familyId, 'members');
       const membersData: any = await getDocs(familyDocRef)
         .then((querySnapshot) =>
@@ -133,19 +95,11 @@ const Message: any = ({ message }: Props) => {
         .catch((error) =>
           console.error('Error retrieving members data:', error)
         );
-      console.log(membersData);
       setMembers(membersData);
     };
     fetchMembers();
   }, [familyId]);
 
-  console.log(formatDate(date));
-
-  type Member = {
-    email: string;
-    role: string;
-    avatar: string;
-  };
 
   return (
     <Wrapper>
@@ -177,10 +131,9 @@ const Message: any = ({ message }: Props) => {
 
 const MessageContainer = styled.div`
   margin: 10 auto;
-  // overflow: auto;
   display: flex;
-  justify-content: center; // Center the container horizontally
-  align-items: center; // Center the container vertically
+  justify-content: center; 
+  align-items: center; 
   width: 80%;
   height: 100%;
   padding: 10px;

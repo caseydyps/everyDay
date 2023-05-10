@@ -1,59 +1,26 @@
-import { NavLink, Link, NavLinkProps } from 'react-router-dom';
-import styled from 'styled-components/macro';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { Link, NavLink } from 'react-router-dom';
+import styled from 'styled-components/macro';
 import { auth } from '../../config/firebase.config';
-import SignIn from '../Login/SignIn';
-import LogOut from '../Login/LogOut';
-
-// import { color, backgroundColor } from '../../theme';
-import UserAvatar from './Avatar';
-import googleSignIn from '../Login/SignIn';
-import { faBars, faTimes } from '@fortawesome/free-solid-svg-icons';
-
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from 'react';
 import {
-  faHouse,
-  faEdit,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faCircleChevronRight,
-  faCircleChevronLeft,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faTable,
   faCalendarDays,
-  faListCheck,
-  faRobot,
-  faPalette,
-  faImage,
+  faCircleChevronLeft,
+  faCircleChevronRight,
   faComments,
+  faImage,
+  faListCheck,
+  faPalette,
+  faRobot,
+  faTable,
   faTimeline,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const SideNav = () => {
-  const [user] = useAuthState(auth);
-  const userName = user ? user.displayName : null;
-  const avatarUrl = user ? user.photoURL : null;
-  const userUrl = user ? user.email : null;
-
-  // const handleAvatarClick = () => {
-  //   setIsMenuOpen(!isMenuOpen);
-  // };
-  // const handleLogout = () => {
-  //   setIsMenuOpen(false); // Close the menu
-  //   auth.signOut();
-  // };
-
   const [open, setOpen] = useState(true);
-
   const toggleNav = () => {
     setOpen(!open);
-  };
-
-  type NavbarProps = {
-    showNav: boolean;
   };
 
   return (
@@ -123,11 +90,9 @@ const SideNav = () => {
 
 const NavbarWrapper = styled.div<NavListProps>`
   z-index: 2;
-
   height: auto;
   margin-top: 60px;
   margin-left: 5px;
-
   width: ${(props) => (props.showNav ? '180px' : '20px')};
   padding: ${(props) => (props.showNav ? '0px' : '0')};
   transition: width 0.3s ease-out, padding 0.3s ease-out;
@@ -147,30 +112,8 @@ const Text = styled.span`
   margin-left: 5px;
 `;
 
-const Logo = styled(Link)`
-  width: 150px;
-  height: 28px;
-  color: #5981b0;
-  text-align: center;
-  font-weight: bold;
-  margin: auto 0;
-  margin-top: 0px;
-  font-family: 'Braah One';
-  text-decoration: none;
-  align-items: center;
-  position: absolute;
-  top: 40px;
-  left: 010px;
-  justify-content: center;
-  font-size: 24px;
-  &:hover {
-    transform: scale(1.05);
-  }
-  /* media query for screens narrower than 1080px */
-`;
-
 interface NavListProps {
-  showNav: boolean; // 添加 open 属性
+  showNav: boolean;
 }
 export const NavList = styled.ul<NavListProps>`
   list-style: none;
@@ -186,7 +129,6 @@ export const NavList = styled.ul<NavListProps>`
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  //border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
   border-radius: 12px;
@@ -210,7 +152,6 @@ export const NavList = styled.ul<NavListProps>`
 
 export const NavItem = styled.li`
   margin: 0px;
-  /* media query for screens narrower than 768px */
   @media screen and (max-width: 767px) {
     margin: 10px 0;
   }
@@ -221,7 +162,6 @@ const NavToggle = styled.div<NavListProps>`
   margin-left: auto;
   position: fixed;
   bottom: 150px;
-
   font-size: 36px;
   color: #ffffff;
   transition: width 0.3s ease-out, padding 0.3s ease-out;
@@ -246,17 +186,14 @@ export const StyledNavLink = styled(NavLink)<NavProps>`
     background-color: #5981b0;
   }
   padding: 10px;
-
   &:hover {
     transform: scale(1.05);
     border-bottom: 4px solid #f6f8f8;
   }
-
   &.active {
     border-bottom: 4px solid #5981b0;
     transition: all 0.3s ease;
   }
-  /* media query for screens narrower than 768px */
   @media screen and (max-width: 767px) {
     padding: 5px;
     font-size: 14px;

@@ -1,29 +1,10 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../../../config/Context/authContext';
+import React, { useContext, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { MembersSelector } from '../../AI/SmartInput';
-import UserAuthData from '../../../Components/Login/Auth';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styled from 'styled-components';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faArrowDownWideShort,
-  faArrowDownShortWide,
-  faPerson,
-  faCalendarDays,
-  faUsers,
-  faP,
-  faPencil,
-  faCalendar,
-} from '@fortawesome/free-solid-svg-icons';
 import DefaultButton from '../../../Components/Button/Button';
+import { AuthContext } from '../../../config/Context/authContext';
+import { MembersSelector } from '../../AI/SmartInput';
 type FamilyMember = {
   name: string;
   role: string;
@@ -47,37 +28,6 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
   const [selectedMember, setSelectedMember] = useState<number | null>(null);
   const [showMembersSelector, setShowMembersSelector] = useState(false);
   const [dueDateNeeded, setDueDateNeeded] = useState(false);
-  const family = [
-    {
-      name: 'Dad',
-      role: 'Parent',
-      avatarSrc:
-        'https://api.dicebear.com/6.x/adventurer/svg?seed=Dad&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-    },
-    {
-      name: 'Mom',
-      role: 'Parent',
-      avatarSrc:
-        'https://api.dicebear.com/6.x/adventurer/svg?seed=Mom&eyebrows=variant01&eyes=variant01&hair=long03&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-    },
-    {
-      name: 'Kid',
-      role: 'Child',
-      avatarSrc:
-        'https://api.dicebear.com/6.x/adventurer/svg?seed=Kid&eyebrows=variant01&eyes=variant01&hair=short19&hairProbability=0&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100',
-    },
-  ];
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
   const { membersArray } = useContext(AuthContext);
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
@@ -88,26 +38,18 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
   }
 
   function handleMemberChange(member: string | string[]) {
-    console.log(member);
     const getMemberAvatar = (memberName: string | string[]) => {
       const member = membersArray.find((m: any) => m.role === memberName);
       return member ? member.avatar : null;
     };
-
-    console.log(membersArray);
     const memberAvatar = getMemberAvatar(member);
-    console.log(memberAvatar);
     setSelectedMember(memberAvatar);
   }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (selectedMember !== null) {
-      ///const member = family[selectedMember];
       const due = dueDateNeeded ? dueDate.toLocaleDateString() : null;
-      console.log('Title:', title);
-      console.log('Due:', due);
-      console.log('SelectedMember:', selectedMember);
       const member = selectedMember;
       onAddItem(groupIndex, { title, due, member });
       setTitle('');
@@ -149,9 +91,6 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
         )}
 
         <MembersSelectorWrap>
-          {/* <Button onClick={() => setShowMembersSelector(!showMembersSelector)}>
-          Add member
-        </Button> */}
           <MembersSelector
             onSelectMember={(selectedMember) => {
               setShowMembersSelector(false);
@@ -168,7 +107,6 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
 
 const Button = styled(DefaultButton)`
   display: flex;
-  // justify-content: space-between;
   margin: 20px;
   flex-direction: column;
 `;
@@ -184,7 +122,6 @@ const Form = styled.form`
   label {
     margin-top: 0.5rem;
   }
-
   input[type='text'],
   input[type='checkbox'] {
     margin-left: 0.5rem;
@@ -193,7 +130,6 @@ const Form = styled.form`
     border-radius: 0.25rem;
     border: 1px solid #ccc;
   }
-
   input[type='checkbox'] {
     margin-left: 0;
   }

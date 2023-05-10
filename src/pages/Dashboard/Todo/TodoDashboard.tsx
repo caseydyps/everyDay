@@ -1,40 +1,23 @@
-import styled from 'styled-components/macro';
+import 'firebase/firestore';
 import {
-  useState,
+  collection,
+  doc,
+  getDocs,
+  updateDoc
+} from 'firebase/firestore';
+import {
+  Dispatch,
   useContext,
   useEffect,
   useReducer,
   useRef,
-  Dispatch,
+  useState,
 } from 'react';
+import styled from 'styled-components/macro';
 import { AuthContext } from '../../../config/Context/authContext';
-import DragNDrop from './DragNDropMini';
-import Sidebar from '../../../Components/Nav/Navbar';
 import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import Layout from '../../../Components/layout';
-import DefaultButton from '../../../Components/Button/Button';
-import UserAuthData from '../../../Components/Login/Auth';
-import {
-  collection,
-  updateDoc,
-  getDocs,
-  doc,
-  query,
-  where,
-} from 'firebase/firestore';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-} from '@fortawesome/free-solid-svg-icons';
-
+import DragNDrop from './DragNDropMini';
+import React from 'react';
 const Wrapper = styled.div`
   width: 100%;
 
@@ -43,12 +26,6 @@ const Wrapper = styled.div`
   flex-wrap: wrap;
 `;
 
-const Wrap = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  height: 80px;
-`;
 
 const Container = styled.div`
   display: flex;
@@ -177,7 +154,7 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
         },
       };
     case 'SET_DATA':
-      return action.payload; // update state with todosData
+      return action.payload;
     default:
       return state;
     case 'ADD_LIST':
@@ -189,24 +166,11 @@ const Todo = () => {
   const { familyId, membersArray } = useContext(AuthContext);
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-  console.log(data);
-  // useEffect(() => {
-  //   localStorage.setItem('List', JSON.stringify(data));
-  // }, [data]);
-
-  const addList = (dispatch: Dispatch<ActionType>) => {
-    const title = prompt('輸入新清單名稱');
-    console.log(data);
-    title && dispatch({ type: 'ADD_LIST', payload: title });
-  };
-
   const dueDateRef = useRef<HTMLInputElement>(null);
-
   const addItem = (listIndex: number, dispatch: Dispatch<ActionType>) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current ? dueDateRef.current.value : '';
     const due = new Date(dueDateString);
-
     const member = prompt('Enter member name');
     const done = false;
     if (text && due && member) {
@@ -217,15 +181,10 @@ const Todo = () => {
 
   useEffect(() => {
     const fetchTodosData = async (dispatch: Dispatch<ActionType>) => {
-      console.log(familyId);
-      const passId = familyId;
       const familyDocRef = collection(db, 'Family', familyId, 'todo');
       const querySnapshot = await getDocs(familyDocRef);
       const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
-      console.log(todosData);
-      // const todosData = await getTodosData();
-
-      dispatch({ type: 'SET_DATA', payload: todosData }); // update data state with todosData
+      dispatch({ type: 'SET_DATA', payload: todosData }); 
     };
     fetchTodosData(dispatch);
   }, [familyId]);
@@ -236,7 +195,6 @@ const Todo = () => {
       const familyDocRef = doc(db, 'Family', familyId);
       try {
         await updateDoc(familyDocRef, { todo: data });
-        console.log('Data has been updated in Firestore!');
       } catch (error) {
         console.error('Error updating data in Firestore: ', error);
       }

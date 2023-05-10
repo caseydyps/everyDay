@@ -1,59 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { AuthContext } from '../../config/Context/authContext';
+import { db } from '../../config/firebase.config';
 import Message from './Message';
 import SendMessage from './SendMessage';
-import { db } from '../../config/firebase.config';
-import { query, collection, orderBy, onSnapshot } from 'firebase/firestore';
-import styled from 'styled-components';
-import { LoadButton } from '../../Components/Button/Button';
-import UserAuthData from '../../Components/Login/Auth';
-import { AuthContext } from '../../config/Context/authContext';
-const ChatContainer = styled.div`
-  display: flex;
-  padding: 20px;
-  flex-direction: column;
-  height: 70vh;
-  width: 85vw;
-  overflow: auto;
-  margin-top: 0px;
-`;
-const CenterWrap = styled.div`
-  display: flex;
-  justify-content: center; /* Center the child element horizontally */
-  align-items: center; /* Center the child element vertically */
-  height: auto;
-  flex-direction: column;
-`;
-
-const CopiedMessage = styled.div`
-  background-color: #f7f7f7;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin: 10px 0;
-  font-size: 0.9rem;
-  text-align: center;
-`;
-
-interface Message {
-  uid: string;
-  name: string;
-  text: string;
-  timestamp: {
-    nanoseconds: number;
-    seconds: number;
-  };
-  id: string;
-}
-
-const ChatBottom = styled.span`
-  float: left;
-  clear: both;
-`;
-
-const ChatTop = styled.span`
-  float: left;
-  clear: both;
-`;
-
+import React from 'react';
 const Chat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [stickyMessage, setStickyMessage] = useState<any>(null);
@@ -68,38 +20,16 @@ const Chat = () => {
     }
   }, [messages]);
 
-  // const handleTopButtonClick = () => {
-  //   const chatContainer = document.getElementById('chat-container');
-  //   chatContainer.scrollTop = 0;
-  // };
-
   const handleTopButtonClick = () => {
-    const chatTop = document.getElementById('chat-container');
-    const chatBottom = document.getElementById('chat-bottom');
-
     if (chatContainerTop && scroll.current) {
-      // If the chat container is currently at the top, set it to the bottom position
       scroll.current.scrollIntoView({ behavior: 'smooth' });
       setChatContainerTop(false);
     } else {
-      // If the chat container is currently at the bottom, set it to the top position
       if (scrollTop.current) {
         scrollTop.current.scrollIntoView({ behavior: 'smooth' });
         setChatContainerTop(true);
       }
     }
-  };
-
-  // const handleStickButtonClick = (message) => {
-  //   setStickyMessage({ ...message });
-  //   if (stickyMessage) {
-  //     setStickyMessage(null);
-  //   }
-  // };
-
-  const handleUnstickButtonClick = () => {
-    console.log('Unstick button clicked! Sticky message:', stickyMessage);
-    setStickyMessage(null);
   };
 
   const messagesWithSticky = stickyMessage
@@ -146,13 +76,6 @@ const Chat = () => {
       </TopButton>
       {messagesWithSticky.map((message, index) => (
         <div key={message.id}>
-          {/* {!stickyMessage ? (
-            <StickyButton onClick={() => handleStickButtonClick(message)}>
-              釘選
-            </StickyButton>
-          ) : index === 1 ? (
-            <CancelButton onClick={handleUnstickButtonClick}>X</CancelButton>
-          ) : null} */}
           <Message
             message={message}
             ref={index === 0 ? firstMessageRef : null}
@@ -191,19 +114,35 @@ const TopButton = styled.button`
   }
 `;
 
-const StickyButton = styled(LoadButton)`
-  z-index: 2;
-  width: 30px;
-  height: 30px;
-  font-size: 0.8rem;
+const ChatContainer = styled.div`
+  display: flex;
+  padding: 20px;
+  flex-direction: column;
+  height: 70vh;
+  width: 85vw;
+  overflow: auto;
+  margin-top: 0px;
 `;
 
-const CancelButton = styled(StickyButton)`
-  z-index: 2;
-  width: 30px;
-  height: 30px;
-  font-size: 0.8rem;
-  background-color: red;
+interface Message {
+  uid: string;
+  name: string;
+  text: string;
+  timestamp: {
+    nanoseconds: number;
+    seconds: number;
+  };
+  id: string;
+}
+
+const ChatBottom = styled.span`
+  float: left;
+  clear: both;
+`;
+
+const ChatTop = styled.span`
+  float: left;
+  clear: both;
 `;
 
 export default Chat;

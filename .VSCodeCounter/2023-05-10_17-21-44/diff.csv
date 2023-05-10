@@ -1,0 +1,27 @@
+"filename", "language", "TypeScript JSX", "comment", "blank", "total"
+"/Users/casey/Documents/appworks/everyday/src/App.tsx", "TypeScript JSX", 1, 0, 0, 1
+"/Users/casey/Documents/appworks/everyday/src/Components/Banner/Banner.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/LogOut.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/SignIn.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/SignInNav.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/Avatar.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/Navbar.tsx", "TypeScript JSX", -3, 0, -2, -5
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/SideNav.tsx", "TypeScript JSX", -28, 0, -2, -30
+"/Users/casey/Documents/appworks/everyday/src/Components/drawingtool.tsx", "TypeScript JSX", -62, -45, -48, -155
+"/Users/casey/Documents/appworks/everyday/src/Components/drawingtoolMini.tsx", "TypeScript JSX", -59, 0, -13, -72
+"/Users/casey/Documents/appworks/everyday/src/Components/layout.tsx", "TypeScript JSX", -1, 0, 0, -1
+"/Users/casey/Documents/appworks/everyday/src/Components/loading.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/config/Context/authContext.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/AI/AI.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/AI/SuggestionMini.tsx", "TypeScript JSX", -2, 0, -3, -5
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Album/SlideShow.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Album/SlideShowMini.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Calendar/HourView.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Milestone.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/MilestoneMini.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Todo/Todo.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/Todo/TodoDashboard.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Dashboard/WeatherApp.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/Chat.tsx", "TypeScript JSX", 1, 0, -1, 0
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/ChatApp.tsx", "TypeScript JSX", 1, 0, -1, 0
+"Total", "-", -136, -45, -86, -267

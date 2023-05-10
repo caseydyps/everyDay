@@ -1,11 +1,8 @@
-import React from 'react';
-import GoogleButton from 'react-google-button';
-
+import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import styled from 'styled-components/macro';
 import { auth } from '../../config/firebase.config';
-import { GoogleAuthProvider, signInWithRedirect } from 'firebase/auth';
 import { ThreeDButton } from '../Button/Button';
-
+import React from 'react';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -27,7 +24,6 @@ const SignIn = () => {
         {' '}
         Continue with Google
       </GoogleLoginButton>
-      {/* <GoogleButton type="dark" onClick={googleSignIn} /> */}
     </Wrapper>
   );
 };

@@ -1,8 +1,5 @@
 import styled from 'styled-components/macro';
 import React, { useState } from 'react';
-import axios from 'axios';
-import Sidebar from '../../Components/Nav/Navbar';
-
 const Wrapper = styled.div`
   width: 80vw;
   height: auto;
@@ -14,20 +11,6 @@ const Container = styled.div`
   width: 100vw;
   display: flex;
   flex-direction: row;
-`;
-
-const HastagWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const Button = styled.button`
-  background-color: #eaeaea;
-  border-radius: 4px;
-  padding: 5px 10px;
-  font-size: 32px;
-  color: #555;
 `;
 
 const InputForm = styled.form`
@@ -267,11 +250,7 @@ const SmartInputMini = () => {
     "completed": false,
     "response": "完成任務後，請不要忘記將其標記為完成。回應訊息"
   }
-
-    
-
     `;
-
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt,
@@ -287,8 +266,6 @@ const SmartInputMini = () => {
       使用者輸入: ${inputValue}
   今天日期是 ${formattedDate}
   請依照繁體中文格式，生成以下 JSON 回應：
-
-
   便利貼：
   {
     "title": "便利貼標題",
@@ -296,8 +273,6 @@ const SmartInputMini = () => {
     "content": "便利貼內容",
     "response": "此便利貼已添加到您的便利貼列表。回應訊息"
   }
-
-
     `;
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -372,13 +347,6 @@ const SmartInputMini = () => {
             <p>{responseValue}</p>
           </ResponseDisplay>
         )}
-
-        {/* <iframe
-          allow="microphone;"
-          width="1000"
-          height="1000"
-          src="https://console.dialogflow.com/api-client/demo/embedded/ffb168b2-33cb-451d-9a1b-fe91dc74bd4e"
-        ></iframe> */}
       </Wrapper>
     </Container>
   );

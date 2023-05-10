@@ -1,57 +1,39 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import styled from 'styled-components/macro';
-import Sidebar from '../../../Components/Nav/Navbar';
-import { db } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import { getISOWeek } from 'date-fns';
-import 'firebase/firestore';
-import { MembersSelector } from '../../AI/SmartInput';
-import { format } from 'date-fns-tz';
-import Banner from '../../../Components/Banner/Banner';
-import SmartInput from '../../AI/SmartInput';
-import { ChatMini } from '../Dashboard';
-import Swal from 'sweetalert2';
-import { renderToString } from 'react-dom/server';
 import {
-  collection,
-  updateDoc,
-  getDocs,
-  doc,
-  addDoc,
-  deleteDoc,
-  onSnapshot,
-  setDoc,
-  query,
-  where,
-} from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faEdit,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faCircleInfo,
-  faEllipsis,
-  faChevronRight,
   faChevronLeft,
+  faChevronRight,
+  faCircleInfo,
+  faEdit,
+  faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
-import HourlyView from './HourView';
-import DailyHourlyView from './DailyHourView';
-import Layout from '../../../Components/layout';
-import DefaultButton, {
-  CancelButton,
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { format } from 'date-fns-tz';
+import 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where
+} from 'firebase/firestore';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import Swal from 'sweetalert2';
+import { v4 as uuidv4 } from 'uuid';
+import Banner from '../../../Components/Banner/Banner';
+import {
   AddButton,
   CloseButton,
-  ThreeDButton,
+  ThreeDButton
 } from '../../../Components/Button/Button';
-import UserAuthData from '../../../Components/Login/Auth';
-import { AuthContext } from '../../../config/Context/authContext';
 import SideNav from '../../../Components/Nav/SideNav';
+import { AuthContext } from '../../../config/Context/authContext';
+import { db } from '../../../config/firebase.config';
+import SmartInput, { MembersSelector } from '../../AI/SmartInput';
+import { ChatMini } from '../Dashboard';
+import HourlyView from './HourView';
 const CalendarContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -93,40 +75,9 @@ const MonthLabel = styled.span`
   font-size: 24px;
   font-weight: bold;
   color: #5981b0;
-  //border: 3px solid white;
   border-radius: 20px;
   background-color: transparent;
   padding: 10px;
-`;
-
-const WeekContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 1rem;
-`;
-
-const WeekLabel = styled.span`
-  font-size: 1.5rem;
-  font-weight: bold;
-`;
-const DayContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 1rem;
-`;
-
-const DayLabel = styled.span`
-  font-size: 1.5rem;
-  font-weight: bold;
-`;
-
-const ColumnWrap = styled.div`
-  display: flex;
-  flex-direction: column;
 `;
 
 const MonthColumnWrap = styled.div`
@@ -152,73 +103,21 @@ const Button = styled.button`
 const EventEditButton = styled.button`
   top: 50px;
   right: 20px;
-  //position: absolute;
   border: none;
   z-index: 5;
   background-color: transparent;
   cursor: pointer;
-  //font-size: 1rem;
   font-weight: bold;
   text-transform: uppercase;
   color: #5981b0;
   &:hover {
     color: #3467a1;
-  }
-`;
-
-const ExitButton = styled.button`
-  margin-top: 10px;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #5981b0;
-  &:hover {
-    color: #3467a1;
-  }
-  position: absolute;
-  top: 0;
-  right: 0;
-`;
-
-const EditButton = styled.button`
-  margin-top: 10px;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #d7dde2;
-  &:hover {
-    color: #414141;
-  }
-`;
-
-const TabButton = styled.button`
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 20px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #333;
-  &:hover {
-    color: #666;
   }
 `;
 
 const InfoButton = styled(ThreeDButton)`
-  // background-color: #d7dde2;
   padding: 10px;
-  //color: rgba(255, 255, 255, 0.5);
-  //border: none;
-  //box-shadow: none;
   :hover {
-    // background-color: transparent;
-    // color: rgba(255, 255, 255, 0.75);
   }
   position: absolute;
   right: 150px;
@@ -235,11 +134,6 @@ const Table = styled.table`
   box-shadow: 10px 0px 10px rgba(0, 0, 0, 0.2);
 `;
 
-const Th = styled.thead`
-  background-color: #333;
-  color: #fff;
-`;
-
 const Td = styled.td`
   max-width: 100px;
   max-height: 100px;
@@ -248,12 +142,9 @@ const Td = styled.td`
   justify-content: center;
   align-items: center;
   position: relative;
-  //box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   border-radius: 0px;
   border: 3px solid rgba(211, 211, 211, 0.5);
   border-collapse: collapse;
-  // overflow-y: auto;
-
   &.inactive {
     color: #f5f5f5;
   }
@@ -285,7 +176,6 @@ const Container = styled.div`
   width: 100vw;
   height: 100%;
   padding-top: 0px;
-  //border: gold solid 3px;
 `;
 
 const SmartInputContainer = styled.div`
@@ -296,8 +186,6 @@ const SmartInputContainer = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   backdrop-filter: blur(10px);
-
-  // border: 2px solid black;
 `;
 
 const Wrap = styled.div`
@@ -306,9 +194,6 @@ const Wrap = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  //border: 3px solid red;
-
-  // background-color: rgba(64, 64, 64, 0.5);
 `;
 
 const RowWrap = styled.div`
@@ -323,24 +208,9 @@ const EditWrap = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  //max-width: 100%;
   margin-left: 160px;
   top: -50px;
   height: 50px;
-  //width: 200px;
-`;
-
-const TabWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  margin: 0 auto;
-  width: 200px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 2px solid #3467a1;
 `;
 
 const MenuWrap = styled.div`
@@ -353,36 +223,6 @@ const MenuWrap = styled.div`
   right: 0;
   z-index: 2;
 `;
-
-const Menu = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 300px;
-  height: 400px;
-  padding: 25px;
-  border-radius: 20px;
-  //box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  background-color: #1e3d6b;
-  border: 1px solid #d7dde2;
-  z-index: 2;
-`;
-
-// const AddButton = styled(DefaultButton)`
-//   border: none;
-//   border-radius: 20px;
-//   padding: 10px 20px;
-//   cursor: pointer;
-//   margin: 10px;
-//   color: #f6f8f8;
-//   background-color: #5981b0;
-//   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-// `;
 
 const Modal = styled.div`
   display: flex;
@@ -402,7 +242,6 @@ const ModalForm = styled.form`
   -webkit-border-radius: 12px;
   color: rgba(255, 255, 255, 0.75);
   border-radius: 10px;
-  //box-shadow: 3px 3px 5px black;
   padding: 30px 30px;
   color: #f5f5f5;
   width: 400px;
@@ -426,7 +265,6 @@ const ModalForm = styled.form`
     margin-bottom: 10px;
   }
 `;
-
 interface EventWrapperProps {
   category: string;
   multiDay?: boolean;
@@ -445,9 +283,6 @@ const EventWrapper = styled.div<EventWrapperProps>`
   position: relative;
   width: auto;
   height: 20px;
-  //padding: 2px;
-
-  //box-shadow: 3px 3px 5px black;
   ::-webkit-scrollbar {
     display: none;
   }
@@ -455,26 +290,17 @@ const EventWrapper = styled.div<EventWrapperProps>`
 
   background-color: ${({ member, members }) => {
     const memberIndex = members.findIndex((m) => m.role === member) % 5;
-    console.log(members);
-    console.log(member);
-    console.log(memberIndex);
     const colors = ['#83d1ae', '#f3a977', '#fff5c9', '#90b1e3', '#e3aaeb '];
     return colors[memberIndex];
   }};
   ${({ multiDay }) =>
     multiDay
       ? `
-       
         box-shadow: 0px 0px 0px black;
-        
       `
       : `
         border: 1px solid #1E3D6B;
         margin: 0px;
-     
-        
-
-        
       `}
 `;
 
@@ -489,7 +315,6 @@ const ViewSelect = styled.select`
   position: absolute;
   right: 220px;
   top: 250px;
-  //margin: 0 auto;
   border-radius: 5px;
   border: 1px solid #d7dde2;
   background-color: #f6f8f8;
@@ -501,13 +326,9 @@ const ViewSelect = styled.select`
   background-repeat: no-repeat;
   background-position: right 10px center;
   cursor: pointer;
-
-  /* Add a hover effect */
   &:hover {
     border-color: #999;
   }
-
-  /* Add a focus effect */
   &:focus {
     outline: none;
     border-color: #1e3d6b;
@@ -521,12 +342,11 @@ const DateDetailsWrapper = styled.div`
   width: 100px;
   height: 100px;
   margin-top: 20px;
-  //border: 2px solid #3467a1;
   &::-webkit-scrollbar {
     display: none;
   }
-  overflow-y: auto; /* add this line */
-  overflow-x: hidden; /* add this line */
+  overflow-y: auto; 
+  overflow-x: hidden; 
 `;
 
 interface EventTitleProps {
@@ -541,22 +361,11 @@ const EventTitle = styled.div<EventTitleProps>`
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
 `;
 
-const DetailTitle = styled.div<EventTitleProps>`
-  font-size: 24px;
-  font-weight: bold;
-  color: #f6f8f8;
-  margin-bottom: 10px;
-  color: ${({ finished }) => (finished ? 'gray' : 'black')};
-`;
-
 const EventMember = styled.div`
   font-size: 16px;
   color: blue;
 `;
 
-const DetailMember = styled.div`
-  margin-bottom: 10px;
-`;
 
 const CenterWrap = styled.div`
   display: flex;
@@ -568,10 +377,6 @@ const EventCategory = styled.div`
   color: gray;
 `;
 
-const BannerWrap = styled.div`
-  position: relative;
-`;
-
 const EventList = styled.ul`
   list-style-type: none;
   padding: 5px;
@@ -580,11 +385,9 @@ const EventList = styled.ul`
   padding-left: 0px;
   margin: 5px 0px;
   font-size: 20px;
-
   overflow-y: auto;
-
   &::-webkit-scrollbar {
-    display: none; /* Hide the scrollbar */
+    display: none; 
   }
 `;
 
@@ -612,7 +415,6 @@ function Calendar() {
   const [selectedRow, setSelectedRow] = useState<number | null>(0);
   const [view, setView] = useState<string>('month');
   const draggedEventIdRef = useRef<string | null>(null);
-  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = [
     'Jan',
     'Feb',
@@ -627,18 +429,6 @@ function Calendar() {
     'Nov',
     'Dec',
   ];
-
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
 
   const { familyId, membersArray } = useContext(AuthContext);
   const [showButtons, setShowButtons] = useState(false);
@@ -657,15 +447,6 @@ function Calendar() {
     member: string;
     note: string;
   }
-
-  type DateDetailsProps = {
-    date: Date;
-    month: string;
-    events: Event[];
-    setEvents: React.Dispatch<React.SetStateAction<Event[]>>;
-    draggedEventIdRef?: React.MutableRefObject<string | null>;
-    isCurrentMonth?: boolean;
-  };
   const [isEventAdded, setIsEventAdded] = useState(false);
 
   useEffect(() => {
@@ -718,14 +499,10 @@ function Calendar() {
 
   const editEventtoFirestore = async (eventId: any, updatedData: any) => {
     const eventRef = collection(db, 'Family', familyId, 'Calendar');
-    console.log(eventId, updatedData);
-    console.log(typeof eventId);
-    // Query for the document with the matching ID
     const querySnapshot = await getDocs(
       query(eventRef, where('id', '==', eventId.current))
     );
-    console.log('querySnapshot', querySnapshot);
-    // Update the document with the new data
+   
     querySnapshot.forEach(async (doc) => {
       try {
         await updateDoc(doc.ref, updatedData);
@@ -736,15 +513,6 @@ function Calendar() {
     });
   };
 
-  const updateEventToFirestore = async (eventId: string, finished: boolean) => {
-    const eventRef = doc(db, 'Family', familyId, 'Calendar', eventId);
-    try {
-      await updateDoc(eventRef, { finished: finished });
-      console.log('Document successfully updated!');
-    } catch (error) {
-      console.error('Error updating document: ', error);
-    }
-  };
 
   function DateDetails({
     date,
@@ -753,14 +521,11 @@ function Calendar() {
     draggedEventIdRef,
     isCurrentMonth,
   }: any) {
-    //console.log(isCurrentMonth);
     const handleDragStart = (
       e: React.DragEvent<HTMLDivElement>,
       eventId: string
     ) => {
-      // console.log(eventId);
       draggedEventIdRef.current = eventId;
-      // console.log(draggedEventIdRef.current);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -773,8 +538,6 @@ function Calendar() {
       draggedEventIdRef: React.MutableRefObject<string | null>
     ) => {
       e.preventDefault();
-      //console.log('drop', date);
-      //console.log(draggedEventIdRef.current);
       const updatedEvents = events.map((event: Event) => {
         console.log(draggedEventIdRef.current);
         console.log(event.id + ' ' + draggedEventIdRef.current);
@@ -792,11 +555,9 @@ function Calendar() {
       const dateString = format(date, 'yyyy-MM-dd', {
         timeZone: 'Asia/Taipei',
       });
-
       const updatedData = {
         date: dateString,
         endDate: dateString,
-        // Add any other fields to update here
       };
       await editEventtoFirestore(draggedEventIdRef, updatedData);
       setEvents(updatedEvents);
@@ -810,28 +571,11 @@ function Calendar() {
       const eventDate = new Date(event.date);
       if (eventDate.getMonth() === date.getMonth()) {
         const startDate = new Date(eventDate);
-
-        // Single day event
         return startDate.getDate() === date.getDate();
       } else {
         return false;
       }
     });
-
-    // const handleShowButtons = (clickedEvent: Event) => {
-    //   setSelectedEvents((prevState) =>
-    //     prevState.map((event) =>
-    //       event.id === clickedEvent.id
-    //         ? { ...event, showButtons: !event.showButtons }
-    //         : { ...event, showButtons: false }
-    //     )
-    //   );
-    // };
-
-    // console.log(selectedEvents);
-    // console.log(isCurrentMonth);
-    // console.log(date.getMonth());
-    //console.log(membersArray);
     interface EventMemberProps {
       members: Array<{ avatar: string; role: string }>;
       memberRole: string;
@@ -841,7 +585,6 @@ function Calendar() {
       height: 20px;
       width: 20px;
     `;
-
     const EventMember: React.FC<EventMemberProps> = ({
       members,
       memberRole,
@@ -852,42 +595,11 @@ function Calendar() {
       ) : null;
     };
 
-    const DetailMember: React.FC<EventMemberProps> = ({
-      members,
-      memberRole,
-    }) => {
-      const member = members.find((m) => m.role === memberRole);
-      return member ? (
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <MemberAvatar
-            style={{ width: '48px', height: '48px' }}
-            src={member.avatar}
-            alt={member.role}
-          />
-          <span
-            style={{ color: '#F6F8F8', paddingLeft: '10px', fontSize: '20px' }}
-          >
-            {member.role}
-          </span>
-        </div>
-      ) : null;
-    };
-
-    // console.log(selectedEventId, showButtons);
-
-    // useEffect(() => {
-    //   setTimeout(() => {
-    //     console.log(selectedEventId);
-    //   }, 100);
-    // }, [selectedEventId]);
     return (
       <DateDetailsWrapper
         onDragOver={handleDragOver}
         onDrop={(e) => handleDrop(e, date, draggedEventIdRef)}
       >
-        {/* <div>{`${
-          months[date.getMonth()]
-        } ${date.getDate()}, ${date.getFullYear()}`}</div> */}
         {selectedEvents.length > 0 ? (
           <EventList>
             {selectedEvents.map((event: Event, index: number) =>
@@ -901,94 +613,19 @@ function Calendar() {
                     member={event.member}
                     members={membersArray}
                     finished={event.finished}
-                    //multiDay={event.date !== event.endDate}
                     onClick={() => {
                       setSelectedEventId(event.id);
-                      console.log(selectedEventId);
                       setShowButtons(true);
                     }}
                   >
-                    {/* {selectedEventId === event.id && showButtons && (
-                      <Menu>
-                        <DetailMember
-                          members={membersArray}
-                          memberRole={event.member}
-                        ></DetailMember>
-
-                        <DetailTitle
-                          style={{
-                            color: '#f6f8f8',
-                            fontSize: '20px',
-                            paddingLeft: '10px',
-                          }}
-                          finished={event.finished}
-                        >
-                          Event: {event.title}
-                        </DetailTitle>
-                        <EventTime
-                          style={{
-                            color: '#f6f8f8',
-                            fontSize: '20px',
-                            paddingLeft: '10px',
-                          }}
-                        >
-                          Start date: {event.date}
-                        </EventTime>
-                        <EventTime
-                          style={{
-                            color: '#f6f8f8',
-                            fontSize: '20px',
-                            paddingLeft: '10px',
-                          }}
-                        >
-                          Start time:{event.time}
-                        </EventTime>
-                        <EventTime
-                          style={{
-                            color: '#f6f8f8',
-                            fontSize: '20px',
-                            paddingLeft: '10px',
-                          }}
-                        >
-                          End date: {event.endDate}
-                        </EventTime>
-                        <EventTime
-                          style={{
-                            color: '#f6f8f8',
-                            fontSize: '20px',
-                            paddingLeft: '10px',
-                          }}
-                        >
-                          End time: {`${event.endTime}`}
-                        </EventTime>
-                        <RowWrap>
-                          <Button onClick={() => handleEditEvent(event)}>
-                            <FontAwesomeIcon icon={faEdit} />
-                          </Button>
-                          <Button onClick={() => handleDeleteEvent(event)}>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                          </Button>
-                        </RowWrap>
-
-                        <ExitButton
-                          onClick={() => setShowButtons(!showButtons)}
-                        >
-                          <FontAwesomeIcon icon={faCircleXmark} />
-                        </ExitButton>
-                      </Menu>
-                    )} */}
                     <EventMember
                       members={membersArray}
                       memberRole={event.member}
                     ></EventMember>
-                    {/* <EventTime>{event.time}</EventTime>
-                 <EventTime>{`~${event.endTime}`}</EventTime> */}
+                   
                     <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
-                    {/* <EditButton onClick={() => setShowButtons(!showButtons)}>
-                      <FontAwesomeIcon icon={faEllipsis} />
-                    </EditButton> */}
                   </EventWrapper>
                 </li>
               ) : null
@@ -1007,7 +644,6 @@ function Calendar() {
   };
 
   function MonthDetails({ date, events }: MonthDetailsProps) {
-    //console.log(date);
     if (!date) {
       return <div>No date selected</div>;
     }
@@ -1034,7 +670,6 @@ function Calendar() {
       ::-webkit-scrollbar {
         display: none;
       }
-
       background-color: rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
@@ -1072,10 +707,6 @@ function Calendar() {
       height: 50px;
     `;
 
-    const Member = styled.span`
-      font-weight: bold;
-    `;
-
     const EventDetails = styled.span`
       margin-left: 5px;
     `;
@@ -1084,9 +715,6 @@ function Calendar() {
       font-style: italic;
       font-size: 16px;
     `;
-
-    // console.log(selectedMonthEvents);
-
     interface EventMemberProps {
       members: Array<{ avatar: string; role: string }>;
       memberRole: string;
@@ -1154,12 +782,6 @@ function Calendar() {
               month: '2-digit',
               day: '2-digit',
             });
-            const eventEndDateInTaipei = eventEndDate.toLocaleString('en-US', {
-              timeZone: 'Asia/Taipei',
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            });
             const selectedDateInTaipei = selectedDate.toLocaleString('en-US', {
               timeZone: 'Asia/Taipei',
               year: 'numeric',
@@ -1169,8 +791,6 @@ function Calendar() {
 
             return (
               eventDateInTaipei === selectedDateInTaipei
-              // &&
-              // selectedDateInTaipei <= eventEndDateInTaipei
             );
           }).length > 0 ? (
             <EventList>
@@ -1361,7 +981,6 @@ function Calendar() {
     setSelectedRow(
       newMonth === currentMonth ? (selectedRow ? selectedRow + 1 : 0) : 0
     );
-    //console.log(newDate);
     getWeekNumber(newDate);
   };
 
@@ -1380,13 +999,7 @@ function Calendar() {
   const handleDateClick = (day: number, row: number | null) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
-    //console.log(selectedDate);
     getWeekNumber(new Date(date.getFullYear(), date.getMonth(), day));
-    //console.log(weekNumber);
-  };
-
-  const handleWeekDateClick = (day: number, row: number) => {
-    setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
   };
 
   const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -1395,49 +1008,36 @@ function Calendar() {
     const newEvent: any = {
       title: eventTitle,
       date: eventDate,
-      //endDate: eventEndDate,
       category: eventCategory,
       member: eventMember,
       id: uuidv4(),
-      //multiDay: isMultiDay,
       time: eventTime,
-      //endTime: eventEndTime,
       description: '',
       finished: false,
       note: '',
       day: eventDay,
       endDay: eventEndDay,
     };
-    // if (!isAllDay) {
-    //   newEvent.time = eventTime;
-    //   newEvent.endTime = eventEndTime;
-    // }
-    postEventToFirestore(newEvent); // post new event to Firestore
+  
+    postEventToFirestore(newEvent);
     setEvents([...events, newEvent]);
     setShowModal(false);
     setEventTitle('');
     setEventDate('');
-    // setEventEndDate('');
     setEventTime('');
-    // setEventEndTime('');
     setEventCategory('');
     setEventMember('');
     setEventNote('');
     setIsAllDay(false);
     setEventDay('');
-    // setEventEndDay('');
+  
   };
 
   const handleAddEvent = () => {
     setShowModal(!showModal);
   };
 
-  function getLastDayOfWeek(date: Date) {
-    return new Date(date.setDate(date.getDate() + 6));
-  }
-
   useEffect(() => {
-    //console.log(selectedRow); // log the updated value of selectedRow
   }, [selectedRow]);
 
   const handleViewClick = (view: string) => {
@@ -1445,31 +1045,24 @@ function Calendar() {
   };
 
   function getWeekNumber(date: Date) {
-    const dayOfWeek = (date.getDay() + 6) % 7; // 0 = Sunday, 1 = Monday, etc.
+    const dayOfWeek = (date.getDay() + 6) % 7; 
     const jan1 = new Date(date.getFullYear(), 0, 1);
     const daysSinceJan1 =
       Math.floor((date.getTime() - jan1.getTime()) / (24 * 60 * 60 * 1000)) + 1;
     const weekNumber = Math.floor((daysSinceJan1 + (7 - dayOfWeek)) / 7);
-    //console.log(weekNumber);
     setWeekNumber(weekNumber);
   }
 
   function getISOWeek(date: Date): number {
     const dayOfWeek = date.getDay();
     const dayOfMonth = date.getDate();
-
-    // Calculate the Thursday of the current week
     const thursday = new Date(
       date.getTime() + (3 - ((dayOfWeek + 6) % 7)) * 86400000
     );
-
-    // Calculate the difference in days between the Thursday and the first day of the year
     const january1st = new Date(date.getFullYear(), 0, 1);
     const daysSinceJanuary1st = Math.floor(
       (thursday.getTime() - january1st.getTime()) / 86400000
     );
-
-    // Calculate the ISO week number
     const weekNumber = Math.floor((daysSinceJanuary1st + 3) / 7) + 1;
 
     return weekNumber;
@@ -1499,8 +1092,6 @@ function Calendar() {
       'November',
       'December',
     ];
-    //console.log('selectedDate ' + selectedDate);
-    //console.log('week ' + weekNumber);
     if (!selectedDate) {
       selectedDate = new Date();
     }
@@ -1512,16 +1103,10 @@ function Calendar() {
     return (
       <div>
         <h1>{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h1>
-        {/* <button onClick={handlePrevDay}>Previous day</button>
-        <button onClick={handleNextDay}>Next day</button> */}
-        {/* <table>...</table> */}
       </div>
     );
   }
-
-  // handleEditEvent function
   const handleEditEvent = async (event: Event) => {
-    // Prompt the user for the updated event details
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
     const updatedEndDate = prompt(
@@ -1541,8 +1126,6 @@ function Calendar() {
       'Enter the updated event member:',
       event.member
     );
-
-    // Create a new event object with the updated details
     const updatedEvent = {
       id: event.id,
       title: updatedTitle,
@@ -1554,7 +1137,6 @@ function Calendar() {
       member: updatedMember,
     };
 
-    // Update the events list with the new event object
     const updatedEvents: any = events.map((e) =>
       e.id === event.id ? updatedEvent : e
     );
@@ -1562,28 +1144,20 @@ function Calendar() {
     setEvents(updatedEvents);
   };
 
-  // handleDeleteEvent function
   const handleDeleteEvent = async (event: Event) => {
-    // Prompt the user to confirm deletion
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${event.title}"?`
     );
     if (confirmDelete) {
-      // Remove the event from the events list
       const updatedEvents = events.filter((e) => {
-        console.log(e.id);
-        console.log(event.id);
         return e.id !== event.id;
       });
       setEvents(updatedEvents);
-      console.log(events);
-      console.log(event.id);
       await deleteEventFromFirestore(event.id);
     }
   };
 
   useEffect(() => {
-    //console.log(events);
   }, [events]);
 
   const handleDateChange = (date: string) => {
@@ -1614,7 +1188,6 @@ function Calendar() {
   };
 
   const handleSelectMember = (member: string) => {
-    // event.preventDefault();
     setEventMember(member);
   };
 
@@ -1630,7 +1203,6 @@ function Calendar() {
       background: '#F6F8F8',
       padding: '1rem',
       width: '400px',
-      // height: '200px',
       heightAuto: false,
       position: 'center',
       reverseButtons: true,
@@ -1644,7 +1216,6 @@ function Calendar() {
   const handleClose = () => {
     setShowSmartInput(false);
   };
-
   return (
     <Container>
       <SideNav />
@@ -1669,19 +1240,12 @@ function Calendar() {
               <FontAwesomeIcon icon={faChevronRight} />
             </Button>
           </MonthContainer>
-          {/* <DateDetails
-            date={selectedDate}
-            events={events}
-            setEvents={setEvents}
-          /> */}
-
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
           <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>
             <option value="">Month/Week</option>
             <option value="month">Month</option>
             <option value="week">Week</option>
-            {/* <option value="day">Day</option> */}
           </ViewSelect>
           {showModal && (
             <Modal>
@@ -1734,29 +1298,6 @@ function Calendar() {
                     onChange={(e) => setEventTime(e.target.value)}
                   />
                 </label>
-
-                {/* <label>
-                  End Time:
-                  <input
-                    type="time"
-                    value={eventEndTime}
-                    step="1800"
-                    onChange={(e) => setEventEndTime(e.target.value)}
-                  />
-                </label> */}
-
-                {/* <label>
-                    Category:
-                    <select
-                      value={eventCategory}
-                      onChange={(e) => setEventCategory(e.target.value)}
-                    >
-                      <option value="">Select a category</option>
-                      <option value="Work">Work</option>
-                      <option value="Personal">Personal</option>
-                      <option value="School">School</option>
-                    </select>
-                  </label> */}
                 <label>
                   Member:
                   <MembersSelector onSelectMember={handleSelectMember} />
@@ -1802,7 +1343,6 @@ function Calendar() {
                       const isFirstWeek = dayOfMonth <= 0;
                       const isLastWeek = dayOfMonth > getDaysInMonth(date);
                       const isCurrentMonth = !isFirstWeek && !isLastWeek;
-                      //console.log(isCurrentMonth);
                       const isToday =
                         isCurrentMonth &&
                         dayOfMonth === new Date().getDate() &&
@@ -1834,9 +1374,9 @@ function Calendar() {
                         >
                           <span
                             style={{
-                              position: 'absolute', // add this line
-                              top: '5px', // add this line
-                              left: '10px', // add this line
+                              position: 'absolute', 
+                              top: '5px', 
+                              left: '10px', 
                               fontSize: '18px',
                             }}
                           >
@@ -1886,7 +1426,6 @@ function Calendar() {
               <option value="">Month/Week</option>
               <option value="month">Month</option>
               <option value="week">Week</option>
-              {/* <option value="day">Day</option> */}
             </ViewSelect>
           </MonthContainer>
 
@@ -1895,7 +1434,6 @@ function Calendar() {
             events={events}
             setEvents={setEvents}
           />
-
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           {showModal && (
             <Modal>
@@ -1924,14 +1462,6 @@ function Calendar() {
                     onChange={(e) => handleDateChange(e.target.value)}
                   />
                 </label>
-                {/* <label>
-                  Due:
-                  <input
-                    type="date"
-                    value={eventEndDate}
-                    onChange={(e) => handleEndDateChange(e.target.value)}
-                  />
-                </label> */}
                 <label>
                   Time:
                   <input
@@ -1941,16 +1471,6 @@ function Calendar() {
                     onChange={(e) => setEventTime(e.target.value)}
                   />
                 </label>
-                {/* <label>
-                  Time:
-                  <input
-                    type="time"
-                    step="1800"
-                    value={eventEndTime}
-                    onChange={(e) => setEventEndTime(e.target.value)}
-                  />
-                </label> */}
-
                 <label>
                   Category:
                   <select
@@ -1980,66 +1500,9 @@ function Calendar() {
               </ModalForm>
             </Modal>
           )}
-
-          {/* <tbody>
-            <tr key={selectedRow}>
-              {' '}
-              {Array.from(Array(7).keys()).map((weekday) => {
-                const dayOfMonth =
-                  selectedRow !== null
-                    ? selectedRow * 7 + weekday - getFirstDayOfMonth(date) + 1
-                    : 0;
-                const isFirstWeek = dayOfMonth <= 0;
-                const isLastWeek = dayOfMonth > getDaysInMonth(date);
-                const isCurrentMonth = !isFirstWeek && !isLastWeek;
-                const isToday =
-                  isCurrentMonth &&
-                  dayOfMonth === new Date().getDate() &&
-                  date.getMonth() === new Date().getMonth() &&
-                  date.getFullYear() === new Date().getFullYear();
-                const eventsOnDay = events.filter((event) => {
-                  return (
-                    event.date ===
-                    `${date.getFullYear()}-${date.getMonth() + 1}-${dayOfMonth}`
-                  );
-                });
-                return (
-                  <>
-                    <Td
-                      key={weekday}
-                      className={`${isCurrentMonth ? '' : 'inactive'} ${
-                        isToday ? 'today' : ''
-                      }`}
-                      onClick={() => handleDateClick(dayOfMonth, selectedRow)}
-                    >
-                      {isCurrentMonth ? dayOfMonth : ''}
-                      {eventsOnDay.map((event) => (
-                        <div key={event.title}>{event.title}</div>
-                      ))}
-
-                      <DateDetails
-                        date={
-                          new Date(
-                            date.getFullYear(),
-                            date.getMonth(),
-                            dayOfMonth
-                          )
-                        }
-                        events={events}
-                        setEvents={setEvents}
-                        draggedEventIdRef={draggedEventIdRef}
-                        isCurrentMonth={isCurrentMonth}
-                      />
-                    </Td>
-                  </>
-                );
-              })}
-            </tr>
-          </tbody> */}
           <HourlyView events={events} weekNumber={weekNumber} date={date} />
         </WeekWrap>
         <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
-          {/* <h2>{formatDate(selectedDate)}</h2> */}
           <MonthContainer>
             <Button onClick={handlePrevDay}>Prev</Button>
             <MonthLabel>{`${
@@ -2162,9 +1625,6 @@ function Calendar() {
                   selectedDateObj.getDate()
                 );
 
-                // console.log(eventDate);
-                // console.log(selectedDateOnly);
-                // console.log(new Date(event.endDate));
                 if (
                   selectedDateOnly === eventDateOnly ||
                   (selectedDateOnly >= eventDateOnly &&
@@ -2203,7 +1663,6 @@ function Calendar() {
                       >
                         {event.member}
                       </EventMember>
-
                       <EventTime
                         style={{
                           fontSize: '36px',
@@ -2219,17 +1678,9 @@ function Calendar() {
               })}
             </Td>
           </CenterWrap>
-
-          {/* <DailyHourlyView
-              events={events}
-              weekNumber={weekNumber}
-              date={date}
-              selectedDate={selectedDate}
-            /> */}
         </DayWrap>
       </Wrap>
     </Container>
   );
 }
-
 export default Calendar;

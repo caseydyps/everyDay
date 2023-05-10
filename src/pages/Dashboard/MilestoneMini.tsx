@@ -1,41 +1,16 @@
-import styled, { keyframes } from 'styled-components/macro';
-import { useState, useEffect, ChangeEvent, useContext } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'firebase/firestore';
+import { useContext, useEffect, useState } from 'react';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
+import styled from 'styled-components/macro';
+import DefaultButton, { Card } from '../../Components/Button/Button';
 import { AuthContext } from '../../config/Context/authContext';
 import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import Layout from '../../Components/layout';
-import { v4 as uuidv4 } from 'uuid';
-import DefaultButton, { Card } from '../../Components/Button/Button';
-import { AiOutlineArrowLeft } from 'react-icons/ai';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-} from '@fortawesome/free-solid-svg-icons';
-import LoadingAnimation from '../../Components/loading';
-
+import React from 'react';
 import {
   collection,
-  updateDoc,
-  addDoc,
   getDocs,
-  getDoc,
-  setDoc,
-  writeBatch,
-  deleteDoc,
-  doc,
-  query,
-  where,
-  arrayUnion,
 } from 'firebase/firestore';
-import UserAuthData from '../../Components/Login/Auth';
-import { MembersSelector } from '../AI/SmartInput';
 
 function Milestone() {
   type EventType = {
@@ -45,110 +20,8 @@ function Milestone() {
     member: string;
     image: string | null;
   };
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
   const { familyId, membersArray } = useContext(AuthContext);
   const [events, setEvents] = useState<EventType[]>([]);
-  const [newEventTitle, setNewEventTitle] = useState<string>('');
-  const [newEventDate, setNewEventDate] = useState<string>('');
-  const [newEventMember, setNewEventMember] = useState<string>('');
-  const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
-    null
-  );
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [file, setFile] = useState<any>(null);
-  const [imagePreview, setImagePreview] = useState<ImageType | null>(null);
-  const [member, setMember] = useState<string>('');
-  type NewEvent = {
-    id: number;
-    title: string;
-    date: Date;
-    member: string;
-    image: string;
-  };
-
-  type HandleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => void;
-
-  const handleNewEventSubmit: HandleNewEventSubmit = async (e) => {
-    e.preventDefault();
-    console.log(newEventDate);
-    const newEvent = {
-      id: uuidv4(),
-      title: newEventTitle,
-      date: newEventDate,
-      member: newEventMember,
-      image: file ? file : null,
-    };
-
-    try {
-      const eventsRef = collection(db, 'Family', familyId, 'Milestone');
-      await setDoc(doc(eventsRef, newEvent.id), newEvent);
-      console.log('New event has been added to Firestore!');
-      setEvents((prevEvents: any) => [...prevEvents, newEvent]);
-    } catch (error) {
-      console.error('Error adding new event to Firestore: ', error);
-    }
-
-    // Clear the form fields
-    setNewEventTitle('');
-    setNewEventDate('');
-    setNewEventMember('');
-    setNewEventImage(null);
-  };
-
-  type AvatarPreviewProps = {
-    avatar: string;
-    src: string;
-  };
-
-  const AvatarPreview = ({ avatar }: any) => {
-    return <img src={avatar} alt="Avatar" />;
-  };
-
-  const handleEditEvent = (event: EventType) => {
-    setEditedEvent(event);
-    setIsEditing(true);
-  };
-
-  const filterEvents = (events: EventType[]) => {
-    return events.filter((event) => {
-      let match = true;
-
-      if (filter.member !== '') {
-        match =
-          match &&
-          event.member.toLowerCase().includes(filter.member.toLowerCase());
-      }
-
-      if (filter.startDate !== null) {
-        match = match && event.date >= filter.startDate;
-      }
-
-      if (filter.endDate !== null) {
-        match = match && event.date <= filter.endDate;
-      }
-
-      if (filter.title !== null) {
-        match =
-          match &&
-          event.title.toLowerCase().includes(filter.title.toLowerCase());
-      }
-
-      return match;
-    });
-  };
-
   type FilterType = {
     member: string;
     startDate: Date | null;
@@ -162,133 +35,8 @@ function Milestone() {
     title: '',
   });
   type HandleEditFormSubmit = (editedEvent: EventType) => void;
-  const handleEditFormSubmit: HandleEditFormSubmit = async (editedEvent) => {
-    try {
-      const eventsRef = doc(
-        db,
-        'Family',
-        familyId,
-        'Milestone',
-        editedEvent.id.toString()
-      );
-      await updateDoc(eventsRef, editedEvent);
-      console.log('Event updated successfully!');
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === editedEvent.id ? editedEvent : event
-        )
-      );
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating event: ', error);
-    }
-  };
+  
 
-  const handleDeleteEvent = async (id: any) => {
-    console.log(id);
-    try {
-      await deleteDoc(doc<any>(db, 'Family', familyId, 'Milestone', id));
-      setEvents(events.filter((event) => event.id !== id));
-      console.log(events);
-      console.log('Event deleted successfully!');
-    } catch (error) {
-      console.error('Error deleting event: ', error);
-    }
-  };
-
-  const EditEventForm: any = ({
-    event,
-    onEdit,
-  }: {
-    event: EventType;
-    onEdit: HandleEditFormSubmit;
-  }) => {
-    const [title, setTitle] = useState(event.title);
-    const [date, setDate] = useState<string | Date>(event.date);
-    const [member, setMember] = useState<string | string[]>(event.member);
-    const [image, setImage] = useState<any>(null);
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-
-      const editedEvent: any = {
-        ...event,
-        title,
-        date: date,
-        member,
-        image: image ? image : null,
-      };
-
-      onEdit(editedEvent);
-    };
-
-    const handleEditMember = (member: string | string[]) => {
-      setMember(member);
-    };
-
-    return (
-      <Wrap style={{ top: '0%' }}>
-        <CancelButton onClick={() => setIsEditing(false)}>
-          <AnimatedFontAwesomeIcon
-            icon={faCircleXmark}
-          ></AnimatedFontAwesomeIcon>
-        </CancelButton>
-        <form onSubmit={handleSubmit}>
-          <FormField>
-            <FormLabel>Title:</FormLabel>
-            <FormInput
-              type="text"
-              value={title}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setTitle(e.target.value)
-              }
-            />
-          </FormField>
-          <FormField>
-            <FormLabel>Date:</FormLabel>
-            <FormInput
-              type="date"
-              value={date}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setDate(e.target.value)
-              }
-            />
-          </FormField>
-          <FormField>
-            <FormLabel>Member:</FormLabel>
-            <MembersSelector onSelectMember={handleEditMember} />
-            <FormInput
-              type="text"
-              value={member}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setMember(e.target.value)
-              }
-            />
-          </FormField>
-          <FormField>
-            <FormLabel>Image:</FormLabel>
-            <FormInput
-              type="file"
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                const selectedFile = e.target.files?.[0];
-                if (selectedFile) {
-                  const reader = new FileReader();
-                  reader.onload = () => {
-                    const fileUrl = reader.result as string;
-                    setImage(fileUrl);
-                  };
-                  reader.readAsDataURL(selectedFile);
-                } else {
-                  setImage(null);
-                }
-              }}
-            />
-          </FormField>
-          <Button type="submit">Save</Button>
-        </form>
-      </Wrap>
-    );
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -310,27 +58,7 @@ function Milestone() {
     fetchData();
   }, [familyId]);
 
-  console.log(events);
-  console.log(isEditing);
-
   const [showFilter, setShowFilter] = useState<boolean>(false);
-  const handleToggleFilter = (): void => {
-    setShowFilter(!showFilter);
-    if (showAddEvent) {
-      toggleAddEvent();
-    }
-  };
-
-  // const handleSelectMember = (member: string) => {
-  //   event.preventDefault();
-
-  //   setNewEventMember(member);
-  // };
-  // const handlefilterSelectMember = (member: string) => {
-  //   // event.preventDefault();
-  //   setFilter({ ...filter, member: member });
-  // };
-
   const [showAddEvent, setShowAddEvent] = useState<boolean>(false);
   const toggleAddEvent = (): void => {
     setShowAddEvent(!showAddEvent);
@@ -338,9 +66,6 @@ function Milestone() {
       setShowFilter(!showFilter);
     }
   };
-
-  const [currentPage, setCurrentPage] = useState(1);
-
   const HintBox = styled.div`
     display: flex;
     align-items: center;
@@ -367,7 +92,6 @@ function Milestone() {
 
   return (
     <Container>
-      {/* <BoxTitle>Celebrates</BoxTitle> */}
       <ColumnWrap>
         <ContentWrapper>
           <RowWrap>
@@ -436,41 +160,15 @@ function Milestone() {
                               <EventTitle>{event.title}</EventTitle>
                               <EventTitle>{event.member}</EventTitle>
                             </InfoWrap>
-                            {/* <RowWrap>
-                          <Button onClick={() => handleEditEvent(event)}>
-                            <AnimatedFontAwesomeIcon
-                              icon={faPenToSquare}
-                            ></AnimatedFontAwesomeIcon>
-                          </Button>
-                          <Button onClick={() => handleDeleteEvent(event.id)}>
-                            <AnimatedFontAwesomeIcon
-                              icon={faTrashCan}
-                            ></AnimatedFontAwesomeIcon>
-                          </Button>
-                        </RowWrap> */}
                           </ColumnWrap>
                         </EventBox>
-                        {/* <EventDot
-                      style={{
-                        alignSelf: 'center',
-                      }}
-                    /> */}
                       </>
                     );
                   })}
               </EventContainer>
             </RowWrap>
-            {/* <BoxTitle>Upcoming</BoxTitle> */}
           </RowWrap>
-
-          {/* {isEditing ? (
-            <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
-          ) : (
-            <form onSubmit={handleNewEventSubmit} />
-          )} */}
         </ContentWrapper>
-
-        {/* <LoadingAnimation /> */}
       </ColumnWrap>
       <HintBox>
         <HintIcon /> Scroll to see more
@@ -481,18 +179,9 @@ function Milestone() {
 
 export default Milestone;
 
-const BoxTitle = styled.h3`
-  color: #414141;
-  font-size: 20px;
-  position: absolute;
-  left: 10px;
-  top: 0%;
-`;
-
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
-  // border-radius: 5%;
   max-width: 400px;
   align-items: center;
   position: relative;
@@ -510,14 +199,6 @@ const Wrap = styled(Card)`
   top: 30%;
 `;
 
-const Header = styled.h1`
-  margin-top: 50px;
-  font-size: 48px;
-  font-weight: bold;
-  text-align: center;
-  color: #fff;
-`;
-
 const ContentWrapper = styled.div`
   width: 100%;
   display: flex;
@@ -530,16 +211,12 @@ const ContentWrapper = styled.div`
 const EventContainer = styled.div`
   max-width: 200px;
   height: 100%;
-
   overflow-x: scroll;
   padding: 10px;
   margin-left: 10px;
   -webkit-overflow-scrolling: touch;
   display: flex;
-
   gap: 20px;
-
-  /* Hide the scrollbar */
   &::-webkit-scrollbar {
     width: 0;
   }
@@ -565,30 +242,14 @@ const EventTitle = styled.div`
   margin-right: 5px;
   margin-left: 5px;
   color: #414141;
-
-  //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
 `;
 
 const DayText = styled.div`
   font-size: 6px;
   font-weight: bold;
   text-align: center;
-
   margin-right: auto;
-
   color: #414141;
-
-  //text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.7); /* added text shadow */
-`;
-
-const EventDate: any = styled.div`
-  font-size: 10px;
-  text-align: center;
-`;
-
-const EventMember = styled.div`
-  font-size: 18px;
-  text-align: center;
 `;
 
 const RowWrap = styled.div`
@@ -608,9 +269,8 @@ const DateBox = styled.div`
   width: 50px;
   height: 50px;
   background-color: #5981b0;
-  // box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 35px; /* changed top property to bottom */
+  bottom: 35px; 
   left: 5px;
   padding: 5px;
 `;
@@ -638,20 +298,6 @@ const EventImage = styled.img<any>`
   overflow-x: hidden;
 `;
 
-const FormWrapper = styled.div`
-  width: 80%;
-  margin: 50px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`;
-
-const Form = styled.form`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`;
-
 const FormField = styled.div`
   display: flex;
   flex-direction: column;
@@ -672,88 +318,6 @@ const FormInput: any = styled.input`
   border-radius: 5px;
 `;
 
-const FormButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #3e8e41;
-  }
-`;
-const TimelineWrapper = styled.div`
-  position: absolute;
-  width: 2px;
-  height: 100%; /* change height to 100% */
-  right: 50%;
-  margin: 0 20px;
-  background-color: #aaa;
-`;
-
-const EditButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #0b7dda;
-  }
-`;
-
-const DeleteButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #e57373;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #ef5350;
-  }
-`;
-
-const EventDot = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #aaa;
-`;
-
-const SearchInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 10px;
-`;
-
-const SearchIcon = styled.i`
-  font-size: 20px;
-  color: #999;
-  margin-right: 5px;
-`;
-
-const SearchInputField = styled.input`
-  border: none;
-  outline: none;
-  font-size: 16px;
-  color: #333;
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -764,21 +328,9 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const bounce = keyframes`
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-`;
 
 const AnimatedFontAwesomeIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
-  // &:hover {
-  //   animation: ${bounce} 0.5s;
-  // }
 `;
 
 const DateInfo = styled.div`
@@ -787,19 +339,6 @@ const DateInfo = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-`;
-
-const Year = styled.div`
-  font-size: 8px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: black;
-`;
-
-const Month = styled.div`
-  font-size: 8px;
-  margin-bottom: 5px;
-  color: black;
 `;
 
 const Day = styled.div`

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-
+import React from 'react';
 const SlideshowContainer = styled.div`
   position: relative;
   height: 200px;
@@ -19,26 +19,6 @@ const SlideshowImage = styled.img`
 
   opacity: 0;
   transition: opacity 2s ease-in-out;
-
-  &.active {
-    opacity: 1;
-  }
-`;
-
-const ThumbnailContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-`;
-
-const ThumbnailImage = styled.img`
-  height: 70px;
-  width: 70px;
-  object-fit: cover;
-  margin: 0 5px;
-  opacity: 0.5;
-  border-radius: 10px;
-  transition: opacity 0.5s ease-in-out;
 
   &.active {
     opacity: 1;
@@ -85,20 +65,6 @@ const Slideshow = ({ interval = 3000, photos }: SlideshowProps) => {
           </a>
         ))}
       </SlideshowContainer>
-      {/* <ThumbnailContainer
-        onMouseEnter={() => setShowSlideshow(true)}
-        onMouseLeave={() => setShowSlideshow(false)}
-      >
-        {photos.map((photo, index) => (
-          <ThumbnailImage
-            key={index}
-            src={photo.url}
-            alt={`Thumbnail ${index}`}
-            className={index === activeIndex ? 'active' : ''}
-            onClick={() => setActiveIndex(index)}
-          />
-        ))}
-      </ThumbnailContainer> */}
     </div>
   );
 };

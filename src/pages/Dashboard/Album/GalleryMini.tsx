@@ -1,50 +1,27 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-import styled from 'styled-components/macro';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
-import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
-import Slideshow from './SlideShowMini';
-import Layout from '../../../Components/layout';
-import UserAuthData from '../../../Components/Login/Auth';
-import { AuthContext } from '../../../config/Context/authContext';
-import DefaultButton from '../../../Components/Button/Button';
-import { MembersSelector } from '../../AI/SmartInput';
 import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
-  faCircleXmark,
-  faMagnifyingGlass,
-  faX,
-  faLock,
-  faLockOpen,
-  faEyeSlash,
-  faCloudArrowUp,
   faPause,
-  faPlay,
+  faPlay, faStar as fasStar
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'firebase/firestore';
 import {
-  collection,
-  updateDoc,
-  getDocs,
-  doc,
   addDoc,
-  getDoc,
+  collection,
   deleteDoc,
-  setDoc,
+  getDoc,
+  getDocs,
   query,
-  where,
+  updateDoc,
+  where
 } from 'firebase/firestore';
-import { v4 as uuidv4 } from 'uuid';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import styled from 'styled-components/macro';
+import DefaultButton from '../../../Components/Button/Button';
+import { AuthContext } from '../../../config/Context/authContext';
+import { db, storage } from '../../../config/firebase.config';
+import Slideshow from './SlideShowMini';
 
 type Album = {
   id: string;
@@ -103,17 +80,17 @@ function Gallery() {
   const { familyId } = useContext(AuthContext);
   const regularStar = farStar;
   const solidStar = fasStar;
-  // const {
-  //   user,
-  //   userName,
-  //   googleAvatarUrl,
-  //   userEmail,
-  //   hasSetup,
-  //   familyId,
-  //   setHasSetup,
-  //   membersArray,
-  //   memberRolesArray,
-  // } = UserAuthData();
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   const handleMembersChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedOptions = Array.from(
       e.target.selectedOptions,
@@ -145,14 +122,14 @@ function Gallery() {
     }
 
     try {
-      // Check if an album with the same name already exists in Firestore
+      
       const albumsRef = collection(db, 'Family', familyId, 'photos');
       const querySnapshot = await getDocs(
         query(albumsRef, where('title', '==', albumTitle))
       );
       let albumDoc;
       if (querySnapshot.empty) {
-        // If no album exists with the same name, create a new one
+        
         console.log('No album exists with the same name, creating a new one');
         albumDoc = await addDoc(albumsRef, {
           title: albumTitle,
@@ -163,39 +140,28 @@ function Gallery() {
           date: date,
         });
       } else {
-        // If an album already exists with the same name, use its document reference
         albumDoc = querySnapshot.docs[0].ref;
         console.log(
           "An album already exists with the same name, using it's document reference"
         );
       }
-
-      // Retrieve the current photos array from Firestore
       const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
       const currentPhotos: any = albumData.photos || [];
       console.log('currentPhotos', currentPhotos);
-
       const updatedPhotos = [...currentPhotos];
 
-      // Loop over each selected file
+      
       for (let i = 0; i < file.length; i++) {
         const currFile = file[i];
-
-        // Generate a unique ID for the new photo
         const newId = Date.now();
-
-        // Upload the file to Firebase Storage
         const storageRef = ref(
           storage,
           `${albumTitle}/${Date.now()}_${currFile.name}`
         );
         await uploadBytes(storageRef, currFile);
-
-        // Get the download URL of the uploaded file
         const downloadURL = await getDownloadURL(storageRef);
         console.log('File uploaded to Firebase Storage: ', downloadURL);
         setShowUpdateSection(false);
-        // Add the new photo to the album in Firestore
         const newPhoto = {
           id: newId,
           title: currFile.name,
@@ -205,11 +171,11 @@ function Gallery() {
         console.log('Photo added to updated photos array!');
       }
 
-      // Update the photos array in Firestore
+      
       await updateDoc(albumDoc, { photos: updatedPhotos });
       console.log('Updated photos array in Firestore!');
 
-      // Reset the file input and album form
+      
       setFile(null);
       setAlbumTitle('');
       setAlbumId('');
@@ -299,11 +265,11 @@ function Gallery() {
         console.log('No matching album found');
         return;
       }
-      // Delete the album document
+      
       const albumDoc = querySnapshot.docs[0].ref;
       await deleteDoc(albumDoc);
       console.log('Album deleted successfully!');
-      // Reset the selected album state
+      
       const updatedAlbums = albums.filter((a) => a.id !== album.id);
       setAlbums(updatedAlbums);
       setSelectedAlbumId('');
@@ -319,7 +285,7 @@ function Gallery() {
     const albumRef = collection(db, 'Family', familyId, 'photos');
 
     try {
-      // Update the favorite property of the album document
+      
       const querySnapshot = await getDocs(
         query(albumRef, where('title', '==', album.title))
       );
@@ -333,7 +299,7 @@ function Gallery() {
       await updateDoc(albumDocRef, { favorite: !album.favorite });
       console.log('Album favorite status updated successfully!');
 
-      // Update the selected album state
+      
       const updatedAlbums = albums.map((a) => {
         if (a.id === album.id) {
           return {

@@ -1,52 +1,37 @@
-import styled, { keyframes } from 'styled-components/macro';
-import { useState, useEffect, ChangeEvent, useRef, useContext } from 'react';
-import { AuthContext } from '../../config/Context/authContext';
-import Sidebar from '../../Components/Nav/Navbar';
-import { db } from '../../config/firebase.config';
-import firebase from 'firebase/app';
-import 'firebase/firestore';
-import Layout from '../../Components/layout';
-import SideNav from '../../Components/Nav/SideNav';
-import { v4 as uuidv4 } from 'uuid';
-import Time from '../../Components/Banner/time.png';
-import Swal from 'sweetalert2';
-import resizeFile from 'react-image-file-resizer';
-import { ChatMini } from './Dashboard';
-import DefaultButton, {
-  Card,
-  ThreeDButton,
-} from '../../Components/Button/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faFilter,
-  faPlus,
-  faCirclePlus,
-  faPlusCircle,
-  faPenToSquare,
-  faTrashCan,
   faCircleXmark,
   faEllipsisH,
+  faFilter,
+  faPenToSquare,
+  faPlus,
+  faPlusCircle,
+  faTrashCan
 } from '@fortawesome/free-solid-svg-icons';
-import LoadingAnimation from '../../Components/loading';
-import { Chrono } from 'react-chrono';
-import Banner from '../../Components/Banner/banner';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import 'firebase/firestore';
 import {
   collection,
-  updateDoc,
-  addDoc,
-  getDocs,
-  getDoc,
-  setDoc,
-  writeBatch,
   deleteDoc,
   doc,
-  query,
-  where,
-  arrayUnion,
+  getDocs,
+  setDoc,
+  updateDoc
 } from 'firebase/firestore';
-import UserAuthData from '../../Components/Login/Auth';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
+import styled, { keyframes } from 'styled-components/macro';
+import Swal from 'sweetalert2';
+import { v4 as uuidv4 } from 'uuid';
+import Banner from '../../Components/Banner/Banner';
+import DefaultButton, {
+  ThreeDButton
+} from '../../Components/Button/Button';
+import SideNav from '../../Components/Nav/SideNav';
+import LoadingAnimation from '../../Components/loading';
+import { AuthContext } from '../../config/Context/authContext';
+import { db } from '../../config/firebase.config';
 import { MembersSelector } from '../AI/SmartInput';
-
+import { ChatMini } from './Dashboard';
+import React from 'react';
 function Milestone() {
   type EventType = {
     id: number;
@@ -69,10 +54,8 @@ function Milestone() {
   const MAX_FILE_SIZE = 1048487;
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
   const [file, setFile] = useState<any>(null);
   const [imagePreview, setImagePreview] = useState<ImageType | null>(null);
-  const [member, setMember] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
   type NewEvent = {
     id: number;
@@ -88,7 +71,6 @@ function Milestone() {
     e.preventDefault();
     console.log(newEventDate);
     if (!newEventTitle || !newEventDate) {
-      // show an error message using SweetAlert
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -115,18 +97,11 @@ function Milestone() {
     } catch (error) {
       console.error('Error adding new event to Firestore: ', error);
     }
-
-    // Clear the form fields
     setNewEventTitle('');
     setNewEventDate('');
     setNewEventMember('');
     setNewEventImage(null);
     setShowAddEvent(false);
-  };
-
-  type AvatarPreviewProps = {
-    avatar: string;
-    src: string;
   };
 
   const AvatarPreview = ({ avatar }: any) => {
@@ -206,8 +181,6 @@ function Milestone() {
     try {
       await deleteDoc(doc<any>(db, 'Family', familyId, 'Milestone', id));
       setEvents(events.filter((event) => event.id !== id));
-      console.log(events);
-      console.log('Event deleted successfully!');
     } catch (error) {
       console.error('Error deleting event: ', error);
     }
@@ -224,7 +197,6 @@ function Milestone() {
     const [date, setDate] = useState<string | Date>(event.date);
     const [member, setMember] = useState<string | string[]>(event.member);
     const [image, setImage] = useState<any>(null);
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!title || !date || !member) {
@@ -326,15 +298,12 @@ function Milestone() {
 
   useEffect(() => {
     async function fetchData() {
-      console.log(familyId);
-      console.log(membersArray);
       const familyDocRef = collection(db, 'Family', familyId, 'Milestone');
       try {
         const querySnapshot = await getDocs(familyDocRef);
         const data: any = querySnapshot.docs.map((doc) => ({
           ...doc.data(),
         }));
-        console.log(data);
         setEvents(data);
       } catch (error) {
         console.error('Error fetching data from Firestore: ', error);
@@ -343,10 +312,6 @@ function Milestone() {
 
     fetchData();
   }, [familyId]);
-
-  console.log(events);
-  console.log(isEditing);
-
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const handleToggleFilter = (): void => {
     setShowFilter(!showFilter);
@@ -355,11 +320,7 @@ function Milestone() {
     }
   };
 
-  // const handleSelectMember = (member: string | string[]) => {
-  //   setNewEventMember(member);
-  // };
   const handlefilterSelectMember = (member: string | string[]) => {
-    // event.preventDefault();
     setFilter({ ...filter, member: member });
   };
 
@@ -370,114 +331,12 @@ function Milestone() {
       setShowFilter(!showFilter);
     }
   };
-
-  const rotate = keyframes`
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-`;
-
-  const Gradient = styled.div`
-    --size: 50px;
-    --speed: 20s;
-    --easing: cubic-bezier(0.8, 0.2, 0.2, 0.8);
-
-    width: 600px;
-    height: 300px;
-    filter: blur(calc(var(--size) / 5));
-    background-image: linear-gradient(
-      hsl(158, 82%, 57%, 85%),
-      hsl(252, 82%, 57%)
-    );
-
-    animation: ${rotate} var(--speed) var(--easing) alternate infinite;
-    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-
-    @media (min-width: 720px) {
-      --size: 500px;
-    }
-  `;
-
-  const Body = styled.body`
-    background-color: #222;
-    position: absolute;
-    inset: 0;
-    display: flex;
-    place-content: center;
-    align-items: center;
-    overflow: hidden;
-  `;
-
-  const BannerContainer = styled.div`
-    width: 100vw-200px;
-    height: 25vh;
-
-    border: 3px solid white;
-    position: relative; /* Added to set stacking context */
-
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 0.8),
-        rgba(0, 0, 0, 0.5),
-        rgba(0, 0, 0, 0.3),
-        rgba(0, 0, 0, 0.2),
-        rgba(0, 0, 0, 0)
-      ),
-      linear-gradient(
-        -45deg,
-
-        #3467a1,
-        #555555,
-        #1034a6,
-        #1b4d3e,
-        #1034a6,
-        #ff69b4
-      );
-    display: flex;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.9);
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 50px;
-  `;
-
-  const BannerTitle = styled.h1`
-    position: absolute;
-    top: 30%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    border: 3px solid white;
-    padding: 20px;
-    font-size: 36px;
-    z-index: 2; /* Increased z-index value */
-  `;
-
-  const BannerSubTitle = styled.h2`
-    position: absolute;
-    top: 75%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 20px;
-    text-align: center;
-    z-index: 1;
-  `;
-
-  const BannerImg = styled.img`
-    width: auto;
-    height: 250px;
-    position: absolute;
-    right: 10%;
-  `;
+ 
   const [eventWrapWidth, setEventWrapWidth] = useState(null);
   const [showButtons, setShowButtons] = useState(false);
   const handleToggleButtons = () => {
     setShowButtons(!showButtons);
   };
-  console.log(membersArray);
 
   const alertMaxFileSize = () => {
     Swal.fire({
@@ -510,7 +369,6 @@ function Milestone() {
       <Wrapper>
         <ChatMini />
         <Banner title="Time Machine" subTitle="Time less memories"></Banner>
-
         <RowWrap>
           <Button onClick={handleToggleFilter}>
             <AnimatedFontAwesomeIcon icon={faFilter}></AnimatedFontAwesomeIcon>
@@ -539,19 +397,10 @@ function Milestone() {
                 }
               />
             </FormField>
-
             <FormField>
               <FormLabel>Member:</FormLabel>
               <MembersSelector onSelectMember={handlefilterSelectMember} />
-              {/* <FormInput
-                type="text"
-                value={filter.member}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFilter({ ...filter, member: e.target.value })
-                }
-              /> */}
             </FormField>
-
             <FormField>
               <FormLabel>開始日期:</FormLabel>
               <FormInput
@@ -565,7 +414,6 @@ function Milestone() {
                 }
               />
             </FormField>
-
             <FormField>
               <FormLabel>結束日期:</FormLabel>
               <FormInput
@@ -608,8 +456,6 @@ function Milestone() {
                     }
                   />
                 </FormField>
-
-                {/* <MembersSelector onSelectMember={handleSelectMember} /> */}
                 <FormField>
                   <FormLabel>Member:</FormLabel>
                   <FormSelection
@@ -736,11 +582,6 @@ function Milestone() {
                         </ButtonRowWrap>
                       </ColumnWrap>
                     </EventBox>
-                    {/* <EventDot
-                      style={{
-                        alignSelf: 'center',
-                      }}
-                    /> */}
                   </EventWrap>
                 );
               })}
@@ -775,7 +616,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  // border: 3px solid red;
   margin-top: 30px;
   position: relative;
   justify-content: center;
@@ -841,17 +681,13 @@ const EventContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.3);
   border-radius: 20px;
   -webkit-overflow-scrolling: touch;
-
-  /* Style the scrollbar */
   &::-webkit-scrollbar {
     width: 8px;
   }
-
   &::-webkit-scrollbar-thumb {
     background-color: #3467a1;
     border-radius: 58px;
   }
-
   &::-webkit-scrollbar-thumb:hover {
     background-color: #3467a1;
   }
@@ -865,7 +701,6 @@ const EventContainer = styled.div`
     background-color: transparent;
     background-image: linear-gradient(
       to bottom,
-
       rgba(52, 103, 161, 0.5),
       #1e3d6b
     );
@@ -876,7 +711,6 @@ const EventContainer = styled.div`
 const EventBox = styled.div`
   width: auto;
   max-height: 400px;
-
   margin-right: 20px;
   border-radius: 20px;
   transition: box-shadow 0.5s ease-in-out;
@@ -884,11 +718,9 @@ const EventBox = styled.div`
   background-color: white;
   justify-content: space-between;
   margin: 10px;
-
   position: relative;
-  //box-shadow: 3px 3px 5px black; /* added box shadow */
   &:hover {
-    box-shadow: 0 0 10px #f6f8f8, 0 0 20px #f6f8f8, 0 0 40px #f6f8f8; /* added glow effect */
+    box-shadow: 0 0 10px #f6f8f8, 0 0 20px #f6f8f8, 0 0 40px #f6f8f8; 
     transform: scale(1.05);
   }
 `;
@@ -902,15 +734,6 @@ const EventTitle = styled.div`
   color: #3467a1;
 `;
 
-const EventDate: any = styled.div`
-  font-size: 10px;
-  text-align: center;
-`;
-
-const EventMember = styled.div`
-  font-size: 18px;
-  text-align: center;
-`;
 
 const RowWrap = styled.div`
   display: flex;
@@ -943,7 +766,7 @@ const DateBox = styled.div`
   background-color: #fff;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
   border-radius: 20%;
-  bottom: 45px; /* changed top property to bottom */
+  bottom: 45px; 
   left: 10px;
   padding: 5px;
 `;
@@ -989,13 +812,6 @@ const EventImage = styled.img<any>`
   border-radius: 20px 20px 0 0;
 `;
 
-const FormWrapper = styled.div`
-  width: 80%;
-  margin: 50px 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-`;
 
 const Form = styled.form`
   display: flex;
@@ -1034,87 +850,6 @@ const FormSelection: any = styled.select`
   width: 150px;
 `;
 
-const FormButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #3e8e41;
-  }
-`;
-const TimelineWrapper = styled.div`
-  position: absolute;
-  width: 2px;
-  height: 100%; /* change height to 100% */
-  right: 50%;
-  margin: 0 20px;
-  background-color: #aaa;
-`;
-
-const EditButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #2196f3;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #0b7dda;
-  }
-`;
-
-const DeleteButton = styled.button`
-  font-size: 16px;
-  padding: 5px 10px;
-  background-color: #e57373;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-
-  &:hover {
-    background-color: #ef5350;
-  }
-`;
-
-const EventDot = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #aaa;
-`;
-
-const SearchInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 5px;
-  margin-bottom: 10px;
-`;
-
-const SearchIcon = styled.i`
-  font-size: 20px;
-  color: #999;
-  margin-right: 5px;
-`;
-
-const SearchInputField = styled.input`
-  border: none;
-  outline: none;
-  font-size: 16px;
-  color: #333;
-`;
 
 export const GradientAnimation = keyframes`
   0% {
@@ -1136,36 +871,10 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-  //border: 3px solid gold;
-  /* background: linear-gradient(
-    -45deg,
-    #3467a1,
-    #555555,
-    #1034a6,
-    #1b4d3e,
-    #1034a6,
-    #ff69b4
-  );
-  background-size: 300% 300%;
-
-  animation: ${GradientAnimation} 20s ease-in-out infinite; */
-`;
-
-const bounce = keyframes`
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
 `;
 
 const AnimatedFontAwesomeIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
-  // &:hover {
-  //   animation: ${bounce} 0.5s;
-  // }
 `;
 
 const DateInfo = styled.div`
@@ -1195,9 +904,6 @@ const Day = styled.div`
   color: coral;
 `;
 
-const TimelineContainer = styled.div`
-  position: relative;
-`;
 const pulse = keyframes`
   0% {
     box-shadow: 0 0 0 0 #3467a1;
@@ -1229,20 +935,6 @@ const Dot = styled.div<Dot>`
   animation: ${pulse} 2s ease-in-out infinite;
 `;
 
-const DateText = styled.div`
-  margin-left: 20px;
-  font-size: 16px;
-`;
-
-const TimelineLine = styled.div`
-  position: absolute;
-  top: 12px;
-  bottom: 12px;
-
-  left: 11px;
-  right: 0;
-  border-left: 2px solid #aaa;
-`;
 type EventWrapType = {
   onLayout?: (event: Event) => void;
 };

@@ -1,9 +1,8 @@
-import React from 'react';
-import { auth } from '../../config/firebase.config';
-import styled from 'styled-components/macro';
 import { useState } from 'react';
+import styled from 'styled-components/macro';
+import { auth } from '../../config/firebase.config';
 import { ThreeDButton } from '../Button/Button';
-
+import React from 'react';
 const LogOut = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const signOut = () => {
@@ -11,7 +10,7 @@ const LogOut = () => {
     auth.signOut();
     setTimeout(() => {
       window.location.href = '/';
-    }, 1000); // Redirect after 3 seconds
+    }, 1000); 
   };
 
   return <LogoutButton onClick={signOut}>登出</LogoutButton>;
