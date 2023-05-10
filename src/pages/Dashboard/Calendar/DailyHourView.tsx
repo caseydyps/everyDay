@@ -246,7 +246,7 @@ const Table = styled.table`
   background-color: rgba(64, 64, 64, 0.5);
   color: #fff;
   overflow: auto;
-  height: 800px; ;
+  height: 800px;
 `;
 
 const TableRow = styled.tr`

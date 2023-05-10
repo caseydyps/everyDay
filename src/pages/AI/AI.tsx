@@ -22,7 +22,7 @@ import {
   where,
 } from 'firebase/firestore';
 import SmartInput from './SmartInput';
-import Banner from '../../Components/Banner/Banner';
+import Banner from '../../Components/Banner/banner';
 import Suggestion from './Suggestion';
 
 const AI = () => {

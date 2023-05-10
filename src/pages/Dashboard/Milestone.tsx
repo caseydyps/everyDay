@@ -29,7 +29,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import LoadingAnimation from '../../Components/loading';
 import { Chrono } from 'react-chrono';
-import Banner from '../../Components/Banner/Banner';
+import Banner from '../../Components/Banner/banner';
 import {
   collection,
   updateDoc,

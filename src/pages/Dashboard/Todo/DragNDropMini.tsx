@@ -263,7 +263,7 @@ const ListInfoWrap = styled.div<ListInfo>`
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   border-radius: 25px;
   margin: 5px;
-  padding: 5px;
+  padding: 5px 10px;
   font-weight: bold;
   height: 35px;
   color: #f5f5f5;
@@ -758,12 +758,12 @@ function DragNDrop({ data }: any) {
           {list.map((group, groupIndex) => (
             <List>
               <ListInfoWrap index={groupIndex}>
-                <h3>{group.title}</h3>
+                <h5>{group.title}</h5>
                 {/* <h4>Unfinished tasks: {getUnfinishedTaskCount(group)}</h4>
               <h4>Total tasks: {getTotalTaskCount(group)}</h4> */}
-                <h4>
+                <h6>
                   {getfinishedTaskCount(group)}/{getTotalTaskCount(group)}
-                </h4>
+                </h6>
               </ListInfoWrap>
               {/* {getListProgress(group)} */}
               {/* 
