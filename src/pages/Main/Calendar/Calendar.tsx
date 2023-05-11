@@ -9,7 +9,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format } from 'date-fns-tz';
 import 'firebase/firestore';
 import {
-  addDoc,
   collection,
   deleteDoc,
   getDocs,
@@ -33,7 +32,6 @@ import { db } from '../../../config/firebase.config';
 import SmartInput from '../AI/SmartInput';
 import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
-import HourlyView from './HourView';
 
 function Calendar() {
   const [date, setDate] = useState<Date>(new Date());
@@ -42,9 +40,7 @@ function Calendar() {
   const [isAllDay, setIsAllDay] = useState<boolean>(false);
   const [eventTitle, setEventTitle] = useState<string>('');
   const [eventDate, setEventDate] = useState<string>('');
-  const [eventEndDate, setEventEndDate] = useState<string>('');
   const [eventTime, setEventTime] = useState<string>('');
-  const [eventEndTime, setEventEndTime] = useState<string>('');
   const [eventCategory, setEventCategory] = useState<string>('');
   const [eventMember, setEventMember] = useState<string>('');
   const [eventNote, setEventNote] = useState<string>('');
@@ -73,7 +69,6 @@ function Calendar() {
     'Nov',
     'Dec',
   ];
-
   const { familyId, membersArray } = useContext(AuthContext);
   const [showButtons, setShowButtons] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState('');
@@ -114,7 +109,6 @@ function Calendar() {
   };
 
   const postEventToFirestore = async (data: any) => {
-    const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
     try {
       setIsEventAdded(true);
     } catch (error) {
@@ -142,7 +136,6 @@ function Calendar() {
     const querySnapshot = await getDocs(
       query(eventRef, where('id', '==', eventId.current))
     );
-
     querySnapshot.forEach(async (doc) => {
       try {
         await updateDoc(doc.ref, updatedData);
@@ -165,11 +158,9 @@ function Calendar() {
     ) => {
       draggedEventIdRef.current = eventId;
     };
-
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
       e.preventDefault();
     };
-
     const handleDrop = async (
       e: React.DragEvent<HTMLDivElement>,
       date: Date,
@@ -254,7 +245,6 @@ function Calendar() {
                       members={membersArray}
                       memberRole={event.member}
                     ></EventMember>
-
                     <EventTitle finished={event.finished}>
                       {event.title}
                     </EventTitle>
@@ -279,7 +269,6 @@ function Calendar() {
     if (!date) {
       return <div>No date selected</div>;
     }
-
     const selectedMonthEvents = events.filter((event: Event) => {
       const eventDate = new Date(event.date);
       return (
@@ -339,8 +328,19 @@ function Calendar() {
       height: 50px;
     `;
 
-    const EventDetails = styled.span`
-      margin-left: 5px;
+    interface EventDetailsProps {
+      fontSize?: string;
+      top?: string;
+      left?: string;
+      color?: string;
+    }
+
+    const EventDetails = styled.span<EventDetailsProps>`
+      position: absolute;
+      font-size: ${(props) => props.fontSize};
+      top: ${(props) => props.top};
+      left: ${(props) => props.left};
+      color: ${(props) => props.color};
     `;
 
     const NoEvents = styled.div`
@@ -355,6 +355,9 @@ function Calendar() {
       border-radius: 50%;
       height: 40px;
       width: 40px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
     `;
 
     const EventMember: React.FC<EventMemberProps> = ({
@@ -363,33 +366,13 @@ function Calendar() {
     }) => {
       const member = members.find((m) => m.role === memberRole);
       return member ? (
-        <MemberAvatar
-          style={{
-            position: 'absolute',
-            top: '10px',
-            right: '10px',
-          }}
-          src={member.avatar}
-          alt={member.role}
-        />
+        <MemberAvatar src={member.avatar} alt={member.role} />
       ) : null;
     };
     const EventRole: React.FC<EventMemberProps> = ({ members, memberRole }) => {
       const member = members.find((m) => m.role === memberRole);
-      return member ? (
-        <span
-          style={{
-            position: 'absolute',
-            top: '45px',
-            right: '15px',
-            fontSize: '12px',
-          }}
-        >
-          {member.role}
-        </span>
-      ) : null;
+      return member ? <RoleLabel>{member.role}</RoleLabel> : null;
     };
-
     return (
       <MonthColumnWrap>
         <MonthWrap>
@@ -402,12 +385,8 @@ function Calendar() {
               })
               .replace(/\//g, '-')}
           </Title>
-
           {selectedMonthEvents.filter((event) => {
             const eventDate = new Date(`${event.date}T${event.time}:00`);
-            const eventEndDate = new Date(
-              `${event.endDate}T${event.endTime}:00`
-            );
             const eventDateInTaipei = eventDate.toLocaleString('en-US', {
               timeZone: 'Asia/Taipei',
               year: 'numeric',
@@ -420,7 +399,6 @@ function Calendar() {
               month: '2-digit',
               day: '2-digit',
             });
-
             return eventDateInTaipei === selectedDateInTaipei;
           }).length > 0 ? (
             <EventList>
@@ -453,29 +431,17 @@ function Calendar() {
                       members={membersArray}
                       memberRole={event.member}
                     ></EventRole>
-
-                    <EventDetails
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        fontSize: '20px',
-                      }}
-                    >
+                    <EventDetails top="10px" left="10px" fontSize="20px">
                       {event.title}
                     </EventDetails>
                     <EventDetails
-                      style={{
-                        position: 'absolute',
-                        top: '40px',
-                        left: '12px',
-                        fontSize: '12px',
-                        color: '#F6F8F8',
-                      }}
+                      top="40px"
+                      left="12px"
+                      fontSize="12px"
+                      color="#F6F8F8"
                     >
                       {event.time}
                     </EventDetails>
-
                     <EditWrap>
                       <EventEditButton onClick={() => handleEditEvent(event)}>
                         <FontAwesomeIcon icon={faEdit} />
@@ -490,12 +456,9 @@ function Calendar() {
           ) : (
             <>
               <NoEvents>No event for the selected date.</NoEvents>
-              <AddButton
-                style={{ position: 'absolute', bottom: '0px', right: '0px' }}
-                onClick={handleAddEvent}
-              >
+              <AddEventButton onClick={handleAddEvent}>
                 Add Event
-              </AddButton>
+              </AddEventButton>
             </>
           )}
         </MonthWrap>
@@ -519,35 +482,22 @@ function Calendar() {
                       members={membersArray}
                       memberRole={event.member}
                     ></EventRole>
-                    <EventDetails
-                      style={{
-                        position: 'absolute',
-                        top: '10px',
-                        left: '10px',
-                        fontSize: '20px',
-                      }}
-                    >
+                    <EventDetails top="10px" left="10px" fontSize="20px">
                       {event.title}
                     </EventDetails>
                     <EventDetails
-                      style={{
-                        position: 'absolute',
-                        top: '40px',
-                        left: '80px',
-                        fontSize: '12px',
-                        color: '#F6F8F8',
-                      }}
+                      top="40px"
+                      left="80px"
+                      fontSize="12px"
+                      color="#F6F8F8"
                     >
                       {event.time}
                     </EventDetails>
                     <EventDetails
-                      style={{
-                        position: 'absolute',
-                        top: '40px',
-                        left: '12px',
-                        fontSize: '12px',
-                        color: '#F6F8F8',
-                      }}
+                      top="40px"
+                      left="12px"
+                      fontSize="12px"
+                      color="#F6F8F8"
                     >
                       {event.date}
                     </EventDetails>
@@ -561,7 +511,6 @@ function Calendar() {
       </MonthColumnWrap>
     );
   }
-
   const getDaysInMonth = (date: Date): number => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -588,43 +537,6 @@ function Calendar() {
     getWeekNumber(new Date(year, month, 1));
   };
 
-  const handlePrevWeek = () => {
-    const newDate = new Date(date.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const newMonth = newDate.getMonth();
-    const currentMonth = date.getMonth();
-    const lastRowOfMonth = Math.ceil(getDaysInMonth(date) / 7) - 1;
-    setDate(newDate);
-    setSelectedRow(
-      newMonth === currentMonth
-        ? Math.max(selectedRow ? selectedRow - 1 : 0, 0)
-        : lastRowOfMonth
-    );
-    getWeekNumber(newDate);
-  };
-
-  const handleNextWeek = () => {
-    const newDate = new Date(date.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const newMonth = newDate.getMonth();
-    const currentMonth = date.getMonth();
-    setDate(newDate);
-    setSelectedRow(
-      newMonth === currentMonth ? (selectedRow ? selectedRow + 1 : 0) : 0
-    );
-    getWeekNumber(newDate);
-  };
-
-  const handlePrevDay = () => {
-    const newDate = new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000);
-    setSelectedDate(newDate);
-    getWeekNumber(new Date(selectedDate.getTime() - 24 * 60 * 60 * 1000));
-  };
-
-  const handleNextDay = () => {
-    const newDate = new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000);
-    setSelectedDate(newDate);
-    getWeekNumber(new Date(selectedDate.getTime() + 24 * 60 * 60 * 1000));
-  };
-
   const handleDateClick = (day: number, row: number | null) => {
     setSelectedDate(new Date(date.getFullYear(), date.getMonth(), day));
     setSelectedRow(row);
@@ -633,7 +545,6 @@ function Calendar() {
 
   const handleEventSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const isMultiDay = eventDate !== eventEndDate;
     const newEvent: any = {
       title: eventTitle,
       date: eventDate,
@@ -647,7 +558,6 @@ function Calendar() {
       day: eventDay,
       endDay: eventEndDay,
     };
-
     postEventToFirestore(newEvent);
     setEvents([...events, newEvent]);
     setShowModal(false);
@@ -667,10 +577,6 @@ function Calendar() {
 
   useEffect(() => {}, [selectedRow]);
 
-  const handleViewClick = (view: string) => {
-    setView(view);
-  };
-
   function getWeekNumber(date: Date) {
     const dayOfWeek = (date.getDay() + 6) % 7;
     const jan1 = new Date(date.getFullYear(), 0, 1);
@@ -682,7 +588,6 @@ function Calendar() {
 
   function getISOWeek(date: Date): number {
     const dayOfWeek = date.getDay();
-    const dayOfMonth = date.getDate();
     const thursday = new Date(
       date.getTime() + (3 - ((dayOfWeek + 6) % 7)) * 86400000
     );
@@ -691,48 +596,9 @@ function Calendar() {
       (thursday.getTime() - january1st.getTime()) / 86400000
     );
     const weekNumber = Math.floor((daysSinceJanuary1st + 3) / 7) + 1;
-
     return weekNumber;
   }
 
-  function DayCalendar({ selectedDate = new Date() }) {
-    const weekdays = [
-      'Sunday',
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-    ];
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    if (!selectedDate) {
-      selectedDate = new Date();
-    }
-    const dayOfWeek = weekdays[selectedDate.getDay()];
-    const month = months[selectedDate.getMonth()];
-    const dayOfMonth = selectedDate.getDate();
-    const year = selectedDate.getFullYear();
-
-    return (
-      <div>
-        <h1>{`${dayOfWeek}, ${month} ${dayOfMonth}, ${year}`}</h1>
-      </div>
-    );
-  }
   const handleEditEvent = async (event: Event) => {
     const updatedTitle = prompt('Enter the updated event title:', event.title);
     const updatedDate = prompt('Enter the updated event date:', event.date);
@@ -795,16 +661,6 @@ function Calendar() {
     getWeekNumber(new Date(date));
   };
 
-  const handleEndDateChange = (date: string) => {
-    const dateObj = new Date(date);
-    const selectedDayOfWeek = dateObj.toLocaleDateString(undefined, {
-      weekday: 'long',
-    });
-
-    setEventEndDate(date);
-    setEventEndDay(selectedDayOfWeek);
-  };
-
   const handleSelectMember = (member: string) => {
     setEventMember(member);
   };
@@ -840,13 +696,10 @@ function Calendar() {
       <Wrap>
         <ChatToggle />
         <Banner title="Calendar" subTitle="EVERY DAY COUNTS"></Banner>
-
         <InfoButton onClick={handleInfoClick}>
           <FontAwesomeIcon icon={faCircleInfo} />
         </InfoButton>
-        <CalendarContainer
-          style={{ display: view === 'month' ? 'block' : 'none' }}
-        >
+        <CalendarContainer view={view}>
           <MonthContainer>
             <Button onClick={handlePrevMonth}>
               <FontAwesomeIcon icon={faChevronLeft} />
@@ -860,11 +713,6 @@ function Calendar() {
           </MonthContainer>
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
-          <ViewSelect onChange={(event) => handleViewClick(event.target.value)}>
-            <option value="">Month/Week</option>
-            <option value="month">Month</option>
-            <option value="week">Week</option>
-          </ViewSelect>
           {showModal && (
             <Modal>
               <ModalForm onSubmit={handleEventSubmit}>
@@ -913,18 +761,9 @@ function Calendar() {
           <RowWrap>
             {showSmartInput && (
               <SmartInputContainer>
-                <CloseButton
-                  style={{
-                    zIndex: '5',
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                  }}
-                  onClick={handleButtonClick}
-                ></CloseButton>
+                <CloseInputButton onClick={handleButtonClick} />
                 <SmartInput
                   onClose={handleClose}
-                  style={{ position: 'relative' }}
                   setIsEventAdded={setIsEventAdded}
                 ></SmartInput>
               </SmartInputContainer>
@@ -974,20 +813,12 @@ function Calendar() {
                             textAlign: 'left',
                           }}
                         >
-                          <span
-                            style={{
-                              position: 'absolute',
-                              top: '5px',
-                              left: '10px',
-                              fontSize: '18px',
-                            }}
-                          >
+                          <DayNumber>
                             {isCurrentMonth ? dayOfMonth : ''}
-                          </span>
+                          </DayNumber>
                           {eventsOnDay.map((event) => (
                             <div key={event.title}>{event.title}</div>
                           ))}
-
                           <DateDetails
                             date={
                               new Date(
@@ -1012,280 +843,24 @@ function Calendar() {
             <MonthDetails date={selectedDate} events={events} />
           </RowWrap>
         </CalendarContainer>
-        <WeekWrap style={{ display: view === 'week' ? 'block' : 'none' }}>
-          <h1>
-            Week {weekNumber} of {date.getFullYear()}
-          </h1>
-          <MonthContainer>
-            <Button onClick={handlePrevWeek}>Prev</Button>
-            <MonthLabel>{`${
-              months[date.getMonth()]
-            } ${date.getFullYear()}`}</MonthLabel>
-            <Button onClick={handleNextWeek}>Next</Button>
-            <ViewSelect
-              onChange={(event) => handleViewClick(event.target.value)}
-            >
-              <option value="">Month/Week</option>
-              <option value="month">Month</option>
-              <option value="week">Week</option>
-            </ViewSelect>
-          </MonthContainer>
-          <DateDetails
-            date={selectedDate}
-            events={events}
-            setEvents={setEvents}
-          />
-          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-          {showModal && (
-            <Modal>
-              <ModalForm onSubmit={handleEventSubmit}>
-                <label>
-                  Title:
-                  <input
-                    type="text"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                  />
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={isAllDay}
-                    onChange={(e) => setIsAllDay(e.target.checked)}
-                  />
-                  All Day Event
-                </label>
-                <label>
-                  Start:
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => handleDateChange(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Time:
-                  <input
-                    type="time"
-                    step="1800"
-                    value={eventTime}
-                    onChange={(e) => setEventTime(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Category:
-                  <select
-                    value={eventCategory}
-                    onChange={(e) => setEventCategory(e.target.value)}
-                  >
-                    <option value="">Select a category</option>
-                    <option value="Work">Work</option>
-                    <option value="Personal">Personal</option>
-                    <option value="School">School</option>
-                  </select>
-                </label>
-                <label>
-                  Member:
-                  <select
-                    value={eventMember}
-                    onChange={(e) => setEventMember(e.target.value)}
-                  >
-                    <option value="">Select a family member</option>
-                    <option value="Dad">Dad</option>
-                    <option value="Mom">Mom</option>
-                    <option value="Baby">Baby</option>
-                  </select>
-                </label>
-
-                <button type="submit">Add</button>
-              </ModalForm>
-            </Modal>
-          )}
-          <HourlyView events={events} weekNumber={weekNumber} date={date} />
-        </WeekWrap>
-        <DayWrap style={{ display: view === 'day' ? 'block' : 'none' }}>
-          <MonthContainer>
-            <Button onClick={handlePrevDay}>Prev</Button>
-            <MonthLabel>{`${
-              months[date.getMonth()]
-            } ${date.getFullYear()}`}</MonthLabel>
-            <Button onClick={handleNextDay}>Next</Button>
-          </MonthContainer>
-          <DateDetails
-            date={selectedDate}
-            events={events}
-            setEvents={setEvents}
-            draggedEventIdRef={draggedEventIdRef}
-          />
-          <AddButton onClick={handleAddEvent}>Add Event</AddButton>
-          {showModal && (
-            <Modal>
-              <ModalForm onSubmit={handleEventSubmit}>
-                <label>
-                  Title:
-                  <input
-                    type="text"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                  />
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={isAllDay}
-                    onChange={(e) => setIsAllDay(e.target.checked)}
-                  />
-                  All Day Event
-                </label>
-                <label>
-                  Start:
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => handleDateChange(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Due:
-                  <input
-                    type="date"
-                    value={eventEndDate}
-                    onChange={(e) => handleEndDateChange(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Time:
-                  <input
-                    type="time"
-                    step="1800"
-                    value={eventTime}
-                    onChange={(e) => setEventTime(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Time:
-                  <input
-                    type="time"
-                    step="1800"
-                    value={eventEndTime}
-                    onChange={(e) => setEventEndTime(e.target.value)}
-                  />
-                </label>
-
-                <label>
-                  Category:
-                  <select
-                    value={eventCategory}
-                    onChange={(e) => setEventCategory(e.target.value)}
-                  >
-                    <option value="">Select a category</option>
-                    <option value="Work">Work</option>
-                    <option value="Personal">Personal</option>
-                    <option value="School">School</option>
-                  </select>
-                </label>
-                <label>
-                  Member:
-                  <select
-                    value={eventMember}
-                    onChange={(e) => setEventMember(e.target.value)}
-                  >
-                    <option value="">Select a family member</option>
-                    <option value="Dad">Dad</option>
-                    <option value="Mom">Mom</option>
-                    <option value="Baby">Baby</option>
-                  </select>
-                </label>
-                <button type="submit">Add</button>
-              </ModalForm>
-            </Modal>
-          )}
-          <DayCalendar selectedDate={selectedDate} />
-          <CenterWrap>
-            {' '}
-            <Td
-              style={{
-                width: '500px',
-                height: '500px',
-                maxWidth: '500px',
-                maxHeight: '500px;',
-              }}
-            >
-              {events.map((event) => {
-                const eventDate = new Date(event.date);
-                const selectedDateObj = new Date(selectedDate);
-                const eventDateOnly = new Date(
-                  eventDate.getFullYear(),
-                  eventDate.getMonth(),
-                  eventDate.getDate()
-                );
-                const selectedDateOnly = new Date(
-                  selectedDateObj.getFullYear(),
-                  selectedDateObj.getMonth(),
-                  selectedDateObj.getDate()
-                );
-
-                if (
-                  selectedDateOnly === eventDateOnly ||
-                  (selectedDateOnly >= eventDateOnly &&
-                    selectedDateOnly < new Date(event.endDate))
-                ) {
-                  return (
-                    <div
-                      style={{
-                        height: '500px',
-                        fontSize: '72px',
-                        color: 'white',
-                      }}
-                    >
-                      <EventTitle
-                        style={{
-                          fontSize: '72px',
-                          color: 'white',
-                        }}
-                        finished={event.finished}
-                      >
-                        {event.title}
-                      </EventTitle>
-                      <EventCategory
-                        style={{
-                          fontSize: '36px',
-                          color: 'white',
-                        }}
-                      >
-                        {event.category}
-                      </EventCategory>
-                      <EventMember
-                        style={{
-                          fontSize: '36px',
-                          color: 'white',
-                        }}
-                      >
-                        {event.member}
-                      </EventMember>
-                      <EventTime
-                        style={{
-                          fontSize: '36px',
-                        }}
-                      >
-                        {event.time}
-                      </EventTime>
-                    </div>
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </Td>
-          </CenterWrap>
-        </DayWrap>
       </Wrap>
     </Container>
   );
 }
 
-const CalendarContainer = styled.div`
-  display: flex;
+const RoleLabel = styled.span`
+  position: absolute;
+  top: 45px;
+  right: 15px;
+  font-size: 12px;
+`;
+
+type CalendarContainerProps = {
+  view: 'month' | 'week' | 'day';
+};
+
+const CalendarContainer = styled.div<CalendarContainerProps>`
+  display: ${(props) => (props.view === 'month' ? 'block' : 'none')};
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -1303,14 +878,11 @@ const WeekWrap = styled.div`
   margin: 5px;
 `;
 
-const DayWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  font-family: Arial, sans-serif;
-  margin: 5px;
+const CloseInputButton = styled(CloseButton)`
+  z-index: 5;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 `;
 
 const MonthContainer = styled.div`
@@ -1348,6 +920,12 @@ const Button = styled.button`
   &:hover {
     color: #3467a1;
   }
+`;
+const DayNumber = styled.span`
+  position: absolute;
+  top: 5px;
+  left: 10px;
+  font-size: 18px;
 `;
 
 const EventEditButton = styled.button`
@@ -1495,13 +1073,11 @@ const ModalForm = styled.form`
   padding: 30px 30px;
   color: #f5f5f5;
   width: 400px;
-
   label {
     display: block;
     margin-bottom: 5px;
     color: #414141;
   }
-
   input[type='text'],
   input[type='date'],
   input[type='time'],
@@ -1537,7 +1113,6 @@ const EventWrapper = styled.div<EventWrapperProps>`
     display: none;
   }
   justify-content: space-between;
-
   background-color: ${({ member, members }) => {
     const memberIndex = members.findIndex((m) => m.role === member) % 5;
     const colors = ['#83d1ae', '#f3a977', '#fff5c9', '#90b1e3', '#e3aaeb '];
@@ -1552,38 +1127,6 @@ const EventWrapper = styled.div<EventWrapperProps>`
         border: 1px solid #1E3D6B;
         margin: 0px;
       `}
-`;
-
-const EventTime = styled.div`
-  font-size: 20px;
-  margin-bottom: 10px;
-`;
-
-const ViewSelect = styled.select`
-  width: 150px;
-  height: 40px;
-  position: absolute;
-  right: 220px;
-  top: 250px;
-  border-radius: 5px;
-  border: 1px solid #d7dde2;
-  background-color: #f6f8f8;
-  font-size: 16px;
-  color: #414141;
-  padding: 8px 16px;
-  appearance: none;
-  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8"%3E%3Cpath fill="%237e7e7e" d="M0 0l6 8 6-8H0z" /%3E%3C/svg%3E');
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  cursor: pointer;
-  &:hover {
-    border-color: #999;
-  }
-  &:focus {
-    outline: none;
-    border-color: #1e3d6b;
-    box-shadow: 0 0 0 2px rgba(30, 61, 107, 0.2);
-  }
 `;
 
 const DateDetailsWrapper = styled.div`
@@ -1611,21 +1154,6 @@ const EventTitle = styled.div<EventTitleProps>`
   text-decoration: ${(props) => (props.finished ? 'line-through' : 'none')};
 `;
 
-const EventMember = styled.div`
-  font-size: 16px;
-  color: blue;
-`;
-
-const CenterWrap = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const EventCategory = styled.div`
-  font-size: 16px;
-  color: gray;
-`;
-
 const EventList = styled.ul`
   list-style-type: none;
   padding: 5px;
@@ -1638,6 +1166,12 @@ const EventList = styled.ul`
   &::-webkit-scrollbar {
     display: none;
   }
+`;
+
+const AddEventButton = styled(AddButton)`
+  position: absolute;
+  bottom: 0;
+  right: 0;
 `;
 
 export default Calendar;

@@ -2,13 +2,12 @@ import { faPaperPlane, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'firebase/firestore';
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components/macro';
 import { v4 as uuidv4 } from 'uuid';
 import { DefaultButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import LoadingAnimation from '../../../Components/loading';
-import { AuthContext } from '../../../config/Context/authContext';
 import { CategorySelector } from '../../../Components/Selectors/CategorySelector';
 import { db } from '../../../config/firebase.config';
 import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
@@ -31,7 +30,6 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   const handleCategorySelect = (category: string) => {
     setCategory(category);
   };
-
   const handleSelectMember = (member: string | string[]) => {
     setMember(member);
   };
@@ -47,9 +45,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       let prompt = `
       User input: ${inputValue}
       today is ${formattedDate}
-      
       請依照傳統行事曆格式，生成以下 JSON回應：
-
       {
         "title": "事件名稱",
         "category": "類別:work, personal, school",
@@ -115,7 +111,6 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       let prompt = `
     使用者輸入：${inputValue}
     今天是${formattedDate}。
-
     請生成一個包含以下字段的JSON回應：
     {
       "title": "里程碑描述",
@@ -310,17 +305,26 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
           <LoadingAnimation />
         ) : responseValue ? (
           <ResponseDisplay onClose={onClose}>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+            <ButtonWrapper>
+              <RedoButton onClick={handleRedo}>
                 <FontAwesomeIcon icon={faRotateLeft}></FontAwesomeIcon>
-              </DefaultButton>
-            </div>
+              </RedoButton>
+            </ButtonWrapper>
           </ResponseDisplay>
         ) : null}
       </Card>
     </Wrapper>
   );
 };
+
+const ButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const RedoButton = styled(DefaultButton)`
+  margin: 10px;
+`;
 
 const Wrapper = styled.div`
   width: 500px;
@@ -407,7 +411,6 @@ const Card = styled.div`
   p {
     margin: 0 0 10px;
   }
-
   img {
     width: 100%;
     height: auto;

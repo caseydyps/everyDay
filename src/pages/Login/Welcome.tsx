@@ -1,23 +1,15 @@
 import 'firebase/firestore';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import UserAuthData from '../../Components/Login/Auth';
 import SignIn from '../../Components/Login/SignIn';
 import aiImage from './ai.png';
 import cart from './cart.png';
 import gallery from './gallery.png';
 import message from './message.png';
+import { Card } from '../../Components/Card/Card';
 const { v4: uuidv4 } = require('uuid');
-const Card: React.FC<CardProps> = ({ title, imageSrc, altText, children }) => {
-  return (
-    <CardContainer>
-      <CardTitle>{title}</CardTitle>
-      <CardImage src={imageSrc} alt={altText} />
-      <CardText>{children}</CardText>
-    </CardContainer>
-  );
-};
 
 function WelcomePage() {
   const {
@@ -91,7 +83,6 @@ function WelcomePage() {
           <SignIn />
         </Section>
       )}
-
       {!user && (
         <>
           <CurveSection style={{ height: 'auto' }}>
@@ -121,7 +112,6 @@ function WelcomePage() {
               </Card>
             </RowWrap>
           </CurveSection>
-
           <CurveSection>
             <h1 style={{ fontFamily: 'Braah One', color: '#3467a1' }}>
               Can't wait? Login in seconds!
@@ -133,19 +123,6 @@ function WelcomePage() {
     </Container>
   );
 }
-
-export const GradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-  
-`;
 
 const Section = styled.section`
   position: relative;
@@ -219,48 +196,5 @@ const LinkButton: any = styled(Link)`
     transform: scale(1.05);
   }
 `;
-
-const CardContainer = styled.div`
-  height: 280px;
-  width: 200px;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  text-align: center;
-  margin: 10px;
-  padding: 20px;
-`;
-
-const CardTitle = styled.h2`
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #1e3d6b;
-  font-family: 'Braah One';
-`;
-
-const CardImage = styled.img`
-  width: 100px;
-  height: auto;
-  margin-bottom: 10px;
-`;
-
-const CardText = styled.p`
-  text-align: left;
-  margin-top: 10px;
-  font-size: 14px;
-`;
-
-type CardProps = {
-  title: string;
-  imageSrc: string;
-  altText: string;
-  children: React.ReactNode;
-};
 
 export default WelcomePage;

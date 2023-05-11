@@ -1,5 +1,5 @@
 import 'firebase/firestore';
-import styled, { keyframes } from 'styled-components/macro';
+import styled from 'styled-components/macro';
 import Banner from '../../../Components/Banner/Banner';
 import SideNav from '../../../Components/Nav/SideNav';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
@@ -33,19 +33,6 @@ const Section = styled.section`
   max-width: 100vw;
 `;
 
-export const GradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-  
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -61,7 +48,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-
   margin-top: 30px;
 `;
 
@@ -70,7 +56,6 @@ const AiRowWrap = styled.div`
   flex-direction: row;
   justify-content: baseline;
   align-items: center;
-
   width: 100%;
   height: 370px;
 `;

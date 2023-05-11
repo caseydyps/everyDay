@@ -37,7 +37,6 @@ const Suggestion = () => {
         const data = querySnapshot.docs.map((doc) => ({
           ...doc.data(),
         }));
-
         setMilestoneData(
           data as {
             id: string;
@@ -51,7 +50,6 @@ const Suggestion = () => {
         console.error('Error fetching data from Firestore: ', error);
       }
     }
-
     fetchData();
   }, [familyId]);
 
@@ -61,7 +59,6 @@ const Suggestion = () => {
     const todosData = querySnapshot.docs.map((doc) => ({ ...doc.data() }));
     return todosData;
   };
-
   interface Todo {
     id: string;
     title: string;
@@ -78,7 +75,6 @@ const Suggestion = () => {
   useEffect(() => {
     const fetchTodosData = async () => {
       const todoData = await getTodosData();
-
       setTodoData(
         todoData as {
           id: string;
@@ -93,7 +89,6 @@ const Suggestion = () => {
   useEffect(() => {
     const fetchCalendarData = async () => {
       const calendarData: any = await getCalendarData();
-
       setCalendarData(calendarData);
     };
     fetchCalendarData();
@@ -105,33 +100,26 @@ const Suggestion = () => {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
     const formattedDate = `${year}-${month}-${day}`;
-
     if (inputValue === '智慧建議') {
       const prompt = `  
       這是我家庭的資料庫，裡面有以下資料：
     - 行事曆資料庫: ${JSON.stringify(calendarData)}
     - 待辦事項資料庫: ${JSON.stringify(todoData)}
-   
-    請使用以上資料庫,並用下方方式回答
-    
+    請使用以上資料庫,並用下方方式回答   
 1. ${formattedDate}有哪些行程安排？附上今天的事件/時間/參與者。
 2. 從${formattedDate}開始的七天有哪些行程安排？附上未來七天的事件/時間/參與者還有${formattedDate}跟${formattedDate}七天後日期。
-
 以下請用自然語言格式回答：
-
 {
  "今日行程：...",
 "未來七天行程：...",
 }
       `;
-
       const response = await openai.createCompletion({
         model: 'text-davinci-003',
         prompt: prompt,
         max_tokens: 1000,
         temperature: 0.5,
       });
-
       setResponseValue(response.data.choices[0].text);
     } else {
       const conversationHistory = conversation
@@ -144,7 +132,6 @@ const Suggestion = () => {
     ${conversationHistory}
     請依照資料庫回答使用者的問題:${inputValue},請設定自己是個家庭管家的口吻,盡量不超過30字,回答時請附上事件發生日期/時間(如果有,不要年份)/參與者(如果有),不用反問使用者
       `;
-
       const response = await openai.createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [
@@ -161,7 +148,6 @@ const Suggestion = () => {
         temperature: 0.5,
         max_tokens: 500,
       });
-
       setResponseValue(response.data.choices[0].message.content);
       setIsLoading(false);
     }
@@ -174,7 +160,6 @@ const Suggestion = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const message = { text: inputValue, sender: 'user' };
-
     runPrompt();
     setIsLoading(true);
   };
@@ -187,10 +172,8 @@ const Suggestion = () => {
 
   return (
     <Container>
-      <Card>
-        <p style={{ color: '#1E3D6B', fontFamily: 'Braah one' }}>
-          Ask anything about your family !
-        </p>
+      <SuggestionCard>
+        <Title>Ask anything about your family !</Title>
         <SuggestionWrap>
           <RowWrap>
             <ColumnWrap>
@@ -225,7 +208,6 @@ const Suggestion = () => {
             </ColumnWrap>
           </RowWrap>
         </SuggestionWrap>
-
         <InputForm onSubmit={handleSubmit}>
           <InputLabel>
             <Input
@@ -235,45 +217,36 @@ const Suggestion = () => {
               placeholder="請輸入智慧建議或隨意問問題, Ex:今天有什麼事?"
             />
           </InputLabel>
-
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <DefaultButton
+          <CenteredContainer>
+            <StyledDefaultButton
               className={isLoading ? 'fade-enter-active' : ''}
               type="submit"
-              style={{ margin: '10px' }}
             >
-              <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
-            </DefaultButton>
-          </div>
+              <FontAwesomeIcon icon={faPaperPlane} />
+            </StyledDefaultButton>
+          </CenteredContainer>
         </InputForm>
         {isLoading ? (
           <LoadingAnimation />
         ) : responseValue ? (
           <Response>
             <Text>{responseValue}</Text>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <DefaultButton onClick={handleRedo} style={{ margin: '10px' }}>
+            <CenteredContainer>
+              <StyledDefaultButton onClick={handleRedo}>
                 <FontAwesomeIcon icon={faRotateLeft}></FontAwesomeIcon>
-              </DefaultButton>
-            </div>
+              </StyledDefaultButton>
+            </CenteredContainer>
           </Response>
         ) : null}
-      </Card>
+      </SuggestionCard>
     </Container>
   );
 };
+
+const Title = styled.p`
+  color: #1e3d6b;
+  font-family: 'Braah one';
+`;
 
 const Text = styled.div`
   font-size: 20px;
@@ -286,6 +259,12 @@ const Text = styled.div`
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
 `;
 
+const CenteredContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -293,6 +272,10 @@ const Container = styled.div`
   justify-content: center;
   background-color: transparent;
   flex: 1;
+`;
+
+const StyledDefaultButton = styled(DefaultButton)`
+  margin: 10px;
 `;
 
 const SuggestionWrap = styled.div`
@@ -318,12 +301,11 @@ const RowWrap = styled.div`
   justify-content: center;
 `;
 
-const Card = styled.div`
+const SuggestionCard = styled.div`
   width: 600px;
   padding: 20px;
   border-radius: 10px;
   font-size: 36px;
-
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
@@ -333,13 +315,11 @@ const Card = styled.div`
   border-radius: 12px;
   -webkit-border-radius: 12px;
   color: rgba(255, 255, 255, 0.75);
-
   position: relative;
   z-index: 1;
   p {
     margin: 0 0 10px;
   }
-
   img {
     width: 100%;
     height: auto;
