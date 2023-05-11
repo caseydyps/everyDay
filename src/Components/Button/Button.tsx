@@ -94,7 +94,6 @@ export const AddButton = styled(ThreeDButton)`
   }
   margin: 20px;
   z-index: 5;
-  
 `;
 
 export const ConfirmButton = styled(DefaultButton)`
@@ -109,21 +108,6 @@ export const ConfirmButton = styled(DefaultButton)`
   &:hover {
     transform: scale(1.1);
     color: #1e3d6b;
-  }
-`;
-
-export const CancelButton = styled.button`
-  background-color: #eb5757;
-  color: #ffffff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  &:hover {
-    background-color: #c0392b;
   }
 `;
 
@@ -159,7 +143,6 @@ export const CloseButton = styled.button`
   }
 
   &:active {
-   
     &::before,
     &::after {
       background-color: black;
@@ -199,7 +182,7 @@ export const Card = styled.div`
   font-size: 36px;
   background-color: transparent;
   box-shadow: 3px 3px 5px black;
-  
+
   position: relative;
   z-index: 1;
   p {

@@ -9,7 +9,7 @@ import LoadingAnimation from '../../../Components/loading';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
 import { InputForm } from './SmartInput';
-const configJs = require('../../config/config.js');
+const configJs = require('../../../config/config.js');
 const { Configuration, OpenAIApi } = require('openai');
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,
@@ -252,7 +252,6 @@ const Suggestion = () => {
             </DefaultButton>
           </div>
         </InputForm>
-
         {isLoading ? (
           <LoadingAnimation />
         ) : responseValue ? (

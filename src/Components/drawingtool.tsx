@@ -15,68 +15,6 @@ import { db } from '../config/firebase.config';
 import DefaultButton from './Button/Button';
 import UserAuthData from './Login/Auth';
 
-const ButtonWrap = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  margin: 0 auto;
-  border: 2px solid #d7dde2;
-  border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  flex-direction: column;
-  position: absolute;
-  top: 32%;
-  right: 9%;
-  padding: 5px;
-
-  @media screen and (max-width: 768px) {
-    flex-direction: column;
-    align-items: center;
-    top: 0%;
-    right: 30px;
-    position: absolute;
-  }
-`;
-
-const Container = styled.div`
-  width: 737px;
-  height: 404px;
-  margin-top: 50px;
-`;
-
-const CanvasButton = styled(DefaultButton)`
-  border-radius: 50%;
-  background-color: transparent;
-
-  padding: 5px;
-  color: #5981b0;
-  margin-right: 5px;
-  margin-left: 5px;
-  border: none;
-`;
-
-const CanvasContainer = styled.div`
-  max-width: 741px;
-  height: 244px;
-`;
-
-type StrokeData = {
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-  color: string;
-  width: number;
-};
-
 const DrawingTool = () => {
   const [isPainting, setIsPainting] = useState<boolean>(false);
   const [color, setColor] = useState<string>('black');
@@ -85,9 +23,7 @@ const DrawingTool = () => {
   const contextRef = useRef<CanvasRenderingContext2D | null>(null);
   const [undoStack, setUndoStack] = useState<any[]>([]);
   const prevOffset = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [currentColor, setCurrentColor] = useState('#000000');
   const [strokes, setStrokes] = useState<any>([]);
-
   const { familyId } = UserAuthData();
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -152,7 +88,6 @@ const DrawingTool = () => {
   }, [familyId]);
 
   const stackLimit = 500;
-
   const paint = ({ nativeEvent }: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isPainting) {
       return;
@@ -175,10 +110,8 @@ const DrawingTool = () => {
           width,
         };
         setStrokes([...strokes, newStroke]);
-
         const state = context.getImageData(0, 0, canvas.width, canvas.height);
         setUndoStack((prevStack) => [...prevStack, state]);
-
         prevOffset.current = { x: offsetX, y: offsetY };
       }
     }
@@ -193,9 +126,7 @@ const DrawingTool = () => {
       familyId,
       'strokes'
     );
-
     const strokeObject = { strokes };
-
     try {
       const docRef = await addDoc(strokesCollectionRef, strokeObject);
     } catch (error) {
@@ -232,7 +163,6 @@ const DrawingTool = () => {
     );
 
     const querySnapshot = await getDocs(collectionRef);
-
     querySnapshot.forEach(async (doc) => {
       try {
         await deleteDoc(doc.ref);
@@ -302,23 +232,10 @@ const DrawingTool = () => {
           </CanvasButton>
           <CanvasButton onClick={loadCanvas}>load</CanvasButton>
           <CanvasButton>
-            <input
-              type="color"
+            <ColorInput
               onChange={(event) => handleChangeColor(event.target.value)}
-              style={{
-                width: '2em',
-                height: '2em',
-                borderRadius: '50%',
-                padding: 0,
-                margin: 0,
-                appearance: 'none',
-                border: 'none',
-                backgroundColor: 'transparent',
-                outline: 'none',
-              }}
             />
           </CanvasButton>
-
           <CanvasButton
             color="transparent"
             onClick={() => handleChangeColor('white')}
@@ -344,32 +261,108 @@ const DrawingTool = () => {
           >
             <FontAwesomeIcon icon={faPaintRoller} />
           </CanvasButton>
-
           <CanvasButton color="transparent" onClick={clearCanvas}>
             <FontAwesomeIcon icon={faBroom} />
           </CanvasButton>
         </ButtonWrap>
-        <canvas
+        <Canvas
           id="canvas"
           ref={canvasRef}
           onMouseDown={startPaint}
           onMouseUp={endPaint}
           onMouseMove={paint}
-          style={{
-            height: 'auto',
-            maxWidth: '741px',
-            maxHeight: '242px',
-            minHeight: '242px',
-            width: '741px',
-            border: '2px solid transparent',
-            boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
-            borderRadius: '25px',
-            backgroundColor: 'rgb(255, 255, 255)',
-          }}
         />
       </CanvasContainer>
     </Container>
   );
 };
+
+const ButtonWrap = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  margin: 0 auto;
+  border: 2px solid #d7dde2;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  flex-direction: column;
+  position: absolute;
+  top: 32%;
+  right: 9%;
+  padding: 5px;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    top: 0%;
+    right: 30px;
+    position: absolute;
+  }
+`;
+
+const Canvas = styled.canvas`
+  height: auto;
+  max-width: 741px;
+  max-height: 242px;
+  min-height: 242px;
+  width: 741px;
+  border: 2px solid transparent;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
+  border-radius: 25px;
+  background-color: rgb(255, 255, 255);
+`;
+
+const Container = styled.div`
+  width: 737px;
+  height: 404px;
+  margin-top: 50px;
+`;
+
+const CanvasButton = styled(DefaultButton)`
+  border-radius: 50%;
+  background-color: transparent;
+
+  padding: 5px;
+  color: #5981b0;
+  margin-right: 5px;
+  margin-left: 5px;
+  border: none;
+`;
+
+const CanvasContainer = styled.div`
+  max-width: 741px;
+  height: 244px;
+`;
+
+type StrokeData = {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  color: string;
+  width: number;
+};
+
+const ColorInput = styled.input.attrs({
+  type: 'color',
+})`
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  border: none;
+  background-color: transparent;
+  outline: none;
+`;
 
 export default DrawingTool;

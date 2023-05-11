@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { Link, NavLink } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components/macro';
-import { auth } from '../../config/firebase.config';
 import React from 'react';
 import {
   faCalendarDays,
@@ -30,7 +28,6 @@ const SideNav = () => {
           <NavItem>
             <StyledNavLink activeClassName="active" to="/dashboard">
               <FontAwesomeIcon icon={faTable} />
-
               <Text> Dashboard</Text>
             </StyledNavLink>
           </NavItem>
@@ -52,7 +49,6 @@ const SideNav = () => {
               <Text> Hey AI</Text>
             </StyledNavLink>
           </NavItem>
-
           <NavItem>
             <StyledNavLink activeClassName="active" to="/whiteboard">
               <FontAwesomeIcon icon={faPalette} />
@@ -62,7 +58,6 @@ const SideNav = () => {
           <NavItem>
             <StyledNavLink activeClassName="active" to="/gallery">
               <FontAwesomeIcon icon={faImage} />
-
               <Text> Gallery</Text>
             </StyledNavLink>
           </NavItem>
@@ -111,7 +106,6 @@ const Nav = styled.div`
 const Text = styled.span`
   margin-left: 5px;
 `;
-
 interface NavListProps {
   showNav: boolean;
 }
@@ -125,7 +119,6 @@ export const NavList = styled.ul<NavListProps>`
   display: ${(props) => (props.showNav ? 'flex' : 'none')};
   top: 50px;
   height: 100%;
-
   background-color: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);

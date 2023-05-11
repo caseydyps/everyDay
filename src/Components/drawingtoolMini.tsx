@@ -5,26 +5,6 @@ import styled from 'styled-components/macro';
 import { db } from '../config/firebase.config';
 import UserAuthData from './Login/Auth';
 
-const Container = styled.div`
-  width: 100%;
-  height: 100%;
-  margin-top: 0px;
-`;
-
-const CanvasContainer = styled.div`
-  max-width: 733px;
-  height: 240px;
-`;
-
-type StrokeData = {
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-  color: string;
-  width: number;
-};
-
 const DrawingTool = () => {
   const [isPainting, setIsPainting] = useState<boolean>(false);
   const [color, setColor] = useState<string>('black');
@@ -146,7 +126,6 @@ const DrawingTool = () => {
     if (!context) {
       return;
     }
-
     const strokesCollectionRef = collection(
       db,
       'Family',
@@ -176,25 +155,46 @@ const DrawingTool = () => {
   return (
     <Container>
       <CanvasContainer>
-        <canvas
+        <Canvas
           id="canvas"
           ref={canvasRef}
           onMouseDown={startPaint}
           onMouseUp={endPaint}
           onMouseMove={paint}
-          style={{
-            height: 'auto',
-            maxWidth: '733px',
-            maxHeight: '240px',
-            minHeight: '240px',
-            width: '733px',
-            borderRadius: '10px',
-            backgroundColor: 'rgb(255, 255, 255)',
-          }}
         />
       </CanvasContainer>
     </Container>
   );
+};
+
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  margin-top: 0px;
+`;
+
+const CanvasContainer = styled.div`
+  max-width: 733px;
+  height: 240px;
+`;
+
+const Canvas = styled.canvas`
+  height: auto;
+  max-width: 733px;
+  max-height: 240px;
+  min-height: 240px;
+  width: 733px;
+  border-radius: 10px;
+  background-color: rgb(255, 255, 255);
+`;
+
+type StrokeData = {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  color: string;
+  width: number;
 };
 
 export default DrawingTool;

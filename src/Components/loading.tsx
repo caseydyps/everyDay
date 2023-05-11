@@ -14,6 +14,8 @@ const LoadingAnimation = () => {
     };
   }, []);
 
+ 
+
   return (
     <Container>
       {showAnimation ? (

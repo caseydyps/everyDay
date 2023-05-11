@@ -1,6 +1,22 @@
 import styled from 'styled-components';
 import SmartInputMini from '../../pages/Main/Widget/SmartInputWidget';
 
+const Navbar = () => {
+  return (
+    <Nav>
+      <Avatar
+        src="https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100"
+        alt="Avatar"
+      />
+      <SmartInputMini />
+      <div>
+        <Icon>Chat</Icon>
+        <Icon>Notification</Icon>
+      </div>
+    </Nav>
+  );
+};
+
 const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
@@ -25,21 +41,5 @@ const Icon = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-const Navbar = () => {
-  return (
-    <Nav>
-      <Avatar
-        src="https://api.dicebear.com/6.x/adventurer/svg?seed=Sassy&eyebrows=variant01&eyes=variant01&hair=short01&hairProbability=100&hairColor=0e0e0e&mouth=variant01&backgroundColor=transparent&features=blush&featuresProbability=100"
-        alt="Avatar"
-      />
-      <SmartInputMini />
-      <div>
-        <Icon>Chat</Icon>
-        <Icon>Notification</Icon>
-      </div>
-    </Nav>
-  );
-};
 
 export default Navbar;

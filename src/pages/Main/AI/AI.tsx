@@ -2,7 +2,7 @@ import 'firebase/firestore';
 import styled, { keyframes } from 'styled-components/macro';
 import Banner from '../../../Components/Banner/Banner';
 import SideNav from '../../../Components/Nav/SideNav';
-import { ChatMini } from '../Dashboard';
+import { ChatToggle } from '../../../Components/Chat/ChatToggle';
 import Suggestion from './Suggestion';
 import React from 'react';
 const AI = () => {
@@ -11,7 +11,7 @@ const AI = () => {
       <SideNav />
       <Wrapper>
         <Banner title={'AI'} subTitle="Hey AI," />
-        <ChatMini />
+        <ChatToggle />
         <Section>
           <AiRowWrap>
             <Suggestion />

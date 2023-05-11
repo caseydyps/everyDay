@@ -5,7 +5,7 @@ import styled from 'styled-components/macro';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
 import React from 'react';
-const configJs = require('../../config/config.js');
+const configJs = require('../../../config/config.js');
 const { Configuration, OpenAIApi } = require('openai');
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,

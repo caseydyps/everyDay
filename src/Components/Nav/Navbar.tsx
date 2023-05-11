@@ -25,11 +25,8 @@ const Navbar = () => {
       <Nav>
         <Logo to="/dashboard">
           EVERYDAY
-          {/* <img style={{ width: '200px' }} src={logo} alt="EVERYDAY" /> */}
         </Logo>
-        <div style={{ position: 'absolute', right: '30px', top: '6px' }}>
-          {!user && <SignIn />}
-        </div>
+        <SignInContainer user={user} />
         <UserSetting>
           <AvatarContainer onClick={handleAvatarClick}>
             <UserAvatar />
@@ -51,6 +48,16 @@ const Navbar = () => {
       </Nav>
     </NavbarWrapper>
   );
+};
+
+const SignInWrapper = styled.div`
+  position: absolute;
+  right: 30px;
+  top: 6px;
+`;
+
+const SignInContainer = ({ user }:any) => {
+  return <SignInWrapper>{!user && <SignIn />}</SignInWrapper>;
 };
 
 const NavbarWrapper = styled.div`

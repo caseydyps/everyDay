@@ -1,0 +1,38 @@
+Date : 2023-05-11 09:40:40
+Directory : /Users/casey/Documents/appworks/everyday
+Total : 5 files,  -10 codes, -1 comments, -8 blanks, all -19 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |          5 |        -10 |         -1 |         -8 |        -19 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                              | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                 |          5 |        -10 |         -1 |         -8 |        -19 |
+| src                                                                               |          5 |        -10 |         -1 |         -8 |        -19 |
+| src/Components                                                                    |          1 |        101 |          0 |          8 |        109 |
+| src/Components/Chat                                                               |          1 |        101 |          0 |          8 |        109 |
+| src/pages                                                                         |          4 |       -111 |         -1 |        -16 |       -128 |
+| src/pages/Family                                                                  |          1 |        -15 |         -1 |         -6 |        -22 |
+| src/pages/Main                                                                    |          3 |        -96 |          0 |        -10 |       -106 |
+| src/pages/Main (Files)                                                            |          1 |        -95 |          0 |         -6 |       -101 |
+| src/pages/Main/Calendar                                                           |          1 |         -1 |          0 |         -3 |         -4 |
+| src/pages/Main/Whiteboard                                                         |          1 |          0 |          0 |         -1 |         -1 |
++-----------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                          | language       | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/casey/Documents/appworks/everyday/src/Components/Chat/ChatToggle.tsx       | TypeScript JSX |        101 |          0 |          8 |        109 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Family/FamilyForm.tsx          | TypeScript JSX |        -15 |         -1 |         -6 |        -22 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/Calendar.tsx     | TypeScript JSX |         -1 |          0 |         -3 |         -4 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Dashboard.tsx             | TypeScript JSX |        -95 |          0 |         -6 |       -101 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Whiteboard/Whiteboard.tsx | TypeScript JSX |          0 |          0 |         -1 |         -1 |
+| Total                                                                             |                |        -10 |         -1 |         -8 |        -19 |
++-----------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

@@ -10,150 +10,11 @@ import UserAuthData from '../../../Components/Login/Auth';
 import LoadingAnimation from '../../../Components/loading';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
-
-const Wrapper = styled.div`
-  width: 500px;
-  margin: 0 auto;
-  flex: 2;
-`;
-
-const CategoryWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-`;
-
-export const InputForm = styled.form`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: baseline;
-  margin-bottom: 10px;
-  margin-top: 0px;
-  width: 100%;
-`;
-
-const Wrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-  position: fixed;
-  background-color: #5981b0;
-  border-radius: 4px;
-  padding: 20px;
-  width: 100%;
-  height: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-
-const InputField = styled.input`
-  margin: 20px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 16px;
-  width: 100%;
-`;
-
-const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
-  font-size: 16px;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 25px;
-  cursor: pointer;
-
-  ${(props) =>
-    props.active &&
-    `
-    background-color: #3467a1;
-    color: #F6F8F8;
-  `}
-`;
-
-const CategorySelectorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-`;
-
-const Text = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  background-color: #fff;
-  padding: 10px;
-  border-radius: 5px;
-  margin: 30px;
-`;
-
-const Instruction = styled.div`
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin-bottom: 10px;
-  padding: 10px;
-  width: 100%;
-  border-radius: 5px;
-`;
-
-const Card = styled.div`
-  max-width: 600px;
-  padding: 20px;
-  border-radius: 10px;
-  font-size: 36px;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  position: relative;
-  z-index: 1;
-  p {
-    margin: 0 0 10px;
-  }
-
-  img {
-    width: 100%;
-    height: auto;
-    margin-top: 10px;
-    border-radius: 50%;
-  }
-  &:hover {
-  }
-`;
-
-const ColumnWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: baseline;
-  width: 100%;
-  justify-content: space-between;
-`;
-
-const configJs = require('../../config/config.js');
-
+const configJs = require('../../../config/config.js');
 const { Configuration, OpenAIApi } = require('openai');
-
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,
 });
-
 const openai = new OpenAIApi(config);
 interface CategorySelectorProps {
   onSelect: (category: string) => void;
@@ -298,18 +159,7 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       let prompt = `
       使用者輸入: ${inputValue}
   今天日期是 ${formattedDate}
-  請依照繁體中文格式，生成以下 JSON 回應：
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+  請依照繁體中文格式，生成以下 JSON 回應： 
     `;
       let response = await openai.createCompletion({
         model: 'text-davinci-003',
@@ -326,8 +176,6 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     今天是${formattedDate}。
 
     請生成一個包含以下字段的JSON回應：
-
-    
     {
       "title": "里程碑描述",
       "type": ${category},
@@ -358,8 +206,6 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     setIsLoading(true);
     await runPrompt(setIsEventAdded);
   };
-
-  type HandleNewEventSubmit = (responseValue: string) => Promise<void>;
 
   const handleNewEventSubmit: any = async (
     responseValue: string,
@@ -414,7 +260,6 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
       };
 
       postEventToFirestore(newItem);
-    } else if (category === '#StickyNotes') {
     } else if (category === '#Milestone') {
       const newEvent = {
         id: uuidv4(),
@@ -536,5 +381,140 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
     </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  width: 500px;
+  margin: 0 auto;
+  flex: 2;
+`;
+
+const CategoryWrap = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const InputForm = styled.form`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: baseline;
+  margin-bottom: 10px;
+  margin-top: 0px;
+  width: 100%;
+`;
+
+const Wrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  position: fixed;
+  background-color: #5981b0;
+  border-radius: 4px;
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
+const InputField = styled.input`
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  width: 100%;
+`;
+
+const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
+  font-size: 16px;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 25px;
+  cursor: pointer;
+
+  ${(props) =>
+    props.active &&
+    `
+    background-color: #3467a1;
+    color: #F6F8F8;
+  `}
+`;
+
+const CategorySelectorContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+`;
+
+const Text = styled.div`
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin: 30px;
+`;
+
+const Instruction = styled.div`
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+`;
+
+const Card = styled.div`
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 10px;
+  font-size: 36px;
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
+  border-radius: 12px;
+  -webkit-border-radius: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  position: relative;
+  z-index: 1;
+  p {
+    margin: 0 0 10px;
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    margin-top: 10px;
+    border-radius: 50%;
+  }
+  &:hover {
+  }
+`;
+
+const ColumnWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  width: 100%;
+  justify-content: space-between;
+`;
 
 export default SmartInput;

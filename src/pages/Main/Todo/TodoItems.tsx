@@ -318,15 +318,10 @@ function DragNDrop({ data }: any) {
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
     try {
-      // Get the existing items array from the todo document
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
-
-      // Update the specific item in the items array
       const updatedItems = [...items];
       updatedItems[itemIndex][field] = value;
-
-      // Update the items array in the todo document
       await setDoc(todoRef, {
         items: updatedItems,
         title: list[groupIndex].title,
@@ -360,23 +355,13 @@ function DragNDrop({ data }: any) {
     };
 
     const memberAvatar = getMemberAvatar(member);
-
-    //const value = e.target.value;
-
-    // if (!value) return;
-
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
 
     try {
-      // Get the existing items array from the todo document
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
-
-      // Update the specific item in the items array
       const updatedItems = [...items];
       updatedItems[itemIndex][field] = memberAvatar;
-
-      // Update the items array in the todo document
       await setDoc(todoRef, {
         items: updatedItems,
         title: list[groupIndex].title,
@@ -404,15 +389,11 @@ function DragNDrop({ data }: any) {
     itemIndex: number
   ) => {
     const checked = e.target.checked;
-
     const group = list[groupIndex];
-
-    if (!group) return; // exit early if group doesn't exist
+    if (!group) return; 
     const item = group.items[itemIndex];
-
-    if (!item) return; // exit early if item doesn't exist
+    if (!item) return; 
     const newItem = { ...item, done: checked };
-
     try {
       const todoRef = doc(
         db,
@@ -424,8 +405,6 @@ function DragNDrop({ data }: any) {
 
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
-
-      // update the entire items array with the new checked item
       const updatedItems = items.map((item: Item, index: number) =>
         index === itemIndex ? newItem : item
       );
