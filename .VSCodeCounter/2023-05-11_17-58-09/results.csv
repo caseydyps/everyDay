@@ -1,0 +1,79 @@
+"filename", "language", "TypeScript", "XML", "JSON", "TypeScript JSX", "HTML", "CSS", "JSON with Comments", "Markdown", "JavaScript", "comment", "blank", "total"
+"/Users/casey/Documents/appworks/everyday/.eslintrc.js", "JavaScript", 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 1, 25
+"/Users/casey/Documents/appworks/everyday/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 21, 47
+"/Users/casey/Documents/appworks/everyday/firebase.json", "JSON", 0, 0, 8, 0, 0, 0, 0, 0, 0, 9, 0, 17
+"/Users/casey/Documents/appworks/everyday/firestore.indexes.json", "JSON", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/casey/Documents/appworks/everyday/package-lock.json", "JSON", 0, 0, 21463, 0, 0, 0, 0, 0, 0, 0, 1, 21464
+"/Users/casey/Documents/appworks/everyday/package.json", "JSON", 0, 0, 101, 0, 0, 0, 0, 0, 0, 0, 1, 102
+"/Users/casey/Documents/appworks/everyday/public/404.html", "HTML", 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 2, 34
+"/Users/casey/Documents/appworks/everyday/public/index.html", "HTML", 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 2, 39
+"/Users/casey/Documents/appworks/everyday/public/manifest.json", "JSON", 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 1, 26
+"/Users/casey/Documents/appworks/everyday/src/App.css", "CSS", 0, 0, 0, 0, 0, 33, 0, 0, 0, 0, 6, 39
+"/Users/casey/Documents/appworks/everyday/src/App.test.tsx", "TypeScript JSX", 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 2, 10
+"/Users/casey/Documents/appworks/everyday/src/App.tsx", "TypeScript JSX", 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 4, 31
+"/Users/casey/Documents/appworks/everyday/src/Components/Banner/Banner.tsx", "TypeScript JSX", 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 5, 40
+"/Users/casey/Documents/appworks/everyday/src/Components/Button/Button.tsx", "TypeScript JSX", 0, 0, 0, 193, 0, 0, 0, 0, 0, 0, 11, 204
+"/Users/casey/Documents/appworks/everyday/src/Components/Card/Card.tsx", "TypeScript JSX", 0, 0, 0, 53, 0, 0, 0, 0, 0, 0, 6, 59
+"/Users/casey/Documents/appworks/everyday/src/Components/Chat/ChatToggle.tsx", "TypeScript JSX", 0, 0, 0, 101, 0, 0, 0, 0, 0, 0, 8, 109
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/Auth.tsx", "TypeScript JSX", 0, 0, 0, 121, 0, 0, 0, 0, 0, 0, 15, 136
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/LogOut.tsx", "TypeScript JSX", 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 4, 33
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/SignIn.tsx", "TypeScript JSX", 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 4, 44
+"/Users/casey/Documents/appworks/everyday/src/Components/Login/SignInNav.tsx", "TypeScript JSX", 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 4, 44
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/Avatar.tsx", "TypeScript JSX", 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 3, 25
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/Navbar.tsx", "TypeScript JSX", 0, 0, 0, 216, 0, 0, 0, 0, 0, 0, 19, 235
+"/Users/casey/Documents/appworks/everyday/src/Components/Nav/SideNav.tsx", "TypeScript JSX", 0, 0, 0, 187, 0, 0, 0, 0, 0, 0, 10, 197
+"/Users/casey/Documents/appworks/everyday/src/Components/Navbar/Navbar.tsx", "TypeScript JSX", 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 6, 46
+"/Users/casey/Documents/appworks/everyday/src/Components/Selectors/CategorySelector.tsx", "TypeScript JSX", 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 6, 56
+"/Users/casey/Documents/appworks/everyday/src/Components/Selectors/MemberSelector.tsx", "TypeScript JSX", 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 6, 65
+"/Users/casey/Documents/appworks/everyday/src/Components/drawingtool.tsx", "TypeScript JSX", 0, 0, 0, 341, 0, 0, 0, 0, 0, 0, 28, 369
+"/Users/casey/Documents/appworks/everyday/src/Components/drawingtoolMini.tsx", "TypeScript JSX", 0, 0, 0, 184, 0, 0, 0, 0, 0, 0, 17, 201
+"/Users/casey/Documents/appworks/everyday/src/Components/loading.tsx", "TypeScript JSX", 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 12, 75
+"/Users/casey/Documents/appworks/everyday/src/config/Context/authContext.tsx", "TypeScript JSX", 0, 0, 0, 111, 0, 0, 0, 0, 0, 0, 11, 122
+"/Users/casey/Documents/appworks/everyday/src/config/firebase.config.tsx", "TypeScript JSX", 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 1, 19
+"/Users/casey/Documents/appworks/everyday/src/index.css", "CSS", 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 7, 36
+"/Users/casey/Documents/appworks/everyday/src/index.tsx", "TypeScript JSX", 0, 0, 0, 42, 0, 0, 0, 0, 0, 0, 2, 44
+"/Users/casey/Documents/appworks/everyday/src/logo.svg", "XML", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/FamilyForm.tsx", "TypeScript JSX", 0, 0, 0, 1067, 0, 0, 0, 0, 0, 28, 50, 1145
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/FamilySetup.tsx", "TypeScript JSX", 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 3, 8
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/LogOut.tsx", "TypeScript JSX", 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 5, 20
+"/Users/casey/Documents/appworks/everyday/src/pages/Family/SignIn.tsx", "TypeScript JSX", 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 5, 23
+"/Users/casey/Documents/appworks/everyday/src/pages/Login/Welcome.tsx", "TypeScript JSX", 0, 0, 0, 190, 0, 0, 0, 0, 0, 0, 10, 200
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/AI/AI.tsx", "TypeScript JSX", 0, 0, 0, 59, 0, 0, 0, 0, 0, 0, 4, 63
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/AI/SmartInput.tsx", "TypeScript JSX", 0, 0, 0, 410, 0, 0, 0, 0, 0, 0, 32, 442
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/AI/Suggestion.tsx", "TypeScript JSX", 0, 0, 0, 353, 0, 0, 0, 0, 0, 0, 26, 379
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Album/Gallery.tsx", "TypeScript JSX", 0, 0, 0, 546, 0, 0, 0, 0, 0, 0, 31, 577
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Album/SlideShow.tsx", "TypeScript JSX", 0, 0, 0, 99, 0, 0, 0, 0, 0, 0, 9, 108
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Album/UpdatePhoto.tsx", "TypeScript JSX", 0, 0, 0, 340, 0, 0, 0, 0, 0, 0, 20, 360
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/Calendar.tsx", "TypeScript JSX", 0, 0, 0, 1114, 0, 0, 0, 0, 0, 0, 64, 1178
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Chat.tsx", "TypeScript JSX", 0, 0, 0, 131, 0, 0, 0, 0, 0, 0, 14, 145
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/ChatApp.tsx", "TypeScript JSX", 0, 0, 0, 38, 0, 0, 0, 0, 0, 0, 4, 42
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Message.tsx", "TypeScript JSX", 0, 0, 0, 142, 0, 0, 0, 0, 0, 0, 13, 155
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/SendMessage.tsx", "TypeScript JSX", 0, 0, 0, 120, 0, 0, 0, 0, 0, 0, 10, 130
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/SendMessageMini.tsx", "TypeScript JSX", 0, 0, 0, 147, 0, 0, 0, 0, 0, 0, 12, 159
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Dashboard.tsx", "TypeScript JSX", 0, 0, 0, 382, 0, 0, 0, 0, 0, 0, 25, 407
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Milestone.tsx", "TypeScript JSX", 0, 0, 0, 447, 0, 0, 0, 0, 0, 465, 30, 942
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/AddItemForm.tsx", "TypeScript JSX", 0, 0, 0, 155, 0, 0, 0, 0, 0, 0, 13, 168
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/Todo.tsx", "TypeScript JSX", 0, 0, 0, 282, 0, 0, 0, 0, 0, 0, 25, 307
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/TodoItems.tsx", "TypeScript JSX", 0, 0, 0, 806, 0, 0, 0, 0, 0, 0, 45, 851
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Whiteboard/Giphy.tsx", "TypeScript JSX", 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 9, 59
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Whiteboard/Whiteboard.tsx", "TypeScript JSX", 0, 0, 0, 577, 0, 0, 0, 0, 0, 0, 43, 620
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/CalendarWidget.tsx", "TypeScript JSX", 0, 0, 0, 474, 0, 0, 0, 0, 0, 0, 36, 510
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/ChatWidget/ChatWidget.tsx", "TypeScript JSX", 0, 0, 0, 104, 0, 0, 0, 0, 0, 0, 15, 119
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/ChatWidget/Message.tsx", "TypeScript JSX", 0, 0, 0, 144, 0, 0, 0, 0, 0, 0, 19, 163
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/FamilyWidget.tsx", "TypeScript JSX", 0, 0, 0, 232, 0, 0, 0, 0, 0, 0, 21, 253
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/GalleryWidget/GalleryWidget.tsx", "TypeScript JSX", 0, 0, 0, 204, 0, 0, 0, 0, 0, 2, 28, 234
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/GalleryWidget/SlideShow.tsx", "TypeScript JSX", 0, 0, 0, 63, 0, 0, 0, 0, 0, 0, 9, 72
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/MilestoneWidget.tsx", "TypeScript JSX", 0, 0, 0, 254, 0, 0, 0, 0, 0, 0, 21, 275
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/SmartInputWidget.tsx", "TypeScript JSX", 0, 0, 0, 311, 0, 0, 0, 0, 0, 0, 28, 339
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/SuggestionWidget.tsx", "TypeScript JSX", 0, 0, 0, 161, 0, 0, 0, 0, 0, 0, 17, 178
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/TodoWidget/TodoItem.tsx", "TypeScript JSX", 0, 0, 0, 149, 0, 0, 0, 0, 0, 0, 23, 172
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/TodoWidget/TodoWidget.tsx", "TypeScript JSX", 0, 0, 0, 196, 0, 0, 0, 0, 0, 0, 15, 211
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/WeatherWidget.tsx", "TypeScript JSX", 0, 0, 0, 72, 0, 0, 0, 0, 0, 0, 10, 82
+"/Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/WhiteboardWidget.tsx", "TypeScript JSX", 0, 0, 0, 184, 0, 0, 0, 0, 0, 0, 15, 199
+"/Users/casey/Documents/appworks/everyday/src/react-app-env.d.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2
+"/Users/casey/Documents/appworks/everyday/src/reportWebVitals.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/casey/Documents/appworks/everyday/src/setupTests.ts", "TypeScript", 1, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 6
+"/Users/casey/Documents/appworks/everyday/src/theme.tsx", "TypeScript JSX", 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 3, 37
+"/Users/casey/Documents/appworks/everyday/src/utils/familySetupOptions.tsx", "TypeScript JSX", 0, 0, 0, 90, 0, 0, 0, 0, 0, 0, 7, 97
+"/Users/casey/Documents/appworks/everyday/tsconfig.json", "JSON with Comments", 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 1, 27
+"Total", "-", 14, 1, 21601, 12145, 69, 62, 26, 26, 24, 509, 1002, 35479

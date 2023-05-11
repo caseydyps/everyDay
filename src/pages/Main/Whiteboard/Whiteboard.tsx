@@ -34,7 +34,6 @@ import SideNav from '../../../Components/Nav/SideNav';
 const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
 export const Whiteboard = () => {
-  const [newStickerColor, setNewStickerColor] = useState<string>('yellow');
   const stickerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [dragging, setDragging] = useState<number | null>(null);
   const [offset, setOffset] = useState<{ x: number; y: number }>({
@@ -140,11 +139,9 @@ export const Whiteboard = () => {
   const getStickers = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'stickers');
     const querySnapshot = await getDocs(familyDocRef);
-
     const stickersData: any = querySnapshot.docs.map((doc) => ({
       ...doc.data(),
     }));
-
     setStickers(stickersData);
     setStickerText(stickersData.map((sticker: Sticker) => sticker.content));
     return stickersData;
@@ -235,21 +232,7 @@ export const Whiteboard = () => {
               </InfoButton>
             }
             {showTooltip && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '50px',
-                  left: '220px',
-                  backgroundColor: '#414141',
-                  color: '#fff',
-                  padding: '10px',
-                  borderRadius: '15px',
-                  zIndex: 2,
-                  width: '200px',
-                }}
-              >
-                {'Hover to left-top for lock & delete'}
-              </div>
+              <HoverMessage>Hover to left-top for lock & delete</HoverMessage>
             )}
           </div>
 
@@ -266,11 +249,9 @@ export const Whiteboard = () => {
                         onStickerMouseDown(index, e)
                 }
                 ref={(el: any) => (stickerRefs.current[index] = el)}
-                style={{
-                  left: sticker.x - (dragging === index ? offset.x : 0),
-                  top: sticker.y - (dragging === index ? offset.y : 0),
-                }}
                 locked={lockedStickers[index]}
+                left={sticker.x - (dragging === index ? offset.x : 0)}
+                top={sticker.y - (dragging === index ? offset.y : 0)}
               >
                 <StickerInput
                   as="textarea"
@@ -305,18 +286,11 @@ export const Whiteboard = () => {
                   disabled={lockedStickers[index]}
                 />
                 {sticker.isSticker !== true && (
-                  <>
-                    <img
-                      src={sticker.content}
-                      alt=""
-                      style={{
-                        borderRadius: '20px',
-                        width: '100%',
-                        height: '100%',
-                      }}
-                      draggable="false"
-                    />
-                  </>
+                  <StickerImage
+                    src={sticker.content}
+                    alt=""
+                    draggable="false"
+                  />
                 )}
                 <DeleteButton onClick={() => deleteSticker(index)}>
                   <FontAwesomeIcon icon={faX} />
@@ -370,30 +344,16 @@ export const Whiteboard = () => {
               </SearchButton>
             </SearchContainer>
           </StickerRowWrap>
-
           {showResults && (
             <Results>
               <GifWrap>
                 <div>
                   {searchResults.map((result) => (
-                    <img
+                    <GifImage
                       key={result.id}
                       src={result.images.original.url}
                       alt={result.title}
-                      style={{
-                        borderRadius: '25px',
-                        width: '110px',
-                        height: '110px',
-                        margin: '5px',
-                        border:
-                          selectedGif && selectedGif.id === result.id
-                            ? '5px solid #fff5c9'
-                            : 'none',
-                        boxShadow:
-                          selectedGif && selectedGif.id === result.id
-                            ? '0px 0px 10px #3467a1'
-                            : 'none',
-                      }}
+                      selected={selectedGif && selectedGif.id === result.id}
                       onClick={() => setSelectedGif(result)}
                     />
                   ))}
@@ -457,8 +417,8 @@ const Sticker: any = styled.div<{
   isSticker: boolean;
 }>`
   position: absolute;
-  top: ${(props) => props.offsetY}px;
-  left: ${(props) => props.offsetX}px;
+  left: ${(props) => props.left}px;
+  top: ${(props) => props.top}px;
   background-color: ${({ color }) => color};
   cursor: ${(props) => (props.dragging ? 'grabbing' : 'grab')};
   width: 120px;
@@ -470,6 +430,35 @@ const Sticker: any = styled.div<{
   justify-content: center;
   font-size: 18px;
   font-weight: bold;
+`;
+
+const GifImage = styled.img`
+  border-radius: 25px;
+  width: 110px;
+  height: 110px;
+  margin: 5px;
+  border: ${(props) => (props.selected ? '5px solid #fff5c9' : 'none')};
+  box-shadow: ${(props) => (props.selected ? '0px 0px 10px #3467a1' : 'none')};
+`;
+
+const StickerImage = styled.img`
+  border-radius: 20px;
+  width: 100%;
+  height: 100%;
+`;
+
+const HoverMessage = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 220px;
+  background-color: #414141;
+  color: #fff;
+  padding: 10px;
+  border-radius: 15px;
+  z-index: 2;
+  width: 200px;
+  font-size: 16px;
+  padding: 10px;
 `;
 
 const ColorButton = styled(DefaultButton)<{ color: string }>`

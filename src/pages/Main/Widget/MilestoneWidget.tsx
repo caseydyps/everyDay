@@ -17,14 +17,8 @@ function Milestone() {
     member: string;
     image: string | null;
   };
-  const { familyId, membersArray } = useContext(AuthContext);
+  const { familyId } = useContext(AuthContext);
   const [events, setEvents] = useState<EventType[]>([]);
-  type FilterType = {
-    member: string;
-    startDate: Date | null;
-    endDate: Date | null;
-    title: string;
-  };
 
   useEffect(() => {
     async function fetchData() {
@@ -43,8 +37,6 @@ function Milestone() {
     fetchData();
   }, [familyId]);
 
-  const [showFilter, setShowFilter] = useState<boolean>(false);
-  const [showAddEvent, setShowAddEvent] = useState<boolean>(false);
   const HintBox = styled.div`
     display: flex;
     align-items: center;
@@ -125,9 +117,7 @@ function Milestone() {
                             <DateBox>
                               <DateInfo>
                                 <Day>{Math.abs(daysDifference)}</Day>
-                                <DayText style={{ fontSize: '6px' }}>
-                                  {daysText}
-                                </DayText>
+                                <DayText>{daysText}</DayText>
                               </DateInfo>
                             </DateBox>
                             <InfoWrap>

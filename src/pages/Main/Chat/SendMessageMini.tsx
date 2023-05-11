@@ -115,16 +115,20 @@ const SendMessage: React.FC<SendMessageProps> = ({ scroll }) => {
 
       {showSmartInput && (
         <Container>
-          <CloseButton
-            style={{ zIndex: '5', position: 'absolute', top: '0', left: '0' }}
-            onClick={handleButtonClick}
-          ></CloseButton>
+          <CloseInputButton onClick={handleButtonClick}></CloseInputButton>
           <SmartInput onClose={handleButtonClick}></SmartInput>
         </Container>
       )}
     </>
   );
 };
+
+const CloseInputButton = styled(CloseButton)`
+  z-index: 5;
+  position: absolute;
+  top: 0;
+  left: 0;
+`;
 
 const Form = styled.form`
   display: flex;

@@ -74,9 +74,7 @@ interface MessageType {
 const Message: any = ({ message }: Props) => {
   const { familyId } = useContext(AuthContext);
   const isSent = message.uid === auth.currentUser?.uid;
-
   const date = message.timestamp && message.timestamp.toDate();
-
   const [members, setMembers] = useState<any[]>([]);
   const formatDate = (date: Date) => {
     if (!date || !date.getMonth) {
@@ -86,7 +84,6 @@ const Message: any = ({ message }: Props) => {
     const day = String(date.getDate()).padStart(2, '0');
     const hour = String(date.getHours()).padStart(2, '0');
     const minute = String(date.getMinutes()).padStart(2, '0');
-
     return `${month}/${day} ${hour}:${minute}`;
   };
 
@@ -125,13 +122,18 @@ const Message: any = ({ message }: Props) => {
             </SenderName>
           )}
 
-          <p style={{ fontSize: '8px', margin: '5px' }}>{message.text}</p>
+          <StyledParagraph>{message.text}</StyledParagraph>
           <Time isSent={isSent}>{formatDate(date)}</Time>
         </MessageBubble>
       </MessageContainer>
     </Wrapper>
   );
 };
+
+const StyledParagraph = styled.p`
+  font-size: 8px;
+  margin: 5px;
+`;
 
 const MessageContainer = styled.div`
   margin: 10 auto;

@@ -149,20 +149,13 @@ const MembersSelector = ({
   return (
     <div>
       {members.map((member) => (
-        <button
+        <MemberButton
           key={member}
-          style={{
-            background: selectedMembers.includes(member) ? 'blue' : 'grey',
-            color: 'white',
-            padding: '5px 10px',
-            margin: '5px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
+          selected={selectedMembers.includes(member)}
           onClick={() => handleSelectMember(member)}
         >
           {member}
-        </button>
+        </MemberButton>
       ))}
     </div>
   );
@@ -172,7 +165,6 @@ const SmartInputMini = () => {
   const [inputValue, setInputValue] = useState('');
   const [responseValue, setResponseValue] = useState('');
   const [category, setCategory] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedMembers, setSelectedMembers] = useState([
     'Daddy',
     'Mom',
@@ -334,5 +326,14 @@ const SmartInputMini = () => {
     </Container>
   );
 };
+
+const MemberButton = styled.button`
+  background: ${(props) => (props.selected ? 'blue' : 'grey')};
+  color: white;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+`;
 
 export default SmartInputMini;

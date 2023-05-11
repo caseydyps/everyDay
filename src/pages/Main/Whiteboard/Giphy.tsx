@@ -8,7 +8,6 @@ const giphyFetch = new GiphyFetch('sXpGFDGZs0Dv1mmNFvYaGUvYwKX0PWIh');
 
 function Giphy(): JSX.Element {
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [modalGif, setModalGif] = useState<IGif | null>(null);
   const [showCarousel, setShowCarousel] = useState<boolean>(false);
   const [selectedGif, setSelectedGif] = useState<IGif | null>(null);
 

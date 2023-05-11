@@ -96,10 +96,8 @@ const TopButton = styled.button`
   transform: translateX(-50%);
   transform-origin: center;
   transition: transform 0.2s ease-out;
-
   background-color: transparent;
   color: #3467a1;
-
   padding: 10px;
   border: 1px solid #3467a1;
   border-radius: 5px;

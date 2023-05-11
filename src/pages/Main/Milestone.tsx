@@ -49,22 +49,12 @@ function Milestone() {
   const [newEventImage, setNewEventImage] = useState<Blob | MediaSource | null>(
     null
   );
-  const MAX_FILE_SIZE = 1048487;
   const [isEditing, setIsEditing] = useState(false);
   const [editedEvent, setEditedEvent] = useState<EventType | null>(null);
   const [file, setFile] = useState<any>(null);
   const [imagePreview, setImagePreview] = useState<ImageType | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>('');
-  type NewEvent = {
-    id: number;
-    title: string;
-    date: Date;
-    member: string;
-    image: string;
-  };
-
   type HandleNewEventSubmit = (e: React.FormEvent<HTMLFormElement>) => void;
-
   const handleNewEventSubmit: HandleNewEventSubmit = async (e) => {
     e.preventDefault();
     if (!newEventTitle || !newEventDate) {
@@ -118,15 +108,12 @@ function Milestone() {
           match &&
           event.member.toLowerCase().includes(filter.member.toLowerCase());
       }
-
       if (filter.startDate !== null) {
         match = match && event.date >= filter.startDate;
       }
-
       if (filter.endDate !== null) {
         match = match && event.date <= filter.endDate;
       }
-
       if (filter.title !== null) {
         match =
           match &&
@@ -275,16 +262,13 @@ function Milestone() {
             />
           </FormField>
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-          <Button
+          <StyledButton
             type="submit"
             disabled={!date}
-            title="Please fill in all required fields"
-            style={{
-              cursor: !date ? 'not-allowed' : 'pointer',
-            }}
+            title={!date ? 'Please fill in all required fields' : ''}
           >
             Save
-          </Button>
+          </StyledButton>
         </form>
       </Wrap>
     );
@@ -345,7 +329,7 @@ function Milestone() {
       const fileSizeInMB = selectedFile.size / (1024 * 1024);
       if (fileSizeInMB > 1) {
         alertMaxFileSize();
-        event.target.value = ''; // clear the input field
+        event.target.value = '';
       } else {
         const reader = new FileReader();
         reader.onload = () => {
@@ -420,7 +404,6 @@ function Milestone() {
             </FormField>
           </Wrap>
         )}
-
         {showAddEvent && (
           <Wrap>
             <Form onSubmit={handleNewEventSubmit}>
@@ -481,15 +464,12 @@ function Milestone() {
                 </FormField>
               </>
               {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-              <Button
-                style={{ position: 'absolute', bottom: '25px', right: '150px' }}
-                type="submit"
-              >
+              <SubmitButton type="submit">
                 {'新增事件'}
                 <AnimatedFontAwesomeIcon
                   icon={faPlusCircle}
                 ></AnimatedFontAwesomeIcon>
-              </Button>
+              </SubmitButton>
             </Form>
           </Wrap>
         )}
@@ -514,23 +494,8 @@ function Milestone() {
                       setEventWrapWidth(event.nativeEvent.layout.width)
                     }
                   >
-                    <Dot
-                      eventWrapWidth={eventWrapWidth}
-                      style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: index % 2 === 0 ? `50%` : `50%`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    ></Dot>
-                    <EventBox
-                      key={event.id}
-                      style={{
-                        alignSelf: index % 2 === 0 ? 'flex-start' : 'flex-end',
-                        marginRight: index % 2 === 0 ? '0px' : '600px',
-                        marginLeft: index % 2 === 0 ? '600px' : '0px',
-                      }}
-                    >
+                    <Dot eventWrapWidth={eventWrapWidth} index={index} />
+                    <EventBox key={event.id} index={index}>
                       <ColumnWrap>
                         <EventImage
                           src={
@@ -705,7 +670,6 @@ const EventContainer = styled.div`
 const EventBox = styled.div`
   width: auto;
   max-height: 400px;
-  margin-right: 20px;
   border-radius: 20px;
   transition: box-shadow 0.5s ease-in-out;
   display: flex;
@@ -713,6 +677,9 @@ const EventBox = styled.div`
   justify-content: space-between;
   margin: 10px;
   position: relative;
+  align-self: ${(props) => (props.index % 2 === 0 ? 'flex-start' : 'flex-end')};
+  margin-right: ${(props) => (props.index % 2 === 0 ? '0px' : '600px')};
+  margin-left: ${(props) => (props.index % 2 === 0 ? '600px' : '0px')};
   &:hover {
     box-shadow: 0 0 10px #f6f8f8, 0 0 20px #f6f8f8, 0 0 40px #f6f8f8;
     transform: scale(1.05);
@@ -764,6 +731,19 @@ const DateBox = styled.div`
   padding: 5px;
 `;
 
+const StyledButton = styled(ThreeDButton)`
+  margin: 5px;
+  padding: 10px;
+  border-radius: 25px;
+  border: 2px solid #5981b0;
+  background-color: #5981b0;
+  color: #f6f8f8;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  :hover {
+    background-color: #3467a1;
+  }
+`;
+
 const Button = styled(ThreeDButton)`
   margin: 5px;
   padding: 10px;
@@ -771,9 +751,16 @@ const Button = styled(ThreeDButton)`
   border: 2px solid #5981b0;
   background-color: #5981b0;
   color: #f6f8f8;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   :hover {
     background-color: #3467a1;
   }
+`;
+
+const SubmitButton = styled(Button)`
+  position: absolute;
+  bottom: 25px;
+  right: 150px;
 `;
 
 const MoreButton = styled(DefaultButton)`
@@ -917,12 +904,12 @@ const Dot = styled.div<Dot>`
   background-color: #3467a1;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  left: ${(props) => (props.index % 2 === 0 ? '50%' : '50%')};
+  transform: translate(-50%, -50%);
   transition: opacity 0.5s ease-in-out;
   box-shadow: 0 0 5px black, 0 0 10px #3467a1, 0 0 15px #3467a1,
     0 0 20px #3467a1, 0 0 30px #3467a1, 0 0 40px #3467a1, 0 0 70px #3467a1,
     0 0 80px #3467a13a, 0 0 100px #3467a110, 0 0 150px #3467a15f;
-
   animation: ${pulse} 2s ease-in-out infinite;
 `;
 

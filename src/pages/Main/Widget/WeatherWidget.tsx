@@ -13,7 +13,6 @@ function WeatherApp() {
   const [data, setData] = useState<DataType>({});
   const [location, setLocation] = useState('Taipei');
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&units=imperial&appid=895284fb2d2c50a520ea537456963d9c`;
-
   useEffect(() => {
     if (location !== '') {
       axios.get(url).then((response) => {
@@ -46,36 +45,43 @@ function WeatherApp() {
   return (
     <Container className="container">
       <Top className="top">
-        <input
+        <StyledInput
           value={location}
           onChange={handleInputChange}
           placeholder="Enter Location"
           type="text"
-          style={{
-            border: 'none',
-            outline: 'none',
-            backgroundColor: 'transparent',
-            fontSize: '20px',
-            color: '#414141',
-            fontWeight: 'bold',
-            lineHeight: '1.5',
-          }}
         />
-
         {data.main ? (
-          <h2 style={{ margin: '0', color: '#414141' }}>
+          <TemperatureHeading>
             {(((data.main.temp - 32) * 5) / 9).toFixed()}°C
-          </h2>
+          </TemperatureHeading>
         ) : null}
-
         {data.weather ? (
-          <p style={{ fontSize: '12px', color: '#939393' }}>
-            {data.weather[0].main}
-          </p>
+          <WeatherText>{data.weather[0].main}</WeatherText>
         ) : null}
       </Top>
     </Container>
   );
 }
+
+const StyledInput = styled.input`
+  border: none;
+  outline: none;
+  background-color: transparent;
+  font-size: 20px;
+  color: #414141;
+  font-weight: bold;
+  line-height: 1.5;
+`;
+
+const TemperatureHeading = styled.h2`
+  margin: 0;
+  color: #414141;
+`;
+
+const WeatherText = styled.p`
+  font-size: 12px;
+  color: #939393;
+`;
 
 export default WeatherApp;

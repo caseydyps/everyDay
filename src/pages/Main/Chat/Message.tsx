@@ -4,61 +4,13 @@ import { auth } from '../../../config/firebase.config';
 import styled from 'styled-components/macro';
 import { db } from '../../../config/firebase.config';
 import { collection, getDocs } from 'firebase/firestore';
-
-const MessageBubble = styled.div<MessageBubbleProps>`
-  display: flex;
-  align-items: center;
-  justify-content: ${(props) => (props.isSent ? 'flex-end' : 'flex-start')};
-  max-width: 70%;
-  height: 40px;
-  margin: 0 auto;
-  margin-bottom: 0.5rem;
-  padding: 5px 10px;
-  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
-  border-radius: ${({ isSent }) =>
-    isSent ? '20px 20px 5px 20px' : '20px 20px 20px 0'};
-  background-color: ${(props) =>
-    props.isSent
-      ? '#5981b0'
-      : 'linear-gradient(rgb(255, 143, 178) 0%, rgb(167, 151, 255) 50%, rgb(0, 229, 255) 100%)'};
-  color: ${(props) => (props.isSent ? '#F6F8F8' : '#414141')};
-  backdrop-filter: blur(8px);
-  ${({ isSent }) =>
-    isSent
-      ? `
-  margin-left: auto;
-  margin-right: 0;
-  `
-      : `
-  margin-left: 0;
-  margin-right: auto;
-  position: relative;
-  `}
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const SenderName = styled.p`
-  margin-top: 0px;
-  color: #142850;
-  font-size: 12px;
-  position: absolute;
-  left: -37px;
-`;
-
 interface MessageBubbleProps {
   isSent: boolean;
 }
-
 interface Props {
   message: MessageType;
   isSent: boolean;
 }
-
 interface MessageType {
   uid: string;
   name: string;
@@ -152,6 +104,51 @@ const Avatar = styled.img`
   width: 50px;
   height: 50px;
   margin-bottom: -50px;
+`;
+
+const MessageBubble = styled.div<MessageBubbleProps>`
+  display: flex;
+  align-items: center;
+  justify-content: ${(props) => (props.isSent ? 'flex-end' : 'flex-start')};
+  max-width: 70%;
+  height: 40px;
+  margin: 0 auto;
+  margin-bottom: 0.5rem;
+  padding: 5px 10px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3);
+  border-radius: ${({ isSent }) =>
+    isSent ? '20px 20px 5px 20px' : '20px 20px 20px 0'};
+  background-color: ${(props) =>
+    props.isSent
+      ? '#5981b0'
+      : 'linear-gradient(rgb(255, 143, 178) 0%, rgb(167, 151, 255) 50%, rgb(0, 229, 255) 100%)'};
+  color: ${(props) => (props.isSent ? '#F6F8F8' : '#414141')};
+  backdrop-filter: blur(8px);
+  ${({ isSent }) =>
+    isSent
+      ? `
+  margin-left: auto;
+  margin-right: 0;
+  `
+      : `
+  margin-left: 0;
+  margin-right: auto;
+  position: relative;
+  `}
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const SenderName = styled.p`
+  margin-top: 0px;
+  color: #142850;
+  font-size: 12px;
+  position: absolute;
+  left: -37px;
 `;
 
 export default Message;

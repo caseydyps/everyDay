@@ -72,19 +72,26 @@ type DragNDropItemProps = {
 const DragNDropItem: any = styled.div<DragNDropItemProps>`
   height: 80px;
   margin: 25px;
-  background-color: #5981b0;
   position: relative;
   border-radius: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
   cursor: move;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   font-size: 32px;
   font-weight: 500;
+  display: ${(props) =>
+    props.hideChecked && props.item.done ? 'none' : 'block'};
+  background-color: ${(props) =>
+    props.item.done
+      ? 'rgba(128, 128, 128, 0.5)'
+      : props.isOverdue
+      ? '#1E3D6B'
+      : '#1E3D6B'};
+  color: ${(props) => (props.item.done ? '#737373' : '#F6F8F8')};
 
   &:hover {
-    background-color: #f0f0f0;
+    transform: scale(1.1);
   }
 
   .drag-handle {
@@ -126,7 +133,6 @@ const ItemTextWrap = styled.div`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-
   height: auto;
   width: 100%;
 `;
@@ -146,6 +152,7 @@ const ListRowWrap = styled.div`
   justify-content: space-between;
   margin: 0 auto;
   margin-top: 10px;
+  height: 80px;
 `;
 const AvatarRowWrap = styled.div`
   display: flex;
@@ -279,7 +286,6 @@ function DragNDrop({ data }: any) {
 
   const deleteItem = (groupIndex: number, itemIndex: number): void => {
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
-
     getDoc(todoRef)
       .then((doc) => {
         if (doc.exists()) {
@@ -312,11 +318,8 @@ function DragNDrop({ data }: any) {
     field: string
   ) => {
     const value = e.target.value;
-
     if (!value) return;
-
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
-
     try {
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
@@ -353,10 +356,8 @@ function DragNDrop({ data }: any) {
       const member = membersArray.find((m: any) => m.role === memberName);
       return member ? member.avatar : null;
     };
-
     const memberAvatar = getMemberAvatar(member);
     const todoRef = doc(db, 'Family', familyId, 'todo', list[groupIndex].title);
-
     try {
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
@@ -402,13 +403,11 @@ function DragNDrop({ data }: any) {
         'todo',
         list[groupIndex].title
       );
-
       const todoDoc = await getDoc(todoRef);
       const items = todoDoc.exists() ? todoDoc.data().items : [];
       const updatedItems = items.map((item: Item, index: number) =>
         index === itemIndex ? newItem : item
       );
-
       await setDoc(todoRef, {
         items: updatedItems,
         title: list[groupIndex].title,
@@ -476,23 +475,9 @@ function DragNDrop({ data }: any) {
       totalTasks === 0 ? 0 : Math.round((finishedTasks / totalTasks) * 100);
 
     return (
-      <div
-        style={{
-          width: '95%',
-          backgroundColor: '#ddd',
-          borderRadius: '5px',
-          height: '7px',
-        }}
-      >
-        <div
-          style={{
-            width: `${progress}%`,
-            backgroundColor: 'rgba(52, 103, 161, 0.6)',
-            borderRadius: '5px',
-            height: '100%',
-          }}
-        />
-      </div>
+      <ProgressBarContainer>
+        <ProgressBarFill progress={progress} />
+      </ProgressBarContainer>
     );
   }
   const [showMore, setShowMore] = useState(false);
@@ -500,9 +485,7 @@ function DragNDrop({ data }: any) {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
     const formattedDate = format(new Date(dueDate), 'MMM d, yyyy');
-
     if (new Date(dueDate).toDateString() === today.toDateString()) {
       return 'Today';
     } else if (new Date(dueDate).toDateString() === tomorrow.toDateString()) {
@@ -530,7 +513,7 @@ function DragNDrop({ data }: any) {
                 </h4>
               </ListInfoWrap>
               {getListProgress(group)}
-              <ListRowWrap style={{ height: '80px', margin: '0px' }}>
+              <ListRowWrap>
                 <Button onClick={() => deleteList(groupIndex)}>
                   <FontAwesomeIcon icon={faTrashCan}></FontAwesomeIcon>
                 </Button>
@@ -603,28 +586,21 @@ function DragNDrop({ data }: any) {
                           <DragNDropItem
                             draggable
                             key={item}
-                            onDragStart={(e: React.DragEvent<HTMLDivElement>) =>
+                            hideChecked={hideChecked}
+                            item={item}
+                            isOverdue={isOverdue}
+                            onDragStart={(e) =>
                               handleDragStart(e, { groupIndex, itemIndex })
                             }
                             onDragEnter={
                               dragging
-                                ? (e: React.DragEvent<HTMLDivElement>) =>
+                                ? (e) =>
                                     handleDragEnter(e, {
                                       groupIndex,
                                       itemIndex,
                                     })
                                 : null
                             }
-                            style={{
-                              display:
-                                hideChecked && item.done ? 'none' : 'block',
-                              backgroundColor: item.done
-                                ? 'rgba(128, 128, 128, 0.5)'
-                                : isOverdue
-                                ? '#1E3D6B'
-                                : '#1E3D6B',
-                              color: item.done ? '#737373' : '#F6F8F8',
-                            }}
                           >
                             <ColumnWrap>
                               <AvatarRowWrap>
@@ -632,7 +608,6 @@ function DragNDrop({ data }: any) {
                                   src={matchingMemberAvatar}
                                   alt="Member Avatar"
                                 ></Avatar>
-
                                 <CheckboxContainer>
                                   <CheckboxInput
                                     type="checkbox"
@@ -647,22 +622,9 @@ function DragNDrop({ data }: any) {
                               <ItemTextWrap>
                                 {item.due ? (
                                   <DueText
-                                    style={{
-                                      display:
-                                        hideChecked && item.done
-                                          ? 'none'
-                                          : 'block',
-                                      backgroundColor: item.done
-                                        ? 'rgba(128, 128, 128, 0.5)'
-                                        : isOverdue
-                                        ? 'rgba(232, 55, 55, 0.522)'
-                                        : '#1E3D6B',
-                                      border: item.done
-                                        ? '1px solid #737373'
-                                        : '1px solid #F6F8F8',
-
-                                      color: item.done ? '#737373' : '#F6F8F8',
-                                    }}
+                                    hideChecked={hideChecked}
+                                    item={item}
+                                    isOverdue={isOverdue}
                                   >
                                     {formatDate(item.due)}
                                   </DueText>
@@ -675,17 +637,8 @@ function DragNDrop({ data }: any) {
                                   <FontAwesomeIcon icon={faEllipsis} />
                                 </MoreButton>
 
-                                <EventTitle
-                                  style={{
-                                    textDecoration: item.done
-                                      ? 'line-through'
-                                      : 'none',
-                                  }}
-                                >
-                                  {item.text}
-                                </EventTitle>
+                                <EventTitle item={item}>{item.text}</EventTitle>
                               </ItemTextWrap>
-
                               {showMore && (
                                 <RowWrap>
                                   <RowButton
@@ -765,6 +718,20 @@ function DragNDrop({ data }: any) {
   }
 }
 
+const ProgressBarContainer = styled.div`
+  width: 95%;
+  background-color: #ddd;
+  border-radius: 5px;
+  height: 7px;
+`;
+
+const ProgressBarFill = styled.div`
+  width: ${(props) => props.progress}%;
+  background-color: rgba(52, 103, 161, 0.6);
+  border-radius: 5px;
+  height: 100%;
+`;
+
 const HideButton = styled(ThreeDButton)`
   height: auto;
   color: #5981b0;
@@ -786,6 +753,7 @@ const EventTitle = styled.div`
   margin-top: -10px;
   margin-bottom: 5px;
   margin-right: 10px;
+  text-decoration: ${(props) => (props.item.done ? 'line-through' : 'none')};
 `;
 
 const DueText = styled.div`
@@ -793,9 +761,18 @@ const DueText = styled.div`
   margin-top: -10px;
   margin-bottom: 5px;
   margin-left: 5px;
-  border: 1px solid #f6f8f8;
   border-radius: 5px;
-  color: #f6f8f8;
+  display: ${(props) =>
+    props.hideChecked && props.item.done ? 'none' : 'block'};
+  background-color: ${(props) =>
+    props.item.done
+      ? 'rgba(128, 128, 128, 0.5)'
+      : props.isOverdue
+      ? 'rgba(232, 55, 55, 0.522)'
+      : '#1E3D6B'};
+  border: ${(props) =>
+    props.item.done ? '1px solid #737373' : '1px solid #F6F8F8'};
+  color: ${(props) => (props.item.done ? '#737373' : '#F6F8F8')};
 `;
 
 const CheckboxContainer = styled.div`

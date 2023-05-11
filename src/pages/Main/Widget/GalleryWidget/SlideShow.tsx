@@ -16,7 +16,6 @@ const SlideshowImage = styled.img`
   width: 100%;
   border-radius: 10px;
   object-fit: cover;
-
   opacity: 0;
   transition: opacity 2s ease-in-out;
 
@@ -53,19 +52,21 @@ const Slideshow = ({ interval = 3000, photos }: SlideshowProps) => {
     <div>
       <SlideshowContainer>
         {photos.map((photo, index) => (
-          <a href="/gallery" style={{ textDecoration: 'none' }}>
+          <StyledLink href="/gallery">
             <SlideshowImage
               key={index}
               src={photo.url}
               alt={`Slide ${index}`}
               className={index === activeIndex ? 'active' : ''}
-              style={{ width: '100%', height: '100%' }}
             />
-          </a>
+          </StyledLink>
         ))}
       </SlideshowContainer>
     </div>
   );
 };
 
+const StyledLink = styled.a`
+  text-decoration: none;
+`;
 export default Slideshow;

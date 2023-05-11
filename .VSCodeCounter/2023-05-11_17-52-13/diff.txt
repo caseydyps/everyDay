@@ -1,0 +1,35 @@
+Date : 2023-05-11 17:52:13
+Directory : /Users/casey/Documents/appworks/everyday
+Total : 6 files,  -825 codes, 0 comments, -94 blanks, all -919 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |          6 |       -825 |          0 |        -94 |       -919 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                  |          6 |       -825 |          0 |        -94 |       -919 |
+| src                                                                                |          6 |       -825 |          0 |        -94 |       -919 |
+| src/pages                                                                          |          6 |       -825 |          0 |        -94 |       -919 |
+| src/pages/Main                                                                     |          6 |       -825 |          0 |        -94 |       -919 |
+| src/pages/Main/Calendar                                                            |          3 |       -828 |          0 |        -92 |       -920 |
+| src/pages/Main/Chat                                                                |          3 |          3 |          0 |         -2 |          1 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                           | language       | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/Calendar.tsx      | TypeScript JSX |       -402 |          0 |        -21 |       -423 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/DailyHourView.tsx | TypeScript JSX |       -218 |          0 |        -33 |       -251 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/HourView.tsx      | TypeScript JSX |       -208 |          0 |        -38 |       -246 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Chat.tsx              | TypeScript JSX |         -2 |          0 |          0 |         -2 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Message.tsx           | TypeScript JSX |          0 |          0 |         -3 |         -3 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/SendMessage.tsx       | TypeScript JSX |          5 |          0 |          1 |          6 |
+| Total                                                                              |                |       -825 |          0 |        -94 |       -919 |
++------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

@@ -9,7 +9,6 @@ import { CloseButton, ThreeDButton } from '../../Components/Button/Button';
 import SideNav from '../../Components/Nav/SideNav';
 import SmartInput from './AI/SmartInput';
 import Suggestion from './Widget/SuggestionWidget';
-import Chat from './Widget/ChatWidget/ChatWidget';
 import FamilyMemberForm from './Widget/FamilyWidget';
 import Gallery from './Widget/GalleryWidget/GalleryWidget';
 import CalendarMini from './Widget/CalendarWidget';
@@ -66,8 +65,6 @@ const Dashboard = () => {
     width: auto;
     height: auto;
     position: relative;
-     
-   
   }
 
   &:active {
@@ -327,16 +324,8 @@ const Dashboard = () => {
           <Grid>
             {showSmartInput && (
               <SmartInputContainer>
-                <CloseButton
-                  style={{
-                    zIndex: '5',
-                    position: 'absolute',
-                    top: '10px',
-                    left: '10px',
-                  }}
-                  onClick={handleButtonClick}
-                ></CloseButton>
-                <SmartInput onClose={handleButtonClick}></SmartInput>
+                <StyledCloseButton onClick={handleButtonClick} />
+                <SmartInput onClose={handleButtonClick} />
               </SmartInputContainer>
             )}
             <InfoButton onClick={handleInfoClick}>
@@ -371,6 +360,13 @@ const BoxTitle = styled.h4`
   left: 10px;
   padding: 0;
   font-family: 'Braah One';
+`;
+
+const StyledCloseButton = styled(CloseButton)`
+  z-index: 5;
+  position: absolute;
+  top: 10px;
+  left: 10px;
 `;
 
 const Container = styled.div`

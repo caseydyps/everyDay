@@ -17,11 +17,6 @@ type Item = {
   member: FamilyMember;
 };
 
-type AddItemFormProps = {
-  groupIndex: number;
-  onAddItem: (groupIndex: number, item: Item) => void;
-};
-
 function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
   const [title, setTitle] = useState<string>('');
   const [dueDate, setDueDate] = useState<Date>(new Date());
@@ -32,11 +27,9 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
   function handleTitleChange(event: React.ChangeEvent<HTMLInputElement>) {
     setTitle(event.target.value);
   }
-
   function handleDateChange(date: Date) {
     setDueDate(date);
   }
-
   function handleMemberChange(member: string | string[]) {
     const getMemberAvatar = (memberName: string | string[]) => {
       const member = membersArray.find((m: any) => m.role === memberName);
@@ -73,7 +66,6 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
           Title:
           <TitleInput type="text" value={title} onChange={handleTitleChange} />
         </Label>
-
         <Label>
           <input
             type="checkbox"
@@ -82,14 +74,12 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
           />
           Due date needed
         </Label>
-
         {dueDateNeeded && (
           <DueDateLabel>
             Due Date:
             <DatePicker selected={dueDate} onChange={handleDateChange} />
           </DueDateLabel>
         )}
-
         <MembersSelectorWrap>
           <MembersSelector
             onSelectMember={(selectedMember) => {
@@ -98,7 +88,6 @@ function AddItemForm({ groupIndex, onAddItem, onCancel }: any) {
             }}
           />
         </MembersSelectorWrap>
-
         <Button type="submit">Add Todo</Button>
       </Form>
     </>

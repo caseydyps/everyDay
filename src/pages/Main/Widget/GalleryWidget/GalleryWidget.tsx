@@ -1,4 +1,3 @@
-import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import {
   faPause,
   faPlay,
@@ -8,11 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'firebase/firestore';
 import {
   collection,
-  deleteDoc,
   getDocs,
-  query,
-  updateDoc,
-  where,
 } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 import React, { useContext, useEffect, useRef, useState } from 'react';
@@ -41,16 +36,6 @@ type Photo = {
   alt: string;
 };
 
-interface AlbumData {
-  id: string;
-  title: string;
-  members: string[];
-  description: string;
-  date: string;
-  isFavorite: boolean;
-  photos: Photo[];
-}
-
 function Gallery() {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [selectedMember, setSelectedMember] = useState<string>('');
@@ -60,19 +45,14 @@ function Gallery() {
   useEffect(() => {
     const fetchAlbums = async () => {
       const familyDocRef = collection(db, 'Family', familyId, 'photos');
-
       const querySnapshot = await getDocs(familyDocRef);
       const albumsData: any = [];
-
       querySnapshot.docs.forEach((doc) => {});
       for (const albumDoc of querySnapshot.docs) {
         const album = albumDoc.data();
-
         const firstPhoto = album.photos[0];
-
         if (firstPhoto) {
           const photoRef = ref(storage, firstPhoto.url);
-
           const downloadURL = await getDownloadURL(photoRef);
           albumsData.push({ ...album, firstPhotoURL: downloadURL });
         } else {
@@ -88,11 +68,9 @@ function Gallery() {
   const filteredAlbums = albums.filter((album) => {
     let memberMatch = true;
     let dateMatch = true;
-
     if (selectedMember && !album.members.includes(selectedMember)) {
       memberMatch = false;
     }
-
     if (selectedDate) {
       const albumDate = new Date(album.date);
       const selectedDateObj = new Date(selectedDate);
@@ -137,10 +115,7 @@ function Gallery() {
         <GalleryWrapper ref={galleryRef}>
           {filteredAlbums.map((album) => (
             <AlbumWrapper key={album.id}>
-              {/* <AlbumTitle>{album.title}</AlbumTitle> */}
-
               <Slideshow photos={album.photos} />
-              {/* <AlbumDescription>{album.description}</AlbumDescription> */}
             </AlbumWrapper>
           ))}
         </GalleryWrapper>
@@ -161,7 +136,6 @@ const GalleryWrapper = styled.div`
   overflow-x: scroll;
   scrollbar-width: 0;
   scrollbar-color: transparent;
-
   &::-webkit-scrollbar {
     width: 0px;
     background-color: transparent;
@@ -182,10 +156,8 @@ const AlbumWrapper = styled.div`
   align-items: center;
   border-radius: 20px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-
   width: auto;
   height: auto;
-
   @media screen and (max-width: 767px) {
     flex-direction: column;
   }
@@ -196,11 +168,6 @@ const ColumnWrap = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-`;
-
-const RowWrap = styled.div`
-  display: flex;
-  flex-direction: row;
 `;
 
 const Container = styled.div`

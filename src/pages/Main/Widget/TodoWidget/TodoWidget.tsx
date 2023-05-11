@@ -154,7 +154,7 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
 };
 
 const Todo = () => {
-  const { familyId, membersArray } = useContext(AuthContext);
+  const { familyId } = useContext(AuthContext);
   const [data, dispatch] = useReducer<any>(todoReducer, []);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
   const dueDateRef = useRef<HTMLInputElement>(null);

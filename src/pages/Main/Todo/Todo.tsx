@@ -2,7 +2,6 @@ import 'firebase/firestore';
 import {
   collection,
   doc,
-  getDocs,
   onSnapshot,
   setDoc,
   updateDoc,
@@ -19,7 +18,6 @@ import SmartInput from '../AI/SmartInput';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
 import DragNDrop from './TodoItems';
 import React from 'react';
-
 
 export const todoReducer = (state: TodoState, action: TodoAction) => {
   switch (action.type) {
@@ -66,23 +64,18 @@ export const todoReducer = (state: TodoState, action: TodoAction) => {
 
 const Todo = () => {
   const { familyId } = UserAuthData();
-
   const [data, dispatch] = useReducer<any>(todoReducer, [defaultData]);
   const [selectedItemIndex, setSelectedItemIndex] = useState(null);
-
   const addList = async (dispatch: Dispatch<ActionType>) => {
     const title = prompt('Enter the title for the new list:');
-
     if (title) {
       const listRef = doc(db, 'Family', familyId, 'todo', title);
       const newItem = {
         title: title,
         items: [],
       };
-
       try {
         await setDoc(listRef, newItem);
-
         dispatch({ type: 'ADD_LIST', payload: newItem });
       } catch (error) {
         console.error('Error creating new list in Firestore: ', error);
@@ -91,12 +84,10 @@ const Todo = () => {
   };
 
   const dueDateRef = useRef<HTMLInputElement>(null);
-
   const addItem = (listIndex: number, dispatch: Dispatch<ActionType>) => {
     const text = prompt('Enter item text');
     const dueDateString = dueDateRef.current ? dueDateRef.current.value : '';
     const due = new Date(dueDateString);
-
     const member = prompt('Enter member name');
     const done = false;
     if (text && due && member) {
@@ -145,18 +136,10 @@ const Todo = () => {
           Add List
         </AddListButton>
         <InputButton onClick={handleButtonClick}>Smart Input</InputButton>
-        <Banner title="Todo" subTitle="Get Things Done"></Banner>
+        <Banner title="Todo" subTitle="Get Things Done" />
         {showSmartInput && (
           <SmartInputContainer>
-            <CloseButton
-              style={{
-                zIndex: '5',
-                position: 'absolute',
-                top: '10px',
-                left: '10px',
-              }}
-              onClick={handleButtonClick}
-            ></CloseButton>
+            <CloseInputButton />
             <SmartInput onClose={handleButtonClick}></SmartInput>
           </SmartInputContainer>
         )}
@@ -170,6 +153,13 @@ const Todo = () => {
     </Container>
   );
 };
+
+const CloseInputButton = styled(CloseButton)`
+  z-index: 5;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+`;
 
 const SmartInputContainer = styled.div`
   max-width: 800px;

@@ -85,7 +85,6 @@ type Item = {
 };
 
 function DragNDrop({ data }: any) {
- 
   const [list, setList] = useState<DataItem[]>(data);
   const [dragging, setDragging] = useState<boolean>(false);
 
@@ -118,22 +117,18 @@ function DragNDrop({ data }: any) {
 
   function getTotalTaskCount(group: DataItem): number {
     let count = 0;
-
     for (const item of group.items) {
       count++;
     }
-
     return count;
   }
   function getfinishedTaskCount(group: DataItem) {
     let count = 0;
-
     for (const item of group.items) {
       if (item.done) {
         count++;
       }
     }
-
     return count;
   }
 

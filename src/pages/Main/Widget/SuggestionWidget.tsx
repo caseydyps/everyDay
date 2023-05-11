@@ -14,9 +14,6 @@ const openai = new OpenAIApi(config);
 
 const Suggestion = () => {
   const [responseValue, setResponseValue] = useState('');
-  const [milestoneData, setMilestoneData] = useState<
-    { id: string; title: string; date: Date; member: string; image: string }[]
-  >([]);
   const [todoData, setTodoData] = useState<Todo[]>([]);
   const [calendarData, setCalendarData] = useState<any>([]);
   const { familyId } = useContext(AuthContext);
@@ -45,13 +42,11 @@ const Suggestion = () => {
   useEffect(() => {
     const fetchTodosData = async () => {
       const todoData = await getTodosData();
-
       setTodoData(todoData as Todo[]);
     };
 
     const fetchCalendarData = async () => {
       const calendarData = await getCalendarData();
-
       setCalendarData(calendarData);
     };
 

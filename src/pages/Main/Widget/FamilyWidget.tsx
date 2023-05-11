@@ -20,9 +20,6 @@ const FamilyMemberForm = () => {
         .catch((error) =>
           console.error('Error retrieving members data:', error)
         );
-      const matchingData = membersData.find(
-        (data: any) => data.familyId === familyId
-      );
       setMembers(membersData);
       if (membersData.length > 0) {
         setFormSubmitted(true);
@@ -65,7 +62,6 @@ const FamilyMemberForm = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>(
     `https://api.dicebear.com/6.x/adventurer/svg?seed=${seed}&skinColor=${skinColor}&eyebrows=${eyebrows}&eyes=${eyes}&hair=${hair}&hairProbability=${hairProbability}&hairColor=${hairColor}&mouth=${mouth}&backgroundColor=${background}&features=${feature}&featuresProbability=${featuresProbability}`
   );
-  const [selectedCardIndex, setSelectedCardIndex] = useState<number>(-1);
   function getAvatarUrl(member: any): string {
     return `https://api.dicebear.com/6.x/adventurer/svg?seed=${member.seed}&skinColor=${skinColor}&eyebrows=${member.eyebrows}&eyes=${member.eyes}&hair=${member.hair}&hairProbability=${member.hairProbability}&hairColor=${member.hairColor}&mouth=${member.mouth}&backgroundColor=${member.background}&features=${member.feature}&featuresProbability=${member.featuresProbability}`;
   }
@@ -101,7 +97,6 @@ const FamilyMemberForm = () => {
   ]);
 
   const [hoverIndex, setHoverIndex] = useState<number>(-1);
-
   const handleMouseEnter = (
     event: React.MouseEvent<HTMLDivElement>,
     index: number
@@ -116,11 +111,9 @@ const FamilyMemberForm = () => {
   function getCurrentAge(dateOfBirth: string) {
     const now = new Date();
     const birthDate = new Date(dateOfBirth);
-
     let age = now.getFullYear() - birthDate.getFullYear();
     let monthDiff = now.getMonth() - birthDate.getMonth();
     let dayDiff = now.getDate() - birthDate.getDate();
-
     if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
       age--;
       monthDiff = 12 + monthDiff; // add 12 months to get the correct number of months
@@ -199,19 +192,6 @@ const AvatarImage = styled.img`
   max-height: 50px;
 `;
 
-export const GradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-  
-`;
-
 export const Container = styled.div`
   display: flex;
   align-items: center;
@@ -221,8 +201,6 @@ export const Container = styled.div`
   width: 100%;
   position: relative;
   justify-content: center;
-  animation: ${GradientAnimation} 20s ease-in-out infinite;
-  background-size: 300% 300%;
 `;
 
 const Card = styled.div`
@@ -232,14 +210,11 @@ const Card = styled.div`
   font-size: 36px;
   background-color: transparent;
   height: 50px;
-
   position: relative;
   z-index: 1;
-
   p {
     margin: 0 0 10px;
   }
-
   img {
     width: 100%;
     height: auto;
