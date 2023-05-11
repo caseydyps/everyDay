@@ -1,0 +1,139 @@
+Date : 2023-05-11 14:02:20
+Directory : /Users/casey/Documents/appworks/everyday
+Total : 75 files,  34748 codes, 509 comments, 1138 blanks, all 36395 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| JSON               |          5 |     21,601 |          9 |          4 |     21,614 |
+| TypeScript JSX     |         59 |     12,925 |        495 |      1,089 |     14,509 |
+| HTML               |          2 |         69 |          0 |          4 |         73 |
+| CSS                |          2 |         62 |          0 |         13 |         75 |
+| JSON with Comments |          1 |         26 |          0 |          1 |         27 |
+| Markdown           |          1 |         26 |          0 |         21 |         47 |
+| JavaScript         |          1 |         24 |          0 |          1 |         25 |
+| TypeScript         |          3 |         14 |          5 |          5 |         24 |
+| XML                |          1 |          1 |          0 |          0 |          1 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                           | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                              |         75 |     34,748 |        509 |      1,138 |     36,395 |
+| . (Files)                                                                                      |          7 |     21,652 |          9 |         26 |     21,687 |
+| public                                                                                         |          3 |         94 |          0 |          5 |         99 |
+| src                                                                                            |         65 |     13,002 |        500 |      1,107 |     14,609 |
+| src (Files)                                                                                    |         10 |        188 |          5 |         29 |        222 |
+| src/Components                                                                                 |         14 |      1,612 |          0 |        146 |      1,758 |
+| src/Components (Files)                                                                         |          3 |        588 |          0 |         57 |        645 |
+| src/Components/Banner                                                                          |          1 |         35 |          0 |          5 |         40 |
+| src/Components/Button                                                                          |          1 |        193 |          0 |         11 |        204 |
+| src/Components/Chat                                                                            |          1 |        101 |          0 |          8 |        109 |
+| src/Components/Login                                                                           |          4 |        230 |          0 |         27 |        257 |
+| src/Components/Nav                                                                             |          3 |        425 |          0 |         32 |        457 |
+| src/Components/Navbar                                                                          |          1 |         40 |          0 |          6 |         46 |
+| src/config                                                                                     |          2 |        129 |          0 |         12 |        141 |
+| src/config (Files)                                                                             |          1 |         18 |          0 |          1 |         19 |
+| src/config/Context                                                                             |          1 |        111 |          0 |         11 |        122 |
+| src/pages                                                                                      |         38 |     11,024 |        495 |        915 |     12,434 |
+| src/pages/Family                                                                               |          4 |      1,140 |         28 |         67 |      1,235 |
+| src/pages/Login                                                                                |          1 |        248 |          0 |         19 |        267 |
+| src/pages/Main                                                                                 |         33 |      9,636 |        467 |        829 |     10,932 |
+| src/pages/Main (Files)                                                                         |          2 |        829 |        465 |         55 |      1,349 |
+| src/pages/Main/AI                                                                              |          3 |        919 |          0 |         79 |        998 |
+| src/pages/Main/Album                                                                           |          2 |        916 |          0 |         68 |        984 |
+| src/pages/Main/Calendar                                                                        |          3 |      1,977 |          0 |        163 |      2,140 |
+| src/pages/Main/Chat                                                                            |          5 |        572 |          0 |         54 |        626 |
+| src/pages/Main/Todo                                                                            |          3 |      1,248 |          0 |        101 |      1,349 |
+| src/pages/Main/Whiteboard                                                                      |          2 |        627 |          0 |         52 |        679 |
+| src/pages/Main/Widget                                                                          |         13 |      2,548 |          2 |        257 |      2,807 |
+| src/pages/Main/Widget (Files)                                                                  |          7 |      1,688 |          0 |        148 |      1,836 |
+| src/pages/Main/Widget/ChatWidget                                                               |          2 |        248 |          0 |         34 |        282 |
+| src/pages/Main/Widget/GalleryWidget                                                            |          2 |        267 |          2 |         37 |        306 |
+| src/pages/Main/Widget/TodoWidget                                                               |          2 |        345 |          0 |         38 |        383 |
+| src/utils                                                                                      |          1 |         49 |          0 |          5 |         54 |
++------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                       | language           | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/casey/Documents/appworks/everyday/.eslintrc.js                                          | JavaScript         |         24 |          0 |          1 |         25 |
+| /Users/casey/Documents/appworks/everyday/README.md                                             | Markdown           |         26 |          0 |         21 |         47 |
+| /Users/casey/Documents/appworks/everyday/firebase.json                                         | JSON               |          8 |          9 |          0 |         17 |
+| /Users/casey/Documents/appworks/everyday/firestore.indexes.json                                | JSON               |          4 |          0 |          1 |          5 |
+| /Users/casey/Documents/appworks/everyday/package-lock.json                                     | JSON               |     21,463 |          0 |          1 |     21,464 |
+| /Users/casey/Documents/appworks/everyday/package.json                                          | JSON               |        101 |          0 |          1 |        102 |
+| /Users/casey/Documents/appworks/everyday/public/404.html                                       | HTML               |         32 |          0 |          2 |         34 |
+| /Users/casey/Documents/appworks/everyday/public/index.html                                     | HTML               |         37 |          0 |          2 |         39 |
+| /Users/casey/Documents/appworks/everyday/public/manifest.json                                  | JSON               |         25 |          0 |          1 |         26 |
+| /Users/casey/Documents/appworks/everyday/src/App.css                                           | CSS                |         33 |          0 |          6 |         39 |
+| /Users/casey/Documents/appworks/everyday/src/App.test.tsx                                      | TypeScript JSX     |          8 |          0 |          2 |         10 |
+| /Users/casey/Documents/appworks/everyday/src/App.tsx                                           | TypeScript JSX     |         27 |          0 |          4 |         31 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Banner/Banner.tsx                      | TypeScript JSX     |         35 |          0 |          5 |         40 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Button/Button.tsx                      | TypeScript JSX     |        193 |          0 |         11 |        204 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Chat/ChatToggle.tsx                    | TypeScript JSX     |        101 |          0 |          8 |        109 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Login/Auth.tsx                         | TypeScript JSX     |        121 |          0 |         15 |        136 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Login/LogOut.tsx                       | TypeScript JSX     |         29 |          0 |          4 |         33 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Login/SignIn.tsx                       | TypeScript JSX     |         40 |          0 |          4 |         44 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Login/SignInNav.tsx                    | TypeScript JSX     |         40 |          0 |          4 |         44 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Nav/Avatar.tsx                         | TypeScript JSX     |         22 |          0 |          3 |         25 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Nav/Navbar.tsx                         | TypeScript JSX     |        216 |          0 |         19 |        235 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Nav/SideNav.tsx                        | TypeScript JSX     |        187 |          0 |         10 |        197 |
+| /Users/casey/Documents/appworks/everyday/src/Components/Navbar/Navbar.tsx                      | TypeScript JSX     |         40 |          0 |          6 |         46 |
+| /Users/casey/Documents/appworks/everyday/src/Components/drawingtool.tsx                        | TypeScript JSX     |        341 |          0 |         28 |        369 |
+| /Users/casey/Documents/appworks/everyday/src/Components/drawingtoolMini.tsx                    | TypeScript JSX     |        184 |          0 |         17 |        201 |
+| /Users/casey/Documents/appworks/everyday/src/Components/loading.tsx                            | TypeScript JSX     |         63 |          0 |         12 |         75 |
+| /Users/casey/Documents/appworks/everyday/src/config/Context/authContext.tsx                    | TypeScript JSX     |        111 |          0 |         11 |        122 |
+| /Users/casey/Documents/appworks/everyday/src/config/firebase.config.tsx                        | TypeScript JSX     |         18 |          0 |          1 |         19 |
+| /Users/casey/Documents/appworks/everyday/src/index.css                                         | CSS                |         29 |          0 |          7 |         36 |
+| /Users/casey/Documents/appworks/everyday/src/index.tsx                                         | TypeScript JSX     |         42 |          0 |          2 |         44 |
+| /Users/casey/Documents/appworks/everyday/src/logo.svg                                          | XML                |          1 |          0 |          0 |          1 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Family/FamilyForm.tsx                       | TypeScript JSX     |      1,102 |         28 |         54 |      1,184 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Family/FamilySetup.tsx                      | TypeScript JSX     |          5 |          0 |          3 |          8 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Family/LogOut.tsx                           | TypeScript JSX     |         15 |          0 |          5 |         20 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Family/SignIn.tsx                           | TypeScript JSX     |         18 |          0 |          5 |         23 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Login/Welcome.tsx                           | TypeScript JSX     |        248 |          0 |         19 |        267 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/AI/AI.tsx                              | TypeScript JSX     |         73 |          0 |          5 |         78 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/AI/SmartInput.tsx                      | TypeScript JSX     |        483 |          0 |         38 |        521 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/AI/Suggestion.tsx                      | TypeScript JSX     |        363 |          0 |         36 |        399 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Album/Gallery.tsx                      | TypeScript JSX     |        772 |          0 |         52 |        824 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Album/SlideShow.tsx                    | TypeScript JSX     |        144 |          0 |         16 |        160 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/Calendar.tsx                  | TypeScript JSX     |      1,551 |          0 |         92 |      1,643 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/DailyHourView.tsx             | TypeScript JSX     |        218 |          0 |         33 |        251 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Calendar/HourView.tsx                  | TypeScript JSX     |        208 |          0 |         38 |        246 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Chat.tsx                          | TypeScript JSX     |        133 |          0 |         14 |        147 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/ChatApp.tsx                       | TypeScript JSX     |         38 |          0 |          4 |         42 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/Message.tsx                       | TypeScript JSX     |        142 |          0 |         16 |        158 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/SendMessage.tsx                   | TypeScript JSX     |        115 |          0 |          9 |        124 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Chat/SendMessageMini.tsx               | TypeScript JSX     |        144 |          0 |         11 |        155 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Dashboard.tsx                          | TypeScript JSX     |        382 |          0 |         25 |        407 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Milestone.tsx                          | TypeScript JSX     |        447 |        465 |         30 |        942 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/AddItemForm.tsx                   | TypeScript JSX     |        159 |          0 |         20 |        179 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/Todo.tsx                          | TypeScript JSX     |        283 |          0 |         32 |        315 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Todo/TodoItems.tsx                     | TypeScript JSX     |        806 |          0 |         49 |        855 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Whiteboard/Giphy.tsx                   | TypeScript JSX     |         50 |          0 |          9 |         59 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Whiteboard/Whiteboard.tsx              | TypeScript JSX     |        577 |          0 |         43 |        620 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/CalendarWidget.tsx              | TypeScript JSX     |        474 |          0 |         36 |        510 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/ChatWidget/ChatWidget.tsx       | TypeScript JSX     |        104 |          0 |         15 |        119 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/ChatWidget/Message.tsx          | TypeScript JSX     |        144 |          0 |         19 |        163 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/FamilyWidget.tsx                | TypeScript JSX     |        232 |          0 |         21 |        253 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/GalleryWidget/GalleryWidget.tsx | TypeScript JSX     |        204 |          2 |         28 |        234 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/GalleryWidget/SlideShow.tsx     | TypeScript JSX     |         63 |          0 |          9 |         72 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/MilestoneWidget.tsx             | TypeScript JSX     |        254 |          0 |         21 |        275 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/SmartInputWidget.tsx            | TypeScript JSX     |        311 |          0 |         28 |        339 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/SuggestionWidget.tsx            | TypeScript JSX     |        161 |          0 |         17 |        178 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/TodoWidget/TodoItem.tsx         | TypeScript JSX     |        149 |          0 |         23 |        172 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/TodoWidget/TodoWidget.tsx       | TypeScript JSX     |        196 |          0 |         15 |        211 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/WeatherWidget.tsx               | TypeScript JSX     |         72 |          0 |         10 |         82 |
+| /Users/casey/Documents/appworks/everyday/src/pages/Main/Widget/WhiteboardWidget.tsx            | TypeScript JSX     |        184 |          0 |         15 |        199 |
+| /Users/casey/Documents/appworks/everyday/src/react-app-env.d.ts                                | TypeScript         |          0 |          1 |          1 |          2 |
+| /Users/casey/Documents/appworks/everyday/src/reportWebVitals.ts                                | TypeScript         |         13 |          0 |          3 |         16 |
+| /Users/casey/Documents/appworks/everyday/src/setupTests.ts                                     | TypeScript         |          1 |          4 |          1 |          6 |
+| /Users/casey/Documents/appworks/everyday/src/theme.tsx                                         | TypeScript JSX     |         34 |          0 |          3 |         37 |
+| /Users/casey/Documents/appworks/everyday/src/utils/familySetupOptions.tsx                      | TypeScript JSX     |         49 |          0 |          5 |         54 |
+| /Users/casey/Documents/appworks/everyday/tsconfig.json                                         | JSON with Comments |         26 |          0 |          1 |         27 |
+| Total                                                                                          |                    |     34,748 |        509 |      1,138 |     36,395 |
++------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

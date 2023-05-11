@@ -30,7 +30,8 @@ import {
 import SideNav from '../../../Components/Nav/SideNav';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
-import SmartInput, { MembersSelector } from '../AI/SmartInput';
+import SmartInput from '../AI/SmartInput';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
 import HourlyView from './HourView';
 

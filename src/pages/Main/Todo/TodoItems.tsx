@@ -6,7 +6,7 @@ import styled from 'styled-components/macro';
 import { ThreeDButton } from '../../../Components/Button/Button';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
-import { MembersSelector } from '../AI/SmartInput';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 import {
   faArrowDownShortWide,
   faArrowDownWideShort,
@@ -390,9 +390,9 @@ function DragNDrop({ data }: any) {
   ) => {
     const checked = e.target.checked;
     const group = list[groupIndex];
-    if (!group) return; 
+    if (!group) return;
     const item = group.items[itemIndex];
-    if (!item) return; 
+    if (!item) return;
     const newItem = { ...item, done: checked };
     try {
       const todoRef = doc(

@@ -9,74 +9,15 @@ import { DefaultButton } from '../../../Components/Button/Button';
 import UserAuthData from '../../../Components/Login/Auth';
 import LoadingAnimation from '../../../Components/loading';
 import { AuthContext } from '../../../config/Context/authContext';
+import { CategorySelector } from '../../../Components/Selectors/CategorySelector';
 import { db } from '../../../config/firebase.config';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 const configJs = require('../../../config/config.js');
 const { Configuration, OpenAIApi } = require('openai');
 const config = new Configuration({
   apiKey: configJs.openai.apiKey,
 });
 const openai = new OpenAIApi(config);
-interface CategorySelectorProps {
-  onSelect: (category: string) => void;
-}
-
-const CategorySelector = ({ onSelect }: CategorySelectorProps): JSX.Element => {
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const categories = ['#Calendar', '#Todo', '#Milestone'];
-
-  const onCategorySelect = (category: string) => {
-    setSelectedCategory(category);
-    onSelect(category);
-  };
-
-  return (
-    <CategorySelectorContainer>
-      {categories.map((category) => (
-        <CategoryButton
-          key={category}
-          active={selectedCategory === category}
-          onClick={() => onCategorySelect(category)}
-        >
-          {category}
-        </CategoryButton>
-      ))}
-    </CategorySelectorContainer>
-  );
-};
-
-interface MembersSelectorProps {
-  onSelectMember: (selectedMembers: string) => void;
-  selectedMembers?: string[] | string;
-}
-
-export const MembersSelector = ({ onSelectMember }: MembersSelectorProps) => {
-  const [selectedMember, setSelectedMember] = useState<string>('');
-  const { familyId, memberRolesArray } = useContext(AuthContext);
-  const onMemberSelect = (member: string) => {
-    setSelectedMember(member);
-    onSelectMember(member);
-  };
-  return (
-    <CategoryWrap>
-      {memberRolesArray.map((member) => (
-        <DefaultButton
-          key={member}
-          style={{
-            background: selectedMember === member ? '#3467a1' : '#F6F8F8',
-            color: selectedMember === member ? '#F6F8F8' : '#3467a1',
-            padding: '5px 10px',
-            margin: '5px',
-            borderRadius: '25px',
-            cursor: 'pointer',
-          }}
-          onClick={() => onMemberSelect(member)}
-        >
-          {member}
-        </DefaultButton>
-      ))}
-    </CategoryWrap>
-  );
-};
 
 const SmartInput = ({ onClose, setIsEventAdded }: any) => {
   const [inputValue, setInputValue] = useState('');
@@ -359,13 +300,12 @@ const SmartInput = ({ onClose, setIsEventAdded }: any) => {
             onChange={handleInputChange}
             placeholder="Input event, e.g: 今天晚上九點要去看電影"
           />
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <DefaultButton type="submit" style={{ marginRight: '10px' }}>
+          <SubmitButtonContainer>
+            <FormSubmitButton type="submit">
               <FontAwesomeIcon icon={faPaperPlane}></FontAwesomeIcon>
-            </DefaultButton>
-          </div>
+            </FormSubmitButton>
+          </SubmitButtonContainer>
         </InputForm>
-
         {isLoading ? (
           <LoadingAnimation />
         ) : responseValue ? (
@@ -386,14 +326,6 @@ const Wrapper = styled.div`
   width: 500px;
   margin: 0 auto;
   flex: 2;
-`;
-
-const CategoryWrap = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
 `;
 
 export const InputForm = styled.form`
@@ -431,29 +363,6 @@ const InputField = styled.input`
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 16px;
-  width: 100%;
-`;
-
-const CategoryButton = styled(DefaultButton)<{ active?: boolean }>`
-  font-size: 16px;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 25px;
-  cursor: pointer;
-
-  ${(props) =>
-    props.active &&
-    `
-    background-color: #3467a1;
-    color: #F6F8F8;
-  `}
-`;
-
-const CategorySelectorContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 20px;
   width: 100%;
 `;
 
@@ -515,6 +424,15 @@ const ColumnWrap = styled.div`
   align-items: baseline;
   width: 100%;
   justify-content: space-between;
+`;
+
+const SubmitButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const FormSubmitButton = styled(DefaultButton)`
+  margin-right: 10px;
 `;
 
 export default SmartInput;

@@ -17,6 +17,16 @@ import { ThreeDButton } from '../../Components/Button/Button';
 import UserAuthData from '../../Components/Login/Auth';
 import { AuthContext } from '../../config/Context/authContext';
 import { db } from '../../config/firebase.config';
+import {
+  eyebrowOptions,
+  eyesOptions,
+  skinColors,
+  hairColors,
+  featureOptions,
+  backgroundOptions,
+  mouthOptions,
+  hairOptions,
+} from '../../utils/familySetupOptions';
 const FamilyMemberForm = () => {
   const { familyId } = UserAuthData();
   const { user, userEmail, hasSetup, setHasSetup, membersArray } =
@@ -481,7 +491,6 @@ const FamilyMemberForm = () => {
               ))}
             </RowWrap>
           </ColumnWrap>
-
           <Button
             onClick={() => {
               setHasSetup(false);
@@ -502,20 +511,14 @@ const FamilyMemberForm = () => {
       ) : (
         <>
           <FormContainer>
-            <FormCard style={{ flex: '2', zIndex: '2', width: 'auto' }}>
+            <FormCard>
               <Form onSubmit={handleFormSubmit}>
                 <AddMinusInput
                   value={numberOfMembers}
                   onIncrement={handleNumberOfMembersIncrement}
                   onDecrement={handleNumberOfMembersDecrement}
                 >
-                  <Text
-                    style={{
-                      color: '#414141',
-                    }}
-                  >
-                    How many members?
-                  </Text>
+                  <Text>How many members?</Text>
                 </AddMinusInput>
                 {numberOfMembers > 0 && (
                   <div>
@@ -535,13 +538,7 @@ const FamilyMemberForm = () => {
                     {members[currentMemberIndex] && (
                       <div>
                         <FormField>
-                          <Text
-                            style={{
-                              color: '#414141',
-                            }}
-                          >
-                            Name
-                          </Text>
+                          <Text>Name</Text>
                           <FormInput
                             type="text"
                             value={members[currentMemberIndex].name}
@@ -551,13 +548,7 @@ const FamilyMemberForm = () => {
                           />
                         </FormField>
                         <FormField>
-                          <Text
-                            style={{
-                              color: '#414141',
-                            }}
-                          >
-                            Email
-                          </Text>
+                          <Text>Email</Text>
                           <FormInput
                             type="text"
                             value={members[currentMemberIndex].email}
@@ -566,15 +557,8 @@ const FamilyMemberForm = () => {
                             }
                           />
                         </FormField>
-
                         <FormField>
-                          <Text
-                            style={{
-                              color: '#414141',
-                            }}
-                          >
-                            Birthday
-                          </Text>
+                          <Text>Birthday</Text>
                           <FormInput
                             type="date"
                             value={members[currentMemberIndex].birthday}
@@ -588,13 +572,7 @@ const FamilyMemberForm = () => {
                           />
                         </FormField>
                         <FormField>
-                          <Text
-                            style={{
-                              color: '#414141',
-                            }}
-                          >
-                            Role{' '}
-                          </Text>
+                          <Text>Role </Text>
                           <FormInput
                             type="text"
                             value={members[currentMemberIndex].role}
@@ -613,7 +591,7 @@ const FamilyMemberForm = () => {
                 </ConfettiButton>
               </Form>
             </FormCard>
-            <FormCard style={{ flex: '3', width: 'auto' }}>
+            <AvatarCreateCard>
               {numberOfMembers > 0 && (
                 <AvatarContainer>
                   <FormLabel style={{ color: '#414141', fontSize: '28px' }}>
@@ -659,18 +637,7 @@ const FamilyMemberForm = () => {
                         <CirclePicker
                           width="600px"
                           color={members[currentMemberIndex].skinColor}
-                          colors={[
-                            '#fff1e6',
-                            '#ffd9b3',
-                            '#ffc299',
-                            '#ffad80',
-                            '#ff9966',
-                            '#e68a00',
-                            '#cc7a00',
-                            '#b36b00',
-                            '#994d00',
-                            '#803300',
-                          ]}
+                          colors={skinColors}
                           circleSize={32}
                           onChangeComplete={(color) =>
                             handleSkinColorChange(currentMemberIndex, color.hex)
@@ -688,13 +655,11 @@ const FamilyMemberForm = () => {
                               handleEyebrowsChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="variant01">濃眉</option>
-                            <option value="variant02">兇眉</option>
-                            <option value="variant03">細眉</option>
-                            <option value="variant04">一字眉</option>
-                            <option value="variant05">短眉</option>
-                            <option value="variant07">八字眉</option>
-                            <option value="variant08">挑眉</option>
+                            {eyebrowOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
                         <br />
@@ -707,15 +672,11 @@ const FamilyMemberForm = () => {
                               handleEyesChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="variant01">看右邊</option>
-                            <option value="variant02">看左邊</option>
-                            <option value="variant03">中間</option>
-                            <option value="variant04">睡眼</option>
-                            <option value="variant05">鬥雞眼</option>
-                            <option value="variant18">白眼</option>
-                            <option value="variant19">笑眼</option>
-                            <option value="variant22">眨眼</option>
-                            <option value="variant23">水汪汪</option>
+                            {eyesOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
 
@@ -729,24 +690,11 @@ const FamilyMemberForm = () => {
                               handleHairChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="long03">中短髮</option>
-                            <option value="long06">大波浪</option>
-                            <option value="long08">花圈</option>
-                            <option value="long07">中長髮</option>
-                            <option value="long10">包頭</option>
-                            <option value="long13">雙包頭</option>
-                            <option value="long15">雙馬尾</option>
-                            <option value="long16">辮子</option>
-                            <option value="long19">馬尾</option>
-                            <option value="short01">瀏海</option>
-                            <option value="short04">平頭</option>
-                            <option value="short08">陽光</option>
-                            <option value="short07">韓系</option>
-                            <option value="short09">韓系2</option>
-                            <option value="short12">呆頭</option>
-                            <option value="short15">8+9</option>
-                            <option value="short16">刺蝟</option>
-                            <option value="short19">當兵</option>
+                            {hairOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
                       </RowWrapper>
@@ -755,18 +703,7 @@ const FamilyMemberForm = () => {
                         <CirclePicker
                           width="600px"
                           color={members[currentMemberIndex].hairColor}
-                          colors={[
-                            '#000000',
-                            '#331a00',
-                            '#4d2600',
-                            '#663300',
-                            '#804d00',
-                            '#b37300',
-                            '#cc9900',
-                            '#e6b800',
-                            '#ffd966',
-                            '#ffffff',
-                          ]}
+                          colors={hairColors}
                           circleSize={32}
                           onChangeComplete={(color) =>
                             handleHairColorChange(currentMemberIndex, color.hex)
@@ -784,9 +721,11 @@ const FamilyMemberForm = () => {
                               handleFeatureChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="blush">臉紅😳</option>
-                            <option value="freckles">雀斑</option>
-                            <option value="none">無</option>
+                            {featureOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
                         <br />
@@ -799,16 +738,11 @@ const FamilyMemberForm = () => {
                               handleMouthChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="variant01">笑</option>
-                            <option value="variant02">微笑</option>
-                            <option value="variant03">喔</option>
-                            <option value="variant10">閉嘴</option>
-                            <option value="variant16">吐舌</option>
-                            <option value="variant17">嘟嘴</option>
-                            <option value="variant22">顆顆</option>
-                            <option value="variant24">愛心</option>
-                            <option value="variant26">大笑</option>
-                            <option value="variant28">露齒笑</option>
+                            {mouthOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
                         <br />
@@ -816,7 +750,6 @@ const FamilyMemberForm = () => {
                           <Label htmlFor="background-color-select">
                             背景顏色:
                           </Label>
-
                           <Select
                             id="background-color-select"
                             value={members[currentMemberIndex].background}
@@ -824,13 +757,11 @@ const FamilyMemberForm = () => {
                               handleBackgroundChange(currentMemberIndex, event)
                             }
                           >
-                            <option value="transparent">Transparent</option>
-                            <option value="f5f5f5">Light Gray</option>
-                            <option value="b6e3f4">Blue</option>
-                            <option value="d1d4f9">Purple</option>
-                            <option value="ffd5dc">Pink</option>
-                            <option value="ffffff">White</option>
-                            <option value="607D8B">Grayish-blue</option>
+                            {backgroundOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
                           </Select>
                         </FlexWrap>
                       </RowWrapper>
@@ -867,7 +798,7 @@ const FamilyMemberForm = () => {
                   </SaveButton>
                 </AvatarContainer>
               )}
-            </FormCard>
+            </AvatarCreateCard>
           </FormContainer>
         </>
       )}
@@ -1096,6 +1027,24 @@ const FormCard = styled(Card)`
   font-size: 24px;
   background: none;
   backdrop-filter: blur(10px);
+  &:hover {
+    transform: scale(1);
+  }
+  backdrop-filter: blur(16px);
+  box-shadow: 0 15px 25px rgba(129, 124, 124, 0.2);
+  flex: 2;
+  z-index: 2;
+`;
+
+const AvatarCreateCard = styled(Card)`
+  height: 100%;
+  min-height: 60vh;
+  width: auto;
+  backdrop-filter: blur(8px);
+  font-size: 24px;
+  background: none;
+  backdrop-filter: blur(10px);
+  flex: 3;
   &:hover {
     transform: scale(1);
   }

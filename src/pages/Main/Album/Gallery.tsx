@@ -12,12 +12,13 @@ import { ChatToggle } from '../../../Components/Chat/ChatToggle';
 import Swal from 'sweetalert2';
 import { useContext } from 'react';
 import { AuthContext } from '../../../config/Context/authContext';
+import { UpdatePhoto } from './UpdatePhoto';
 import DefaultButton, {
   ThreeDButton,
   AddButton,
   CloseButton,
 } from '../../../Components/Button/Button';
-import { MembersSelector } from '../AI/SmartInput';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 import Banner from '../../../Components/Banner/Banner';
 import {
   faFilter,
@@ -73,22 +74,15 @@ type PhotoType = Photo & {
   tags: string[];
 };
 
-type AlbumArray = Album[];
-
 function Gallery() {
   const [file, setFile] = useState<any>(null);
   const [albumTitle, setAlbumTitle] = useState<string>('');
-  const [members, setMembers] = useState<string[] | string>([]);
-  const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<string>('');
-  const [albumId, setAlbumId] = useState<string>('');
   const [albums, setAlbums] = useState<Album[]>([]);
+  const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [selectedAlbumId, setSelectedAlbumId] = useState<string | null>(null);
   const [selectedAlbumTitle, setSelectedAlbumTitle] = useState<string>('');
   const [showFavorite, setShowFavorite] = useState(false);
-  const handleAlbumTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAlbumTitle(e.target.value);
-  };
   const [selectedMember, setSelectedMember] = useState<string | string[] | any>(
     ''
   );
@@ -106,84 +100,6 @@ function Gallery() {
   }, [file, selectedAlbumId, albumTitle, selectedMember, date]);
 
   const { familyId } = useContext(AuthContext);
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      setFile(files);
-    }
-  };
-
-  const handleUpload = async () => {
-    if (!file || file.length === 0) {
-      console.error('No files selected!');
-      return;
-    }
-    if (!albumTitle || !File || !date) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: 'Please fill in all required fields!',
-      });
-      return;
-    }
-
-    try {
-      const albumsRef = collection(db, 'Family', familyId, 'photos');
-      const querySnapshot = await getDocs(
-        query(albumsRef, where('title', '==', albumTitle))
-      );
-      let albumDoc;
-      if (querySnapshot.empty) {
-        albumDoc = await addDoc(albumsRef, {
-          title: albumTitle,
-          members: members,
-          description: description,
-          photos: [],
-          favorite: false,
-          date: date,
-        });
-      } else {
-        albumDoc = querySnapshot.docs[0].ref;
-      }
-      const albumData: AlbumData = (await getDoc(albumDoc)).data() as AlbumData;
-      const currentPhotos: any = albumData.photos || [];
-      const updatedPhotos = [...currentPhotos];
-
-      for (let i = 0; i < file.length; i++) {
-        const currFile = file[i];
-        const newId = Date.now();
-        const storageRef = ref(
-          storage,
-          `${albumTitle}/${Date.now()}_${currFile.name}`
-        );
-        await uploadBytes(storageRef, currFile);
-        const downloadURL = await getDownloadURL(storageRef);
-        setShowUpdateSection(false);
-
-        const newPhoto = {
-          id: newId,
-          title: currFile.name,
-          url: downloadURL,
-        };
-        updatedPhotos.push(newPhoto);
-      }
-
-      await updateDoc(albumDoc, { photos: updatedPhotos });
-      setFile(null);
-      setAlbumTitle('');
-      setAlbumId('');
-      setMembers([]);
-      setDescription('');
-      fetchAlbums();
-    } catch (error) {
-      console.error('Error uploading file to Firebase: ', error);
-    }
-  };
-
-  const handleAlbumSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setAlbumTitle(e.target.value);
-  };
-
   const fetchAlbums = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'photos');
     const querySnapshot = await getDocs(familyDocRef);
@@ -194,7 +110,6 @@ function Gallery() {
       const firstPhoto = album.photos[0];
       if (firstPhoto) {
         const photoRef = ref(storage, firstPhoto.url);
-
         const downloadURL = await getDownloadURL(photoRef);
         albumsData.push({ ...album, firstPhotoURL: downloadURL });
       } else {
@@ -215,7 +130,6 @@ function Gallery() {
         const firstPhoto = album.photos[0];
         if (firstPhoto) {
           const photoRef = ref(storage, firstPhoto.url);
-
           const downloadURL = await getDownloadURL(photoRef);
           albumsData.push({ ...album, firstPhotoURL: downloadURL });
         } else {
@@ -225,20 +139,17 @@ function Gallery() {
       setAlbums(albumsData);
     };
     fetchAlbums();
-  }, [familyId]);
+  }, [familyId, albums]);
 
   const handleDeleteAlbum = async (album: Album) => {
     try {
       const albumsRef = collection(db, 'Family', familyId, 'photos');
-
       const querySnapshot = await getDocs(
         query(albumsRef, where('title', '==', album.title))
       );
-
       if (querySnapshot.empty) {
         return;
       }
-
       const albumDoc = querySnapshot.docs[0].ref;
       await deleteDoc(albumDoc);
       const updatedAlbums = albums.filter((a) => a.id !== album.id);
@@ -256,11 +167,9 @@ function Gallery() {
       const querySnapshot = await getDocs(
         query(albumRef, where('title', '==', album.title))
       );
-
       if (querySnapshot.empty) {
         return;
       }
-
       const albumDocRef = querySnapshot.docs[0].ref;
       await updateDoc(albumDocRef, { favorite: !album.favorite });
       const updatedAlbums = albums.map((a) => {
@@ -279,7 +188,6 @@ function Gallery() {
       console.error('Error updating album favorite status: ', error);
     }
   };
-
   const filteredAlbums = albums.filter((album) => {
     let memberMatch = true;
     let dateMatch = true;
@@ -300,24 +208,11 @@ function Gallery() {
     }
     return memberMatch && dateMatch && favoriteMatch;
   });
-  const [showUpdateSection, setShowUpdateSection] = useState(false);
   const [showFilterSection, setShowFilterSection] = useState(false);
-  const handleEditMember = (member: string | string[]) => {
-    setMembers(member);
-  };
   const handleFilterMember = (member: string | string[]) => {
     setSelectedMember(member);
   };
   const [showSlideshow, setShowSlideshow] = useState(false);
-  const InfoButton = styled(ThreeDButton)`
-    position: absolute;
-    padding: 10px;
-    left: 400px;
-    top: -50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `;
   const [showTooltip, setShowTooltip] = useState(false);
 
   return (
@@ -329,7 +224,9 @@ function Gallery() {
           <RowWrap>
             <UploadButton
               onClick={() => {
+                console.log('clicked');
                 setShowUpdateSection(!showUpdateSection);
+                console.log(showUpdateSection);
                 setShowFilterSection(false);
               }}
             >
@@ -344,81 +241,14 @@ function Gallery() {
               <FontAwesomeIcon icon={faFilter} />
             </UploadButton>
           </RowWrap>
-
           {showUpdateSection && (
-            <UpdateSection>
-              <h4>上傳照片</h4>
-              <CloseButton
-                onClick={() => {
-                  setShowUpdateSection(false);
-                }}
-                style={{ position: 'absolute', right: '10px', top: '10px' }}
-              />
-              <StyledFileInput
-                type="file"
-                onChange={handleFileChange}
-                multiple
-              />
-
-              <FileInputLabel>
-                <StyledSelect
-                  value={selectedAlbumId || ''}
-                  onChange={handleAlbumSelect}
-                >
-                  <option value="">-- Select an album --</option>
-                  {albums.map((album) => (
-                    <option key={album.id} value={album.id}>
-                      {album.title}
-                    </option>
-                  ))}
-                </StyledSelect>
-              </FileInputLabel>
-              {selectedAlbumId ? (
-                <p>
-                  選擇相簿:{' '}
-                  {albums.find((album) => album.id === selectedAlbumId)?.title}
-                </p>
-              ) : (
-                <FileInputLabel>
-                  相簿名稱
-                  <StyledInput
-                    type="text"
-                    value={albumTitle}
-                    onChange={handleAlbumTitleChange}
-                    placeholder='e.g. "Trip to Japan"'
-                  />
-                </FileInputLabel>
-              )}
-              <br />
-              <MembersSelector onSelectMember={handleEditMember} />
-              <br />
-              <FileInputLabel>
-                Date:
-                <StyledDateInput
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                />
-              </FileInputLabel>
-              <AddButton onClick={handleUpload} disabled={!canUpload}>
-                Upload
-              </AddButton>
-            </UpdateSection>
+            <UpdatePhoto setShowUpdateSection={setShowUpdateSection} />
           )}
           {showFilterSection && (
             <FilterSection>
-              <DefaultButton
-                style={{
-                  position: 'absolute',
-                  top: '0px',
-                  right: '0px',
-                  fontSize: '20px',
-                  background: 'transparent',
-                }}
-                onClick={() => setShowFilterSection(false)}
-              >
+              <FilterButton onClick={() => setShowFilterSection(false)}>
                 <FontAwesomeIcon icon={faXmarkCircle} />
-              </DefaultButton>
+              </FilterButton>
               <Text>
                 Filter by member:
                 <DefaultButton
@@ -426,14 +256,6 @@ function Gallery() {
                     setSelectedMember('');
                   }}
                   className={selectedMember === '' ? 'active' : ''}
-                  style={{
-                    background: '#B7CCE2',
-                    color: 'white',
-                    padding: '5px 10px',
-                    margin: '5px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                  }}
                 >
                   All
                 </DefaultButton>
@@ -452,29 +274,19 @@ function Gallery() {
               <br />
               <Text>
                 Filter by favorite:
-                <DefaultButton
+                <FavoriteButton
                   onClick={() => setShowFavorite(!showFavorite)}
                   className={showFavorite ? 'active' : ''}
-                  style={{
-                    background: '#B7CCE2',
-                    color: 'white',
-                    padding: '5px 10px',
-                    margin: '5px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                  }}
                 >
                   {showFavorite ? 'Show all' : 'Show only favorites'}
-                </DefaultButton>
+                </FavoriteButton>
               </Text>
               <br />
             </FilterSection>
           )}
-
           <GalleryWrapper>
-            <ChatToggle></ChatToggle>
-            <div
-              style={{ position: 'absolute', top: '220px', left: '600px' }}
+            <ChatToggle />
+            <TooltipWrapper
               onMouseEnter={() => setShowTooltip(true)}
               onMouseLeave={() => setShowTooltip(false)}
             >
@@ -484,24 +296,9 @@ function Gallery() {
                 </InfoButton>
               }
               {showTooltip && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '50px',
-                    left: '220px',
-                    backgroundColor: '#414141',
-                    color: '#fff',
-                    padding: '20px',
-                    borderRadius: '15px',
-                    zIndex: 2,
-                    width: '200px',
-                  }}
-                >
-                  {'[Tips] Click album to view details'}
-                </div>
+                <Tooltip>{'[Tips] Click album to view details'}</Tooltip>
               )}
-            </div>
-
+            </TooltipWrapper>
             {filteredAlbums.map((album) => (
               <AlbumWrapper key={album.id}>
                 <RowWrap>
@@ -527,24 +324,17 @@ function Gallery() {
                       setSelectedAlbumId(album.id);
                       setShowSlideshow(!showSlideshow);
                     }}
-                    style={{ width: '320px', height: '320px' }}
                   />
                 )}
-
                 {showSlideshow && (
                   <>
-                    <DefaultButton
+                    <ShowSlideShowButton
                       onClick={() => {
                         setShowSlideshow(!showSlideshow);
                       }}
-                      style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '10px',
-                      }}
                     >
                       Close
-                    </DefaultButton>
+                    </ShowSlideShowButton>
                     <Slideshow photos={album.photos} />
                   </>
                 )}
@@ -638,6 +428,8 @@ const AlbumMembers = styled.p`
 const AlbumCover = styled.img`
   height: auto;
   object-fit: cover;
+  width: 320px;
+  height: 320px;
 `;
 
 const ColumnWrap = styled.div`
@@ -650,7 +442,6 @@ const ColumnWrap = styled.div`
 const UploadButton = styled(ThreeDButton)`
   width: 90px;
   margin: 20px;
-
   padding: 10px;
   border-radius: 25px;
   border: 2px solid #5981b0;
@@ -659,25 +450,6 @@ const UploadButton = styled(ThreeDButton)`
   :hover {
     background-color: #3467a1;
   }
-`;
-
-const UpdateSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 25px;
-  max-width: 700px;
-  padding: 20px;
-  color: black;
-  backdrop-filter: blur(8px);
-  background-color: rgba(255, 255, 255, 0.5);
-  position: absolute;
-  top: 10%;
-  right: 50%;
-  transform: translate(+50%, 0%);
-  z-index: 3;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
 `;
 
 const FilterSection = styled.div`
@@ -714,45 +486,6 @@ const Container = styled.div`
   height: 100%;
 `;
 
-const StyledFileInput = styled.input`
-  padding: 10px;
-  background-color: #f6f8f8;
-  border: 1px solid #d7dde2;
-  border-radius: 5px;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-  color: #414141;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: pointer;
-
-  &::file-selector-button {
-    padding: 10px;
-    background-color: #5981b0;
-    border: none;
-    color: #f6f8f8;
-    border-radius: 5px;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #3467a1;
-      color: #f6f8f8;
-    }
-  }
-`;
-
-const FileInputLabel = styled.label`
-  color: black;
-  padding: 12px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  display: inline-block;
-  margin: 5px;
-  &:hover {
-    background-color: #5981b0;
-  }
-`;
-
 const Text = styled.div`
   color: black;
   padding: 12px 20px;
@@ -765,34 +498,62 @@ const Text = styled.div`
   }
 `;
 
-const StyledInput = styled.input`
-  padding: 8px 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-left: 8px;
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: #3467a1;
-    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
-  }
+const Wrap = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
 `;
 
-const StyledSelect = styled.select`
-  padding: 8px 12px;
-  font-size: 16px;
-  border: 1px solid #d7dde2;
-  border-radius: 4px;
-  margin-left: 8px;
-  box-sizing: border-box;
+const InfoButton = styled(ThreeDButton)`
+  position: absolute;
+  padding: 10px;
+  left: 400px;
+  top: -50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
-  &:focus {
-    outline: none;
-    border-color: #5981b0;
-    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
-  }
+const FilterButton = styled(DefaultButton)`
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  font-size: 20px;
+  background: transparent;
+`;
+const TooltipWrapper = styled.div`
+  position: absolute;
+  top: 220px;
+  left: 600px;
+`;
+
+const Tooltip = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 220px;
+  background-color: #414141;
+  color: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  z-index: 2;
+  width: 200px;
+`;
+
+const ShowSlideShowButton = styled(DefaultButton)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+`;
+
+const FavoriteButton = styled(DefaultButton)`
+  background: #b7cce2;
+  color: white;
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const StyledDateInput = styled.input.attrs({
@@ -810,14 +571,6 @@ const StyledDateInput = styled.input.attrs({
     border-color: #5981b0;
     box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
   }
-`;
-
-const Wrap = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
 `;
 
 export default Gallery;

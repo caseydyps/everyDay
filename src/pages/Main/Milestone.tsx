@@ -27,7 +27,7 @@ import SideNav from '../../Components/Nav/SideNav';
 import LoadingAnimation from '../../Components/loading';
 import { AuthContext } from '../../config/Context/authContext';
 import { db } from '../../config/firebase.config';
-import { MembersSelector } from './AI/SmartInput';
+import { MembersSelector } from '../../Components/Selectors/MemberSelector';
 import { ChatToggle } from '../../Components/Chat/ChatToggle';
 import React from 'react';
 function Milestone() {

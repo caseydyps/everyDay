@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import styled from 'styled-components';
 import DefaultButton from '../../../Components/Button/Button';
 import { AuthContext } from '../../../config/Context/authContext';
-import { MembersSelector } from '../AI/SmartInput';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 type FamilyMember = {
   name: string;
   role: string;
