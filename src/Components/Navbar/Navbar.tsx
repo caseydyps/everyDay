@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import SmartInputMini from '../../pages/AI/SmartInputMini';
+import SmartInputMini from '../../pages/Main/Widget/SmartInputWidget';
 
 const Nav = styled.nav`
   display: flex;

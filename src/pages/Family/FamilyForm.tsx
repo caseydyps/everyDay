@@ -7,7 +7,7 @@ import {
   setDoc,
   updateDoc,
   where,
-  writeBatch
+  writeBatch,
 } from 'firebase/firestore';
 import React, { useContext, useEffect, useState } from 'react';
 import { CirclePicker } from 'react-color';
@@ -21,17 +21,12 @@ const FamilyMemberForm = () => {
   const { familyId } = UserAuthData();
   const { user, userEmail, hasSetup, setHasSetup, membersArray } =
     useContext(AuthContext);
-  console.log(familyId);
-  console.log('user', user);
-  console.log('hasSetup', hasSetup);
   const [numberOfMembers, setNumberOfMembers] = useState<number>(1);
   const [members, setMembers] = useState<FamilyMember[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const [currentMemberIndex, setCurrentMemberIndex] = useState(0);
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(members);
-    const familyRef = collection(db, 'Family');
     const usersRef = collection(db, 'Family', familyId, 'members');
     const familyCollection = collection(db, 'Family');
     const queryUser = where('familyMembers', 'array-contains', {
@@ -39,16 +34,13 @@ const FamilyMemberForm = () => {
     });
     try {
       const matchingDocs = await getDocs(query(familyCollection, queryUser));
-      console.log(matchingDocs);
       const matchingDocRef = matchingDocs.docs[0].ref;
-      console.log(matchingDocs);
       await updateDoc(matchingDocRef, { isSettingDone: true });
       const querySnapshot = await getDocs(usersRef);
       const batch = writeBatch(db);
       querySnapshot.forEach((doc) => batch.delete(doc.ref));
       await batch.commit();
       const familyDocRef = doc(db, 'Family', familyId);
-     
       const familyData = {
         familyId: familyId,
         familyMembers: members.map((member) => ({ userEmail: member.email })),
@@ -57,11 +49,7 @@ const FamilyMemberForm = () => {
       members.forEach(async (member) => {
         await setDoc(doc(usersRef, member.name), member);
         await setDoc(familyDocRef, familyData);
-        
       });
-
-      console.log('Members have been saved to Firestore!');
-      console.log(members);
       setFormSubmitted(true);
       setHasSetup(true);
     } catch (error) {
@@ -71,7 +59,6 @@ const FamilyMemberForm = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      console.log(familyId);
       const familyDocRef = collection(db, 'Family', familyId, 'members');
       const membersData: any = await getDocs(familyDocRef)
         .then((querySnapshot) =>
@@ -80,14 +67,8 @@ const FamilyMemberForm = () => {
         .catch((error) =>
           console.error('Error retrieving members data:', error)
         );
-     
-      const matchingData = membersData.find(
-        (data: any) => data.familyId === familyId
-      );
-      
-      
       setMembers(membersData);
-      
+
       if (membersData.length > 0) {
         setFormSubmitted(true);
       }
@@ -177,7 +158,7 @@ const FamilyMemberForm = () => {
     newMembers[index].role = event.target.value;
     setMembers(newMembers);
   };
- 
+
   const handleNumberOfMembersIncrement = () => {
     setNumberOfMembers(numberOfMembers + 1);
     setMembers((prevMembers: any) => [
@@ -209,7 +190,6 @@ const FamilyMemberForm = () => {
       setMembers((prevMembers) => prevMembers.slice(0, newNumberOfMembers));
     }
   };
-
   const [seed, setSeed] = useState<string>('Sassy');
   const [skinColor, setSkinColor] = useState<string>('f2d3b1');
   const [eyebrows, setEyebrows] = useState<string>('variant01');
@@ -260,8 +240,6 @@ const FamilyMemberForm = () => {
   ]);
 
   const handleSkinColorChange = (index: number, event: any) => {
-    console.log(event);
-    console.log('here');
     const newMembers = [...members];
     newMembers[index].skinColor = event.replace('#', '');
     setSkinColor(event.replace('#', ''));
@@ -408,14 +386,9 @@ const FamilyMemberForm = () => {
       duration: number;
       stagger: number;
       colors: string[];
-
       gravity: number;
     };
 
-    type Shape = string;
-    const shapes: Shape[] = ['square', 'circle', 'triangle'].map(
-      (shape) => shape as Shape
-    );
     const config: Options = {
       angle: 90,
       spread: 45,
@@ -427,11 +400,8 @@ const FamilyMemberForm = () => {
       colors: ['#F08080', '#FFD700', '#008000', '#00BFFF'],
       gravity: 1,
     };
-
-    // Create the confetti animation
     confetti(config);
   };
-
   interface AddMinusInputProps {
     value: number;
     onIncrement: () => void;
@@ -493,9 +463,7 @@ const FamilyMemberForm = () => {
           <ColumnWrap>
             <RowWrap>
               {members.map((member, index) => (
-                <Card
-                  key={index}
-                >
+                <Card key={index}>
                   <RowWrap>
                     <Text> {member.name}</Text>
                     <Split> | </Split>
@@ -551,109 +519,95 @@ const FamilyMemberForm = () => {
                 </AddMinusInput>
                 {numberOfMembers > 0 && (
                   <div>
-                    <div>
-                      <Text>Set up your family one by one</Text>
-                      <FormDropdown
-                        value={currentMemberIndex}
-                        onChange={(event) =>
-                          setCurrentMemberIndex(parseInt(event.target.value))
-                        }
-                      >
-                        {members.map((member, index) => (
-                          <option key={index} value={index}>
-                            {`Member ${index + 1}`}
-                          </option>
-                        ))}
-                      </FormDropdown>
-                      {members[currentMemberIndex] && (
-                        <div>
-                          <FormField>
-                            <Text
-                              style={{
-                                color: '#414141',
-                              }}
-                            >
-                              Name
-                            </Text>
-                            <FormInput
-                              type="text"
-                              value={members[currentMemberIndex].name}
-                              onChange={(event) =>
-                                handleMemberNameChange(
-                                  currentMemberIndex,
-                                  event
-                                )
-                              }
-                            />
-                          </FormField>
-                          <FormField>
-                            <Text
-                              style={{
-                                color: '#414141',
-                              }}
-                            >
-                              Email
-                            </Text>
-                            <FormInput
-                              type="text"
-                              value={members[currentMemberIndex].email}
-                              onChange={(event) =>
-                                handleMemberEmailChange(
-                                  currentMemberIndex,
-                                  event
-                                )
-                              }
-                            />
-                          </FormField>
+                    <Text>Set up your family one by one</Text>
+                    <FormDropdown
+                      value={currentMemberIndex}
+                      onChange={(event) =>
+                        setCurrentMemberIndex(parseInt(event.target.value))
+                      }
+                    >
+                      {members.map((member, index) => (
+                        <option key={index} value={index}>
+                          {`Member ${index + 1}`}
+                        </option>
+                      ))}
+                    </FormDropdown>
+                    {members[currentMemberIndex] && (
+                      <div>
+                        <FormField>
+                          <Text
+                            style={{
+                              color: '#414141',
+                            }}
+                          >
+                            Name
+                          </Text>
+                          <FormInput
+                            type="text"
+                            value={members[currentMemberIndex].name}
+                            onChange={(event) =>
+                              handleMemberNameChange(currentMemberIndex, event)
+                            }
+                          />
+                        </FormField>
+                        <FormField>
+                          <Text
+                            style={{
+                              color: '#414141',
+                            }}
+                          >
+                            Email
+                          </Text>
+                          <FormInput
+                            type="text"
+                            value={members[currentMemberIndex].email}
+                            onChange={(event) =>
+                              handleMemberEmailChange(currentMemberIndex, event)
+                            }
+                          />
+                        </FormField>
 
-                          <FormField>
-                            <Text
-                              style={{
-                                color: '#414141',
-                              }}
-                            >
-                              Birthday
-                            </Text>
-                            <FormInput
-                              type="date"
-                              value={members[currentMemberIndex].birthday}
-                              max={new Date().toISOString().split('T')[0]}
-                              onChange={(event) =>
-                                handleMemberBirthdayChange(
-                                  currentMemberIndex,
-                                  event
-                                )
-                              }
-                            />
-                          </FormField>
-
-                          <FormField>
-                            <Text
-                              style={{
-                                color: '#414141',
-                              }}
-                            >
-                              Role{' '}
-                            </Text>
-                            <FormInput
-                              type="text"
-                              value={members[currentMemberIndex].role}
-                              placeholder="爸爸/媽媽/女兒/兒子..."
-                              onChange={(event) =>
-                                handleMemberRoleChange(
-                                  currentMemberIndex,
-                                  event
-                                )
-                              }
-                            />
-                          </FormField>
-                        </div>
-                      )}
-                    </div>
+                        <FormField>
+                          <Text
+                            style={{
+                              color: '#414141',
+                            }}
+                          >
+                            Birthday
+                          </Text>
+                          <FormInput
+                            type="date"
+                            value={members[currentMemberIndex].birthday}
+                            max={new Date().toISOString().split('T')[0]}
+                            onChange={(event) =>
+                              handleMemberBirthdayChange(
+                                currentMemberIndex,
+                                event
+                              )
+                            }
+                          />
+                        </FormField>
+                        <FormField>
+                          <Text
+                            style={{
+                              color: '#414141',
+                            }}
+                          >
+                            Role{' '}
+                          </Text>
+                          <FormInput
+                            type="text"
+                            value={members[currentMemberIndex].role}
+                            placeholder="爸爸/媽媽/女兒/兒子..."
+                            onChange={(event) =>
+                              handleMemberRoleChange(currentMemberIndex, event)
+                            }
+                          />
+                        </FormField>
+                      </div>
+                    )}
                   </div>
                 )}
-                <></>
-
                 <ConfettiButton onClick={handleClick} type="submit">
                   完成設定🎉
                 </ConfettiButton>
@@ -743,7 +697,6 @@ const FamilyMemberForm = () => {
                             <option value="variant08">挑眉</option>
                           </Select>
                         </FlexWrap>
-
                         <br />
                         <FlexWrap>
                           <Label htmlFor="eyes-select">眼睛:</Label>
@@ -797,23 +750,22 @@ const FamilyMemberForm = () => {
                           </Select>
                         </FlexWrap>
                       </RowWrapper>
-
                       <FlexWrap>
                         <Label htmlFor="hair-color-select">髮色:</Label>
                         <CirclePicker
                           width="600px"
                           color={members[currentMemberIndex].hairColor}
                           colors={[
-                            '#000000', 
-                            '#331a00', 
+                            '#000000',
+                            '#331a00',
                             '#4d2600',
-                            '#663300', 
-                            '#804d00', 
-                            '#b37300', 
-                            '#cc9900', 
-                            '#e6b800', 
-                            '#ffd966', 
-                            '#ffffff', 
+                            '#663300',
+                            '#804d00',
+                            '#b37300',
+                            '#cc9900',
+                            '#e6b800',
+                            '#ffd966',
+                            '#ffffff',
                           ]}
                           circleSize={32}
                           onChangeComplete={(color) =>
@@ -892,7 +844,6 @@ const FamilyMemberForm = () => {
                     }
                     alt="avatar"
                   />
-
                   <SaveButton
                     onClick={() =>
                       handleAvatarSave(
@@ -951,15 +902,6 @@ const FlexWrap = styled.div`
   justify-content: space-between;
   z-index: 1;
   margin: 15px;
-`;
-
-const AvatarWrap = styled.div`
-  text-align: start;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  z-index: 1;
-  margin: 5px;
 `;
 
 const FormLabel = styled.label`
@@ -1044,7 +986,6 @@ const SaveButton = styled(Button)`
   }
 `;
 
-
 export const GradientAnimation = keyframes`
   0% {
     background-position: 0% 50%;
@@ -1067,7 +1008,6 @@ export const Container = styled.div`
   height: 100%;
   padding: 20px;
   justify-content: center;
- 
 `;
 
 const RowWrap = styled.div`
@@ -1077,7 +1017,7 @@ const RowWrap = styled.div`
   min-width: 100%;
   text-align: center;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
 `;
 
 const RowWrapper = styled.div`

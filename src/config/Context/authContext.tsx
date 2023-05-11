@@ -90,7 +90,6 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   } = UserAuthData();
   
   const login = async () => {
-    console.log('login');
     googleSignIn();
   };
 

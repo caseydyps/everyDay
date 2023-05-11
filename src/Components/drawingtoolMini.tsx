@@ -40,12 +40,6 @@ const DrawingTool = () => {
     if (!canvas) return;
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    console.log(
-      canvas.width,
-      canvas.height,
-      canvas.style.width,
-      canvas.style.height
-    );
     const context = canvas.getContext('2d');
     if (!context) return;
     context.scale(1, 1);
@@ -87,16 +81,12 @@ const DrawingTool = () => {
       try {
         const querySnapshot = await getDocs(strokesCollectionRef);
         const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
-        console.log('Strokes data retrieved from Firestore:', strokesData);
-
         strokesData.forEach((stroke, index) => {
           stroke.forEach((s: StrokeData) => {
-            console.log(s);
             handleStrokeUpdate(s);
           });
         });
         loadCanvas();
-        console.log('Canvas loaded successfully');
       } catch (error) {
         console.error('Error loading canvas:', error);
       }
@@ -139,7 +129,6 @@ const DrawingTool = () => {
   const handleStrokeUpdate = (strokeData: StrokeData) => {
     if (!canvasRef.current || !contextRef.current) return;
     const context = contextRef.current;
-    console.log(strokeData);
     context.beginPath();
     context.moveTo(strokeData.startX, strokeData.startY);
     context.lineTo(strokeData.endX, strokeData.endY);
@@ -169,16 +158,11 @@ const DrawingTool = () => {
     try {
       const querySnapshot = await getDocs(strokesCollectionRef);
       const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
-      console.log('Strokes data retrieved from Firestore:', strokesData);
-
       strokesData.forEach((stroke, index) => {
         stroke.forEach((s: StrokeData) => {
-          console.log(s);
           handleStrokeUpdate(s);
         });
       });
-
-      console.log('Canvas loaded successfully');
     } catch (error) {
       console.error('Error loading canvas:', error);
     }

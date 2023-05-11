@@ -92,16 +92,8 @@ const DrawingTool = () => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-
-    console.log(
-      canvas.width,
-      canvas.height,
-      canvas.style.width,
-      canvas.style.height
-    );
     const context = canvas.getContext('2d');
     if (!context) return;
     context.scale(1, 1);
@@ -145,17 +137,12 @@ const DrawingTool = () => {
       try {
         const querySnapshot = await getDocs(strokesCollectionRef);
         const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
-        console.log('Strokes data retrieved from Firestore:', strokesData);
-
         strokesData.forEach((stroke, index) => {
           stroke.forEach((s: StrokeData) => {
-            console.log(s);
             handleStrokeUpdate(s);
           });
         });
         loadCanvas();
-
-        console.log('Canvas loaded successfully');
       } catch (error) {
         console.error('Error loading canvas:', error);
       }
@@ -198,7 +185,6 @@ const DrawingTool = () => {
   };
 
   const addStroke = async (strokeData: StrokeData) => {
-    console.log('Adding stroke to Firestore:', strokeData);
     const strokesCollectionRef = collection(
       db,
       'Family',
@@ -207,13 +193,11 @@ const DrawingTool = () => {
       familyId,
       'strokes'
     );
-    console.log(strokes);
 
     const strokeObject = { strokes };
 
     try {
       const docRef = await addDoc(strokesCollectionRef, strokeObject);
-      console.log('Stroke added to Firestore with ID:', docRef.id);
     } catch (error) {
       console.error('Error adding stroke to Firestore:', error);
     }
@@ -252,7 +236,6 @@ const DrawingTool = () => {
     querySnapshot.forEach(async (doc) => {
       try {
         await deleteDoc(doc.ref);
-        console.log(`Document ${doc.id} deleted successfully`);
       } catch (error) {
         console.error(`Error deleting document ${doc.id}:`, error);
       }
@@ -282,16 +265,11 @@ const DrawingTool = () => {
     try {
       const querySnapshot = await getDocs(strokesCollectionRef);
       const strokesData = querySnapshot.docs.map((doc) => doc.data().strokes);
-      console.log('Strokes data retrieved from Firestore:', strokesData);
-
       strokesData.forEach((stroke, index) => {
         stroke.forEach((s: StrokeData) => {
-          console.log(s);
           handleStrokeUpdate(s);
         });
       });
-
-      console.log('Canvas loaded successfully');
     } catch (error) {
       console.error('Error loading canvas:', error);
     }
@@ -308,9 +286,7 @@ const DrawingTool = () => {
     setIsAdding(true);
     const strokeData = {};
     try {
-      console.log(strokes);
       await addStroke(strokes);
-      console.log('Stroke added successfully');
     } catch (error) {
       console.error('Error adding stroke:', error);
     }

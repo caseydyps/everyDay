@@ -13,7 +13,6 @@ import { auth, db } from '../../config/firebase.config';
 const { v4: uuidv4 } = require('uuid');
 const UserAuthData = () => {
   const [user] = useAuthState(auth);
-  console.log(user);
   const [userName, setUserName] = useState<string | null>(null);
   const [googleAvatarUrl, setGoogleAvatarUrl] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -28,7 +27,7 @@ const UserAuthData = () => {
         setUserName(user.displayName);
         setGoogleAvatarUrl(user.photoURL);
         setUserEmail(user.email);
-        console.log(user);
+        
       }
     }
 
@@ -37,9 +36,7 @@ const UserAuthData = () => {
 
   useEffect(() => {
     async function checkIfUserExists() {
-      console.log('userEmail' + userEmail);
       if (userEmail) {
-        console.log('here');
         const familyCollection = collection(db, 'Family');
         const queryUser = where('familyMembers', 'array-contains', {
           userEmail: userEmail,
@@ -81,7 +78,6 @@ const UserAuthData = () => {
 
   useEffect(() => {
     const fetchMembers = async () => {
-      console.log(familyId);
       const familyDocRef = collection(db, 'Family', familyId, 'members');
       const membersData: any = await getDocs(familyDocRef)
         .then((querySnapshot) =>
@@ -90,7 +86,6 @@ const UserAuthData = () => {
         .catch((error) =>
           console.error('Error retrieving members data:', error)
         );
-      console.log(membersData);
       type Member = (typeof membersData)[number];
       const memberRoles = membersData.map((member: Member) => member.role);
       setMembersArray(membersData);
@@ -104,7 +99,6 @@ const UserAuthData = () => {
     userEmail: string | null,
     familyId: string
   ) => {
-    console.log(familyId);
     const familyDocRef = doc(db, 'Family', familyId);
     const familyData = {
       familyId: familyId,
@@ -114,7 +108,6 @@ const UserAuthData = () => {
 
     try {
       await setDoc(familyDocRef, familyData);
-      console.log('Family created successfully!');
       setHasCreateFamily(true);
       setFamilyId(familyId); 
     } catch (error) {
