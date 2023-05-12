@@ -1,25 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../../../config/firebase.config';
 import 'firebase/firestore';
 import styled from 'styled-components/macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faXmarkCircle } from '@fortawesome/free-solid-svg-icons';
 import { faStar as farStar } from '@fortawesome/free-regular-svg-icons';
 import { faStar as fasStar } from '@fortawesome/free-solid-svg-icons';
 import Slideshow from './SlideShow';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
-import Swal from 'sweetalert2';
 import { useContext } from 'react';
 import { AuthContext } from '../../../config/Context/authContext';
 import { UpdatePhoto } from './UpdatePhoto';
-import DefaultButton, {
-  ThreeDButton,
-  AddButton,
-  CloseButton,
-} from '../../../Components/Button/Button';
-import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
+import DefaultButton, { ThreeDButton } from '../../../Components/Button/Button';
 import Banner from '../../../Components/Banner/Banner';
+import FilterSection from './FilterSection';
 import {
   faFilter,
   faTrashCan,
@@ -30,8 +24,6 @@ import {
   collection,
   updateDoc,
   getDocs,
-  addDoc,
-  getDoc,
   deleteDoc,
   query,
   where,
@@ -55,23 +47,6 @@ type Photo = {
   title: string;
   src: string;
   alt: string;
-};
-
-interface AlbumData {
-  id: string;
-  title: string;
-  members: string[];
-  description: string;
-  date: string;
-  isFavorite: boolean;
-  photos: Photo[];
-}
-
-type PhotoType = Photo & {
-  caption: string;
-  date: Date;
-  location: string;
-  tags: string[];
 };
 
 function Gallery() {
@@ -245,44 +220,16 @@ function Gallery() {
             <UpdatePhoto setShowUpdateSection={setShowUpdateSection} />
           )}
           {showFilterSection && (
-            <FilterSection>
-              <FilterButton onClick={() => setShowFilterSection(false)}>
-                <FontAwesomeIcon icon={faXmarkCircle} />
-              </FilterButton>
-              <Text>
-                Filter by member:
-                <DefaultButton
-                  onClick={() => {
-                    setSelectedMember('');
-                  }}
-                  className={selectedMember === '' ? 'active' : ''}
-                >
-                  All
-                </DefaultButton>
-                <MembersSelector onSelectMember={handleFilterMember} />
-              </Text>
-              <br />
-              <Text>
-                Filter by date:
-                <StyledDateInput
-                  type="date"
-                  value={selectedDate}
-                  onChange={(e) => setSelectedDate(e.target.value)}
-                />
-              </Text>
-              <br />
-              <br />
-              <Text>
-                Filter by favorite:
-                <FavoriteButton
-                  onClick={() => setShowFavorite(!showFavorite)}
-                  className={showFavorite ? 'active' : ''}
-                >
-                  {showFavorite ? 'Show all' : 'Show only favorites'}
-                </FavoriteButton>
-              </Text>
-              <br />
-            </FilterSection>
+            <FilterSection
+              setShowFilterSection={setShowFilterSection}
+              setSelectedMember={setSelectedMember}
+              selectedMember={selectedMember}
+              handleFilterMember={handleFilterMember}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              showFavorite={showFavorite}
+              setShowFavorite={setShowFavorite}
+            />
           )}
           <GalleryWrapper>
             <ChatToggle />
@@ -353,7 +300,6 @@ const GalleryWrapper = styled.div`
   gap: 20px;
   height: auto;
   flex-wrap: wrap;
-
   justify-content: center;
   align-items: center;
 
@@ -452,26 +398,6 @@ const UploadButton = styled(ThreeDButton)`
   }
 `;
 
-const FilterSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  border-radius: 25px;
-  backdrop-filter: blur(5px);
-  background-color: rgba(255, 255, 255, 0.3);
-  max-width: 700px;
-  padding: 20px;
-  position: absolute;
-  color: #3467a1;
-  top: 20%;
-  right: 50%;
-  transform: translate(+50%, 0%);
-  z-index: 3;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-`;
-
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
@@ -484,18 +410,6 @@ const Container = styled.div`
   background-color: transparent;
   width: 100vw;
   height: 100%;
-`;
-
-const Text = styled.div`
-  color: black;
-  padding: 12px 20px;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
-  display: inline-block;
-  margin: 5px;
-  &:hover {
-  }
 `;
 
 const Wrap = styled.div`
@@ -516,13 +430,6 @@ const InfoButton = styled(ThreeDButton)`
   align-items: center;
 `;
 
-const FilterButton = styled(DefaultButton)`
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  font-size: 20px;
-  background: transparent;
-`;
 const TooltipWrapper = styled.div`
   position: absolute;
   top: 220px;
@@ -545,32 +452,6 @@ const ShowSlideShowButton = styled(DefaultButton)`
   position: absolute;
   right: 10px;
   top: 10px;
-`;
-
-const FavoriteButton = styled(DefaultButton)`
-  background: #b7cce2;
-  color: white;
-  padding: 5px 10px;
-  margin: 5px;
-  border-radius: 5px;
-  cursor: pointer;
-`;
-
-const StyledDateInput = styled.input.attrs({
-  type: 'date',
-})`
-  padding: 8px 12px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-left: 8px;
-  box-sizing: border-box;
-
-  &:focus {
-    outline: none;
-    border-color: #5981b0;
-    box-shadow: 0 0 0 2px rgba(52, 103, 161, 0.3);
-  }
 `;
 
 export default Gallery;

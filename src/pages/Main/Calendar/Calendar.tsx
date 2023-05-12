@@ -30,9 +30,9 @@ import SideNav from '../../../Components/Nav/SideNav';
 import { AuthContext } from '../../../config/Context/authContext';
 import { db } from '../../../config/firebase.config';
 import SmartInput from '../AI/SmartInput';
-import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
 import { ChatToggle } from '../../../Components/Chat/ChatToggle';
-
+import { MonthNavigation } from './MonthNavigation';
+import { EventModal } from './EventModal';
 function Calendar() {
   const [date, setDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -99,7 +99,7 @@ function Calendar() {
     };
     fetchCalendarData();
     setIsEventAdded(false);
-  }, [familyId, isEventAdded]);
+  }, [familyId, isEventAdded, setEvents]);
 
   const getCalendarData = async () => {
     const familyDocRef = collection(db, 'Family', familyId, 'Calendar');
@@ -186,7 +186,6 @@ function Calendar() {
       await editEventtoFirestore(draggedEventIdRef, updatedData);
       setEvents(updatedEvents);
     };
-
     if (!date) {
       return <div>今天沒事~</div>;
     }
@@ -690,6 +689,7 @@ function Calendar() {
   const handleClose = () => {
     setShowSmartInput(false);
   };
+
   return (
     <Container>
       <SideNav />
@@ -700,63 +700,25 @@ function Calendar() {
           <FontAwesomeIcon icon={faCircleInfo} />
         </InfoButton>
         <CalendarContainer view={view}>
-          <MonthContainer>
-            <Button onClick={handlePrevMonth}>
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </Button>
-            <MonthLabel>{`${
-              months[date.getMonth()]
-            } ${date.getFullYear()}`}</MonthLabel>
-            <Button onClick={handleNextMonth}>
-              <FontAwesomeIcon icon={faChevronRight} />
-            </Button>
-          </MonthContainer>
+          <MonthNavigation
+            date={date}
+            handlePrevMonth={handlePrevMonth}
+            handleNextMonth={handleNextMonth}
+          />
           <AddButton onClick={handleAddEvent}>Add Event</AddButton>
           <AddButton onClick={handleButtonClick}>Smart Input</AddButton>
           {showModal && (
-            <Modal>
-              <ModalForm onSubmit={handleEventSubmit}>
-                <CloseButton
-                  style={{
-                    position: 'absolute',
-                    right: '10px',
-                    top: '10px',
-                  }}
-                ></CloseButton>
-                <label>
-                  Title:
-                  <input
-                    type="text"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Start:
-                  <input
-                    type="date"
-                    value={eventDate}
-                    onChange={(e) => handleDateChange(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Start Time:
-                  <input
-                    type="time"
-                    value={eventTime}
-                    step="1800"
-                    onChange={(e) => setEventTime(e.target.value)}
-                  />
-                </label>
-                <label>
-                  Member:
-                  <MembersSelector onSelectMember={handleSelectMember} />
-                </label>
-                <Wrap>
-                  <AddButton type="submit">Add</AddButton>
-                </Wrap>
-              </ModalForm>
-            </Modal>
+            <EventModal
+              showModal={showModal}
+              eventTitle={eventTitle}
+              setEventTitle={setEventTitle}
+              eventDate={eventDate}
+              handleDateChange={handleDateChange}
+              eventTime={eventTime}
+              setEventTime={setEventTime}
+              handleSelectMember={handleSelectMember}
+              handleEventSubmit={handleEventSubmit}
+            />
           )}
           <RowWrap>
             {showSmartInput && (
@@ -868,16 +830,6 @@ const CalendarContainer = styled.div<CalendarContainerProps>`
   font-family: Arial, sans-serif;
 `;
 
-const WeekWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0px;
-  font-family: Arial, sans-serif;
-  margin: 5px;
-`;
-
 const CloseInputButton = styled(CloseButton)`
   z-index: 5;
   position: absolute;
@@ -885,42 +837,11 @@ const CloseInputButton = styled(CloseButton)`
   left: 10px;
 `;
 
-const MonthContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 1rem;
-`;
-
-const MonthLabel = styled.span`
-  font-size: 24px;
-  font-weight: bold;
-  color: #5981b0;
-  border-radius: 20px;
-  background-color: transparent;
-  padding: 10px;
-`;
-
 const MonthColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
-const Button = styled.button`
-  margin-top: 10px;
-  border: none;
-  z-index: 5;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #5981b0;
-  &:hover {
-    color: #3467a1;
-  }
-`;
 const DayNumber = styled.span`
   position: absolute;
   top: 5px;
@@ -1052,45 +973,6 @@ const MenuWrap = styled.div`
   z-index: 2;
 `;
 
-const Modal = styled.div`
-  display: flex;
-  justify-content: center;
-`;
-
-const ModalForm = styled.form`
-  position: absolute;
-  z-index: 3;
-  background-color: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  -webkit-box-shadow: rgba(142, 142, 142, 0.19) 0px 6px 15px 0px;
-  border-radius: 12px;
-  -webkit-border-radius: 12px;
-  color: rgba(255, 255, 255, 0.75);
-  border-radius: 10px;
-  padding: 30px 30px;
-  color: #f5f5f5;
-  width: 400px;
-  label {
-    display: block;
-    margin-bottom: 5px;
-    color: #414141;
-  }
-  input[type='text'],
-  input[type='date'],
-  input[type='time'],
-  select {
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-sizing: border-box;
-    font-size: 16px;
-    padding: 10px;
-    width: 100%;
-    margin-bottom: 10px;
-  }
-`;
 interface EventWrapperProps {
   category: string;
   multiDay?: boolean;

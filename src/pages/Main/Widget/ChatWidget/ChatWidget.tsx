@@ -103,7 +103,6 @@ const Chat = () => {
           </div>
         ))}
       </MessageWrap>
-
       <SendMessage scroll={scroll} />
       <ChatBottom id="chat-bottom" ref={scroll} />
     </ChatContainer>
