@@ -119,7 +119,6 @@ const Avatar = styled.img`
   margin-right: 10px;
   flex-shrink: 0;
 `;
-
 const ColumnWrap = styled.div`
   display: flex;
   flex-direction: column;
@@ -209,11 +208,6 @@ function DragNDrop({ data }: any) {
   const [sortOrder, setSortOrder] = useState<'ascending' | 'descending'>(
     'ascending'
   );
-
-  useEffect(() => {
-    setList(data);
-  }, [setList, data]);
-
   const dragItem = useRef<ItemType | null>(null);
   const dragItemNode = useRef<HTMLDivElement | null>(null);
   type ItemType = {
@@ -224,6 +218,10 @@ function DragNDrop({ data }: any) {
     groupIndex: number;
     itemIndex: number;
   };
+
+  useEffect(() => {
+    setList(data);
+  }, [setList, data]);
 
   const handleDragStart: any = (
     e: React.DragEvent<HTMLDivElement>,
@@ -269,7 +267,6 @@ function DragNDrop({ data }: any) {
   };
   const [hideChecked, setHideChecked] = useState(false);
   const [showMembersSelector, setShowMembersSelector] = useState(false);
-
   interface Member {
     name: string;
     avatarSrc: string;
@@ -467,7 +464,6 @@ function DragNDrop({ data }: any) {
     }
     return count;
   }
-
   function getListProgress(list: DataItem) {
     const totalTasks = getTotalTaskCount(list);
     const finishedTasks = getfinishedTaskCount(list);

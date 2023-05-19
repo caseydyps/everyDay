@@ -7,7 +7,7 @@ import reportWebVitals from './reportWebVitals';
 import Dashboard from './pages/Main/Dashboard';
 import Todo from './pages/Main/Todo/Todo';
 import Whiteboard from './pages/Main/Whiteboard/Whiteboard';
-import Milestone from './pages/Main/Milestone';
+import Milestone from './pages/Main/Milestone/Milestone';
 import Calendar from './pages/Main/Calendar/Calendar';
 import FamilySetup from './pages/Family/FamilySetup';
 import AI from './pages/Main/AI/AI';

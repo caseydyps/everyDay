@@ -1,11 +1,8 @@
 import {
   faCircleXmark,
-  faEllipsisH,
   faFilter,
-  faPenToSquare,
   faPlus,
   faPlusCircle,
-  faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import 'firebase/firestore';
@@ -21,15 +18,17 @@ import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components/macro';
 import Swal from 'sweetalert2';
 import { v4 as uuidv4 } from 'uuid';
-import Banner from '../../Components/Banner/Banner';
-import DefaultButton, { ThreeDButton } from '../../Components/Button/Button';
-import SideNav from '../../Components/Nav/SideNav';
-import LoadingAnimation from '../../Components/loading';
-import { AuthContext } from '../../config/Context/authContext';
-import { db } from '../../config/firebase.config';
-import { MembersSelector } from '../../Components/Selectors/MemberSelector';
-import { ChatToggle } from '../../Components/Chat/ChatToggle';
+import Banner from '../../../Components/Banner/Banner';
+import DefaultButton, { ThreeDButton } from '../../../Components/Button/Button';
+import SideNav from '../../../Components/Nav/SideNav';
+import LoadingAnimation from '../../../Components/loading';
+import { AuthContext } from '../../../config/Context/authContext';
+import { db } from '../../../config/firebase.config';
+import { MembersSelector } from '../../../Components/Selectors/MemberSelector';
+import { ChatToggle } from '../../../Components/Chat/ChatToggle';
+import Events from './Events';
 import React from 'react';
+import FilterSection from './FilterSection';
 function Milestone() {
   type EventType = {
     id: number;
@@ -38,7 +37,6 @@ function Milestone() {
     member: string;
     image: string | null;
   };
-
   const { familyId, membersArray } = useContext(AuthContext);
   const [events, setEvents] = useState<EventType[]>([]);
   const [newEventTitle, setNewEventTitle] = useState<string>('');
@@ -67,7 +65,6 @@ function Milestone() {
       });
       return;
     }
-
     const newEvent = {
       id: uuidv4(),
       title: newEventTitle,
@@ -166,7 +163,6 @@ function Milestone() {
       console.error('Error deleting event: ', error);
     }
   };
-
   const EditEventForm: any = ({
     event,
     onEdit,
@@ -198,11 +194,9 @@ function Milestone() {
 
       onEdit(editedEvent);
     };
-
     const handleEditMember = (member: string | string[]) => {
       setMember(member);
     };
-
     return (
       <Wrap>
         <CancelButton onClick={() => setIsEditing(false)}>
@@ -287,7 +281,6 @@ function Milestone() {
         console.error('Error fetching data from Firestore: ', error);
       }
     }
-
     fetchData();
   }, [familyId]);
   const [showFilter, setShowFilter] = useState<boolean>(false);
@@ -297,11 +290,9 @@ function Milestone() {
       toggleAddEvent();
     }
   };
-
   const handlefilterSelectMember = (member: string | string[]) => {
     setFilter({ ...filter, member: member });
   };
-
   const [showAddEvent, setShowAddEvent] = useState<boolean>(false);
   const toggleAddEvent = (): void => {
     setShowAddEvent(!showAddEvent);
@@ -309,20 +300,17 @@ function Milestone() {
       setShowFilter(!showFilter);
     }
   };
-
   const [eventWrapWidth, setEventWrapWidth] = useState(null);
   const [showButtons, setShowButtons] = useState(false);
   const handleToggleButtons = () => {
     setShowButtons(!showButtons);
   };
-
   const alertMaxFileSize = () => {
     Swal.fire({
       icon: 'warning',
       text: 'Please upload an image that is smaller than 1MB.',
     });
   };
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
@@ -357,52 +345,13 @@ function Milestone() {
             新增里程碑
           </Button>
         </RowWrap>
-
         {showFilter && (
-          <Wrap>
-            <CancelButton onClick={() => setShowFilter(false)}>
-              <AnimatedFontAwesomeIcon
-                icon={faCircleXmark}
-              ></AnimatedFontAwesomeIcon>
-            </CancelButton>
-            <FormField>
-              <FormLabel>事件:</FormLabel>
-              <FormInput
-                type="text"
-                value={filter.title}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFilter({ ...filter, title: e.target.value })
-                }
-              />
-            </FormField>
-            <FormField>
-              <FormLabel>Member:</FormLabel>
-              <MembersSelector onSelectMember={handlefilterSelectMember} />
-            </FormField>
-            <FormField>
-              <FormLabel>開始日期:</FormLabel>
-              <FormInput
-                type="date"
-                value={filter.startDate}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFilter({
-                    ...filter,
-                    startDate: new Date(e.target.value),
-                  })
-                }
-              />
-            </FormField>
-            <FormField>
-              <FormLabel>結束日期:</FormLabel>
-              <FormInput
-                type="date"
-                value={filter.endDate}
-                onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                  setFilter({ ...filter, endDate: new Date(e.target.value) })
-                }
-              />
-            </FormField>
-          </Wrap>
+          <FilterSection
+            setShowFilter={setShowFilter}
+            filter={filter}
+            setFilter={setFilter}
+            handlefilterSelectMember={handlefilterSelectMember}
+          />
         )}
         {showAddEvent && (
           <Wrap>
@@ -473,78 +422,18 @@ function Milestone() {
             </Form>
           </Wrap>
         )}
-
         <Header>STORY BEGINS!</Header>
         <ContentWrapper>
-          <EventContainer>
-            {filterEvents(events)
-              .sort(
-                (a, b) =>
-                  new Date(a.date).getTime() - new Date(b.date).getTime()
-              )
-              .map((event, index) => {
-                const dateObj = new Date(event.date);
-                const monthName = dateObj.toLocaleString('default', {
-                  month: 'short',
-                });
-
-                return (
-                  <EventWrap
-                    onLayout={(event: any) =>
-                      setEventWrapWidth(event.nativeEvent.layout.width)
-                    }
-                  >
-                    <Dot eventWrapWidth={eventWrapWidth} index={index} />
-                    <EventBox key={event.id} index={index}>
-                      <ColumnWrap>
-                        <EventImage
-                          src={
-                            event.image ||
-                            'https://source.unsplash.com/random/?city,night'
-                          }
-                          alt=""
-                        />
-                        <DateBox>
-                          <DateInfo>
-                            <Month>{monthName}</Month>
-                            <Day>{dateObj.getDate()}</Day>
-                            <Year>{dateObj.getFullYear()}</Year>
-                          </DateInfo>
-                        </DateBox>
-                        <InfoWrap>
-                          <EventTitle>{event.title}</EventTitle>
-                          <EventTitle>|</EventTitle>
-                          <EventTitle>{event.member}</EventTitle>
-                        </InfoWrap>
-                        <ButtonRowWrap>
-                          {showButtons && (
-                            <>
-                              <Button onClick={() => handleEditEvent(event)}>
-                                <AnimatedFontAwesomeIcon
-                                  icon={faPenToSquare}
-                                ></AnimatedFontAwesomeIcon>
-                              </Button>
-                              <Button
-                                onClick={() => handleDeleteEvent(event.id)}
-                              >
-                                <AnimatedFontAwesomeIcon
-                                  icon={faTrashCan}
-                                ></AnimatedFontAwesomeIcon>
-                              </Button>
-                            </>
-                          )}
-                          <MoreButton onClick={handleToggleButtons}>
-                            <AnimatedFontAwesomeIcon
-                              icon={faEllipsisH}
-                            ></AnimatedFontAwesomeIcon>
-                          </MoreButton>
-                        </ButtonRowWrap>
-                      </ColumnWrap>
-                    </EventBox>
-                  </EventWrap>
-                );
-              })}
-          </EventContainer>
+          <Events
+            events={events} // Array of events
+            filterEvents={filterEvents} // Function to filter events
+            eventWrapWidth={eventWrapWidth} // Width of the event wrap (number)
+            setEventWrapWidth={setEventWrapWidth} // Function to set the event wrap width
+            showButtons={showButtons} // Boolean value to show/hide buttons
+            handleEditEvent={handleEditEvent} // Function to handle edit event action
+            handleDeleteEvent={handleDeleteEvent} // Function to handle delete event action
+            handleToggleButtons={handleToggleButtons} // Function to toggle button visibility
+          />
           {isEditing ? (
             <EditEventForm event={editedEvent} onEdit={handleEditFormSubmit} />
           ) : (
@@ -559,15 +448,6 @@ function Milestone() {
 }
 
 export default Milestone;
-
-const ColumnWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-  border-radius: 5%;
-  width: 100%;
-  align-items: center;
-  position: relative;
-`;
 
 const Wrapper = styled.div`
   width: 100%;
@@ -630,71 +510,6 @@ const ContentWrapper = styled.div`
   background-color: trasparent;
 `;
 
-const EventContainer = styled.div`
-  max-width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow-x: scroll;
-  padding: 30px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 20px;
-  -webkit-overflow-scrolling: touch;
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background-color: #3467a1;
-    border-radius: 58px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #3467a1;
-  }
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 4px;
-    height: 100%;
-    background-color: transparent;
-    background-image: linear-gradient(
-      to bottom,
-      rgba(52, 103, 161, 0.5),
-      #1e3d6b
-    );
-    transform: translateX(-50%);
-  }
-`;
-
-const EventBox = styled.div`
-  width: auto;
-  max-height: 400px;
-  border-radius: 20px;
-  transition: box-shadow 0.5s ease-in-out;
-  display: flex;
-  background-color: white;
-  justify-content: space-between;
-  margin: 10px;
-  position: relative;
-  align-self: ${(props) => (props.index % 2 === 0 ? 'flex-start' : 'flex-end')};
-  margin-right: ${(props) => (props.index % 2 === 0 ? '0px' : '600px')};
-  margin-left: ${(props) => (props.index % 2 === 0 ? '600px' : '0px')};
-  &:hover {
-    box-shadow: 0 0 10px #f6f8f8, 0 0 20px #f6f8f8, 0 0 40px #f6f8f8;
-    transform: scale(1.05);
-  }
-`;
-const EventTitle = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 10px;
-  margin-right: 5px;
-  margin-left: 5px;
-  color: #3467a1;
-`;
-
 const RowWrap = styled.div`
   display: flex;
   flex-direction: row;
@@ -702,33 +517,6 @@ const RowWrap = styled.div`
   align-items: space-between;
 
   right: 0;
-`;
-
-const ButtonRowWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: space-between;
-  position: absolute;
-  right: 0;
-`;
-
-const InfoWrap = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-`;
-
-const DateBox = styled.div`
-  position: absolute;
-  width: 70px;
-  height: 70px;
-  background-color: #fff;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  border-radius: 20%;
-  bottom: 45px;
-  left: 10px;
-  padding: 5px;
 `;
 
 const StyledButton = styled(ThreeDButton)`
@@ -763,15 +551,6 @@ const SubmitButton = styled(Button)`
   right: 150px;
 `;
 
-const MoreButton = styled(DefaultButton)`
-  margin: 10px;
-  color: #fff;
-  padding: 5px;
-  height: 20px;
-  box-shadow: none;
-  border: none;
-  background-color: transparent;
-`;
 const CancelButton = styled(DefaultButton)`
   margin: 10px;
   position: absolute;
@@ -785,12 +564,6 @@ type ImageType = {
   src: string;
   alt: string;
 };
-const EventImage = styled.img<any>`
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 20px 20px 0 0;
-`;
 
 const Form = styled.form`
   display: flex;
@@ -803,7 +576,6 @@ const FormField = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 10px;
-
   width: 400px;
 `;
 
@@ -829,19 +601,6 @@ const FormSelection: any = styled.select`
   width: 150px;
 `;
 
-export const GradientAnimation = keyframes`
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-  
-`;
-
 const Container = styled.div`
   display: flex;
   flex-direction: row;
@@ -853,72 +612,6 @@ const Container = styled.div`
 
 const AnimatedFontAwesomeIcon = styled(FontAwesomeIcon)`
   cursor: pointer;
-`;
-
-const DateInfo = styled.div`
-  color: white;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-`;
-
-const Year = styled.div`
-  font-size: 8px;
-  font-weight: bold;
-  margin-bottom: 5px;
-  color: black;
-`;
-
-const Month = styled.div`
-  font-size: 8px;
-  margin-bottom: 5px;
-  color: black;
-`;
-
-const Day = styled.div`
-  font-size: 24px;
-  font-weight: bold;
-  color: coral;
-`;
-
-const pulse = keyframes`
-  0% {
-    box-shadow: 0 0 0 0 #3467a1;
-  }
-  70% {
-    box-shadow: 0 0 0 15px rgba(0, 255, 204, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(0, 255, 204, 0);
-  }
-`;
-type Dot = {
-  eventWrapWidth: any;
-};
-
-const Dot = styled.div<Dot>`
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background-color: #3467a1;
-  position: absolute;
-  top: 50%;
-  left: ${(props) => (props.index % 2 === 0 ? '50%' : '50%')};
-  transform: translate(-50%, -50%);
-  transition: opacity 0.5s ease-in-out;
-  box-shadow: 0 0 5px black, 0 0 10px #3467a1, 0 0 15px #3467a1,
-    0 0 20px #3467a1, 0 0 30px #3467a1, 0 0 40px #3467a1, 0 0 70px #3467a1,
-    0 0 80px #3467a13a, 0 0 100px #3467a110, 0 0 150px #3467a15f;
-  animation: ${pulse} 2s ease-in-out infinite;
-`;
-
-type EventWrapType = {
-  onLayout?: (event: Event) => void;
-};
-
-const EventWrap = styled.div<EventWrapType>`
-  position: relative;
 `;
 
 const ErrorMessage = styled.div`
